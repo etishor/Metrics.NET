@@ -20,6 +20,10 @@ Unitll some documentation will be provided that is a good starting point.
 
 The [documentation of the Java Library](http://metrics.codahale.com/manual/core/) is also usefull for understaing the concepts.
 
+The library is published on NuGet as a prerelease library and can be installed with the following command:
+
+    Install-Package Metrics.NET -Pre
+
 
 License
 =======
