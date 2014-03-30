@@ -1,12 +1,19 @@
 Metrics.NET
 ===========
 
+This port is still work in progrss and should not be considered ready for production
+------------------------------------------------------------------------------------
+
+
 .NET Port of the awesome [Java metrics library by codahale](https://github.com/dropwizard/metrics)
 
 This port is also inspired and contains code from [Daniel Crenna's port](https://github.com/danielcrenna/metrics-net) of the same library.
 
 I have decided to write another .NET port of the same library since Daniel does not actively maintain metrics-net. 
 I've also whanted to better understand the internals of the library and try to provide a better API, more suitable for the .NET world.
+
+
+
 
 License
 =======
