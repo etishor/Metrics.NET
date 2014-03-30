@@ -27,6 +27,7 @@ The library is published on NuGet as a prerelease library and can be installed w
 Using the library (see Samples for more examples)
 -------------------------------------------------
 
+```csharp
     public class SampleMetrics
     {
         private readonly Timer timer = Metric.Timer<SampleMetrics>("Requests", SamplingType.FavourRecent, Unit.Requests);
@@ -39,21 +40,27 @@ Using the library (see Samples for more examples)
             }
         }
     }
-
+```
 Display Metrics
 ---------------
 
 Schedule a console report to be runned and displayed every 10 seconds:
 
+```csharp
     Metric.Reports.PrintConsoleReport(TimeSpan.FromSeconds(10));
+```
 
 Schedule a line to be appended for each metric to a csv file:
 
+```csharp
     Metric.Reports.StoreCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(30));
+```
 
 Schedule a human readable text repot to be appended to a file every 30 seconds
 
+```csharp
     Metric.Reports.AppendToFile(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(30));
+```
 
 Adapters for other applications
 -------------------------------
@@ -62,9 +69,10 @@ At the moment there is a NancyFx adapter that collects some metrics about Nancy 
 
 In the ApplicationStartup method of a Nancy bootstrapper:
 
+```csharp
     NancyMetrics.RegisterAllMetrics(pipelines);
     NancyMetrics.ExposeMetrics();
-
+```
 
 License
 -------
