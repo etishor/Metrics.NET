@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Metrics.Reporters
 {
-    public abstract class Reporter : IDisposable
+    public abstract class Reporter : IDisposable, Utils.IHideObjectMembers
     {
         public void RunReport(MetricsRegistry registry)
         {
