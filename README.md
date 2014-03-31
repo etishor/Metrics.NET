@@ -1,6 +1,8 @@
 Metrics.NET
 ===========
 
+[![Build status](https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2)](https://ci.appveyor.com/project/etishor/metrics-net)
+
 This port is still work in progrss and should not be considered ready for production
 ------------------------------------------------------------------------------------
 
