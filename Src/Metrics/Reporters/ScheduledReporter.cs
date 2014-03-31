@@ -9,6 +9,7 @@ namespace Metrics.Reporters
         private readonly Func<Reporter> reporter;
         private readonly TimeSpan interval;
         private readonly MetricsRegistry registry;
+        private string name;
         private System.Threading.Timer timer;
 
         public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, TimeSpan interval)
@@ -17,6 +18,7 @@ namespace Metrics.Reporters
             this.reporter = reporter;
             this.interval = interval;
             this.registry = registry;
+            this.name = name;
         }
 
         public void Start()
