@@ -79,7 +79,7 @@ namespace Nancy.Metrics
         /// <param name="metricsPrefix">Optional prefix for the metric name</param>
         public static void RegisterRequestTimer(IPipelines nancyPipelines, string metricName = "Requests", string metricsPrefix = "NancyFx")
         {
-            var requestTimer = Metric.Timer(Name(metricsPrefix, metricName), SamplingType.FavourRecent, Unit.Requests);
+            var requestTimer = Metric.Timer(Name(metricsPrefix, metricName), Unit.Requests, SamplingType.FavourRecent);
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {

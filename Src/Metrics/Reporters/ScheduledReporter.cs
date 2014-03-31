@@ -14,7 +14,7 @@ namespace Metrics.Reporters
 
         public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, TimeSpan interval)
         {
-            this.reportTime = Metric.Timer("Metrics.Reporter." + name, SamplingType.FavourRecent, Unit.Calls);
+            this.reportTime = Metric.Timer("Metrics.Reporter." + name, Unit.Calls);
             this.reporter = reporter;
             this.interval = interval;
             this.registry = registry;

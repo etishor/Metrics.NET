@@ -61,12 +61,12 @@ namespace Metrics.Core
             return this.counters.GetOrAdd(name, () => new CounterMeta(name, new CounterMetric(), unit));
         }
 
-        public Histogram Histogram(string name, SamplingType samplingType, Unit unit)
+        public Histogram Histogram(string name, Unit unit, SamplingType samplingType)
         {
             return this.histograms.GetOrAdd(name, () => new HistogramMeta(name, new HistogramMetric(samplingType), unit));
         }
 
-        public Timer Timer(string name, SamplingType samplingType, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
+        public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit)
         {
             return this.timers.GetOrAdd(name, () => new TimerMeta(name, new TimerMetric(samplingType), unit, rateUnit, durationUnit));
         }

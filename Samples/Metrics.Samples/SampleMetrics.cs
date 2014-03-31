@@ -21,12 +21,12 @@ namespace Metrics.Samples
         /// <summary>
         /// keep a histogram of the number of concurrent requests
         /// </summary>
-        private readonly Histogram histogramOfConcurrentRequests = Metric.Histogram("SampleMetrics.ConcurrentRequests", SamplingType.FavourRecent, Unit.Requests);
+        private readonly Histogram histogramOfConcurrentRequests = Metric.Histogram("SampleMetrics.ConcurrentRequests", Unit.Requests, SamplingType.FavourRecent);
 
         /// <summary>
         /// keep a histogram of the input data of our requet method 
         /// </summary>
-        private readonly Histogram histogramOfData = Metric.Histogram<SampleMetrics>("ResultsExample", SamplingType.LongTerm, Unit.Items);
+        private readonly Histogram histogramOfData = Metric.Histogram<SampleMetrics>("ResultsExample", Unit.Items, SamplingType.LongTerm);
 
         /// <summary>
         /// measure the rate at which requests come in
@@ -36,7 +36,7 @@ namespace Metrics.Samples
         /// <summary>
         /// measure the time rate and duration of requests
         /// </summary>
-        private readonly Timer timer = Metric.Timer<SampleMetrics>("Requests", SamplingType.FavourRecent, Unit.Requests, TimeUnit.Seconds, TimeUnit.Milliseconds);
+        private readonly Timer timer = Metric.Timer<SampleMetrics>("Requests", Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
 
         private double someValue = 1;
 

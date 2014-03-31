@@ -113,25 +113,25 @@ namespace Metrics
         /// <typeparamref name="T"/> is used as a prefix for the metric name.
         /// </summary>
         /// <typeparam name="T">Type used as a prefix for the metric name</typeparam>
-        /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <param name="name">Name of the metric. Must be unique across all histograms.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
+        /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <returns>Reference to the metric</returns>
-        public static Histogram Histogram<T>(string name, SamplingType samplingType, Unit unit)
+        public static Histogram Histogram<T>(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
         {
-            return Histogram(Name<T>(name), samplingType, unit);
+            return Histogram(Name<T>(name), unit, samplingType);
         }
 
         /// <summary>
         /// A Histogram measures the distribution of values in a stream of data: e.g., the number of results returned by a search.
         /// </summary>
-        /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <param name="name">Name of the metric. Must be unique across all histograms.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
+        /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <returns>Reference to the metric</returns>
-        public static Histogram Histogram(string name, SamplingType samplingType, Unit unit)
+        public static Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
         {
-            return registry.Histogram(name, samplingType, unit);
+            return registry.Histogram(name, unit, samplingType);
         }
 
         /// <summary>
@@ -141,31 +141,31 @@ namespace Metrics
         /// </summary>
         /// <typeparam name="T">Type used as a prefix for the metric name</typeparam>
         /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
-        /// <param name="name">Name of the metric. Must be unique across all counters.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
+        /// <param name="name">Name of the metric. Must be unique across all counters.</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <param name="durationUnit">Time unit for reporting durations. Defaults to Milliseconds. </param>
         /// <returns>Reference to the metric</returns>
-        public static Timer Timer<T>(string name, SamplingType samplingType,
-            Unit unit, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
+        public static Timer Timer<T>(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
+             TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
         {
-            return Timer(Name<T>(name), samplingType, unit, rateUnit, durationUnit);
+            return Timer(Name<T>(name), unit, samplingType, rateUnit, durationUnit);
         }
 
         /// <summary>
         /// A timer is basically a histogram of the duration of a type of event and a meter of the rate of its occurrence.
         /// <seealso cref="Histogram"/> and <seealso cref="Meter"/>
         /// </summary>
-        /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <param name="name">Name of the metric. Must be unique across all counters.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
+        /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <param name="durationUnit">Time unit for reporting durations. Defaults to Milliseconds. </param>
         /// <returns>Reference to the metric</returns>
-        public static Timer Timer(string name, SamplingType samplingType,
-            Unit unit, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
+        public static Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
+            TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
         {
-            return registry.Timer(name, samplingType, unit, rateUnit, durationUnit);
+            return registry.Timer(name, unit, samplingType, rateUnit, durationUnit);
         }
 
         /// <summary>

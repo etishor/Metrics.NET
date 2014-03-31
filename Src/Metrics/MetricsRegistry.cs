@@ -17,7 +17,7 @@ namespace Metrics
         Gauge Gauge(string name, Func<string> valueProvider, Unit unit);
         Counter Counter(string name, Unit unit);
         Meter Meter(string name, Unit unit, TimeUnit rateUnit);
-        Histogram Histogram(string name, SamplingType samplingType, Unit unit);
-        Timer Timer(string name, SamplingType samplingType, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit);
+        Histogram Histogram(string name, Unit unit, SamplingType samplingType);
+        Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit);
     }
 }
