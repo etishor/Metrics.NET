@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Metrics;
 using Metrics.Samples;
 using Nancy.Hosting.Self;
 using Newtonsoft.Json;
@@ -10,6 +11,8 @@ namespace NancyFx.Sample
     {
         static void Main(string[] args)
         {
+            Metric.Reports.PrintConsoleReport(TimeSpan.FromSeconds(10));
+
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings { Formatting = Formatting.Indented };
 
             using (var host = new NancyHost(new Uri("http://localhost:1234")))
