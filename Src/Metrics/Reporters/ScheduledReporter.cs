@@ -27,7 +27,7 @@ namespace Metrics.Reporters
             {
                 Stop();
             }
-            this.timer = new System.Threading.Timer((s) => RunReport(), null, TimeSpan.Zero, interval);
+            this.timer = new System.Threading.Timer((s) => RunReport(), null, interval, interval);
         }
 
         private void RunReport()
