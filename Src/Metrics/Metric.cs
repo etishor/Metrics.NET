@@ -1,5 +1,6 @@
 ﻿using System;
 using Metrics.Core;
+using Metrics.PerfCounters;
 using Metrics.Reporters;
 
 namespace Metrics
@@ -11,11 +12,16 @@ namespace Metrics
     {
         private static readonly MetricsRegistry registry = new Registry();
         private static readonly MetricsReports reports = new MetricsReports(registry);
-
+        private static readonly PerformanceCounters machineCounters = new PerformanceCounters(registry);
         /// <summary>
         /// Entry point for metric reporting operations
         /// </summary>
         public static MetricsReports Reports { get { return reports; } }
+
+        /// <summary>
+        /// Entry point for registering metrics derived from PerformanceCounters.
+        /// </summary>
+        public static PerformanceCounters MachineCounters { get { return machineCounters; } }
 
         /// <summary>
         /// A gauge is the simplest metric type. It just returns a value.

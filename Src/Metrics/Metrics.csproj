@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\ExponentiallyDecayingReservoir.cs" />
+    <Compile Include="Core\PerformanceCounterGauge.cs" />
     <Compile Include="Counter.cs" />
     <Compile Include="Gauge.cs" />
     <Compile Include="Histogram.cs" />
@@ -54,6 +55,10 @@
     <Compile Include="MetricsRegistry.cs" />
     <Compile Include="Core\Registry.cs" />
     <Compile Include="MetricsReports.cs" />
+    <Compile Include="PerfCounters\BaseCounterRegristry.cs" />
+    <Compile Include="PerfCounters\PerfCounter.cs" />
+    <Compile Include="PerfCounters\PerformanceCounters.cs" />
+    <Compile Include="PerfCounters\SystemInfo.cs" />
     <Compile Include="Reporters\ConsoleReporter.cs" />
     <Compile Include="Reporters\CSVFileAppender.cs" />
     <Compile Include="Reporters\CSVReporter.cs" />
