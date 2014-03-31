@@ -52,9 +52,9 @@ namespace Nancy.Metrics
         /// <param name="metricsPrefix">Optional prefix for the metric name</param>
         public static void RegisterAllMetrics(IPipelines nancyPipelines, string metricsPrefix = "NancyFx")
         {
-            RegisterRequestTimer(nancyPipelines, metricsPrefix);
-            RegisterErrorsMeter(nancyPipelines, metricsPrefix);
-            RegisterActiveRequestCounter(nancyPipelines, metricsPrefix);
+            RegisterRequestTimer(nancyPipelines, metricsPrefix: metricsPrefix);
+            RegisterErrorsMeter(nancyPipelines, metricsPrefix: metricsPrefix);
+            RegisterActiveRequestCounter(nancyPipelines, metricsPrefix: metricsPrefix);
         }
 
         /// <summary>
