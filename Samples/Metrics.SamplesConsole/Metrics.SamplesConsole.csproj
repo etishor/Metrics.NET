@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -57,11 +57,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Src\Metrics\Metrics.csproj">
-      <Project>{95e29d40-dbec-49e2-9cc5-26b88966dade}</Project>
+      <Project>{95E29D40-DBEC-49E2-9CC5-26B88966DADE}</Project>
       <Name>Metrics</Name>
     </ProjectReference>
     <ProjectReference Include="..\Metrics.Samples\Metrics.Samples.csproj">
-      <Project>{d08a63d0-f440-477c-9565-1264ae0879d0}</Project>
+      <Project>{D08A63D0-F440-477C-9565-1264AE0879D0}</Project>
       <Name>Metrics.Samples</Name>
     </ProjectReference>
   </ItemGroup>
