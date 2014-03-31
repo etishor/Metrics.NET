@@ -1,5 +1,4 @@
-﻿using System;
-using Metrics.Utils;
+﻿using Metrics.Utils;
 
 namespace Metrics.Core
 {

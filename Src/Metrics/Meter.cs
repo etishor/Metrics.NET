@@ -11,7 +11,15 @@ namespace Metrics
     /// </summary>
     public interface Meter : Metric<MeterValue>
     {
+        /// <summary>
+        /// Mark the occurrence of an event.
+        /// </summary>
         void Mark();
+
+        /// <summary>
+        /// Mark the occurrence of <paramref name="count"/> events.
+        /// </summary>
+        /// <param name="count"></param>
         void Mark(long count);
     }
 

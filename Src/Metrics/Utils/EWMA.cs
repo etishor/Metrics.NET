@@ -4,9 +4,9 @@ namespace Metrics.Utils
 {
     /// <summary>
     /// An exponentially-weighted moving average.
-    /// <seealso cref="http://www.teamquest.com/pdfs/whitepaper/ldavg1.pdf">UNIX Load Average Part 1: How It Works</a>
-    /// <seealso cref="http://www.teamquest.com/pdfs/whitepaper/ldavg2.pdf">UNIX Load Average Part 2: Not Your Average Average</a>
-    /// <seealso cref="http://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average">EMA</a>
+    /// <a href="http://www.teamquest.com/pdfs/whitepaper/ldavg1.pdf">UNIX Load Average Part 1: How It Works</a>
+    /// <a href="http://www.teamquest.com/pdfs/whitepaper/ldavg2.pdf">UNIX Load Average Part 2: Not Your Average Average</a>
+    /// <a href="http://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average">EMA</a>
     /// </summary>
     public class EWMA
     {

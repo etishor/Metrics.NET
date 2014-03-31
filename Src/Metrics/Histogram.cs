@@ -8,6 +8,10 @@ namespace Metrics
     /// </summary>
     public interface Histogram : Metric<HistogramValue>
     {
+        /// <summary>
+        /// Adds a recorded value.
+        /// </summary>
+        /// <param name="value">Value to be added to the histogram.</param>
         void Update(long value);
     }
 

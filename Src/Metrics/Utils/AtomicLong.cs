@@ -4,7 +4,7 @@ namespace Metrics.Utils
 {
     /// <summary>
     /// TODO: implement optimizations behind LongAdder from 
-    /// <see cref="https://github.com/dropwizard/metrics/blob/master/metrics-core/src/main/java/com/codahale/metrics/LongAdder.java"/>
+    /// <a href="https://github.com/dropwizard/metrics/blob/master/metrics-core/src/main/java/com/codahale/metrics/LongAdder.java">metrics-core</a>
     /// </summary>
     public class AtomicLong
     {
