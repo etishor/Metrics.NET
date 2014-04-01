@@ -80,7 +80,7 @@ TODO
 ----
 A live list of my future plan
 
-* [in progress] Provide a few presets to map performance counters to Gauges ( machine info, process info, CLR stats etc )
+* [done] Provide a few presets to map performance counters to Gauges ( machine info, process info, CLR stats etc )
 * Refactor scheduled report to prevent overlapping
 * Find/Implement ConcurrentSkipMap like collection form java - low prio as the performance is good for now
 * Provide a way for error reporting (at least for reports that do IO) - maybe a delegate on the Metric class
