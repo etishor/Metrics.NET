@@ -81,9 +81,9 @@ TODO
 A live list of my future plan
 
 * [done] Provide a few presets to map performance counters to Gauges ( machine info, process info, CLR stats etc )
+* [done] Provide a way for error reporting (at least for reports that do IO) - maybe a delegate on the Metric class
 * Refactor scheduled report to prevent overlapping
 * Find/Implement ConcurrentSkipMap like collection form java - low prio as the performance is good for now
-* Provide a way for error reporting (at least for reports that do IO) - maybe a delegate on the Metric class
 * Add metrics for NancyFx request/response size
 * Provide http endpoint for reporting metrics (based on owin or nancy) together with javascript visualisation solution - the idea is to have out-of-the-box metrics visualization in web apps
 * Provide an adapter for hooking into web api for collecting metrics (this might be delayed as I tend to use NancyFx)
