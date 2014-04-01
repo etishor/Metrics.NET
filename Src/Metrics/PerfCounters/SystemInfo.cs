@@ -16,6 +16,8 @@ namespace Metrics.PerfCounters
             Register("CommandLine", () => Environment.CommandLine);
             Register("AvailableRAM", () => new PerformanceCounterGauge("Memory", "Available MBytes"), Unit.Custom("Mb"));
             Register("CPU Usage", () => new PerformanceCounterGauge("Processor", "% Processor Time", TotalInstance), Unit.Custom("%"));
+            Register("Disk Writes/sec", () => new PerformanceCounterGauge("PhysicalDisk", "Disk Reads/sec", TotalInstance, f => (f / 1000).ToString("F")), Unit.Custom("kb/s"));
+            Register("Disk Reads/sec", () => new PerformanceCounterGauge("PhysicalDisk", "Disk Writes/sec", TotalInstance, f => (f / 1000).ToString("F")), Unit.Custom("kb/s"));
         }
 
         private string GetOSVersion()

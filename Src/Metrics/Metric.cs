@@ -24,6 +24,21 @@ namespace Metrics
         public static PerformanceCounters MachineCounters { get { return machineCounters; } }
 
         /// <summary>
+        /// Register a performance counter as a Gauge metric.
+        /// </summary>
+        /// <param name="name">Name of this gauge metric. Must be unique across all gauges.</param>
+        /// <param name="counterCategory">Category of the performance counter</param>
+        /// <param name="counterName">Name of the performance counter</param>
+        /// <param name="counterInstance">Instance of the performance counter</param>
+        /// <param name="formatter">Function to format the float value returned by the counter</param>
+        /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
+        /// <returns>Reference to the gauge</returns>
+        public static Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Func<float, string> formatter, Unit unit)
+        {
+            return registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance, formatter), unit);
+        }
+
+        /// <summary>
         /// A gauge is the simplest metric type. It just returns a value.
         /// This metric is suitable for instantaneous values. 
         /// <typeparamref name="T"/> is used as a prefix for the metric name.
