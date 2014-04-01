@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Metrics;
 using Nancy.Bootstrapper;
 
@@ -55,6 +56,8 @@ namespace Nancy.Metrics
             RegisterRequestTimer(nancyPipelines, metricsPrefix: metricsPrefix);
             RegisterErrorsMeter(nancyPipelines, metricsPrefix: metricsPrefix);
             RegisterActiveRequestCounter(nancyPipelines, metricsPrefix: metricsPrefix);
+            RegisterPostRequestSizeHistogram(nancyPipelines, metricsPrefix: metricsPrefix);
+            RegisterGetResponseSizeHistogram(nancyPipelines, metricsPrefix: metricsPrefix);
         }
 
         /// <summary>
@@ -113,6 +116,37 @@ namespace Nancy.Metrics
             nancyPipelines.AfterRequest.AddItemToEndOfPipeline(ctx =>
             {
                 counter.Decrement();
+            });
+        }
+
+        public static void RegisterPostRequestSizeHistogram(IPipelines nancyPipelines, string metricName = "PostRequestSize", string metricsPrefix = "NancyFx")
+        {
+            var histogram = Metric.Histogram(Name(metricsPrefix, metricName), Unit.Custom("kb"));
+
+            nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
+            {
+                if (ctx.Request.Method.ToUpper() == "POST")
+                {
+                    histogram.Update(ctx.Request.Body.Length);
+                }
+                return null;
+            });
+        }
+
+        public static void RegisterGetResponseSizeHistogram(IPipelines nancyPipelines, string metricName = "GetResponseSize", string metricsPrefix = "NancyFx")
+        {
+            var histogram = Metric.Histogram(Name(metricsPrefix, metricName), Unit.Custom("kb"));
+
+            nancyPipelines.AfterRequest.AddItemToEndOfPipeline(ctx =>
+            {
+                if (ctx.Request.Method.ToUpper() == "GET")
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        ctx.Response.Contents(ms);
+                        histogram.Update(ms.Length);
+                    }
+                }
             });
         }
 
