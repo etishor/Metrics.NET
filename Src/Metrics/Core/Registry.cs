@@ -51,6 +51,11 @@ namespace Metrics.Core
             return this.gauges.GetOrAdd(name, () => new GaugeMeta(name, new GaugeMetric(valueProvider), unit));
         }
 
+        public Gauge Gauge(string name, Func<Gauge> gauge, Unit unit)
+        {
+            return this.gauges.GetOrAdd(name, () => new GaugeMeta(name, gauge(), unit));
+        }
+
         public Meter Meter(string name, Unit unit, TimeUnit rateUnit)
         {
             return this.meters.GetOrAdd(name, () => new MeterMeta(name, new MeterMetric(), unit, rateUnit));

@@ -14,8 +14,8 @@ namespace Metrics.PerfCounters
             Register("OperatingSystem", () => GetOSVersion());
             Register("NETVersion", () => Environment.Version.ToString());
             Register("CommandLine", () => Environment.CommandLine);
-            Register("AvailableRAM", new PerfCounter("Memory", "Available MBytes"), Unit.Custom("Mb"));
-            Register("CPU Usage", new PerfCounter("Processor", "% Processor Time", TotalInstance), Unit.Custom("%"));
+            Register("AvailableRAM", () => new PerformanceCounterGauge("Memory", "Available MBytes"), Unit.Custom("Mb"));
+            Register("CPU Usage", () => new PerformanceCounterGauge("Processor", "% Processor Time", TotalInstance), Unit.Custom("%"));
         }
 
         private string GetOSVersion()

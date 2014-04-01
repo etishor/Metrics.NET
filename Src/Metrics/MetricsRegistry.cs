@@ -15,6 +15,7 @@ namespace Metrics
         IEnumerable<TimerMeta> Timers { get; }
 
         Gauge Gauge(string name, Func<string> valueProvider, Unit unit);
+        Gauge Gauge(string name, Func<Gauge> gauge, Unit unit);
         Counter Counter(string name, Unit unit);
         Meter Meter(string name, Unit unit, TimeUnit rateUnit);
         Histogram Histogram(string name, Unit unit, SamplingType samplingType);

@@ -16,19 +16,9 @@ namespace Metrics.PerfCounters
             this.prefix = prefix;
         }
 
-        protected void Register(string name, PerfCounter counter)
+        protected void Register(string name, Func<Gauge> gauge, Unit unit)
         {
-            Register(name, counter, Unit.None);
-        }
-
-        protected void Register(string name, PerfCounter counter, Unit unit)
-        {
-            Register(name, () => counter.GetValue(), unit);
-        }
-
-        protected void Register(string name, Func<float> value)
-        {
-            Register(name, () => value().ToString("F"));
+            this.registry.Gauge(prefix + "." + name, gauge, unit);
         }
 
         protected void Register(string name, Func<string> value)
