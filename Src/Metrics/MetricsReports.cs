@@ -56,5 +56,14 @@ namespace Metrics
             reporter.Start();
             this.reports.Add(reporter);
         }
+
+        /// <summary>
+        /// Stop all registered reports and clear the registrations.
+        /// </summary>
+        public void StopAndClearAllReports()
+        {
+            reports.ForEach(r => r.Stop());
+            reports.Clear();
+        }
     }
 }

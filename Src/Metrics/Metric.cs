@@ -13,6 +13,13 @@ namespace Metrics
         private static readonly MetricsRegistry registry = new Registry();
         private static readonly MetricsReports reports = new MetricsReports(registry);
         private static readonly PerformanceCounters machineCounters = new PerformanceCounters(registry);
+
+        /// <summary>
+        /// Global error handler for the metrics library. If a handler is registered any error will be passed to the handler.
+        /// If no error handler is registered the exception will be re-thrown.
+        /// </summary>
+        public static Action<Exception> ErrorHandler { get; set; }
+
         /// <summary>
         /// Entry point for metric reporting operations
         /// </summary>

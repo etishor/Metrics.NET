@@ -50,6 +50,7 @@
     <Compile Include="CounterTests.cs" />
     <Compile Include="EWMATests.cs" />
     <Compile Include="ExponentiallyDecayingReservoirTests.cs" />
+    <Compile Include="GlobalErrorHandlerTests.cs" />
     <Compile Include="HistogramTests.cs" />
     <Compile Include="MeterTests.cs" />
     <Compile Include="OptimizedLongTests.cs" />

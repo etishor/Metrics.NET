@@ -33,10 +33,24 @@ namespace Metrics.Reporters
 
         private void RunReport()
         {
-            using (this.reportTime != null ? this.reportTime.NewContext() : null)
-            using (var report = reporter())
+            try
             {
-                report.RunReport(this.registry);
+                using (this.reportTime != null ? this.reportTime.NewContext() : null)
+                using (var report = reporter())
+                {
+                    report.RunReport(this.registry);
+                }
+            }
+            catch (Exception x)
+            {
+                if (Metric.ErrorHandler != null)
+                {
+                    Metric.ErrorHandler(x);
+                }
+                else
+                {
+                    throw;
+                }
             }
         }
 

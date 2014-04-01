@@ -16,6 +16,7 @@ namespace Metrics.Reporters
         public virtual void AppendLine(DateTime timestamp, string metricType, string metricName, IEnumerable<CSVReporter.Value> values)
         {
             var fileName = Path.Combine(this.directory, string.Format("{0}.{1}.csv", metricName, metricType));
+
             if (!File.Exists(fileName))
             {
                 File.AppendAllLines(fileName, new[] { GetHeader(values), GetValues(timestamp, values) });
