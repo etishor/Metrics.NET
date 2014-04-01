@@ -4,7 +4,7 @@ namespace Metrics.Reporters
 {
     public class ScheduledReporter
     {
-        private readonly Timer reportTime;
+        private readonly Timer reportTime = null;
 
         private readonly Func<Reporter> reporter;
         private readonly TimeSpan interval;
@@ -13,7 +13,10 @@ namespace Metrics.Reporters
 
         public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, TimeSpan interval)
         {
-            this.reportTime = Metric.Timer("Metrics.Reporter." + name, Unit.Calls);
+            if (Metric.Reports.EnableReportDiagnosticMetrics)
+            {
+                this.reportTime = Metric.Timer("Metrics.Reporter." + name, Unit.Calls);
+            }
             this.reporter = reporter;
             this.interval = interval;
             this.registry = registry;
@@ -30,7 +33,7 @@ namespace Metrics.Reporters
 
         private void RunReport()
         {
-            using (this.reportTime.NewContext())
+            using (this.reportTime != null ? this.reportTime.NewContext() : null)
             using (var report = reporter())
             {
                 report.RunReport(this.registry);

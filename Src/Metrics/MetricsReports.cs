@@ -17,6 +17,11 @@ namespace Metrics
         }
 
         /// <summary>
+        /// Enable or disable the registration of Report timer metrics.
+        /// </summary>
+        public bool EnableReportDiagnosticMetrics { get; set; }
+
+        /// <summary>
         /// Schedule a Console Report to be executed and displayed on the console at a fixed <paramref name="interval"/>.
         /// </summary>
         /// <param name="interval">Interval at which to display the report on the Console.</param>
