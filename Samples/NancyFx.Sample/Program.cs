@@ -11,7 +11,9 @@ namespace NancyFx.Sample
     {
         static void Main(string[] args)
         {
+            Metric.MachineCounters.RegisterAll();
             Metric.Reports.PrintConsoleReport(TimeSpan.FromSeconds(10));
+
 
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings { Formatting = Formatting.Indented };
 
