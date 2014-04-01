@@ -1,6 +1,8 @@
 Metrics.NET
 ===========
 
+[![Build status](https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2)](https://ci.appveyor.com/project/etishor/metrics-net)
+
 This port is still work in progrss and should not be considered ready for production
 ------------------------------------------------------------------------------------
 
@@ -73,6 +75,27 @@ In the ApplicationStartup method of a Nancy bootstrapper:
     NancyMetrics.RegisterAllMetrics(pipelines);
     NancyMetrics.ExposeMetrics();
 ```
+
+TODO
+----
+A live list of my future plan
+
+* [in progress] Provide a few presets to map performance counters to Gauges ( machine info, process info, CLR stats etc )
+* Refactor scheduled report to prevent overlapping
+* Find/Implement ConcurrentSkipMap like collection form java - low prio as the performance is good for now
+* Provide a way for error reporting (at least for reports that do IO) - maybe a delegate on the Metric class
+* Add metrics for NancyFx request/response size
+* Provide http endpoint for reporting metrics (based on owin or nancy) together with javascript visualisation solution - the idea is to have out-of-the-box metrics visualization in web apps
+* Provide an adapter for hooking into web api for collecting metrics (this might be delayed as I tend to use NancyFx)
+* Provide an adapter for hooking into asp.net mvc
+* Investigate the possibility of using zeromq to delegate metrics to another process - for accross cluster metrics
+* Adapter for graphite and other existing solutions for aggregating metrics
+* Mono compatibility
+* Investigate the possibility of using Redis as an off-process metrics container (the collections behing the metrics seem to map to redis data types)
+* Investigate the possibility for backend to recieve metrics from client js app (not sure it makes sense to capture metrics from js apps - maybe from SPAs)
+* Write more tests
+* Write more "stupid" benchmarks to be able to keep an eye on how performance changes in time
+* Profile & optimize. Also profile existing apps to see the impact of adding metrics
 
 License
 -------
