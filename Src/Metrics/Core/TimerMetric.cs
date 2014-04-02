@@ -10,6 +10,7 @@ namespace Metrics.Core
         {
             private readonly TimerMetric timer;
             private readonly long startTime;
+            private bool disposed = false;
 
             public Context(TimerMetric timer)
             {
@@ -19,7 +20,11 @@ namespace Metrics.Core
 
             public void Dispose()
             {
-                this.timer.Update(this.timer.clock.Nanoseconds - this.startTime, TimeUnit.Nanoseconds);
+                if (!disposed)
+                {
+                    this.timer.Update(this.timer.clock.Nanoseconds - this.startTime, TimeUnit.Nanoseconds);
+                }
+                disposed = true;
             }
         }
 
@@ -32,6 +37,9 @@ namespace Metrics.Core
 
         public TimerMetric(SamplingType samplingType)
             : this(new HistogramMetric(samplingType), Clock.System) { }
+
+        public TimerMetric(SamplingType samplingType, Clock clock)
+            : this(new HistogramMetric(samplingType), clock) { }
 
         public TimerMetric(Histogram histogram, Clock clock)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using FluentAssertions;
 using Metrics.Core;
+using Metrics.Utils;
 using Xunit;
 
 namespace Metrics.Tests
@@ -34,6 +35,33 @@ namespace Metrics.Tests
             timer.Value.Rate.Count.Should().Be(1);
         }
 
+        [Fact]
+        public void TimerCanTrackTime()
+        {
+            Clock.TestClock clock = new Clock.TestClock();
+            Timer timer = new TimerMetric(SamplingType.LongTerm, clock);
+            using (timer.NewContext())
+            {
+                clock.Advance(TimeUnit.Milliseconds, 100);
+            }
+            timer.Value.Histogram.Count.Should().Be(1);
+            timer.Value.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
+        }
 
+        [Fact]
+        public void TimerContextRecordsTimeOnlyOnFirstDispose()
+        {
+            Clock.TestClock clock = new Clock.TestClock();
+            Timer timer = new TimerMetric(SamplingType.LongTerm, clock);
+
+            var context = timer.NewContext();            
+            clock.Advance(TimeUnit.Milliseconds, 100);
+            using (context) { }
+            clock.Advance(TimeUnit.Milliseconds, 100);
+            using (context) { }
+            
+            timer.Value.Histogram.Count.Should().Be(1);
+            timer.Value.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
+        }
     }
 }
