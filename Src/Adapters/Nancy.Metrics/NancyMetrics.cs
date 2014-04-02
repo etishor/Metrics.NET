@@ -7,6 +7,8 @@ namespace Nancy.Metrics
     /// </summary>
     public static class NancyMetrics
     {
+        public static NancyMetricsConfig CurrentConfig { get; private set; }
+
         /// <summary>
         /// Start configuring metrics integration into NancyFx
         /// </summary>
@@ -26,7 +28,8 @@ namespace Nancy.Metrics
         /// <returns>Instance that handles integration customizations</returns>
         public static NancyMetricsConfig Configure(MetricsRegistry metricsRegistry)
         {
-            return new NancyMetricsConfig(metricsRegistry);
+            CurrentConfig = new NancyMetricsConfig(metricsRegistry);
+            return CurrentConfig;
         }
     }
 }

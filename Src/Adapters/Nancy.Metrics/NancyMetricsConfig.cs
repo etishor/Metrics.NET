@@ -13,6 +13,8 @@ namespace Nancy.Metrics
             this.metricsRegistry = metricsRegistry;
         }
 
+        public MetricsRegistry Registry { get { return this.metricsRegistry; } }
+
         /// <summary>
         /// Configure global NancyFx Metrics.
         /// Available global metrics are: Request Timer, Active Requests Counter, Error Meter

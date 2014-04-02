@@ -21,7 +21,7 @@ namespace Nancy.Metrics
         public static void MetricForRequestTime(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
             var name = string.Format("{0}.{1}", module.GetType().Name, metricName);
-            var timer = Metric.Timer(name, Unit.Requests);
+            var timer = NancyMetrics.CurrentConfig.Registry.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
 
             module.Before.AddItemToStartOfPipeline(ctx =>
             {
