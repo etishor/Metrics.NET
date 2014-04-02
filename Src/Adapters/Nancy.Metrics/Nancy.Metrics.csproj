@@ -47,7 +47,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MetricsModule.cs" />
+    <Compile Include="NancyGlobalMetrics.cs" />
     <Compile Include="NancyMetrics.cs" />
+    <Compile Include="NancyMetricsConfig.cs" />
+    <Compile Include="NancyModuleMetricExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
