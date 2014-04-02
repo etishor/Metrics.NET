@@ -20,5 +20,7 @@ namespace Metrics
         Meter Meter(string name, Unit unit, TimeUnit rateUnit);
         Histogram Histogram(string name, Unit unit, SamplingType samplingType);
         Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit);
+
+        void ClearAllMetrics();
     }
 }

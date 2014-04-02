@@ -31,6 +31,11 @@ namespace Metrics
         public static PerformanceCounters MachineCounters { get { return machineCounters; } }
 
         /// <summary>
+        /// The registry where all the metrics are registered. 
+        /// </summary>
+        public static MetricsRegistry Registry { get { return registry; } }
+
+        /// <summary>
         /// Register a performance counter as a Gauge metric.
         /// </summary>
         /// <param name="name">Name of this gauge metric. Must be unique across all gauges.</param>

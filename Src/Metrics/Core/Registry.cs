@@ -22,6 +22,11 @@ namespace Metrics.Core
             {
                 return this.metrics.GetOrAdd(name, n => metricProvider()).Metric();
             }
+
+            public void Clear()
+            {
+                this.metrics.Clear();
+            }
         }
 
         private readonly MetricMetaCatalog<GaugeMeta, Gauge, GaugeValue> gauges = new MetricMetaCatalog<GaugeMeta, Gauge, GaugeValue>();
@@ -74,6 +79,15 @@ namespace Metrics.Core
         public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit)
         {
             return this.timers.GetOrAdd(name, () => new TimerMeta(name, new TimerMetric(samplingType), unit, rateUnit, durationUnit));
+        }
+
+        public void ClearAllMetrics()
+        {
+            this.gauges.Clear();
+            this.counters.Clear();
+            this.meters.Clear();
+            this.histograms.Clear();
+            this.timers.Clear();
         }
     }
 }
