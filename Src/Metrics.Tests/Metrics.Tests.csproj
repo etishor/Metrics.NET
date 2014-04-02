@@ -63,11 +63,13 @@
     <Compile Include="GlobalErrorHandlerTests.cs" />
     <Compile Include="HistogramTests.cs" />
     <Compile Include="MeterTests.cs" />
-    <Compile Include="NancyAdapter\NancyAdapterTests.cs" />
+    <Compile Include="NancyAdapter\NancyAdapterGlobalMetrics.cs" />
+    <Compile Include="NancyAdapter\NancyAdapterModuleMetricsTests.cs" />
     <Compile Include="OptimizedLongTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SlidingWindowReservoirTest.cs" />
     <Compile Include="SnapshotTests.cs" />
+    <Compile Include="TestUtils\TestRegistry.cs" />
     <Compile Include="TimerTests.cs" />
     <Compile Include="TimeUnitTests.cs" />
     <Compile Include="UniformReservoirTests.cs" />
