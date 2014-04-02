@@ -15,7 +15,7 @@ namespace Metrics.Reporters
         {
             if (Metric.Reports.EnableReportDiagnosticMetrics)
             {
-                this.reportTime = Metric.Timer("Metrics.Reporter." + name, Unit.Calls);
+                this.reportTime = registry.Timer("Metrics.Reporter." + name, Unit.Calls, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
             }
             this.reporter = reporter;
             this.interval = interval;
