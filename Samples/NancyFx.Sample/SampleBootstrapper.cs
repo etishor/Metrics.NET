@@ -1,11 +1,13 @@
-﻿using Nancy.Metrics;
+﻿using Nancy;
+using Nancy.Bootstrapper;
+using Nancy.Metrics;
 using Nancy.TinyIoc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
 namespace NancyFx.Sample
 {
-    public class SampleBootstrapper : Nancy.DefaultNancyBootstrapper
+    public class SampleBootstrapper : DefaultNancyBootstrapper
     {
         internal class CustomJsonSerializer : JsonSerializer
         {
@@ -16,12 +18,13 @@ namespace NancyFx.Sample
             }
         }
 
-        protected override void ApplicationStartup(TinyIoCContainer container, Nancy.Bootstrapper.IPipelines pipelines)
+        protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
         {
             base.ApplicationStartup(container, pipelines);
 
-            NancyMetrics.RegisterAllMetrics(pipelines);
-            NancyMetrics.ExposeMetrics();
+            NancyMetrics.Configure()
+                .WithGlobalMetrics(config => config.RegisterAllMetrics(pipelines))
+                .WithMetricsEndpoint( /* m => m.RequiresAuthentication() */ );
         }
 
         protected override void ConfigureApplicationContainer(TinyIoCContainer container)
