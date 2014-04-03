@@ -72,7 +72,7 @@ namespace Metrics.Tests
         public void CounterCanBeIncrementedOnMultipleThreads()
         {
             const int threadCount = 16;
-            const long iterations = 1000 * 1000;
+            const long iterations = 1000 * 100;
 
             Counter counter = new CounterMetric();
 
