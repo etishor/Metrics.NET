@@ -16,7 +16,7 @@ namespace Metrics.Tests.NancyAdapter
             public TestModule(Clock.TestClock clock)
                 : base("/test")
             {
-                this.MetricForRequestTimeAndSize("ActionRequest", "Get", "/");
+                this.MetricForRequestTimeAndResponseSize("ActionRequest", "Get", "/");
 
                 Get["/action"] = _ =>
                 {

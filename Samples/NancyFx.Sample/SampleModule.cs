@@ -9,9 +9,10 @@ namespace NancyFx.Sample
         public SampleModule()
             : base("/")
         {
-            this.MetricForRequestTime("TestRequest", "Get", "/test");
+            this.MetricForRequestTimeAndResponseSize("TestRequest", "Get", "/test");
 
             Get["/test"] = _ => Response.AsText("test");
+
             Get["/error"] = _ => { throw new InvalidOperationException(); };
         }
     }

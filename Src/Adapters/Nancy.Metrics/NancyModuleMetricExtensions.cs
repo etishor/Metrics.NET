@@ -7,15 +7,15 @@ namespace Nancy.Metrics
 {
     public static class NancyModuleMetricExtensions
     {
-        public static void MetricForRequestTimeAndSize(this INancyModule module, string metricName, string method, string pathPrefix)
+        public static void MetricForRequestTimeAndResponseSize(this INancyModule module, string metricName, string method, string pathPrefix)
         {
-            module.MetricForRequestTimeAndSize(metricName, module.MakePredicate(method, pathPrefix));
+            module.MetricForRequestTimeAndResponseSize(metricName, module.MakePredicate(method, pathPrefix));
         }
 
-        public static void MetricForRequestTimeAndSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
+        public static void MetricForRequestTimeAndResponseSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
             module.MetricForRequestTime(metricName + ".Time", routePredicate);
-            module.MetricForRequestSize(metricName + ".Size", routePredicate);
+            module.MetricForResponseSize(metricName + ".Size", routePredicate);
         }
 
         public static void MetricForRequestTime(this INancyModule module, string metricName, string method, string pathPrefix)
@@ -49,12 +49,12 @@ namespace Nancy.Metrics
             });
         }
 
-        public static void MetricForRequestSize(this INancyModule module, string metricName, string method, string pathPrefix)
+        public static void MetricForResponseSize(this INancyModule module, string metricName, string method, string pathPrefix)
         {
-            module.MetricForRequestSize(metricName, module.MakePredicate(method, pathPrefix));
+            module.MetricForResponseSize(metricName, module.MakePredicate(method, pathPrefix));
         }
 
-        public static void MetricForRequestSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
+        public static void MetricForResponseSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
             var name = string.Format("{0}.{1}", module.GetType().Name, metricName);
             CheckNancyMetricsIsConfigured();
@@ -87,6 +87,15 @@ namespace Nancy.Metrics
                 }
             });
         }
+
+        //public static void MetricForRequestSize(this INancyModule module, string metricName, string method, string pathPrefix)
+        //{
+        //    module.MetricForResponseSize(metricName, module.MakePredicate(method, pathPrefix));
+        //}
+
+        //public static void MetricForRequestSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
+        //{
+        //}
 
         private static void CheckNancyMetricsIsConfigured()
         {

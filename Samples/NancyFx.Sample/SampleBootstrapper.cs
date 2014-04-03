@@ -24,7 +24,8 @@ namespace NancyFx.Sample
 
             NancyMetrics.Configure()
                 .WithGlobalMetrics(config => config.RegisterAllMetrics(pipelines))
-                .WithMetricsEndpoint( /* m => m.RequiresAuthentication() */ );
+                .WithMetricsEndpoint();
+            // to enable authentication use .WithMetricsEndpoint( "/stats", m => m.RequiresAuthentication() ) 
         }
 
         protected override void ConfigureApplicationContainer(TinyIoCContainer container)
