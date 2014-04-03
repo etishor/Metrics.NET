@@ -17,6 +17,7 @@ namespace Metrics.Tests.NancyAdapter
                 : base("/test")
             {
                 this.MetricForRequestTimeAndResponseSize("ActionRequest", "Get", "/");
+                this.MetricForRequestSize("RequestSize", "Put", "/");
 
                 Get["/action"] = _ =>
                 {
@@ -29,6 +30,8 @@ namespace Metrics.Tests.NancyAdapter
                     clock.Advance(TimeUnit.Milliseconds, 100);
                     return Response.AsText("response").WithHeader("Content-Length", "100");
                 };
+
+                Put["/size"] = _ => HttpStatusCode.OK;
             }
         }
 
@@ -62,7 +65,7 @@ namespace Metrics.Tests.NancyAdapter
         }
 
         [Fact]
-        public void NancyMetricsShouldBeAbleToMonitorSizeForModuleRequest()
+        public void NancyMetricsShouldBeAbleToMonitorSizeForRouteReponse()
         {
             browser.Get("/test/action").StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -75,6 +78,21 @@ namespace Metrics.Tests.NancyAdapter
             sizeHistogram.Value.Count.Should().Be(2);
             sizeHistogram.Value.Min.Should().Be("response".Length);
             sizeHistogram.Value.Max.Should().Be(100);
+        }
+
+        [Fact]
+        public void NancyMetricsShouldBeAbleToMonitorSizeForRequest()
+        {
+            sizeHistogram.Value.Count.Should().Be(0);
+
+            browser.Put("/test/size", ctx =>
+            {
+                ctx.Header("Content-Length", "content".Length.ToString());
+                ctx.Body("content");
+            }).StatusCode.Should().Be(HttpStatusCode.OK);
+
+            sizeHistogram.Value.Count.Should().Be(1);
+            sizeHistogram.Value.Min.Should().Be("content".Length);
         }
     }
 }

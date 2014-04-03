@@ -88,14 +88,26 @@ namespace Nancy.Metrics
             });
         }
 
-        //public static void MetricForRequestSize(this INancyModule module, string metricName, string method, string pathPrefix)
-        //{
-        //    module.MetricForResponseSize(metricName, module.MakePredicate(method, pathPrefix));
-        //}
+        public static void MetricForRequestSize(this INancyModule module, string metricName, string method, string pathPrefix)
+        {
+            module.MetricForRequestSize(metricName, module.MakePredicate(method, pathPrefix));
+        }
 
-        //public static void MetricForRequestSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
-        //{
-        //}
+        public static void MetricForRequestSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
+        {
+            var name = string.Format("{0}.{1}", module.GetType().Name, metricName);
+            CheckNancyMetricsIsConfigured();
+            var histogram = NancyMetrics.CurrentConfig.Registry.Histogram(name, Unit.Custom("bytes"), SamplingType.FavourRecent);
+
+            module.Before.AddItemToStartOfPipeline(ctx =>
+            {
+                if (routePredicate(ctx.ResolvedRoute.Description))
+                {
+                    histogram.Update(ctx.Request.Headers.ContentLength);
+                }
+                return null;
+            });
+        }
 
         private static void CheckNancyMetricsIsConfigured()
         {
