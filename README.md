@@ -67,48 +67,7 @@ Schedule a human readable text repot to be appended to a file every 30 seconds
 Adapters for other applications
 -------------------------------
 
-The Nancy.Metrics adapter providers the following Global configurable metrics:
-
-* Global Request Timer ( timer updated for any request )
-* Global Post Request Size histogram
-* Global Error Meter 
-* Global Active Requests Counter ( number of current concurrent requests )
-
-To enable the Global metrics, in the ApplicationStartup method of your Nancy bootstrapper you need to add:
-
-```csharp
-    protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
-    {
-        base.ApplicationStartup(container, pipelines);
-
-        NancyMetrics.Configure()
-            .WithGlobalMetrics(config => config.RegisterAllMetrics(pipelines))
-            .WithMetricsEndpoint();
-    }
-```
-
-The adapter also provides extension methods on INancyModule that enable the registration of metrics for:
-
-* Request Timer for a particular route
-* Response Size monitor for a particular route
-* Request Size monitor for a particular route
-
-To enable these metrics call the desired extension methods from the module:
-
-```csharp
-    public class SampleModule : NancyModule
-    {
-        public SampleModule()
-            : base("/")
-        {
-            this.MetricForRequestTimeAndResponseSize("TestRequest", "Get", "/test");
-            this.MetricForRequestSize("TestRequestSize", "Post", "/action");
-
-            Get["/test"] = _ => Response.AsText("test");
-
-        }
-    }
-```
+[NancyFx.Metrics](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter)
 
 
 TODO
