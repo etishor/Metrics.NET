@@ -50,6 +50,7 @@ namespace Metrics.Tests.NancyAdapter
         private readonly Timer timer;
         private readonly Meter meter;
         private readonly Counter counter;
+        private readonly Histogram size;
         private readonly Browser browser;
 
         private readonly TaskCompletionSource<int> requestTrigger = new TaskCompletionSource<int>();
@@ -62,13 +63,19 @@ namespace Metrics.Tests.NancyAdapter
             this.timer = new TimerMetric(SamplingType.SlidingWindow, clock);
             this.meter = new MeterMetric(clock);
             this.counter = new CounterMetric();
+            this.size = new HistogramMetric();
 
             this.browser = new Browser(with =>
             {
                 with.ApplicationStartup((c, p) =>
                 {
-                    NancyMetrics.Configure(new TestRegistry { TimerInstance = timer, MeterInstance = meter, CounterInstance = counter })
-                        .WithGlobalMetrics(config => config.RegisterAllMetrics(p));
+                    NancyMetrics.Configure(new TestRegistry
+                    {
+                        TimerInstance = timer,
+                        MeterInstance = meter,
+                        CounterInstance = counter,
+                        HistogramInstance = size
+                    }).WithGlobalMetrics(config => config.RegisterAllMetrics(p));
                 });
                 with.Module(new TestModule(this.clock));
                 with.Module(new ActiveRequestsModule(this.requestTrigger.Task, result1, result2));
@@ -121,6 +128,25 @@ namespace Metrics.Tests.NancyAdapter
             requestTrigger.SetResult(0);
             Task.WaitAll(request1, request2);
             counter.Value.Should().Be(0);
+        }
+
+        [Fact]
+        public void NancyMetricsShoulBeAbleToRecordPostAndPutRequestSize()
+        {
+            size.Value.Count.Should().Be(0);
+
+            browser.Get("/test/action").StatusCode.Should().Be(HttpStatusCode.OK);
+
+            size.Value.Count.Should().Be(0);
+
+            browser.Post("/test/post", ctx =>
+            {
+                ctx.Header("Content-Length", "content".Length.ToString());
+                ctx.Body("content");
+            }).StatusCode.Should().Be(HttpStatusCode.OK);
+
+            size.Value.Count.Should().Be(1);
+            size.Value.Min.Should().Be("content".Length);
         }
     }
 }

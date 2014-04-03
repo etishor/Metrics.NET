@@ -30,6 +30,7 @@ namespace Nancy.Metrics
             RegisterRequestTimer(nancyPipelines);
             RegisterErrorsMeter(nancyPipelines);
             RegisterActiveRequestCounter(nancyPipelines);
+            RegisterPostAndPutRequestSizeHistogram(nancyPipelines);
         }
 
         /// <summary>
@@ -90,6 +91,26 @@ namespace Nancy.Metrics
             nancyPipelines.AfterRequest.AddItemToEndOfPipeline(ctx =>
             {
                 counter.Decrement();
+            });
+        }
+
+        /// <summary>
+        /// Register a Histogram metric named "Nancy.PostAndPutRequestsSize" on the size of the POST and PUT requests
+        /// </summary>
+        /// <param name="nancyPipelines">Pipelines to hook on.</param>
+        /// <param name="metricName">Name of the metric.</param>
+        public void RegisterPostAndPutRequestSizeHistogram(IPipelines nancyPipelines, string metricName = "PostAndPutRequestsSize")
+        {
+            var histogram = this.registry.Histogram(Name(metricName), Unit.Custom("bytes"), SamplingType.FavourRecent);
+
+            nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
+            {
+                var method = ctx.Request.Method.ToUpper();
+                if (method == "POST" || method == "PUT")
+                {
+                    histogram.Update(ctx.Request.Headers.ContentLength);
+                }
+                return null;
             });
         }
 
