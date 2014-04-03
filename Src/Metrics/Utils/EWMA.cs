@@ -59,7 +59,8 @@ namespace Metrics.Utils
             double instantRate = count / interval;
             if (initialized)
             {
-                rate += (alpha * (instantRate - rate));
+                double doubleRate = rate.Get();
+                rate.Set(doubleRate + alpha * (instantRate - doubleRate));
             }
             else
             {
