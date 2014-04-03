@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Metrics.Core;
 using Xunit;
@@ -76,12 +77,13 @@ namespace Metrics.Tests
             Counter counter = new CounterMetric();
 
             List<Thread> threads = new List<Thread>();
+            TaskCompletionSource<int> tcs = new TaskCompletionSource<int>();
 
             for (int i = 0; i < threadCount; i++)
             {
                 threads.Add(new Thread(s =>
                 {
-                    Thread.Sleep(100);
+                    tcs.Task.Wait();
                     for (long j = 0; j < iterations; j++)
                     {
                         counter.Increment();
@@ -89,6 +91,7 @@ namespace Metrics.Tests
                 }));
             }
             threads.ForEach(t => t.Start());
+            tcs.SetResult(0);
             threads.ForEach(t => t.Join());
 
             counter.Value.Should().Be(threadCount * iterations);
