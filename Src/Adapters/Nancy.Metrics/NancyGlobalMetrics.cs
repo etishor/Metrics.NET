@@ -40,7 +40,7 @@ namespace Nancy.Metrics
         /// <param name="nancyPipelines">Pipelines to hook on.</param>
         public void RegisterRequestTimer(IPipelines nancyPipelines, string metricName = "Requests")
         {
-            var requestTimer = Metric.Timer(Name(metricName), Unit.Requests, SamplingType.FavourRecent);
+            var requestTimer = this.registry.Timer(Name(metricName), Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
@@ -79,7 +79,7 @@ namespace Nancy.Metrics
         /// <param name="metricName">Name of the metric.</param>
         public void RegisterActiveRequestCounter(IPipelines nancyPipelines, string metricName = "ActiveRequests")
         {
-            var counter = Metric.Counter(Name(metricName), Unit.Custom("ActiveRequests"));
+            var counter = this.registry.Counter(Name(metricName), Unit.Custom("ActiveRequests"));
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
