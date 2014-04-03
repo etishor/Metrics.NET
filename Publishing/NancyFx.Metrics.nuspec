@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
         <id>NancyFx.Metrics</id>
-        <version>0.0.2-alpha</version>
+        <version>0.0.3-alpha</version>
         <title>NancyFx.Metrics</title>
         <authors>iulian.margarintescu</authors>
         <owners>Iulian Margarintescu</owners>
@@ -14,7 +14,7 @@
 		<licenseUrl>https://github.com/etishor/Metrics.NET/blob/master/LICENSE</licenseUrl>
         <tags>nancy, nancyfx, metrics, measurements, timer, histogram, duration, graphite</tags>
 		<dependencies>
-			<dependency id="Metrics.NET" version="0.0.2-alpha" />
+			<dependency id="Metrics.NET" version="0.0.3-alpha" />
 			<dependency id="Nancy" version="0.22.2" />
 		</dependencies>
     </metadata>
