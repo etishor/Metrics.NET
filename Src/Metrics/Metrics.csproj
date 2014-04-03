@@ -76,6 +76,7 @@
     <Compile Include="Metric.cs" />
     <Compile Include="Timer.cs" />
     <Compile Include="Unit.cs" />
+    <Compile Include="Utils\ActionScheduler.cs" />
     <Compile Include="Utils\Clock.cs" />
     <Compile Include="Core\CounterMetric.cs" />
     <Compile Include="Core\GaugeMetric.cs" />

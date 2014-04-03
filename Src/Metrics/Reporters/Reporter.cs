@@ -1,15 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace Metrics.Reporters
 {
-    public abstract class Reporter : IDisposable, Utils.IHideObjectMembers
+    public abstract class Reporter : Utils.IHideObjectMembers
     {
+        private CancellationToken token;
+
         public void RunReport(MetricsRegistry registry)
         {
+            RunReport(registry, CancellationToken.None);
+        }
+
+        public void RunReport(MetricsRegistry registry, CancellationToken token)
+        {
+            this.token = token;
             this.Timestamp = DateTime.Now;
             this.RegistryName = registry.Name;
+
             StartReport();
             ReportSection("Gauges", registry.Gauges, g => ReportGauge(g.Name, g.Value.Value, g.Unit));
             ReportSection("Counters", registry.Counters, c => ReportCounter(c.Name, c.Value, c.Unit));
@@ -35,34 +45,25 @@ namespace Metrics.Reporters
 
         private void ReportSection<T>(string name, IEnumerable<T> metrics, Action<T> reporter)
         {
+            if (token.IsCancellationRequested)
+            {
+                return;
+            }
+
             if (metrics.Any())
             {
                 StartMetricGroup(name);
                 foreach (var metric in metrics)
                 {
+                    if (token.IsCancellationRequested)
+                    {
+                        break;
+                    }
+
                     reporter(metric);
                 }
                 EndMetricGroup(name);
             }
         }
-
-        private bool disposed;
-
-        ~Reporter()
-        {
-            Dispose(false);
-        }
-        public void Dispose()
-        {
-            if (!this.disposed)
-            {
-                Dispose(true);
-            }
-            this.disposed = true;
-            GC.SuppressFinalize(this);
-        }
-
-        public virtual void Dispose(bool disposing)
-        { }
     }
 }

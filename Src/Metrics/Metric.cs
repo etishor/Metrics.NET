@@ -217,11 +217,9 @@ namespace Metrics
         /// <returns>String containing the report.</returns>
         public static string GetAsHumanReadable()
         {
-            using (var report = new StringReporter())
-            {
-                report.RunReport(registry);
-                return report.Result;
-            }
+            var report = new StringReporter();
+            report.RunReport(registry);
+            return report.Result;
         }
 
         private static string Name<T>(string name)
