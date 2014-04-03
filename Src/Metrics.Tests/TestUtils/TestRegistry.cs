@@ -9,11 +9,6 @@ namespace Metrics.Tests.TestUtils
         public TestRegistry()
         { }
 
-        public TestRegistry(Timer timer)
-        {
-            this.TimerInstance = timer;
-        }
-
         public string Name { get { return "test"; } }
 
         public Timer TimerInstance { get; set; }
