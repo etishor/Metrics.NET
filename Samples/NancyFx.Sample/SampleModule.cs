@@ -10,8 +10,11 @@ namespace NancyFx.Sample
             : base("/")
         {
             this.MetricForRequestTimeAndResponseSize("TestRequest", "Get", "/test");
+            this.MetricForRequestSize("TestRequestSize", "Post", "/action");
 
             Get["/test"] = _ => Response.AsText("test");
+
+            Post["/action"] = _ => HttpStatusCode.Accepted;
 
             Get["/error"] = _ => { throw new InvalidOperationException(); };
         }

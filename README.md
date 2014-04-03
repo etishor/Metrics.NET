@@ -3,26 +3,26 @@ Metrics.NET
 
 [![Build status](https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2)](https://ci.appveyor.com/project/etishor/metrics-net)
 
-This port is still work in progrss and should not be considered ready for production
+This port is still work in progress and should not be considered ready for production
 ------------------------------------------------------------------------------------
 
 
-.NET Port of the awesome [Java metrics library by codahale](https://github.com/dropwizard/metrics)
+.NET Port of the awesome [Java metrics library by Coda Hale](https://github.com/dropwizard/metrics)
 
 This port is also inspired and contains some code from [Daniel Crenna's port](https://github.com/danielcrenna/metrics-net) of the same library.
 
 I have decided to write another .NET port of the same library since Daniel does not actively maintain metrics-net. 
-I've also whanted to better understand the internals of the library and try to provide a better API, more suitable for the .NET world.
+I've also wanted to better understand the internals of the library and try to provide a better API, more suitable for the .NET world.
 
 Intro
 -----
 
-The entry point in the Metrics libraty is the [Metric](https://github.com/etishor/Metrics.NET/blob/master/Src/Metrics/Metric.cs) static class. 
-Unitll some documentation will be provided that is a good starting point.
+The entry point in the Metrics library is the [Metric](https://github.com/etishor/Metrics.NET/blob/master/Src/Metrics/Metric.cs) static class. 
+Until some documentation will be provided that is a good starting point.
 
-The [documentation of the Java Library](http://metrics.codahale.com/manual/core/) is also usefull for understaing the concepts.
+The [documentation of the Java Library](http://metrics.codahale.com/manual/core/) is also useful for understating the concepts.
 
-The library is published on NuGet as a prerelease library and can be installed with the following command:
+The library is published on NuGet as a pre-release library and can be installed with the following command:
 
     Install-Package Metrics.NET -Pre
 
@@ -46,7 +46,7 @@ Using the library (see Samples for more examples)
 Display Metrics
 ---------------
 
-Schedule a console report to be runned and displayed every 10 seconds:
+Schedule a console report to be run and displayed every 10 seconds:
 
 ```csharp
     Metric.Reports.PrintConsoleReport(TimeSpan.FromSeconds(10));
@@ -67,14 +67,49 @@ Schedule a human readable text repot to be appended to a file every 30 seconds
 Adapters for other applications
 -------------------------------
 
-At the moment there is a NancyFx adapter that collects some metrics about Nancy and can provide metrics via http in json or human readable text. See Samples\NancyFx.Sample for more usage details. 
+The Nancy.Metrics adapter providers the following Global configurable metrics:
 
-In the ApplicationStartup method of a Nancy bootstrapper:
+* Global Request Timer ( timer updated for any request )
+* Global Post Request Size histogram
+* Global Error Meter 
+* Global Active Requests Counter ( number of current concurrent requests )
+
+To enable the Global metrics, in the ApplicationStartup method of your Nancy bootstrapper you need to add:
 
 ```csharp
-    NancyMetrics.RegisterAllMetrics(pipelines);
-    NancyMetrics.ExposeMetrics();
+    protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
+    {
+        base.ApplicationStartup(container, pipelines);
+
+        NancyMetrics.Configure()
+            .WithGlobalMetrics(config => config.RegisterAllMetrics(pipelines))
+            .WithMetricsEndpoint();
+    }
 ```
+
+The adapter also provides extension methods on INancyModule that enable the registration of metrics for:
+
+* Request Timer for a particular route
+* Response Size monitor for a particular route
+* Request Size monitor for a particular route
+
+To enable these metrics call the desired extension methods from the module:
+
+```csharp
+    public class SampleModule : NancyModule
+    {
+        public SampleModule()
+            : base("/")
+        {
+            this.MetricForRequestTimeAndResponseSize("TestRequest", "Get", "/test");
+            this.MetricForRequestSize("TestRequestSize", "Post", "/action");
+
+            Get["/test"] = _ => Response.AsText("test");
+
+        }
+    }
+```
+
 
 TODO
 ----
@@ -83,16 +118,16 @@ A live list of my future plan
 * [done] Provide a few presets to map performance counters to Gauges ( machine info, process info, CLR stats etc )
 * [done] Provide a way for error reporting (at least for reports that do IO) - maybe a delegate on the Metric class
 * [done] Add metrics for NancyFx request/response size
-* Refactor scheduled report to prevent overlapping
+* Re-factor scheduled report to prevent overlapping
 * Find/Implement ConcurrentSkipMap like collection form java - low prio as the performance is good for now
-* Provide http endpoint for reporting metrics (based on owin or nancy) together with javascript visualisation solution - the idea is to have out-of-the-box metrics visualization in web apps
+* Provide http endpoint for reporting metrics (based on owin or nancy) together with javascript visualization solution - the idea is to have out-of-the-box metrics visualization in web apps
 * Provide an adapter for hooking into web api for collecting metrics (this might be delayed as I tend to use NancyFx)
 * Provide an adapter for hooking into asp.net mvc
 * Investigate the possibility of using zeromq to delegate metrics to another process - for accross cluster metrics
 * Adapter for graphite and other existing solutions for aggregating metrics
 * Mono compatibility
-* Investigate the possibility of using Redis as an off-process metrics container (the collections behing the metrics seem to map to redis data types)
-* Investigate the possibility for backend to recieve metrics from client js app (not sure it makes sense to capture metrics from js apps - maybe from SPAs)
+* Investigate the possibility of using Redis as an off-process metrics container (the collections behind the metrics seem to map to redis data types)
+* Investigate the possibility for backend to receive metrics from client js app (not sure it makes sense to capture metrics from js apps - maybe from SPAs)
 * Write more tests
 * Write more "stupid" benchmarks to be able to keep an eye on how performance changes in time
 * Profile & optimize. Also profile existing apps to see the impact of adding metrics
@@ -106,7 +141,7 @@ The original metrics project is released under this therms (https://github.com/d
 Copyright (c) 2010-2013 Coda Hale, Yammer.com
 Published under Apache Software License 2.0, see LICENSE
 
-The Daniel Crenna's idiomatic port is relased under this therms (https://github.com/danielcrenna/metrics-net):
+The Daniel Crenna's idiomatic port is released under this therms (https://github.com/danielcrenna/metrics-net):
 The original Metrics project is Copyright (c) 2010-2011 Coda Hale, Yammer.com
 This idiomatic port of Metrics to C# and .NET is Copyright (c) 2011 Daniel Crenna
 Both works are published under The MIT License, see LICENSE
