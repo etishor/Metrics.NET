@@ -13,21 +13,23 @@ namespace Nancy.Metrics
                 throw new ArgumentException("pathPrefix must start with / ", pathPrefix);
             }
 
-            var path = module.ModulePath + pathPrefix;
+            var path = (module.ModulePath + pathPrefix).ToUpper();
 
-            return d => (string.IsNullOrEmpty(methodName) || methodName.ToUpper() == "ANY" || d.Method.ToUpper() == methodName.ToUpper()) && d.Path.StartsWith(path);
+            return d => (string.IsNullOrEmpty(methodName) || methodName.ToUpper() == "ANY" || d.Method.ToUpper() == methodName.ToUpper())
+                && d.Path.ToUpper().StartsWith(path);
         }
 
         public static void MetricForRequestTime(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
             var name = string.Format("{0}.{1}", module.GetType().Name, metricName);
             var timer = NancyMetrics.CurrentConfig.Registry.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+            var key ="Metrics.Nancy.Request.Timer." + metricName;
 
             module.Before.AddItemToStartOfPipeline(ctx =>
             {
                 if (routePredicate(ctx.ResolvedRoute.Description))
                 {
-                    ctx.Items["metrics.request.timer." + metricName] = timer.NewContext();
+                    ctx.Items[key] = timer.NewContext();
                 }
                 return null;
             });
@@ -36,8 +38,8 @@ namespace Nancy.Metrics
             {
                 if (routePredicate(ctx.ResolvedRoute.Description))
                 {
-                    using (ctx.Items["metrics.request.timer." + metricName] as IDisposable) { }
-                    ctx.Items["metrics.request.timer." + metricName] = null;
+                    using (ctx.Items[key] as IDisposable) { }
+                    ctx.Items.Remove(key);
                 }
             });
         }
@@ -52,7 +54,5 @@ namespace Nancy.Metrics
         {
             module.MetricForRequestTime(typeof(T).Name + "." + metricName, module.MakePredicate(method, pathPrefix));
         }
-
-
     }
 }
