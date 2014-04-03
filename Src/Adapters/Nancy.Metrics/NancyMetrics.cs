@@ -19,7 +19,7 @@ namespace Nancy.Metrics
         }
 
         /// <summary>
-        /// Start configuring metrics integration into NancyFx with a custom <param name="metricsRegistry">Metrics Registry</param>
+        /// Start configuring metrics integration into NancyFx with a custom <paramref name="metricsRegistry"/>
         /// </summary>
         /// <remarks>
         /// This method is useful for testing.
