@@ -70,6 +70,12 @@ Adapters for other applications
 [NancyFx.Metrics](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter)
 
 
+News
+----
+A visualization app is now available in the Visualization folder. More details on the [wiki](https://github.com/etishor/Metrics.NET/wiki/Metrics.Flot-Visualization)
+
+![Sample Visualization](https://raw.githubusercontent.com/etishor/Metrics.NET/master/Visualization/Metrics.Flot/sample.png)
+
 TODO
 ----
 A live list of my future plan
