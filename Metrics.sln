@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Metrics", "Src\Adapte
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9A42F567-91B0-4FFB-A9AD-DB0D158784EA}"
 	ProjectSection(SolutionItems) = preProject
+		Publishing\Metrics.NET.nuspec = Publishing\Metrics.NET.nuspec
+		Publishing\NancyFx.Metrics.nuspec = Publishing\NancyFx.Metrics.nuspec
 		README.md = README.md
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
 	EndProjectSection

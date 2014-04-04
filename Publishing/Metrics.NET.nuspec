@@ -1,22 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
-    <metadata>
-        <id>Metrics.NET</id>
-        <version>0.0.5-alpha</version>
-        <title>Metrics.NET</title>
-        <authors>iulian.margarintescu</authors>
-        <owners>Iulian Margarintescu</owners>
-        <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>The libraby provides support for capturing: Gauges, Counters, Meters, Histograms and Timers</description>
-        <summary>.NET Port of the Java Metrics Library, a library for collecting metrics.</summary>
-        <copyright>Iulian Margarintescu</copyright>
+		<metadata>
+				<id>Metrics.NET</id>
+				<version>0.0.5-alpha</version>
+				<title>Metrics.NET</title>
+				<authors>iulian.margarintescu</authors>
+				<owners>Iulian Margarintescu</owners>
+				<requireLicenseAcceptance>false</requireLicenseAcceptance>
+				<description>The libraby provides support for capturing: Gauges, Counters, Meters, Histograms and Timers</description>
+				<summary>.NET Port of the Java Metrics Library, a library for collecting metrics.</summary>
+				<copyright>Iulian Margarintescu</copyright>
 		<projectUrl>https://github.com/etishor/Metrics.NET</projectUrl>
 		<licenseUrl>https://github.com/etishor/Metrics.NET/blob/master/LICENSE</licenseUrl>
-        <tags>metrics, measurements, timer, histogram, duration, graphite</tags>
-    </metadata>
-    <files>
-        <file src="lib\net451\Metrics.dll" target="lib\net451\Metrics.dll" />
-        <file src="lib\net451\Metrics.pdb" target="lib\net451\Metrics.pdb" />
-        <file src="lib\net451\Metrics.XML" target="lib\net451\Metrics.XML" />
-    </files>
+				<tags>metrics, measurements, timer, histogram, duration, graphite</tags>
+		</metadata>
+		<files>
+				<file src="lib\net451\Metrics.dll" target="lib\net451\Metrics.dll" />
+				<file src="lib\net451\Metrics.pdb" target="lib\net451\Metrics.pdb" />
+				<file src="lib\net451\Metrics.XML" target="lib\net451\Metrics.XML" />
+		</files>
 </package>
