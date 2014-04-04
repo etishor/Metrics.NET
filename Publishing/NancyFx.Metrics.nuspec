@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
         <id>NancyFx.Metrics</id>
-        <version>0.0.4-alpha</version>
+        <version>0.0.5-alpha</version>
         <title>NancyFx.Metrics</title>
         <authors>iulian.margarintescu</authors>
         <owners>Iulian Margarintescu</owners>
