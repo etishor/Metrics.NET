@@ -9,7 +9,7 @@ namespace Metrics.Reporters
         {
             return new
             {
-                Gauges = registry.Gauges.ToDictionary(g => g.Name, g => g.Value),
+                Gauges = registry.Gauges.ToDictionary(g => g.Name, g => g.Value.Value),
                 Counters = registry.Counters.ToDictionary(c => c.Name, c => c.Value),
                 Meters = registry.Meters.ToDictionary(m => m.Name, m => m.Value.Scale(m.RateUnit)),
                 Histograms = registry.Histograms.ToDictionary(h => h.Name, h => h.Value),

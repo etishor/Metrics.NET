@@ -25,6 +25,16 @@ namespace NancyFx.Sample
             NancyMetrics.Configure()
                 .WithGlobalMetrics(config => config.RegisterAllMetrics(pipelines))
                 .WithMetricsEndpoint();
+
+            pipelines.AfterRequest += ctx =>
+            {
+                if (ctx.Response != null)
+                {
+                    ctx.Response
+                        .WithHeader("Access-Control-Allow-Origin", "*")
+                        .WithHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+                }
+            };
             // to enable authentication use .WithMetricsEndpoint( "/stats", m => m.RequiresAuthentication() ) 
         }
 
