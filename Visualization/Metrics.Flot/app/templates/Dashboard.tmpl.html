@@ -1,0 +1,37 @@
+﻿<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 sidebar">
+            <form role="form">
+                <div class="form-group">
+                    <label for="newMetrics">Add Chart With metrics</label>
+                    <input type="text" ng-model="metricSearch" class="form-control" id="newMetrics" placeholder="Type metric prefix">
+                </div>
+                <div class="form-group">
+                    <button ng-click="addToChart()">Add to Chart</button>
+                    <button ng-click="createChart()">Create Chart</button>
+                </div>
+            </form>
+            <ul ng-show="currentChart.hasMetrics()" class="list-unstyled">
+                <li>Currently added metrics</li>
+                <li ng-repeat="metric in currentChart.metrics">{{metric}}</li>
+            </ul>
+            <p>Available Metrics</p>
+            <ul class="list-unstyled">
+                <li ng-repeat="name in metricNames | filter:metricSearch">
+                    <a href="javascript:void(0)" ng-click="createChartFromMetric(name)">{{name}}</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-9 main">
+            <ul class="list-inline">
+                <li ng-repeat="chart in charts" class="chart" style="width:550px;height:200px;">
+                    <h4>{{chart.name}} <a href="javascript:void(0)" ng-click="removeChart(chart)">delete</a> </h4>
+                    <flot dataset="chart.data" options="chart.options" width="400" height="150"></flot>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
