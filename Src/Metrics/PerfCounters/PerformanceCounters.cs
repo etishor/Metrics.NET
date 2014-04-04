@@ -21,23 +21,22 @@ namespace Metrics.PerfCounters
             new SystemInfo(this.registry, namePrefix).Register();
         }
 
-        public void RegisterCLRAppCounters(string namePrefix = "CLR")
+        public void RegisterCLRAppCounters(string namePrefix = "App")
         {
             var clr = new CLRCounters(this.registry, namePrefix);
             clr.RegisterAppCounters();
         }
 
-        public void RegisterCLRGlobalCounters(string namePrefix = "CLR")
+        public void RegisterCLRGlobalCounters(string namePrefix = "System")
         {
             var clr = new CLRCounters(this.registry, namePrefix);
             clr.RegisterAppCounters();
         }
 
-        public void RegisterAllCLRCounters(string namePrefix = "CLR")
+        public void RegisterAllCLRCounters()
         {
-            var clr = new CLRCounters(this.registry, namePrefix);
-            clr.RegisterGlobalCounters();
-            clr.RegisterAppCounters();
+            RegisterCLRGlobalCounters();
+            RegisterCLRAppCounters();
         }
     }
 }
