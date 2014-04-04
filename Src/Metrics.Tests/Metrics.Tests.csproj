@@ -57,6 +57,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="CounterTests.cs" />
     <Compile Include="EWMATests.cs" />
     <Compile Include="ExponentiallyDecayingReservoirTests.cs" />

@@ -46,6 +46,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="MetricsModule.cs" />
     <Compile Include="NancyGlobalMetrics.cs" />
     <Compile Include="NancyMetrics.cs" />
