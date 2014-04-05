@@ -344,7 +344,15 @@ module.exports = function (grunt) {
 					usemin: 'dist/app.js' // <~~ This came from the <!-- build:js --> block
 				}
 			}
-		}
+		},
+		smoosher: {
+			options: {},
+			all: {
+				files: {
+					'dist/index.full.html': 'dist/index.html',
+				},
+			},
+		},
 	});
 
 
@@ -391,7 +399,8 @@ module.exports = function (grunt) {
 		'uglify',
 		'rev',
 		'usemin',
-		'htmlmin'
+		'htmlmin',
+		'smoosher'
 	]);
 
 	grunt.registerTask('default', [
