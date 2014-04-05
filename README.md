@@ -67,7 +67,7 @@ Schedule a human readable text repot to be appended to a file every 30 seconds
 Adapters for other applications
 -------------------------------
 
-[NancyFx.Metrics](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter)
+[NancyFx.Metrics](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter) - includes visualization support
 
 
 News
