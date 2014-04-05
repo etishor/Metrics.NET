@@ -5,25 +5,14 @@
     <title>Metrics.NET Dashboard</title>
     <meta name="viewport" content="width=device-width">
     <link rel="shortcut icon" href="/favicon.ico">
-    <!-- build:css styles/app.css -->
+    <!-- build:css app.css -->
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
     <!-- endbower -->
+    <link href="styles/main.css" rel="stylesheet" />
     <!-- endbuild -->
-
-    <style>
-        body {
-            padding-top: 50px;
-            padding-bottom: 20px;
-        }
-
-        .chart {
-            margin-left: 10px;
-        }
-    </style>
-
     <script>
-        window.metricsEndpoint = 'http://mfip:54321/api/metrics/json';
+        window.metricsEndpoint = 'http://localhost:1234/metrics/json';
     </script>
 </head>
 <body id="ng-app" ng-app="MainModule">
@@ -31,22 +20,25 @@
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">Metrics.NET Dashboard</a>
-            </div>            
+            </div>
         </div>
     </div>
 
     <div class="container-fluid">
-        <div ng-view></div>       
+        <div ng-view></div>
     </div>
 
-    <!-- build:js scripts/app.js -->
+    <!-- build:js app.js -->
     <!-- bower:js -->
-    <script src="bower_components/lodash/dist/lodash.js"></script>
+    <script src="bower_components/es5-shim/es5-shim.js"></script>
     <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="bower_components/lodash/dist/lodash.compat.js"></script>
     <script src="bower_components/flot/jquery.flot.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-flot/angular-flot.js"></script>
+    <script src="bower_components/json3/lib/json3.min.js"></script>
     <!-- endbower -->
     <script src="scripts/Metrics/ValueSeries.js"></script>
     <script src="scripts/Metrics/MetricSet.js"></script>
