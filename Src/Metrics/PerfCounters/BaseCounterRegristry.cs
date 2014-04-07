@@ -10,7 +10,7 @@ namespace Metrics.PerfCounters
         private readonly string prefix;
         private readonly MetricsRegistry registry;
 
-        public BaseCounterRegristry(MetricsRegistry registry, string prefix)
+        protected BaseCounterRegristry(MetricsRegistry registry, string prefix)
         {
             this.registry = registry;
             this.prefix = prefix;
