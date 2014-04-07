@@ -5,7 +5,7 @@ namespace Metrics.Reporters
     {
         private readonly int padding;
 
-        public HumanReadableReporter(int padding = 20)
+        protected HumanReadableReporter(int padding = 20)
         {
             this.padding = padding;
         }
