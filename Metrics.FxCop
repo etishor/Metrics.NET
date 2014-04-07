@@ -77,11 +77,6 @@
     <Modules>
      <Module Name="metrics.dll">
       <Messages>
-       <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Created="2014-04-07 07:29:17Z">
-        <Issue Name="NoStrongName">
-         <Item>'Metrics.dll'</Item>
-        </Issue>
-       </Message>
        <Message TypeName="AttributeStringLiteralsShouldParseCorrectly" Category="Microsoft.Usage" CheckId="CA2243" Created="2014-04-07 07:29:17Z">
         <Issue>
          <Item>'AssemblyInformationalVersionAttribute'</Item>
@@ -90,7 +85,12 @@
          <Item>'Version'</Item>
         </Issue>
        </Message>
-       <Message TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014" Created="2014-04-07 07:29:17Z">
+       <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Status="Excluded" Created="2014-04-07 07:29:17Z">
+        <Issue Name="NoStrongName">
+         <Item>'Metrics.dll'</Item>
+        </Issue>
+       </Message>
+       <Message TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014" Status="Excluded" Created="2014-04-07 07:29:17Z">
         <Issue>
          <Item>'Metrics.dll'</Item>
         </Issue>
@@ -131,10 +131,15 @@
           <Members>
            <Member Name="#Value">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'GaugeValue.Value'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -163,109 +168,169 @@
           <Members>
            <Member Name="#Count">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HistogramValue.Count'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Max">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HistogramValue.Max'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Mean">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HistogramValue.Mean'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Median">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HistogramValue.Median'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Min">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HistogramValue.Min'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Percentile75">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HistogramValue.Percentile75'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Percentile95">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HistogramValue.Percentile95'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Percentile98">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HistogramValue.Percentile98'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Percentile99">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HistogramValue.Percentile99'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Percentile999">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HistogramValue.Percentile999'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#SampleSize">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HistogramValue.SampleSize'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#StdDev">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HistogramValue.StdDev'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -294,46 +359,71 @@
           <Members>
            <Member Name="#Count">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'MeterValue.Count'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#FifteenMinuteRate">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'MeterValue.FifteenMinuteRate'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#FiveMinuteRate">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'MeterValue.FiveMinuteRate'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#MeanRate">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'MeterValue.MeanRate'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#OneMinuteRate">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'MeterValue.OneMinuteRate'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -343,21 +433,31 @@
           <Members>
            <Member Name="#Counter`1(System.String,Metrics.Unit)">
             <Messages>
-             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Metric.Counter&lt;T&gt;(string, Unit)'</Item>
                <Item>'T'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="4" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Gauge`1(System.String,System.Func`1&lt;System.String&gt;,Metrics.Unit)">
             <Messages>
-             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Metric.Gauge&lt;T&gt;(string, Func&lt;string&gt;, Unit)'</Item>
                <Item>'T'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="4" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -381,73 +481,118 @@
            </Member>
            <Member Name="#Histogram(System.String,Metrics.Unit,Metrics.SamplingType)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Metric.Histogram(string, Unit, SamplingType)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Histogram`1(System.String,Metrics.Unit,Metrics.SamplingType)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Metric.Histogram&lt;T&gt;(string, Unit, SamplingType)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
-             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Metric.Histogram&lt;T&gt;(string, Unit, SamplingType)'</Item>
                <Item>'T'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="4" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Meter(System.String,Metrics.Unit,Metrics.TimeUnit)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Metric.Meter(string, Unit, TimeUnit)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Meter`1(System.String,Metrics.Unit,Metrics.TimeUnit)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Metric.Meter&lt;T&gt;(string, Unit, TimeUnit)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
-             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Metric.Meter&lt;T&gt;(string, Unit, TimeUnit)'</Item>
                <Item>'T'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="4" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Timer(System.String,Metrics.Unit,Metrics.SamplingType,Metrics.TimeUnit,Metrics.TimeUnit)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Metric.Timer(string, Unit, SamplingType, TimeUnit, TimeUnit)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Timer`1(System.String,Metrics.Unit,Metrics.SamplingType,Metrics.TimeUnit,Metrics.TimeUnit)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Metric.Timer&lt;T&gt;(string, Unit, SamplingType, TimeUnit, TimeUnit)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
-             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Metric.Timer&lt;T&gt;(string, Unit, SamplingType, TimeUnit, TimeUnit)'</Item>
                <Item>'T'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="4" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -534,19 +679,29 @@
           <Members>
            <Member Name="#Histogram">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'TimerValue.Histogram'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Rate">
             <Messages>
-             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'TimerValue.Rate'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -556,21 +711,31 @@
           <Members>
            <Member Name="#Calls">
             <Messages>
-             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Unit.Calls'</Item>
                <Item>'Unit'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="1" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Errors">
             <Messages>
-             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Unit.Errors'</Item>
                <Item>'Unit'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="1" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -659,41 +824,61 @@
            </Member>
            <Member Name="#Items">
             <Messages>
-             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Unit.Items'</Item>
                <Item>'Unit'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="1" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#None">
             <Messages>
-             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Unit.None'</Item>
                <Item>'Unit'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="2" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Requests">
             <Messages>
-             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Unit.Requests'</Item>
                <Item>'Unit'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="1" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Results">
             <Messages>
-             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Unit.Results'</Item>
                <Item>'Unit'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="1" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -765,26 +950,6 @@
             </Messages>
            </Member>
           </Members>
-         </Type>
-        </Types>
-       </Namespace>
-       <Namespace Name="Metrics.Meta">
-        <Types>
-         <Type Name="MetricMeta`2">
-          <Messages>
-           <Message Id="V" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:29:17Z" FixCategory="NonBreaking">
-            <Issue Name="TypeTypeParameterMoreMeaningfulName">
-             <Item>'MetricMeta&lt;T, V&gt;'</Item>
-             <Item>'V'</Item>
-            </Issue>
-           </Message>
-           <Message Id="T" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="NonBreaking">
-            <Issue Name="TypeTypeParameter">
-             <Item>'MetricMeta&lt;T, V&gt;'</Item>
-             <Item>'V'</Item>
-            </Issue>
-           </Message>
-          </Messages>
          </Type>
         </Types>
        </Namespace>
@@ -913,27 +1078,27 @@
            </Member>
            <Member Name="#RegisterCLRAppCounters(System.String)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
-              <Issue>
-               <Item>'PerformanceCounters.RegisterCLRAppCounters(string)'</Item>
-              </Issue>
-             </Message>
              <Message Id="CLR" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
               <Issue Name="Member">
                <Item>CLR</Item>
                <Item>'PerformanceCounters.RegisterCLRAppCounters(string)'</Item>
                <Item>Clr</Item>
               </Issue>
+             </Message>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'PerformanceCounters.RegisterCLRAppCounters(string)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#RegisterCLRGlobalCounters(System.String)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
-              <Issue>
-               <Item>'PerformanceCounters.RegisterCLRGlobalCounters(string)'</Item>
-              </Issue>
-             </Message>
              <Message Id="CLR" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
               <Issue Name="Member">
                <Item>CLR</Item>
@@ -941,14 +1106,29 @@
                <Item>Clr</Item>
               </Issue>
              </Message>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'PerformanceCounters.RegisterCLRGlobalCounters(string)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
+             </Message>
             </Messages>
            </Member>
            <Member Name="#RegisterSystemInfo(System.String)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'PerformanceCounters.RegisterSystemInfo(string)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -1148,10 +1328,15 @@
           <Members>
            <Member Name="#.ctor(System.Int32)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HumanReadableReporter.HumanReadableReporter(int)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -1169,10 +1354,15 @@
            </Member>
            <Member Name="#WriteValue(System.String,System.String,System.String)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'HumanReadableReporter.WriteValue(string, string, string)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -1273,11 +1463,16 @@
           <Members>
            <Member Name="#System">
             <Messages>
-             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'Clock.System'</Item>
                <Item>'Clock'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="1" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -1473,11 +1668,6 @@
     <Modules>
      <Module Name="nancy.metrics.dll">
       <Messages>
-       <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Created="2014-04-07 07:29:17Z">
-        <Issue Name="NoStrongName">
-         <Item>'Nancy.Metrics.dll'</Item>
-        </Issue>
-       </Message>
        <Message TypeName="AttributeStringLiteralsShouldParseCorrectly" Category="Microsoft.Usage" CheckId="CA2243" Created="2014-04-07 07:29:17Z">
         <Issue>
          <Item>'AssemblyInformationalVersionAttribute'</Item>
@@ -1486,7 +1676,12 @@
          <Item>'Version'</Item>
         </Issue>
        </Message>
-       <Message TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014" Created="2014-04-07 07:29:17Z">
+       <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Status="Excluded" Created="2014-04-07 07:29:17Z">
+        <Issue Name="NoStrongName">
+         <Item>'Nancy.Metrics.dll'</Item>
+        </Issue>
+       </Message>
+       <Message TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014" Status="Excluded" Created="2014-04-07 07:29:17Z">
         <Issue>
          <Item>'Nancy.Metrics.dll'</Item>
         </Issue>
@@ -1499,29 +1694,34 @@
           <Members>
            <Member Name="#RegisterActiveRequestCounter(Nancy.Bootstrapper.IPipelines,System.String)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'NancyGlobalMetrics.RegisterActiveRequestCounter(IPipelines, string)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#RegisterErrorsMeter(Nancy.Bootstrapper.IPipelines,System.String)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'NancyGlobalMetrics.RegisterErrorsMeter(IPipelines, string)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#RegisterPostAndPutRequestSizeHistogram(Nancy.Bootstrapper.IPipelines,System.String)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
-              <Issue>
-               <Item>'NancyGlobalMetrics.RegisterPostAndPutRequestSizeHistogram(IPipelines, string)'</Item>
-              </Issue>
-             </Message>
              <Message Id="System.String.ToUpper" TypeName="SpecifyCultureInfo" Category="Microsoft.Globalization" CheckId="CA1304" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'string.ToUpper()'</Item>
@@ -1529,14 +1729,29 @@
                <Item>'string.ToUpper(CultureInfo)'</Item>
               </Issue>
              </Message>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'NancyGlobalMetrics.RegisterPostAndPutRequestSizeHistogram(IPipelines, string)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
+             </Message>
             </Messages>
            </Member>
            <Member Name="#RegisterRequestTimer(Nancy.Bootstrapper.IPipelines,System.String)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'NancyGlobalMetrics.RegisterRequestTimer(IPipelines, string)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -1546,19 +1761,29 @@
           <Members>
            <Member Name="#WithMetricsEndpoint(System.Action`1&lt;Nancy.INancyModule&gt;,System.String)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'NancyMetricsConfig.WithMetricsEndpoint(Action&lt;INancyModule&gt;, string)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#WithMetricsEndpoint(System.String)">
             <Messages>
-             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue>
                <Item>'NancyMetricsConfig.WithMetricsEndpoint(string)'</Item>
               </Issue>
+              <Notes>
+               <User Name="iulian.margarintescu">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -1657,6 +1882,15 @@
     </Modules>
    </Target>
   </Targets>
+  <Notes>
+   <User Name="iulian.margarintescu">
+    <Note Id="0" Modified="2014-04-07 07:47:11Z">Default parameters simplify api</Note>
+    <Note Id="1" Modified="2014-04-07 07:48:03Z">Unit is imutable</Note>
+    <Note Id="2" Modified="2014-04-07 07:48:38Z">Unit is imutable</Note>
+    <Note Id="3" Modified="2014-04-07 07:49:13Z">For data structures read-only public fields are allowed</Note>
+    <Note Id="4" Modified="2014-04-07 07:49:34Z">Type parameter simplifies api</Note>
+   </User>
+  </Notes>
   <Rules>
    <Rule TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210">
     <Resolution Name="NoStrongName">Sign {0} with a strong name key.</Resolution>
@@ -1694,11 +1928,9 @@
     <Resolution Name="MemberParameter">In method {0}, correct the spelling of '{1}' in parameter name {2} or remove it entirely if it represents any sort of Hungarian notation.</Resolution>
     <Resolution Name="Namespace">Correct the spelling of '{0}' in namespace name '{1}'.</Resolution>
     <Resolution Name="Type">Correct the spelling of '{0}' in type name {1}.</Resolution>
-    <Resolution Name="TypeTypeParameterMoreMeaningfulName">On type {0}, consider providing a more meaningful name than generic type parameter name {1}.</Resolution>
    </Rule>
    <Rule TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715">
     <Resolution Name="Interface">Prefix interface name {0} with 'I'.</Resolution>
-    <Resolution Name="TypeTypeParameter">On type {0}, prefix generic type parameter name {1} with 'T'.</Resolution>
    </Rule>
    <Rule TypeName="IdentifiersShouldNotContainTypeNames" Category="Microsoft.Naming" CheckId="CA1720">
     <Resolution Name="LanguageIndependentMemberParameter">In member {0}, consider replacing the data type identifier '{1}' in parameter name {2} with a more generic term, such as 'value'.</Resolution>
