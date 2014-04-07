@@ -7,7 +7,7 @@ namespace Metrics.Meta
     {
         private readonly T metric;
 
-        public MetricMeta(string name, T metric, Unit unit)
+        protected MetricMeta(string name, T metric, Unit unit)
         {
             this.metric = metric;
             this.Name = name;
