@@ -1,13 +1,13 @@
 ﻿
 namespace Metrics.Meta
 {
-    public abstract class MetricMeta<T, V>
-        where T : Metric<V>
-        where V : struct
+    public abstract class MetricMeta<TMetric, TMetricValue>
+        where TMetric : Metric<TMetricValue>
+        where TMetricValue : struct
     {
-        private readonly T metric;
+        private readonly TMetric metric;
 
-        protected MetricMeta(string name, T metric, Unit unit)
+        protected MetricMeta(string name, TMetric metric, Unit unit)
         {
             this.metric = metric;
             this.Name = name;
@@ -15,10 +15,10 @@ namespace Metrics.Meta
         }
 
         public string Name { get; private set; }
-        public V Value { get { return this.metric.Value; } }
+        public TMetricValue Value { get { return this.metric.Value; } }
         public Unit Unit { get; private set; }
 
-        internal T Metric()
+        internal TMetric Metric()
         {
             return this.metric;
         }
