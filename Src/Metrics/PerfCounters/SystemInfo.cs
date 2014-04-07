@@ -20,7 +20,7 @@ namespace Metrics.PerfCounters
             Register("Disk Reads/sec", () => new PerformanceCounterGauge("PhysicalDisk", "Disk Writes/sec", TotalInstance, f => (f / 1000).ToString("F")), Unit.Custom("kb/s"));
         }
 
-        private string GetOSVersion()
+        private static string GetOSVersion()
         {
             return string.Format("{0} {1}", Environment.OSVersion.VersionString, Environment.Is64BitOperatingSystem ? "64bit" : "32bit");
         }
