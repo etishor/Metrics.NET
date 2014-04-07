@@ -59,7 +59,6 @@
     <Compile Include="MetricsReports.cs" />
     <Compile Include="PerfCounters\BaseCounterRegristry.cs" />
     <Compile Include="PerfCounters\CLRCounters.cs" />
-    <Compile Include="PerfCounters\PerfCounter.cs" />
     <Compile Include="PerfCounters\PerformanceCounterGauge.cs" />
     <Compile Include="PerfCounters\PerformanceCounters.cs" />
     <Compile Include="PerfCounters\SystemInfo.cs" />
