@@ -17,7 +17,7 @@ namespace Metrics.Tests
         {
             TimeUnit.Nanoseconds.ToNanoseconds(10L).Should().Be(10L);
             TimeUnit.Nanoseconds.ToMicroseconds(10L * 1000L).Should().Be(10L);
-            TimeUnit.Nanoseconds.ToMiliseconds(10L * 1000L * 1000L).Should().Be(10L);
+            TimeUnit.Nanoseconds.ToMilliseconds(10L * 1000L * 1000L).Should().Be(10L);
             TimeUnit.Nanoseconds.ToSeconds(10L * 1000L * 1000L * 1000L).Should().Be(10L);
             TimeUnit.Nanoseconds.ToMinutes(10L * 1000L * 1000L * 1000L * 60L).Should().Be(10L);
             TimeUnit.Nanoseconds.ToHours(10L * 1000L * 1000L * 1000L * 60L * 60L).Should().Be(10L);
@@ -25,7 +25,7 @@ namespace Metrics.Tests
 
             TimeUnit.Microseconds.ToNanoseconds(10L).Should().Be(10L * 1000L);
             TimeUnit.Microseconds.ToMicroseconds(10L).Should().Be(10L);
-            TimeUnit.Microseconds.ToMiliseconds(10L * 1000L).Should().Be(10L);
+            TimeUnit.Microseconds.ToMilliseconds(10L * 1000L).Should().Be(10L);
             TimeUnit.Microseconds.ToSeconds(10L * 1000L * 1000L).Should().Be(10L);
             TimeUnit.Microseconds.ToMinutes(10L * 1000L * 1000L * 60L).Should().Be(10L);
             TimeUnit.Microseconds.ToHours(10L * 1000L * 1000L * 60L * 60L).Should().Be(10L);
@@ -33,7 +33,7 @@ namespace Metrics.Tests
 
             TimeUnit.Milliseconds.ToNanoseconds(10L).Should().Be(10L * 1000L * 1000L);
             TimeUnit.Milliseconds.ToMicroseconds(10L).Should().Be(10L * 1000L);
-            TimeUnit.Milliseconds.ToMiliseconds(10L).Should().Be(10L);
+            TimeUnit.Milliseconds.ToMilliseconds(10L).Should().Be(10L);
             TimeUnit.Milliseconds.ToSeconds(10L * 1000L).Should().Be(10L);
             TimeUnit.Milliseconds.ToMinutes(10L * 1000L * 60L).Should().Be(10L);
             TimeUnit.Milliseconds.ToHours(10L * 1000L * 60L * 60L).Should().Be(10L);
@@ -41,7 +41,7 @@ namespace Metrics.Tests
 
             TimeUnit.Seconds.ToNanoseconds(10L).Should().Be(10L * 1000L * 1000L * 1000L);
             TimeUnit.Seconds.ToMicroseconds(10L).Should().Be(10L * 1000L * 1000L);
-            TimeUnit.Seconds.ToMiliseconds(10L).Should().Be(10L * 1000L);
+            TimeUnit.Seconds.ToMilliseconds(10L).Should().Be(10L * 1000L);
             TimeUnit.Seconds.ToSeconds(10L).Should().Be(10L);
             TimeUnit.Seconds.ToMinutes(10L * 60L).Should().Be(10L);
             TimeUnit.Seconds.ToHours(10L * 60L * 60L).Should().Be(10L);
@@ -49,7 +49,7 @@ namespace Metrics.Tests
 
             TimeUnit.Minutes.ToNanoseconds(10L).Should().Be(10L * 1000L * 1000L * 1000L * 60L);
             TimeUnit.Minutes.ToMicroseconds(10L).Should().Be(10L * 1000L * 1000L * 60L);
-            TimeUnit.Minutes.ToMiliseconds(10L).Should().Be(10L * 1000L * 60L);
+            TimeUnit.Minutes.ToMilliseconds(10L).Should().Be(10L * 1000L * 60L);
             TimeUnit.Minutes.ToSeconds(10L).Should().Be(10L * 60L);
             TimeUnit.Minutes.ToMinutes(10L).Should().Be(10L);
             TimeUnit.Minutes.ToHours(10L * 60L).Should().Be(10L);
@@ -57,7 +57,7 @@ namespace Metrics.Tests
 
             TimeUnit.Hours.ToNanoseconds(10L).Should().Be(10L * 1000L * 1000L * 1000L * 60L * 60L);
             TimeUnit.Hours.ToMicroseconds(10L).Should().Be(10L * 1000L * 1000L * 60L * 60L);
-            TimeUnit.Hours.ToMiliseconds(10L).Should().Be(10L * 1000L * 60L * 60L);
+            TimeUnit.Hours.ToMilliseconds(10L).Should().Be(10L * 1000L * 60L * 60L);
             TimeUnit.Hours.ToSeconds(10L).Should().Be(10L * 60L * 60L);
             TimeUnit.Hours.ToMinutes(10L).Should().Be(10L * 60L);
             TimeUnit.Hours.ToHours(10L).Should().Be(10L);
@@ -65,7 +65,7 @@ namespace Metrics.Tests
 
             TimeUnit.Days.ToNanoseconds(10L).Should().Be(10L * 1000L * 1000L * 1000L * 60L * 60L * 24L);
             TimeUnit.Days.ToMicroseconds(10L).Should().Be(10L * 1000L * 1000L * 60L * 60L * 24L);
-            TimeUnit.Days.ToMiliseconds(10L).Should().Be(10L * 1000L * 60L * 60L * 24L);
+            TimeUnit.Days.ToMilliseconds(10L).Should().Be(10L * 1000L * 60L * 60L * 24L);
             TimeUnit.Days.ToSeconds(10L).Should().Be(10L * 60L * 60L * 24L);
             TimeUnit.Days.ToMinutes(10L).Should().Be(10L * 60L * 24L);
             TimeUnit.Days.ToHours(10L).Should().Be(10L * 24L);

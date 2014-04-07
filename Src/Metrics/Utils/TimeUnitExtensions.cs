@@ -60,7 +60,7 @@ namespace Metrics.Utils
             return Convert(unit, TimeUnit.Microseconds, value);
         }
 
-        public static long ToMiliseconds(this TimeUnit unit, long value)
+        public static long ToMilliseconds(this TimeUnit unit, long value)
         {
             return Convert(unit, TimeUnit.Milliseconds, value);
         }
