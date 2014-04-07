@@ -1,0 +1,1751 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FxCopProject Version="10.0" Name="My FxCop Project">
+ <ProjectOptions>
+  <SharedProject>True</SharedProject>
+  <Stylesheet Apply="False">$(FxCopDir)\Xml\FxCopReport.xsl</Stylesheet>
+  <SaveMessages>
+   <Project Status="Active, Excluded, Good, Noise" NewOnly="False" />
+   <Report Status="Active, Good, Noise" NewOnly="False" />
+  </SaveMessages>
+  <ProjectFile Compress="True" DefaultTargetCheck="True" DefaultRuleCheck="True" SaveByRuleGroup="" Deterministic="True" />
+  <EnableMultithreadedLoad>True</EnableMultithreadedLoad>
+  <EnableMultithreadedAnalysis>True</EnableMultithreadedAnalysis>
+  <SourceLookup>True</SourceLookup>
+  <AnalysisExceptionsThreshold>10</AnalysisExceptionsThreshold>
+  <RuleExceptionsThreshold>1</RuleExceptionsThreshold>
+  <Spelling Locale="en-US" />
+  <OverrideRuleVisibilities>False</OverrideRuleVisibilities>
+  <CustomDictionaries SearchFxCopDir="True" SearchUserProfile="True" SearchProjectDir="True" />
+  <SearchGlobalAssemblyCache>False</SearchGlobalAssemblyCache>
+  <DeadlockDetectionTimeout>120</DeadlockDetectionTimeout>
+  <IgnoreGeneratedCode>False</IgnoreGeneratedCode>
+ </ProjectOptions>
+ <Targets>
+  <Target Name="$(ProjectDir)/bin/Debug/Metrics.dll" Analyze="True" AnalyzeAllChildren="True" />
+  <Target Name="$(ProjectDir)/bin/Debug/Nancy.Metrics.dll" Analyze="True" AnalyzeAllChildren="True" />
+ </Targets>
+ <Rules>
+  <RuleFiles>
+   <RuleFile Name="$(FxCopDir)\Rules\DesignRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\GlobalizationRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\InteroperabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\MobilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\NamingRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\PerformanceRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\PortabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\SecurityRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\SecurityTransparencyRules.dll" Enabled="True" AllRulesEnabled="True" />
+   <RuleFile Name="$(FxCopDir)\Rules\UsageRules.dll" Enabled="True" AllRulesEnabled="True" />
+  </RuleFiles>
+  <Groups />
+  <Settings />
+ </Rules>
+ <FxCopReport Version="10.0">
+  <Namespaces>
+   <Namespace Name="Metrics.PerfCounters">
+    <Messages>
+     <Message Id="Perf" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:29:17Z">
+      <Issue Name="Namespace">
+       <Item>Perf</Item>
+       <Item>Metrics.PerfCounters</Item>
+      </Issue>
+     </Message>
+    </Messages>
+   </Namespace>
+   <Namespace Name="Metrics.Utils">
+    <Messages>
+     <Message Id="Utils" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:29:17Z">
+      <Issue Name="Namespace">
+       <Item>Utils</Item>
+       <Item>Metrics.Utils</Item>
+      </Issue>
+     </Message>
+    </Messages>
+   </Namespace>
+   <Namespace Name="Metrics.Visualization">
+    <Messages>
+     <Message TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020" Created="2014-04-07 07:43:48Z">
+      <Issue>
+       <Item>Metrics.Visualization</Item>
+      </Issue>
+     </Message>
+    </Messages>
+   </Namespace>
+  </Namespaces>
+  <Targets>
+   <Target Name="$(ProjectDir)/bin/Debug/Metrics.dll">
+    <Modules>
+     <Module Name="metrics.dll">
+      <Messages>
+       <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Created="2014-04-07 07:29:17Z">
+        <Issue Name="NoStrongName">
+         <Item>'Metrics.dll'</Item>
+        </Issue>
+       </Message>
+       <Message TypeName="AttributeStringLiteralsShouldParseCorrectly" Category="Microsoft.Usage" CheckId="CA2243" Created="2014-04-07 07:29:17Z">
+        <Issue>
+         <Item>'AssemblyInformationalVersionAttribute'</Item>
+         <Item>'informationalVersion'</Item>
+         <Item>0.0.5-alpha</Item>
+         <Item>'Version'</Item>
+        </Issue>
+       </Message>
+       <Message TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014" Created="2014-04-07 07:29:17Z">
+        <Issue>
+         <Item>'Metrics.dll'</Item>
+        </Issue>
+       </Message>
+      </Messages>
+      <Namespaces>
+       <Namespace Name="Metrics">
+        <Types>
+         <Type Name="Counter">
+          <Messages>
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+            <Issue Name="Interface">
+             <Item>'Counter'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="Gauge">
+          <Messages>
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+            <Issue Name="Interface">
+             <Item>'Gauge'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="GaugeValue">
+          <Messages>
+           <Message TypeName="OverrideEqualsAndOperatorEqualsOnValueTypes" Category="Microsoft.Performance" CheckId="CA1815" Created="2014-04-07 07:29:17Z">
+            <Issue Name="Equals">
+             <Item>'GaugeValue'</Item>
+            </Issue>
+            <Issue Name="op_Equality">
+             <Item>'GaugeValue'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#Value">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'GaugeValue.Value'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Histogram">
+          <Messages>
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+            <Issue Name="Interface">
+             <Item>'Histogram'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="HistogramValue">
+          <Messages>
+           <Message TypeName="OverrideEqualsAndOperatorEqualsOnValueTypes" Category="Microsoft.Performance" CheckId="CA1815" Created="2014-04-07 07:29:17Z">
+            <Issue Name="Equals">
+             <Item>'HistogramValue'</Item>
+            </Issue>
+            <Issue Name="op_Equality">
+             <Item>'HistogramValue'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#Count">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HistogramValue.Count'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Max">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HistogramValue.Max'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Mean">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HistogramValue.Mean'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Median">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HistogramValue.Median'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Min">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HistogramValue.Min'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Percentile75">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HistogramValue.Percentile75'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Percentile95">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HistogramValue.Percentile95'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Percentile98">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HistogramValue.Percentile98'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Percentile99">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HistogramValue.Percentile99'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Percentile999">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HistogramValue.Percentile999'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#SampleSize">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HistogramValue.SampleSize'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#StdDev">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HistogramValue.StdDev'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Meter">
+          <Messages>
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+            <Issue Name="Interface">
+             <Item>'Meter'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="MeterValue">
+          <Messages>
+           <Message TypeName="OverrideEqualsAndOperatorEqualsOnValueTypes" Category="Microsoft.Performance" CheckId="CA1815" Created="2014-04-07 07:29:17Z">
+            <Issue Name="Equals">
+             <Item>'MeterValue'</Item>
+            </Issue>
+            <Issue Name="op_Equality">
+             <Item>'MeterValue'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#Count">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'MeterValue.Count'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#FifteenMinuteRate">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'MeterValue.FifteenMinuteRate'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#FiveMinuteRate">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'MeterValue.FiveMinuteRate'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#MeanRate">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'MeterValue.MeanRate'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#OneMinuteRate">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'MeterValue.OneMinuteRate'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Metric">
+          <Members>
+           <Member Name="#Counter`1(System.String,Metrics.Unit)">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Metric.Counter&lt;T&gt;(string, Unit)'</Item>
+               <Item>'T'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Gauge`1(System.String,System.Func`1&lt;System.String&gt;,Metrics.Unit)">
+            <Messages>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Metric.Gauge&lt;T&gt;(string, Func&lt;string&gt;, Unit)'</Item>
+               <Item>'T'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#GetAsHumanReadable()">
+            <Messages>
+             <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Created="2014-04-07 07:29:17Z">
+              <Issue Certainty="50">
+               <Item>'Metric.GetAsHumanReadable()'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#GetForSerialization()">
+            <Messages>
+             <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Created="2014-04-07 07:29:17Z">
+              <Issue Certainty="50">
+               <Item>'Metric.GetForSerialization()'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Histogram(System.String,Metrics.Unit,Metrics.SamplingType)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Metric.Histogram(string, Unit, SamplingType)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Histogram`1(System.String,Metrics.Unit,Metrics.SamplingType)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Metric.Histogram&lt;T&gt;(string, Unit, SamplingType)'</Item>
+              </Issue>
+             </Message>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Metric.Histogram&lt;T&gt;(string, Unit, SamplingType)'</Item>
+               <Item>'T'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Meter(System.String,Metrics.Unit,Metrics.TimeUnit)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Metric.Meter(string, Unit, TimeUnit)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Meter`1(System.String,Metrics.Unit,Metrics.TimeUnit)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Metric.Meter&lt;T&gt;(string, Unit, TimeUnit)'</Item>
+              </Issue>
+             </Message>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Metric.Meter&lt;T&gt;(string, Unit, TimeUnit)'</Item>
+               <Item>'T'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Timer(System.String,Metrics.Unit,Metrics.SamplingType,Metrics.TimeUnit,Metrics.TimeUnit)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Metric.Timer(string, Unit, SamplingType, TimeUnit, TimeUnit)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Timer`1(System.String,Metrics.Unit,Metrics.SamplingType,Metrics.TimeUnit,Metrics.TimeUnit)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Metric.Timer&lt;T&gt;(string, Unit, SamplingType, TimeUnit, TimeUnit)'</Item>
+              </Issue>
+             </Message>
+             <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Metric.Timer&lt;T&gt;(string, Unit, SamplingType, TimeUnit, TimeUnit)'</Item>
+               <Item>'T'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Metric`1">
+          <Messages>
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+            <Issue Name="Interface">
+             <Item>'Metric&lt;T&gt;'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="MetricsRegistry">
+          <Messages>
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+            <Issue Name="Interface">
+             <Item>'MetricsRegistry'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#Gauge(System.String,System.Func`1&lt;Metrics.Gauge&gt;,Metrics.Unit)">
+            <Messages>
+             <Message Id="1#" TypeName="ParameterNamesShouldNotMatchMemberNames" Category="Microsoft.Naming" CheckId="CA1719" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'gauge'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="MetricsReports">
+          <Members>
+           <Member Name="#StoreCSVReports(System.String,System.TimeSpan)">
+            <Messages>
+             <Message Id="CSV" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
+              <Issue Name="Member">
+               <Item>CSV</Item>
+               <Item>'MetricsReports.StoreCSVReports(string, TimeSpan)'</Item>
+               <Item>Csv</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="SamplingType">
+          <Members>
+           <Member Name="#FavourRecent">
+            <Messages>
+             <Message Id="Favour" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:29:17Z">
+              <Issue Name="Member">
+               <Item>Favour</Item>
+               <Item>'SamplingType.FavourRecent'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Timer">
+          <Messages>
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+            <Issue Name="Interface">
+             <Item>'Timer'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="TimerValue">
+          <Messages>
+           <Message TypeName="OverrideEqualsAndOperatorEqualsOnValueTypes" Category="Microsoft.Performance" CheckId="CA1815" Created="2014-04-07 07:29:17Z">
+            <Issue Name="Equals">
+             <Item>'TimerValue'</Item>
+            </Issue>
+            <Issue Name="op_Equality">
+             <Item>'TimerValue'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#Histogram">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'TimerValue.Histogram'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Rate">
+            <Messages>
+             <Message TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'TimerValue.Rate'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Unit">
+          <Members>
+           <Member Name="#Calls">
+            <Messages>
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Unit.Calls'</Item>
+               <Item>'Unit'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Errors">
+            <Messages>
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Unit.Errors'</Item>
+               <Item>'Unit'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#FormatCount(System.Int64)">
+            <Messages>
+             <Message Id="System.Int64.ToString" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'long.ToString()'</Item>
+               <Item>'Unit.FormatCount(long)'</Item>
+               <Item>'long.ToString(IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'Unit.FormatCount(long)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#FormatDuration(System.Double,System.Nullable`1&lt;Metrics.TimeUnit&gt;)">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'Unit.FormatDuration(double, TimeUnit?)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#FormatRate(System.Double,Metrics.TimeUnit)">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object, object)'</Item>
+               <Item>'Unit.FormatRate(double, TimeUnit)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#FormatValue(System.Double)">
+            <Messages>
+             <Message Id="System.Double.ToString(System.String)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'double.ToString(string)'</Item>
+               <Item>'Unit.FormatValue(double)'</Item>
+               <Item>'double.ToString(string, IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'Unit.FormatValue(double)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#FormatValue(System.String)">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'Unit.FormatValue(string)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Items">
+            <Messages>
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Unit.Items'</Item>
+               <Item>'Unit'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#None">
+            <Messages>
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Unit.None'</Item>
+               <Item>'Unit'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Requests">
+            <Messages>
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Unit.Requests'</Item>
+               <Item>'Unit'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Results">
+            <Messages>
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Unit.Results'</Item>
+               <Item>'Unit'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+       <Namespace Name="Metrics.Core">
+        <Types>
+         <Type Name="ExponentiallyDecayingReservoir">
+          <Messages>
+           <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Created="2014-04-07 07:29:17Z" FixCategory="DependsOnFix">
+            <Issue Name="DependsOnFix">
+             <Item>'ExponentiallyDecayingReservoir'</Item>
+             <Item>'ReaderWriterLockSlim'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="Registry">
+          <Members>
+           <Member Name="#.ctor()">
+            <Messages>
+             <Message TypeName="DoNotIndirectlyExposeMethodsWithLinkDemands" Category="Microsoft.Security" CheckId="CA2122" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Registry.Registry()'</Item>
+               <Item>'Process.GetCurrentProcess()'</Item>
+               <Item>&#xD;&#xA;   -&gt;'Registry.Registry()'&#xD;&#xA;   -&gt;'Registry.Registry()'</Item>
+              </Issue>
+              <Issue>
+               <Item>'Registry.Registry()'</Item>
+               <Item>'Process.ProcessName.get()'</Item>
+               <Item>&#xD;&#xA;   -&gt;'Registry.Registry()'&#xD;&#xA;   -&gt;'Registry.Registry()'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Reservoir">
+          <Messages>
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+            <Issue Name="Interface">
+             <Item>'Reservoir'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="Snapshot">
+          <Members>
+           <Member Name="#GetValue(System.Double)">
+            <Messages>
+             <Message Id="quantile" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:29:17Z">
+              <Issue Name="MemberParameter">
+               <Item>'Snapshot.GetValue(double)'</Item>
+               <Item>quantile</Item>
+               <Item>'quantile'</Item>
+              </Issue>
+             </Message>
+             <Message Id="System.String.Format(System.String,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object)'</Item>
+               <Item>'Snapshot.GetValue(double)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+       <Namespace Name="Metrics.Meta">
+        <Types>
+         <Type Name="MetricMeta`2">
+          <Messages>
+           <Message Id="V" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:29:17Z" FixCategory="NonBreaking">
+            <Issue Name="TypeTypeParameterMoreMeaningfulName">
+             <Item>'MetricMeta&lt;T, V&gt;'</Item>
+             <Item>'V'</Item>
+            </Issue>
+           </Message>
+           <Message Id="T" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="NonBreaking">
+            <Issue Name="TypeTypeParameter">
+             <Item>'MetricMeta&lt;T, V&gt;'</Item>
+             <Item>'V'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+         </Type>
+        </Types>
+       </Namespace>
+       <Namespace Name="Metrics.PerfCounters">
+        <Types>
+         <Type Name="BaseCounterRegristry">
+          <Messages>
+           <Message Id="Regristry" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:29:17Z">
+            <Issue Name="Type">
+             <Item>Regristry</Item>
+             <Item>'BaseCounterRegristry'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#Register(System.String,System.Func`1&lt;System.Single&gt;,Metrics.Unit)">
+            <Messages>
+             <Message Id="System.Single.ToString(System.String)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'float.ToString(string)'</Item>
+               <Item>'BaseCounterRegristry.Register(string, Func&lt;float&gt;, Unit)'</Item>
+               <Item>'float.ToString(string, IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="CLRCounters">
+          <Messages>
+           <Message Id="CLR" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
+            <Issue Name="Type">
+             <Item>CLR</Item>
+             <Item>'CLRCounters'</Item>
+             <Item>Clr</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#RegisterAppCounters()">
+            <Messages>
+             <Message TypeName="DoNotIndirectlyExposeMethodsWithLinkDemands" Category="Microsoft.Security" CheckId="CA2122" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'CLRCounters.RegisterAppCounters()'</Item>
+               <Item>'Process.GetCurrentProcess()'</Item>
+               <Item>&#xD;&#xA;   -&gt;'CLRCounters.RegisterAppCounters()'&#xD;&#xA;   -&gt;'CLRCounters.RegisterAppCounters()'</Item>
+              </Issue>
+              <Issue>
+               <Item>'CLRCounters.RegisterAppCounters()'</Item>
+               <Item>'Process.ProcessName.get()'</Item>
+               <Item>&#xD;&#xA;   -&gt;'CLRCounters.RegisterAppCounters()'&#xD;&#xA;   -&gt;'CLRCounters.RegisterAppCounters()'</Item>
+              </Issue>
+             </Message>
+             <Message Id="System.Single.ToString(System.String)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'float.ToString(string)'</Item>
+               <Item>'CLRCounters.RegisterAppCounters()'</Item>
+               <Item>'float.ToString(string, IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegisterGlobalCounters()">
+            <Messages>
+             <Message Id="System.Single.ToString(System.String)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'float.ToString(string)'</Item>
+               <Item>'CLRCounters.RegisterGlobalCounters()'</Item>
+               <Item>'float.ToString(string, IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="PerformanceCounterGauge">
+          <Messages>
+           <Message Id="CounterGauge" TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702" Created="2014-04-07 07:29:17Z">
+            <Issue Name="TypeShouldBeDiscreteTerm">
+             <Item>CounterGauge</Item>
+             <Item>'PerformanceCounterGauge'</Item>
+             <Item>Countergauge</Item>
+            </Issue>
+           </Message>
+           <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Created="2014-04-07 07:29:17Z" FixCategory="DependsOnFix">
+            <Issue Name="DependsOnFix">
+             <Item>'PerformanceCounterGauge'</Item>
+             <Item>'PerformanceCounter'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#.cctor()">
+            <Messages>
+             <Message Id="System.Single.ToString(System.String)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'float.ToString(string)'</Item>
+               <Item>'PerformanceCounterGauge.PerformanceCounterGauge()'</Item>
+               <Item>'float.ToString(string, IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="PerformanceCounters">
+          <Members>
+           <Member Name="#RegisterAllCLRCounters()">
+            <Messages>
+             <Message Id="CLR" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
+              <Issue Name="Member">
+               <Item>CLR</Item>
+               <Item>'PerformanceCounters.RegisterAllCLRCounters()'</Item>
+               <Item>Clr</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegisterCLRAppCounters(System.String)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'PerformanceCounters.RegisterCLRAppCounters(string)'</Item>
+              </Issue>
+             </Message>
+             <Message Id="CLR" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
+              <Issue Name="Member">
+               <Item>CLR</Item>
+               <Item>'PerformanceCounters.RegisterCLRAppCounters(string)'</Item>
+               <Item>Clr</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegisterCLRGlobalCounters(System.String)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'PerformanceCounters.RegisterCLRGlobalCounters(string)'</Item>
+              </Issue>
+             </Message>
+             <Message Id="CLR" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
+              <Issue Name="Member">
+               <Item>CLR</Item>
+               <Item>'PerformanceCounters.RegisterCLRGlobalCounters(string)'</Item>
+               <Item>Clr</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegisterSystemInfo(System.String)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'PerformanceCounters.RegisterSystemInfo(string)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="SystemInfo">
+          <Members>
+           <Member Name="#GetOSVersion()">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'SystemInfo.GetOSVersion()'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Register()">
+            <Messages>
+             <Message Id="System.Int32.ToString" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'int.ToString()'</Item>
+               <Item>'SystemInfo.Register()'</Item>
+               <Item>'int.ToString(IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+             <Message Id="System.Single.ToString(System.String)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'float.ToString(string)'</Item>
+               <Item>'SystemInfo.Register()'</Item>
+               <Item>'float.ToString(string, IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'float.ToString(string)'</Item>
+               <Item>'SystemInfo.Register()'</Item>
+               <Item>'float.ToString(string, IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+       <Namespace Name="Metrics.Reporters">
+        <Types>
+         <Type Name="ConsoleCSVAppender">
+          <Messages>
+           <Message Id="CSV" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
+            <Issue Name="Type">
+             <Item>CSV</Item>
+             <Item>'ConsoleCSVAppender'</Item>
+             <Item>Csv</Item>
+            </Issue>
+           </Message>
+           <Message Id="Appender" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:29:17Z">
+            <Issue Name="Type">
+             <Item>Appender</Item>
+             <Item>'ConsoleCSVAppender'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="ConsoleReporter">
+          <Members>
+           <Member Name="#WriteLine(System.String,System.String[])">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object[])" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, params object[])'</Item>
+               <Item>'ConsoleReporter.WriteLine(string, params string[])'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="CSVFileAppender">
+          <Messages>
+           <Message Id="CSV" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
+            <Issue Name="Type">
+             <Item>CSV</Item>
+             <Item>'CSVFileAppender'</Item>
+             <Item>Csv</Item>
+            </Issue>
+           </Message>
+           <Message Id="Appender" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:29:17Z">
+            <Issue Name="Type">
+             <Item>Appender</Item>
+             <Item>'CSVFileAppender'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#AppendLine(System.DateTime,System.String,System.String,System.Collections.Generic.IEnumerable`1&lt;Metrics.Reporters.CSVReporter+Value&gt;)">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'CSVFileAppender.AppendLine(DateTime, string, string, IEnumerable&lt;CSVReporter.Value&gt;)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#GetValues(System.DateTime,System.Collections.Generic.IEnumerable`1&lt;Metrics.Reporters.CSVReporter+Value&gt;)">
+            <Messages>
+             <Message Id="System.Int64.ToString(System.String)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'long.ToString(string)'</Item>
+               <Item>'CSVFileAppender.GetValues(DateTime, IEnumerable&lt;CSVReporter.Value&gt;)'</Item>
+               <Item>'long.ToString(string, IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="CSVReporter">
+          <Messages>
+           <Message Id="CSV" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
+            <Issue Name="Type">
+             <Item>CSV</Item>
+             <Item>'CSVReporter'</Item>
+             <Item>Csv</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#.ctor(Metrics.Reporters.CSVFileAppender)">
+            <Messages>
+             <Message Id="appender" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:29:17Z">
+              <Issue Name="MemberParameter">
+               <Item>'CSVReporter.CSVReporter(CSVFileAppender)'</Item>
+               <Item>appender</Item>
+               <Item>'appender'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="CSVReporter+Value">
+          <Messages>
+           <Message TypeName="NestedTypesShouldNotBeVisible" Category="Microsoft.Design" CheckId="CA1034" Created="2014-04-07 07:29:17Z">
+            <Issue>
+             <Item>'CSVReporter.Value'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#.ctor(System.String,System.Double)">
+            <Messages>
+             <Message Id="System.Double.ToString(System.String)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'double.ToString(string)'</Item>
+               <Item>'CSVReporter.Value.Value(string, double)'</Item>
+               <Item>'double.ToString(string, IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#.ctor(System.String,System.Int64)">
+            <Messages>
+             <Message Id="System.Int64.ToString(System.String)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'long.ToString(string)'</Item>
+               <Item>'CSVReporter.Value.Value(string, long)'</Item>
+               <Item>'long.ToString(string, IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="HumanReadableReporter">
+          <Members>
+           <Member Name="#.ctor(System.Int32)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HumanReadableReporter.HumanReadableReporter(int)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#StartMetricGroup(System.String)">
+            <Messages>
+             <Message Id="0#" TypeName="ParameterNamesShouldMatchBaseDeclaration" Category="Microsoft.Naming" CheckId="CA1725" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HumanReadableReporter.StartMetricGroup(string)'</Item>
+               <Item>'metricType'</Item>
+               <Item>'metricName'</Item>
+               <Item>'Reporter.StartMetricGroup(string)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#WriteValue(System.String,System.String,System.String)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'HumanReadableReporter.WriteValue(string, string, string)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="RegistrySerializer">
+          <Members>
+           <Member Name="#GetForSerialization(Metrics.MetricsRegistry)">
+            <Messages>
+             <Message TypeName="MarkMembersAsStatic" Category="Microsoft.Performance" CheckId="CA1822" Created="2014-04-07 07:29:17Z" FixCategory="DependsOnFix">
+              <Issue>
+               <Item>'RegistrySerializer.GetForSerialization(MetricsRegistry)'</Item>
+              </Issue>
+             </Message>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'RegistrySerializer.GetForSerialization(MetricsRegistry)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'RegistrySerializer.GetForSerialization(MetricsRegistry)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="StringReporter">
+          <Members>
+           <Member Name="#WriteLine(System.String,System.String[])">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object[])" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, params object[])'</Item>
+               <Item>'StringReporter.WriteLine(string, params string[])'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="TextFileReporter">
+          <Members>
+           <Member Name="#WriteLine(System.String,System.String[])">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object[])" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, params object[])'</Item>
+               <Item>'TextFileReporter.WriteLine(string, params string[])'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+       <Namespace Name="Metrics.Utils">
+        <Types>
+         <Type Name="AtomicLong">
+          <Members>
+           <Member Name="#CompareAndSet(System.Int64,System.Int64)">
+            <Messages>
+             <Message Id="expectd" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:29:17Z">
+              <Issue Name="MemberParameter">
+               <Item>'AtomicLong.CompareAndSet(long, long)'</Item>
+               <Item>expectd</Item>
+               <Item>'expectd'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#GetAndReset()">
+            <Messages>
+             <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Created="2014-04-07 07:29:17Z">
+              <Issue Certainty="50">
+               <Item>'AtomicLong.GetAndReset()'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Clock">
+          <Members>
+           <Member Name="#System">
+            <Messages>
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'Clock.System'</Item>
+               <Item>'Clock'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Clock+TestClock">
+          <Messages>
+           <Message TypeName="NestedTypesShouldNotBeVisible" Category="Microsoft.Design" CheckId="CA1034" Created="2014-04-07 07:29:17Z">
+            <Issue>
+             <Item>'Clock.TestClock'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="EWMA">
+          <Messages>
+           <Message Id="EWMA" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
+            <Issue Name="Type">
+             <Item>EWMA</Item>
+             <Item>'EWMA'</Item>
+             <Item>Ewma</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#FifteenMinuteEWMA()">
+            <Messages>
+             <Message Id="EWMA" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
+              <Issue Name="Member">
+               <Item>EWMA</Item>
+               <Item>'EWMA.FifteenMinuteEWMA()'</Item>
+               <Item>Ewma</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#FiveMinuteEWMA()">
+            <Messages>
+             <Message Id="EWMA" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
+              <Issue Name="Member">
+               <Item>EWMA</Item>
+               <Item>'EWMA.FiveMinuteEWMA()'</Item>
+               <Item>Ewma</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#OneMinuteEWMA()">
+            <Messages>
+             <Message Id="EWMA" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
+              <Issue Name="Member">
+               <Item>EWMA</Item>
+               <Item>'EWMA.OneMinuteEWMA()'</Item>
+               <Item>Ewma</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="IHideObjectMembers">
+          <Members>
+           <Member Name="#Equals(System.Object)">
+            <Messages>
+             <Message Id="obj" TypeName="IdentifiersShouldNotContainTypeNames" Category="Microsoft.Naming" CheckId="CA1720" Created="2014-04-07 07:29:17Z">
+              <Issue Name="LanguageIndependentMemberParameter">
+               <Item>'IHideObjectMembers.Equals(object)'</Item>
+               <Item>obj</Item>
+               <Item>'obj'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#GetType()">
+            <Messages>
+             <Message Id="GetType" TypeName="IdentifiersShouldNotMatchKeywords" Category="Microsoft.Naming" CheckId="CA1716" Created="2014-04-07 07:29:17Z">
+              <Issue Name="Member">
+               <Item>'IHideObjectMembers.GetType()'</Item>
+               <Item>GetType</Item>
+              </Issue>
+             </Message>
+             <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Created="2014-04-07 07:29:17Z">
+              <Issue Certainty="50">
+               <Item>'IHideObjectMembers.GetType()'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="ThreadLocalRandom">
+          <Members>
+           <Member Name="#NextLong()">
+            <Messages>
+             <Message Id="long" TypeName="IdentifiersShouldNotContainTypeNames" Category="Microsoft.Naming" CheckId="CA1720" Created="2014-04-07 07:29:17Z">
+              <Issue Name="LanguageSpecificMember">
+               <Item>Long</Item>
+               <Item>'ThreadLocalRandom.NextLong()'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="TimeUnitExtensions">
+          <Members>
+           <Member Name="#BuildConversionFactorsMatrix()">
+            <Messages>
+             <Message Id="Body" TypeName="PreferJaggedArraysOverMultidimensional" Category="Microsoft.Performance" CheckId="CA1814" Created="2014-04-07 07:29:17Z">
+              <Issue Name="Body">
+               <Item>'TimeUnitExtensions.BuildConversionFactorsMatrix()'</Item>
+               <Item>'long[,]'</Item>
+              </Issue>
+             </Message>
+             <Message Id="Return" TypeName="PreferJaggedArraysOverMultidimensional" Category="Microsoft.Performance" CheckId="CA1814" Created="2014-04-07 07:29:17Z">
+              <Issue Name="Return">
+               <Item>'TimeUnitExtensions.BuildConversionFactorsMatrix()'</Item>
+               <Item>'long[,]'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#conversionFactors">
+            <Messages>
+             <Message Id="Member" TypeName="PreferJaggedArraysOverMultidimensional" Category="Microsoft.Performance" CheckId="CA1814" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'TimeUnitExtensions.conversionFactors'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#Unit(Metrics.TimeUnit)">
+            <Messages>
+             <Message Id="0#" TypeName="ParameterNamesShouldNotMatchMemberNames" Category="Microsoft.Naming" CheckId="CA1719" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'unit'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="VolatileDouble">
+          <Members>
+           <Member Name="#ToString()">
+            <Messages>
+             <Message Id="System.Double.ToString" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'double.ToString()'</Item>
+               <Item>'VolatileDouble.ToString()'</Item>
+               <Item>'double.ToString(IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+       <Namespace Name="Metrics.Visualization">
+        <Types>
+         <Type Name="FlotWebApp">
+          <Messages>
+           <Message Id="Flot" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:43:48Z">
+            <Issue Name="Type">
+             <Item>Flot</Item>
+             <Item>'FlotWebApp'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#GetFlotApp(System.Uri)">
+            <Messages>
+             <Message Id="Flot" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:43:48Z">
+              <Issue Name="Member">
+               <Item>Flot</Item>
+               <Item>'FlotWebApp.GetFlotApp(Uri)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+      </Namespaces>
+     </Module>
+    </Modules>
+   </Target>
+   <Target Name="$(ProjectDir)/bin/Debug/Nancy.Metrics.dll">
+    <Modules>
+     <Module Name="nancy.metrics.dll">
+      <Messages>
+       <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Created="2014-04-07 07:29:17Z">
+        <Issue Name="NoStrongName">
+         <Item>'Nancy.Metrics.dll'</Item>
+        </Issue>
+       </Message>
+       <Message TypeName="AttributeStringLiteralsShouldParseCorrectly" Category="Microsoft.Usage" CheckId="CA2243" Created="2014-04-07 07:29:17Z">
+        <Issue>
+         <Item>'AssemblyInformationalVersionAttribute'</Item>
+         <Item>'informationalVersion'</Item>
+         <Item>0.0.5-alpha</Item>
+         <Item>'Version'</Item>
+        </Issue>
+       </Message>
+       <Message TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014" Created="2014-04-07 07:29:17Z">
+        <Issue>
+         <Item>'Nancy.Metrics.dll'</Item>
+        </Issue>
+       </Message>
+      </Messages>
+      <Namespaces>
+       <Namespace Name="Nancy.Metrics">
+        <Types>
+         <Type Name="NancyGlobalMetrics">
+          <Members>
+           <Member Name="#RegisterActiveRequestCounter(Nancy.Bootstrapper.IPipelines,System.String)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'NancyGlobalMetrics.RegisterActiveRequestCounter(IPipelines, string)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegisterErrorsMeter(Nancy.Bootstrapper.IPipelines,System.String)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'NancyGlobalMetrics.RegisterErrorsMeter(IPipelines, string)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegisterPostAndPutRequestSizeHistogram(Nancy.Bootstrapper.IPipelines,System.String)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'NancyGlobalMetrics.RegisterPostAndPutRequestSizeHistogram(IPipelines, string)'</Item>
+              </Issue>
+             </Message>
+             <Message Id="System.String.ToUpper" TypeName="SpecifyCultureInfo" Category="Microsoft.Globalization" CheckId="CA1304" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'string.ToUpper()'</Item>
+               <Item>'NancyGlobalMetrics.RegisterPostAndPutRequestSizeHistogram(IPipelines, string)'</Item>
+               <Item>'string.ToUpper(CultureInfo)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegisterRequestTimer(Nancy.Bootstrapper.IPipelines,System.String)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'NancyGlobalMetrics.RegisterRequestTimer(IPipelines, string)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="NancyMetricsConfig">
+          <Members>
+           <Member Name="#WithMetricsEndpoint(System.Action`1&lt;Nancy.INancyModule&gt;,System.String)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'NancyMetricsConfig.WithMetricsEndpoint(Action&lt;INancyModule&gt;, string)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#WithMetricsEndpoint(System.String)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'NancyMetricsConfig.WithMetricsEndpoint(string)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="NancyModuleMetricExtensions">
+          <Members>
+           <Member Name="#MakePredicate(Nancy.INancyModule,System.String,System.String)">
+            <Messages>
+             <Message Id="System.String.ToUpper" TypeName="SpecifyCultureInfo" Category="Microsoft.Globalization" CheckId="CA1304" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'string.ToUpper()'</Item>
+               <Item>'NancyModuleMetricExtensions.MakePredicate(this INancyModule, string, string)'</Item>
+               <Item>'string.ToUpper(CultureInfo)'</Item>
+              </Issue>
+              <Issue>
+               <Item>'string.ToUpper()'</Item>
+               <Item>'NancyModuleMetricExtensions.MakePredicate(this INancyModule, string, string)'</Item>
+               <Item>'string.ToUpper(CultureInfo)'</Item>
+              </Issue>
+              <Issue>
+               <Item>'string.ToUpper()'</Item>
+               <Item>'NancyModuleMetricExtensions.MakePredicate(this INancyModule, string, string)'</Item>
+               <Item>'string.ToUpper(CultureInfo)'</Item>
+              </Issue>
+              <Issue>
+               <Item>'string.ToUpper()'</Item>
+               <Item>'NancyModuleMetricExtensions.MakePredicate(this INancyModule, string, string)'</Item>
+               <Item>'string.ToUpper(CultureInfo)'</Item>
+              </Issue>
+              <Issue>
+               <Item>'string.ToUpper()'</Item>
+               <Item>'NancyModuleMetricExtensions.MakePredicate(this INancyModule, string, string)'</Item>
+               <Item>'string.ToUpper(CultureInfo)'</Item>
+              </Issue>
+             </Message>
+             <Message Id="System.String.StartsWith(System.String)" TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307" Created="2014-04-07 07:29:17Z">
+              <Issue>
+               <Item>'string.StartsWith(string)'</Item>
+               <Item>'NancyModuleMetricExtensions.MakePredicate(this INancyModule, string, string)'</Item>
+               <Item>'string.StartsWith(string, StringComparison)'</Item>
+              </Issue>
+              <Issue>
+               <Item>'string.StartsWith(string)'</Item>
+               <Item>'NancyModuleMetricExtensions.MakePredicate(this INancyModule, string, string)'</Item>
+               <Item>'string.StartsWith(string, StringComparison)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#MetricForRequestSize(Nancy.INancyModule,System.String,System.Predicate`1&lt;Nancy.Routing.RouteDescription&gt;)">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'NancyModuleMetricExtensions.MetricForRequestSize(this INancyModule, string, Predicate&lt;RouteDescription&gt;)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#MetricForRequestTime(Nancy.INancyModule,System.String,System.Predicate`1&lt;Nancy.Routing.RouteDescription&gt;)">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'NancyModuleMetricExtensions.MetricForRequestTime(this INancyModule, string, Predicate&lt;RouteDescription&gt;)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#MetricForResponseSize(Nancy.INancyModule,System.String,System.Predicate`1&lt;Nancy.Routing.RouteDescription&gt;)">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'NancyModuleMetricExtensions.MetricForResponseSize(this INancyModule, string, Predicate&lt;RouteDescription&gt;)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+        </Types>
+       </Namespace>
+      </Namespaces>
+     </Module>
+    </Modules>
+   </Target>
+  </Targets>
+  <Rules>
+   <Rule TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210">
+    <Resolution Name="NoStrongName">Sign {0} with a strong name key.</Resolution>
+   </Rule>
+   <Rule TypeName="AttributeStringLiteralsShouldParseCorrectly" Category="Microsoft.Usage" CheckId="CA2243">
+    <Resolution Name="Default">In the constructor of {0}, change the value of argument {1}, which is currently "{2}", to something that can be correctly parsed as {3}.</Resolution>
+   </Rule>
+   <Rule TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020">
+    <Resolution Name="Default">Consider merging the types defined in '{0}' with another namespace.</Resolution>
+   </Rule>
+   <Rule TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702">
+    <Resolution Name="TypeShouldBeDiscreteTerm">The compound word '{0}' in type name {1} exists as a discrete term. If your usage is intended to be single word, case it as '{2}'.</Resolution>
+   </Rule>
+   <Rule TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026">
+    <Resolution Name="Default">Replace method {0} with an overload that supplies all default arguments.</Resolution>
+   </Rule>
+   <Rule TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104">
+    <Resolution Name="Default">Remove the read-only designation from {0} or change the field to one that is an immutable reference type. If the reference type {1} is, in fact, immutable, exclude this message.</Resolution>
+   </Rule>
+   <Rule TypeName="DoNotDeclareVisibleInstanceFields" Category="Microsoft.Design" CheckId="CA1051">
+    <Resolution Name="Default">Because field {0} is visible outside of its declaring type, change its accessibility to private and add a property, with the same accessibility as the field has currently, to provide access to it.</Resolution>
+   </Rule>
+   <Rule TypeName="DoNotIndirectlyExposeMethodsWithLinkDemands" Category="Microsoft.Security" CheckId="CA2122">
+    <Resolution Name="Default">{0} calls into {1} which has a LinkDemand. By making this call, {1} is indirectly exposed to user code. Review the following call stack that might expose a way to circumvent security protection: {2}</Resolution>
+   </Rule>
+   <Rule TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004">
+    <Resolution Name="Default">Consider a design where {0} doesn't require explicit type parameter {1} in any call to it.</Resolution>
+   </Rule>
+   <Rule TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709">
+    <Resolution Name="Member">Correct the casing of '{0}' in member name {1} by changing it to '{2}'.</Resolution>
+    <Resolution Name="Type">Correct the casing of '{0}' in type name {1} by changing it to '{2}'.</Resolution>
+   </Rule>
+   <Rule TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704">
+    <Resolution Name="Member">Correct the spelling of '{0}' in member name {1} or remove it entirely if it represents any sort of Hungarian notation.</Resolution>
+    <Resolution Name="MemberParameter">In method {0}, correct the spelling of '{1}' in parameter name {2} or remove it entirely if it represents any sort of Hungarian notation.</Resolution>
+    <Resolution Name="Namespace">Correct the spelling of '{0}' in namespace name '{1}'.</Resolution>
+    <Resolution Name="Type">Correct the spelling of '{0}' in type name {1}.</Resolution>
+    <Resolution Name="TypeTypeParameterMoreMeaningfulName">On type {0}, consider providing a more meaningful name than generic type parameter name {1}.</Resolution>
+   </Rule>
+   <Rule TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715">
+    <Resolution Name="Interface">Prefix interface name {0} with 'I'.</Resolution>
+    <Resolution Name="TypeTypeParameter">On type {0}, prefix generic type parameter name {1} with 'T'.</Resolution>
+   </Rule>
+   <Rule TypeName="IdentifiersShouldNotContainTypeNames" Category="Microsoft.Naming" CheckId="CA1720">
+    <Resolution Name="LanguageIndependentMemberParameter">In member {0}, consider replacing the data type identifier '{1}' in parameter name {2} with a more generic term, such as 'value'.</Resolution>
+    <Resolution Name="LanguageSpecificMember">Consider replacing the language-specific data type identifier '{0}' in member name {1} with either a language-independent equivalent or a more generic term, such as 'value'.</Resolution>
+   </Rule>
+   <Rule TypeName="IdentifiersShouldNotMatchKeywords" Category="Microsoft.Naming" CheckId="CA1716">
+    <Resolution Name="Member">Rename virtual/interface member {0} so that it no longer conflicts with the reserved language keyword '{1}'. Using a reserved keyword as the name of a virtual/interface member makes it harder for consumers in other languages to override/implement the member.</Resolution>
+   </Rule>
+   <Rule TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014">
+    <Resolution Name="Default">Mark {0} with CLSCompliant(true) because it exposes externally visible types.</Resolution>
+   </Rule>
+   <Rule TypeName="MarkMembersAsStatic" Category="Microsoft.Performance" CheckId="CA1822">
+    <Resolution Name="Default">The 'this' parameter (or 'Me' in Visual Basic) of {0} is never used. Mark the member as static (or Shared in Visual Basic) or use 'this'/'Me' in the method body or at least one property accessor, if appropriate.</Resolution>
+   </Rule>
+   <Rule TypeName="NestedTypesShouldNotBeVisible" Category="Microsoft.Design" CheckId="CA1034">
+    <Resolution Name="Default">Do not nest type {0}. Alternatively, change its accessibility so that it is not externally visible.</Resolution>
+   </Rule>
+   <Rule TypeName="OverrideEqualsAndOperatorEqualsOnValueTypes" Category="Microsoft.Performance" CheckId="CA1815">
+    <Resolution Name="Equals">{0} should override Equals.</Resolution>
+    <Resolution Name="op_Equality">{0} should override the equality (==) and inequality (!=) operators.</Resolution>
+   </Rule>
+   <Rule TypeName="ParameterNamesShouldMatchBaseDeclaration" Category="Microsoft.Naming" CheckId="CA1725">
+    <Resolution Name="Default">In member {0}, change parameter name {1} to {2} in order to match the identifier as it has been declared in {3}.</Resolution>
+   </Rule>
+   <Rule TypeName="ParameterNamesShouldNotMatchMemberNames" Category="Microsoft.Naming" CheckId="CA1719">
+    <Resolution Name="Default">Change either member or parameter name {0} so that one differs from the other.</Resolution>
+   </Rule>
+   <Rule TypeName="PreferJaggedArraysOverMultidimensional" Category="Microsoft.Performance" CheckId="CA1814">
+    <Resolution Name="Body">{0} uses a multidimensional array of {1}. Replace it with a jagged array if possible.</Resolution>
+    <Resolution Name="Default">{0} is a multidimensional array. Replace it with a jagged array if possible.</Resolution>
+    <Resolution Name="Return">{0} returns a multidimensional array of {1}. Replace it with a jagged array if possible.</Resolution>
+   </Rule>
+   <Rule TypeName="SpecifyCultureInfo" Category="Microsoft.Globalization" CheckId="CA1304">
+    <Resolution Name="Default">Because the behavior of {0} could vary based on the current user's locale settings, replace this call in {1} with a call to {2}. If the result of {2} will be displayed to the user, specify 'CultureInfo.CurrentCulture' as the 'CultureInfo' parameter. Otherwise, if the result will be stored and accessed by software, such as when it is persisted to disk or to a database, specify 'CultureInfo.InvariantCulture'.</Resolution>
+   </Rule>
+   <Rule TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305">
+    <Resolution Name="IFormatProviderAlternateString">Because the behavior of {0} could vary based on the current user's locale settings, replace this call in {1} with a call to {2}. If the result of {2} will be displayed to the user, specify {3} as the 'IFormatProvider' parameter. Otherwise, if the result will be stored and accessed by software, such as when it is persisted to disk or to a database, specify {4}.</Resolution>
+   </Rule>
+   <Rule TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307">
+    <Resolution Name="Default">Because the behavior of {0} could vary based on the current user's locale settings, replace this call in {1} with a call to {2}. If the result of {2} will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Resolution>
+   </Rule>
+   <Rule TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001">
+    <Resolution Name="DependsOnFix">Implement IDisposable on {0} because it creates members of the following IDisposable types: {1}. If {0} has previously shipped, adding new members that implement IDisposable to this type is considered a breaking change to existing consumers.</Resolution>
+   </Rule>
+   <Rule TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024">
+    <Resolution Name="Default">Change {0} to a property if appropriate.</Resolution>
+   </Rule>
+  </Rules>
+ </FxCopReport>
+</FxCopProject>
