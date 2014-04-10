@@ -41,7 +41,7 @@ namespace Nancy.Metrics
                 Config.ModuleConfigAction(this);
             }
 
-            Get["/"] = _ => Response.AsText(FlotWebApp.GetFlotApp(new Uri(Config.ModulePath + "/json", UriKind.Relative)), "text/html");
+            Get["/"] = _ => Response.AsText(FlotWebApp.GetFlotApp(new Uri(this.Context.Request.Url, "json")), "text/html");
             Get["/text"] = _ => Response.AsText(Metric.GetAsHumanReadable());
             Get["/json"] = _ => Response.AsJson(new RegistrySerializer().GetForSerialization(Config.Registry));
         }
