@@ -21,7 +21,7 @@ namespace Metrics.Visualization
 
         public static string GetFlotApp(Uri metricsJsonEndpoint)
         {
-            return htmlContent.Value.Replace("http://localhost:1234/metrics/json", metricsJsonEndpoint.ToString());
+            return htmlContent.Value.Replace("http://localhost:1234/json", metricsJsonEndpoint.ToString());
         }
     }
 }
