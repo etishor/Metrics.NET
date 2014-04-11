@@ -11,8 +11,8 @@ namespace Metrics.StupidBenchmarks
             Clock.TestClock clock = new Clock.TestClock();
             Timer timer = new TimerMetric(SamplingType.FavourRecent, clock);
 
-            Counter counter = new CounterMetric();
-            Meter meter = new MeterMetric(clock);
+            //Counter counter = new CounterMetric();
+            //Meter meter = new MeterMetric(clock);
 
             for (int i = 1; i < 8; i++)
             {
