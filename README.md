@@ -3,8 +3,7 @@ Metrics.NET
 
 [![Build status](https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2)](https://ci.appveyor.com/project/etishor/metrics-net)
 
-This port is still work in progress and should not be considered ready for production
-------------------------------------------------------------------------------------
+_This port is still work in progress and should not be considered ready for production. I'm actively using this library in my work projects, but would like to keep the alpha status a little more so I can change my mind about parts of the API._
 
 
 .NET Port of the awesome [Java metrics library by Coda Hale](https://github.com/dropwizard/metrics)
@@ -46,6 +45,12 @@ Using the library (see Samples for more examples)
 Display Metrics
 ---------------
 
+Start a HttpListener that will serve the visualization app
+
+```csharp
+    Metric.Reports.StartHttpListener("http://localhost:1234/");
+```
+
 Schedule a console report to be run and displayed every 10 seconds:
 
 ```csharp
@@ -84,7 +89,8 @@ A live list of my future plan
 * [done] Provide a way for error reporting (at least for reports that do IO) - maybe a delegate on the Metric class
 * [done] Add metrics for NancyFx request/response size
 * [done] Re-factor scheduled report to prevent overlapping
-* [in-progress]Provide http endpoint for reporting metrics (based on owin or nancy) together with javascript visualization solution - the idea is to have out-of-the-box metrics visualization in web apps
+* [done]Provide http endpoint for reporting metrics (based on owin or nancy) together with javascript visualization solution - the idea is to have out-of-the-box metrics visualization in web apps
+* Improve the javascript visualization app
 * Find/Implement ConcurrentSkipMap like collection form java - low prio as the performance is good for now
 * Provide an adapter for hooking into web api for collecting metrics (this might be delayed as I tend to use NancyFx)
 * Provide an adapter for hooking into asp.net mvc
