@@ -19,7 +19,7 @@ namespace Metrics.Tests
             timer.Value.Rate.Count.Should().Be(2);
             timer.Time(() => { });
             timer.Value.Rate.Count.Should().Be(3);
-            var x = timer.Time(() => 1);
+            timer.Time(() => 1);
             timer.Value.Rate.Count.Should().Be(4);
         }
 
