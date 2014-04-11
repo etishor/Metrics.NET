@@ -25,6 +25,8 @@ The library is published on NuGet as a pre-release library and can be installed 
 
     Install-Package Metrics.NET -Pre
 
+Supported runtimes: .NET 4.5.1, .NET 4.5, .NET 4.0, Mono 3.4.0 ( tested on OsX )
+
 Using the library (see Samples for more examples)
 -------------------------------------------------
 
@@ -90,13 +92,13 @@ A live list of my future plan
 * [done] Add metrics for NancyFx request/response size
 * [done] Re-factor scheduled report to prevent overlapping
 * [done]Provide http endpoint for reporting metrics (based on owin or nancy) together with javascript visualization solution - the idea is to have out-of-the-box metrics visualization in web apps
+* [done] Mono compatibility
 * Improve the javascript visualization app
 * Find/Implement ConcurrentSkipMap like collection form java - low prio as the performance is good for now
 * Provide an adapter for hooking into web api for collecting metrics (this might be delayed as I tend to use NancyFx)
 * Provide an adapter for hooking into asp.net mvc
 * Investigate the possibility of using zeromq to delegate metrics to another process - for accross cluster metrics
 * Adapter for graphite and other existing solutions for aggregating metrics
-* Mono compatibility
 * Investigate the possibility of using Redis as an off-process metrics container (the collections behind the metrics seem to map to redis data types)
 * Investigate the possibility for backend to receive metrics from client js app (not sure it makes sense to capture metrics from js apps - maybe from SPAs)
 * Write more tests
