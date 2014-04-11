@@ -28,5 +28,16 @@ namespace Metrics.Reporters
                 }
             };
         }
+
+        public string ValuesAsJson(MetricsRegistry registry)
+        {
+            return new JsonFormatter()
+                .AddObject(registry.Gauges)
+                .AddObject(registry.Counters)
+                .AddObject(registry.Meters)
+                .AddObject(registry.Histograms)
+                .AddObject(registry.Timers)
+                .GetJson();
+        }
     }
 }

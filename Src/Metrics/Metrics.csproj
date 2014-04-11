@@ -65,7 +65,9 @@
     <Compile Include="Reporters\ConsoleReporter.cs" />
     <Compile Include="Reporters\CSVFileAppender.cs" />
     <Compile Include="Reporters\CSVReporter.cs" />
+    <Compile Include="Reporters\JsonFormatter.cs" />
     <Compile Include="Reporters\RegistrySerializer.cs" />
+    <Compile Include="Reporters\JsonObject.cs" />
     <Compile Include="Reporters\StringReporter.cs" />
     <Compile Include="Reporters\TextFileReporter.cs" />
     <Compile Include="Reporters\Reporter.cs" />
@@ -95,6 +97,7 @@
     <Compile Include="Utils\TimeUnitExtensions.cs" />
     <Compile Include="Utils\VolatileDouble.cs" />
     <Compile Include="Visualization\FlotWebApp.cs" />
+    <Compile Include="Visualization\MetricsHttpListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Visualization\index.full.html.gz" />
