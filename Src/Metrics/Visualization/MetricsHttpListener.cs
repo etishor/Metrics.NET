@@ -122,6 +122,7 @@ namespace Metrics.Visualization
 
         public void Dispose()
         {
+            this.Stop();
             this.httpListener.Close();
             using (this.httpListener) { }
         }
