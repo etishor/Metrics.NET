@@ -13,7 +13,7 @@ namespace Metrics.Core
         private const double DefaultAlpha = 0.015;
         private static readonly long RescaleThreshold = TimeUnit.Hours.ToNanoseconds(1);
 
-        private readonly ConcurrentDictionary<double, long> values = new ConcurrentDictionary<double, long>();
+        private readonly ConcurrentDictionary<double, long> values = new ConcurrentDictionary<double, long>(1, DefaultSize);
         private readonly ReaderWriterLockSlim @lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         private readonly double alpha;
         private readonly int size;
