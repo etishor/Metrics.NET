@@ -53,7 +53,7 @@
 
         $scope.currentChart = new metrics.Chart();
 
-        $scope.charts = [new metrics.Chart('CPU Usage', ['system.CPU Usage'])];
+        $scope.charts = [new metrics.Chart('CPU Usage', ['System.CPU Usage'])];
 
         $scope.$on('$destroy', function () {
             stopUpdates();

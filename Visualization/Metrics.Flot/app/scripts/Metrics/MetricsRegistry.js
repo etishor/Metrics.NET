@@ -40,7 +40,7 @@
         };
 
         this.update = function (metricsData) {
-            _(metricsData.gauges).each(function (value, name) {
+            _(metricsData.Gauges).each(function (value, name) {
                 var numericValue = parseFloat(value);
                 if (isNaN(value)) {
                     stringGauges.get(name).update(value);
@@ -49,19 +49,19 @@
                 }
             });
 
-            _(metricsData.counters).each(function (value, name) {
+            _(metricsData.Counters).each(function (value, name) {
                 counters.get(name).update(value);
             });
 
-            _(metricsData.meters).each(function (value, name) {
+            _(metricsData.Meters).each(function (value, name) {
                 meters.get(name).update(value);
             });
 
-            _(metricsData.histograms).each(function (value, name) {
+            _(metricsData.Histograms).each(function (value, name) {
                 histograms.get(name).update(value);
             });
 
-            _(metricsData.timers).each(function (value, name) {
+            _(metricsData.Timers).each(function (value, name) {
                 timers.get(name).update(value);
             });
         };

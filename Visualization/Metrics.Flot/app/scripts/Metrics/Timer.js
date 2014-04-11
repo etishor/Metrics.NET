@@ -10,8 +10,8 @@
         };
 
         this.update = function (value) {
-            rate.update(value.rate);
-            histogram.update(value.histogram);
+            rate.update(value.Rate);
+            histogram.update(value.Histogram);
         };
 
         this.getSeries = function () {

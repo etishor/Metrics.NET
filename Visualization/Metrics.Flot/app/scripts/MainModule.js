@@ -2,7 +2,7 @@
     'use strict';
 
     this.MainModule = angular.module('MainModule', ['ngRoute', 'angular-flot'])
-        .value('metricsEndpoint', window.metricsEndpoint || '/metrics/json')
+        .value('metricsEndpoint', window.metricsEndpoint || '/json')
         .service('MetricsService', [metrics.MetricsRegistry])
         .controller('DashboardController', ['$scope', '$interval', '$http', 'metricsEndpoint', 'MetricsService', metrics.DashboardController])
         .config(['$routeProvider', function ($routeProvider) {

@@ -19,17 +19,17 @@
         };
 
         this.update = function (value) {
-            count.update(value.count);
-            max.update(value.max);
-            mean.update(value.mean);
-            min.update(value.min);
-            stdDev.update(value.stdDev);
-            median.update(value.median);
-            percentile75.update(value.percentile75);
-            percentile95.update(value.percentile95);
-            percentile98.update(value.percentile98);
-            percentile99.update(value.percentile99);
-            percentile999.update(value.percentile999);
+            count.update(value.Count);
+            max.update(value.Max);
+            mean.update(value.Mean);
+            min.update(value.Min);
+            stdDev.update(value.StdDev);
+            median.update(value.Median);
+            percentile75.update(value.Percentile75);
+            percentile95.update(value.Percentile95);
+            percentile98.update(value.Percentile98);
+            percentile99.update(value.Percentile99);
+            percentile999.update(value.Percentile999);
         };
 
         this.getSeries = function () {

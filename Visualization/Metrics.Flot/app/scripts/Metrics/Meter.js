@@ -13,11 +13,11 @@
         };
 
         this.update = function (value) {
-            count.update(value.count);
-            meanRate.update(value.meanRate);
-            oneMinuteRate.update(value.oneMinuteRate);
-            fiveMinuteRate.update(value.fiveMinuteRate);
-            fifteenMinuteRate.update(value.fifteenMinuteRate);
+            count.update(value.Count);
+            meanRate.update(value.MeanRate);
+            oneMinuteRate.update(value.OneMinuteRate);
+            fiveMinuteRate.update(value.FiveMinuteRate);
+            fifteenMinuteRate.update(value.FifteenMinuteRate);
         };
 
         this.getSeries = function () {
