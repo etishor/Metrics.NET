@@ -14,7 +14,7 @@ namespace Metrics.StupidBenchmarks
             //Counter counter = new CounterMetric();
             //Meter meter = new MeterMetric(clock);
 
-            for (int i = 1; i < 8; i++)
+            for (int i = 1; i < 16; i++)
             {
                 //TestMeter(clock, meter, i);
                 //TestCounter(counter, i);
