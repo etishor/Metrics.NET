@@ -29,7 +29,17 @@ namespace Metrics.Visualization
         {
             while (!this.cts.IsCancellationRequested)
             {
-                ProcessRequest(this.httpListener.GetContext());
+                try
+                {
+                    ProcessRequest(this.httpListener.GetContext());
+                }
+                catch (HttpListenerException ex)
+                {
+                    if (ex.ErrorCode != 995) // IO operation aborted
+                    {
+                        throw;
+                    }
+                }
             }
         }
 
@@ -54,51 +64,53 @@ namespace Metrics.Visualization
 
         private static void WriteNotFound(HttpListenerContext context)
         {
+            context.Response.ContentType = "text/html";
+            context.Response.StatusCode = 404;
+            context.Response.StatusDescription = "NOT FOUND";
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
                 writer.Write(NotFoundResponse);
             }
-            context.Response.ContentType = "text/html";
-            context.Response.StatusCode = 404;
-            context.Response.StatusDescription = "NOT FOUND";
             context.Response.Close();
         }
 
         private static void WriteTextMetrics(HttpListenerContext context)
         {
+            context.Response.ContentType = "text/plain";
+            context.Response.StatusCode = 200;
+            context.Response.StatusDescription = "OK";
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
                 writer.Write(Metric.GetAsHumanReadable());
             }
-            context.Response.ContentType = "text/plain";
-            context.Response.StatusCode = 200;
-            context.Response.StatusDescription = "OK";
             context.Response.Close();
         }
 
         private static void WriteJsonMetrics(HttpListenerContext context)
         {
+            context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            context.Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = 200;
+            context.Response.StatusDescription = "OK";
             var json = new RegistrySerializer().ValuesAsJson(Metric.Registry);
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
                 writer.Write(json);
             }
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = 200;
-            context.Response.StatusDescription = "OK";
             context.Response.Close();
         }
 
         private static void WriteFlotApp(HttpListenerContext context)
         {
+            context.Response.ContentType = "text/html";
+            context.Response.StatusCode = 200;
+            context.Response.StatusDescription = "OK";
             var app = FlotWebApp.GetFlotApp(new Uri(context.Request.Url, "json"));
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
                 writer.Write(app);
             }
-            context.Response.ContentType = "text/html";
-            context.Response.StatusCode = 200;
-            context.Response.StatusDescription = "OK";
             context.Response.Close();
         }
 
