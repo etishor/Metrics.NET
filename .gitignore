@@ -8,7 +8,7 @@ Publishing/lib
 *.suo
 *.user
 *.sln.docstates
-
+*.userprefs
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
