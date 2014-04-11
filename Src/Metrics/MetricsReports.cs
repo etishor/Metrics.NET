@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Metrics.Reporters;
+using Metrics.Visualization;
 namespace Metrics
 {
     public class MetricsReports : Utils.IHideObjectMembers
@@ -10,6 +11,7 @@ namespace Metrics
         private readonly MetricsRegistry metricsRegistry;
 
         private readonly List<ScheduledReporter> reports = new List<ScheduledReporter>();
+        private MetricsHttpListener listener;
 
         public MetricsReports(MetricsRegistry metricsRegistry)
         {
@@ -20,6 +22,20 @@ namespace Metrics
         /// Enable or disable the registration of Report timer metrics.
         /// </summary>
         public bool EnableReportDiagnosticMetrics { get; set; }
+
+        /// <summary>
+        /// Create HTTP endpoint where metrics will be available in various formats:
+        /// GET / => visualization application
+        /// GET /json => metrics serialized as JSON
+        /// GET /text => metrics in human readable text format
+        /// </summary>
+        /// <param name="httpUriPrefix">prefix where to start HTTP endpoint</param>
+        public void StartHttpListener(string httpUriPrefix)
+        {
+            using (this.listener) { }
+            this.listener = new MetricsHttpListener(httpUriPrefix);
+            this.listener.Start();
+        }
 
         /// <summary>
         /// Schedule a Console Report to be executed and displayed on the console at a fixed <paramref name="interval"/>.
@@ -62,8 +78,11 @@ namespace Metrics
         /// </summary>
         public void StopAndClearAllReports()
         {
-            reports.ForEach(r => r.Stop());
-            reports.Clear();
+            this.reports.ForEach(r => r.Stop());
+            this.reports.Clear();
+            this.listener.Stop();
+            using (this.listener) { }
+            this.listener = null;
         }
     }
 }
