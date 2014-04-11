@@ -9,6 +9,7 @@ namespace Metrics.Visualization
 {
     public sealed class MetricsHttpListener : IDisposable
     {
+        private const string NotFoundResponse = "<!doctype html><html><body>Resource not found</body></html>";
         private readonly HttpListener httpListener;
         private readonly CancellationTokenSource cts = new CancellationTokenSource();
 
@@ -28,26 +29,77 @@ namespace Metrics.Visualization
         {
             while (!this.cts.IsCancellationRequested)
             {
-                var context = this.httpListener.GetContext();
-
-                if (context.Request.Url.ToString().EndsWith("/json"))
-                {
-                    var json = new RegistrySerializer().ValuesAsJson(Metric.Registry);
-                    using (var writer = new StreamWriter(context.Response.OutputStream))
-                    {
-                        context.Response.ContentType = "application/json";
-                        writer.Write(json);
-                    }
-                }
-                else
-                {
-                    var app = FlotWebApp.GetFlotApp(new Uri(context.Request.Url, "json"));
-                    using (var writer = new StreamWriter(context.Response.OutputStream))
-                    {
-                        writer.Write(app);
-                    }
-                }
+                ProcessRequest(this.httpListener.GetContext());
             }
+        }
+
+        private static void ProcessRequest(HttpListenerContext context)
+        {
+            switch (context.Request.RawUrl)
+            {
+                case "/":
+                    WriteFlotApp(context);
+                    break;
+                case "/json":
+                    WriteJsonMetrics(context);
+                    break;
+                case "/text":
+                    WriteTextMetrics(context);
+                    break;
+                default:
+                    WriteNotFound(context);
+                    break;
+            }
+        }
+
+        private static void WriteNotFound(HttpListenerContext context)
+        {
+            using (var writer = new StreamWriter(context.Response.OutputStream))
+            {
+                writer.Write(NotFoundResponse);
+            }
+            context.Response.ContentType = "text/html";
+            context.Response.StatusCode = 404;
+            context.Response.StatusDescription = "NOT FOUND";
+            context.Response.Close();
+        }
+
+        private static void WriteTextMetrics(HttpListenerContext context)
+        {
+            using (var writer = new StreamWriter(context.Response.OutputStream))
+            {
+                writer.Write(Metric.GetAsHumanReadable());
+            }
+            context.Response.ContentType = "text/plain";
+            context.Response.StatusCode = 200;
+            context.Response.StatusDescription = "OK";
+            context.Response.Close();
+        }
+
+        private static void WriteJsonMetrics(HttpListenerContext context)
+        {
+            var json = new RegistrySerializer().ValuesAsJson(Metric.Registry);
+            using (var writer = new StreamWriter(context.Response.OutputStream))
+            {
+                writer.Write(json);
+            }
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = 200;
+            context.Response.StatusDescription = "OK";
+            context.Response.Close();
+        }
+
+        private static void WriteFlotApp(HttpListenerContext context)
+        {
+            var app = FlotWebApp.GetFlotApp(new Uri(context.Request.Url, "json"));
+            using (var writer = new StreamWriter(context.Response.OutputStream))
+            {
+                writer.Write(app);
+            }
+            context.Response.ContentType = "text/html";
+            context.Response.StatusCode = 200;
+            context.Response.StatusDescription = "OK";
+            context.Response.Close();
         }
 
         public void Stop()
