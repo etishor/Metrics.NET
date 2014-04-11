@@ -29,7 +29,7 @@ namespace Metrics.StupidBenchmarks
         public static Result Run(Action<int, long> action, int threadCount = 8, long iterations = 1 * 1000 * 1000)
         {
 #if DEBUG
-            Console.WriteLine("DEBUG MODE - results are relevant");
+            Console.WriteLine("DEBUG MODE - results are NOT relevant");
 #endif
             // warm - up
             for (int i = 0; i < 100; i++) { action(0, 0); }
