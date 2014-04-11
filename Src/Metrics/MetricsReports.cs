@@ -80,7 +80,6 @@ namespace Metrics
         {
             this.reports.ForEach(r => r.Stop());
             this.reports.Clear();
-            this.listener.Stop();
             using (this.listener) { }
             this.listener = null;
         }
