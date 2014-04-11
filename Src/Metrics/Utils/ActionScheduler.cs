@@ -23,6 +23,7 @@ namespace Metrics.Utils
             this.action = action;
         }
 
+#if !NET40
         public void Start()
         {
             this.token = new CancellationTokenSource();
@@ -38,6 +39,39 @@ namespace Metrics.Utils
                 }
             }, this.token.Token);
         }
+#else
+        public void Start()
+        {
+            this.token = new CancellationTokenSource();
+            Task.Factory.StartNew(() =>
+            {
+                while (!this.token.IsCancellationRequested)
+                {
+                    Delay(interval.Milliseconds).ContinueWith(t =>
+                    {
+                        if (!this.token.IsCancellationRequested)
+                        {
+                            RunAction();
+                        }
+                    });
+                }
+            }, this.token.Token);
+        }
+
+        private static Task Delay(double milliseconds)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            System.Timers.Timer timer = new System.Timers.Timer();
+            timer.Elapsed += (obj, args) =>
+            {
+                tcs.TrySetResult(true);
+            };
+            timer.Interval = milliseconds;
+            timer.AutoReset = false;
+            timer.Start();
+            return tcs.Task;
+        }
+#endif
 
         public void Stop()
         {
