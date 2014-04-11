@@ -25,7 +25,9 @@ namespace Metrics.PerfCounters
         public PerformanceCounterGauge(string category, string counter, string instance, Func<float, string> format)
         {
             this.format = format;
-            this.performanceCounter = new PerformanceCounter(category, counter, instance, true);
+			this.performanceCounter = instance == null?
+				new PerformanceCounter(category, counter, true):
+				new PerformanceCounter(category, counter, instance, true);
         }
 
         public GaugeValue Value
