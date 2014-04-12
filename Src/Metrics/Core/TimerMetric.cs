@@ -33,18 +33,18 @@ namespace Metrics.Core
         private readonly Histogram histogram;
 
         public TimerMetric()
-            : this(new HistogramMetric(), Clock.System) { }
+            : this(new HistogramMetric(), new MeterMetric(), Clock.System) { }
 
         public TimerMetric(SamplingType samplingType)
-            : this(new HistogramMetric(samplingType), Clock.System) { }
+            : this(new HistogramMetric(samplingType), new MeterMetric(), Clock.System) { }
 
-        public TimerMetric(SamplingType samplingType, Clock clock)
-            : this(new HistogramMetric(samplingType), clock) { }
+        public TimerMetric(SamplingType samplingType, Meter meter, Clock clock)
+            : this(new HistogramMetric(samplingType), meter, clock) { }
 
-        public TimerMetric(Histogram histogram, Clock clock)
+        public TimerMetric(Histogram histogram, Meter meter, Clock clock)
         {
             this.clock = clock;
-            this.meter = new MeterMetric(clock);
+            this.meter = meter;
             this.histogram = histogram;
         }
 

@@ -1,10 +1,11 @@
 ﻿
+using System;
 using Metrics.Utils;
 namespace Metrics.Core
 {
-    public class MeterMetric : Meter
+    public sealed class MeterMetric : Meter, IDisposable
     {
-        private static readonly long TickInterval = TimeUnit.Seconds.ToNanoseconds(5);
+        public static readonly TimeSpan TickInterval = TimeSpan.FromSeconds(5);
 
         private readonly EWMA m1Rate = EWMA.OneMinuteEWMA();
         private readonly EWMA m5Rate = EWMA.FiveMinuteEWMA();
@@ -14,15 +15,18 @@ namespace Metrics.Core
         private readonly long startTime;
 
         private readonly AtomicLong count = new AtomicLong();
-        private readonly AtomicLong lastTick = new AtomicLong();
+        private readonly Scheduler tickScheduler;
 
-        public MeterMetric() : this(Clock.System) { }
+        public MeterMetric()
+            : this(Clock.System, new ActionScheduler())
+        { }
 
-        public MeterMetric(Clock clock)
+        public MeterMetric(Clock clock, Scheduler scheduler)
         {
             this.clock = clock;
             this.startTime = this.clock.Nanoseconds;
-            this.lastTick.Value = startTime;
+            this.tickScheduler = scheduler;
+            this.tickScheduler.Start(TickInterval, Tick);
         }
 
         public void Mark()
@@ -32,7 +36,6 @@ namespace Metrics.Core
 
         public void Mark(long count)
         {
-            TickIfNecessary();
             this.count.Add(count);
             this.m1Rate.Update(count);
             this.m5Rate.Update(count);
@@ -65,7 +68,6 @@ namespace Metrics.Core
         {
             get
             {
-                TickIfNecessary();
                 return m15Rate.GetRate(TimeUnit.Seconds);
             }
         }
@@ -74,7 +76,6 @@ namespace Metrics.Core
         {
             get
             {
-                TickIfNecessary();
                 return m5Rate.GetRate(TimeUnit.Seconds);
             }
         }
@@ -83,32 +84,21 @@ namespace Metrics.Core
         {
             get
             {
-                TickIfNecessary();
                 return m1Rate.GetRate(TimeUnit.Seconds);
             }
         }
 
-        private void TickIfNecessary()
+        private void Tick()
         {
-            long oldTick = lastTick.Value;
-            long newTick = clock.Nanoseconds;
-            long age = newTick - oldTick;
-
-            if (age > TickInterval)
-            {
-                long newIntervalStartTick = newTick - age % TickInterval;
-                if (lastTick.CompareAndSet(oldTick, newIntervalStartTick))
-                {
-                    long requiredTicks = age / TickInterval;
-                    for (long i = 0; i < requiredTicks; i++)
-                    {
-                        m1Rate.Tick();
-                        m5Rate.Tick();
-                        m15Rate.Tick();
-                    }
-                }
-            }
+            m1Rate.Tick();
+            m5Rate.Tick();
+            m15Rate.Tick();
         }
 
+        public void Dispose()
+        {
+            this.tickScheduler.Stop();
+            using (this.tickScheduler) { }
+        }
     }
 }
