@@ -28,7 +28,7 @@ namespace Metrics.Core
         { }
 
         public ExponentiallyDecayingReservoir(int size, double alpha)
-            : this(size, alpha, Clock.System)
+            : this(size, alpha, Clock.Default)
         { }
 
         public ExponentiallyDecayingReservoir(int size, double alpha, Clock clock)

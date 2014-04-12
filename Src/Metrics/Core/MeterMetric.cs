@@ -18,7 +18,7 @@ namespace Metrics.Core
         private readonly Scheduler tickScheduler;
 
         public MeterMetric()
-            : this(Clock.System, new ActionScheduler())
+            : this(Clock.Default, new ActionScheduler())
         { }
 
         public MeterMetric(Clock clock, Scheduler scheduler)

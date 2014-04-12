@@ -1,42 +1,19 @@
 ﻿using System;
-using System.Diagnostics;
 using Metrics.Utils;
 
 namespace Metrics.Core
 {
     public class TimerMetric : Timer
     {
-        private sealed class Context : IDisposable
-        {
-            private readonly TimerMetric timer;
-            private readonly long startTime;
-            private bool disposed = false;
-
-            public Context(TimerMetric timer)
-            {
-                this.timer = timer;
-                this.startTime = timer.clock.Nanoseconds;
-            }
-
-            public void Dispose()
-            {
-                if (!disposed)
-                {
-                    this.timer.Update(this.timer.clock.Nanoseconds - this.startTime, TimeUnit.Nanoseconds);
-                }
-                disposed = true;
-            }
-        }
-
         private readonly Clock clock;
         private readonly Meter meter;
         private readonly Histogram histogram;
 
         public TimerMetric()
-            : this(new HistogramMetric(), new MeterMetric(), Clock.System) { }
+            : this(new HistogramMetric(), new MeterMetric(), Clock.Default) { }
 
         public TimerMetric(SamplingType samplingType)
-            : this(new HistogramMetric(samplingType), new MeterMetric(), Clock.System) { }
+            : this(new HistogramMetric(samplingType), new MeterMetric(), Clock.Default) { }
 
         public TimerMetric(SamplingType samplingType, Meter meter, Clock clock)
             : this(new HistogramMetric(samplingType), meter, clock) { }
@@ -50,33 +27,34 @@ namespace Metrics.Core
 
         public void Time(Action action)
         {
-            var watch = Stopwatch.StartNew();
+            var start = this.clock.Nanoseconds;
             try
             {
                 action();
             }
             finally
             {
-                Update(watch.ElapsedTicks * (1000L * 1000L * 1000L) / Stopwatch.Frequency, TimeUnit.Nanoseconds);
+                Update(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds);
             }
         }
 
         public T Time<T>(Func<T> action)
         {
-            var watch = Stopwatch.StartNew();
+            var start = this.clock.Nanoseconds;
             try
             {
                 return action();
             }
             finally
             {
-                Update(watch.ElapsedTicks * (1000L * 1000L * 1000L) / Stopwatch.Frequency, TimeUnit.Nanoseconds);
+                Update(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds);
             }
         }
 
         public IDisposable NewContext()
         {
-            return new Context(this);
+            var start = this.clock.Nanoseconds;
+            return new DisposableAction(() => Update(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds));
         }
 
         public TimerValue Value
