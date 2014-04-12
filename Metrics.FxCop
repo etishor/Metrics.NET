@@ -77,17 +77,17 @@
     <Modules>
      <Module Name="metrics.dll">
       <Messages>
-       <Message TypeName="AttributeStringLiteralsShouldParseCorrectly" Category="Microsoft.Usage" CheckId="CA2243" Created="2014-04-07 07:29:17Z">
-        <Issue>
-         <Item>'AssemblyInformationalVersionAttribute'</Item>
-         <Item>'informationalVersion'</Item>
-         <Item>0.0.5-alpha</Item>
-         <Item>'Version'</Item>
-        </Issue>
-       </Message>
        <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Status="Excluded" Created="2014-04-07 07:29:17Z">
         <Issue Name="NoStrongName">
          <Item>'Metrics.dll'</Item>
+        </Issue>
+       </Message>
+       <Message TypeName="AttributeStringLiteralsShouldParseCorrectly" Category="Microsoft.Usage" CheckId="CA2243" Status="Excluded" Created="2014-04-07 07:29:17Z">
+        <Issue>
+         <Item>'AssemblyInformationalVersionAttribute'</Item>
+         <Item>'informationalVersion'</Item>
+         <Item>0.0.9-alpha</Item>
+         <Item>'Version'</Item>
         </Issue>
        </Message>
        <Message TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014" Status="Excluded" Created="2014-04-07 07:29:17Z">
@@ -101,19 +101,29 @@
         <Types>
          <Type Name="Counter">
           <Messages>
-           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Status="Excluded" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
             <Issue Name="Interface">
              <Item>'Counter'</Item>
             </Issue>
+            <Notes>
+             <User Name="eti">
+              <Note Id="1" />
+             </User>
+            </Notes>
            </Message>
           </Messages>
          </Type>
          <Type Name="Gauge">
           <Messages>
-           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Status="Excluded" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
             <Issue Name="Interface">
              <Item>'Gauge'</Item>
             </Issue>
+            <Notes>
+             <User Name="eti">
+              <Note Id="1" />
+             </User>
+            </Notes>
            </Message>
           </Messages>
          </Type>
@@ -147,10 +157,15 @@
          </Type>
          <Type Name="Histogram">
           <Messages>
-           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Status="Excluded" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
             <Issue Name="Interface">
              <Item>'Histogram'</Item>
             </Issue>
+            <Notes>
+             <User Name="eti">
+              <Note Id="1" />
+             </User>
+            </Notes>
            </Message>
           </Messages>
          </Type>
@@ -338,10 +353,15 @@
          </Type>
          <Type Name="Meter">
           <Messages>
-           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Status="Excluded" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
             <Issue Name="Interface">
              <Item>'Meter'</Item>
             </Issue>
+            <Notes>
+             <User Name="eti">
+              <Note Id="1" />
+             </User>
+            </Notes>
            </Message>
           </Messages>
          </Type>
@@ -463,19 +483,29 @@
            </Member>
            <Member Name="#GetAsHumanReadable()">
             <Messages>
-             <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue Certainty="50">
                <Item>'Metric.GetAsHumanReadable()'</Item>
               </Issue>
+              <Notes>
+               <User Name="eti">
+                <Note Id="4" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#GetForSerialization()">
             <Messages>
-             <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue Certainty="50">
                <Item>'Metric.GetForSerialization()'</Item>
               </Issue>
+              <Notes>
+               <User Name="eti">
+                <Note Id="4" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -600,19 +630,29 @@
          </Type>
          <Type Name="Metric`1">
           <Messages>
-           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Status="Excluded" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
             <Issue Name="Interface">
              <Item>'Metric&lt;T&gt;'</Item>
             </Issue>
+            <Notes>
+             <User Name="eti">
+              <Note Id="1" />
+             </User>
+            </Notes>
            </Message>
           </Messages>
          </Type>
          <Type Name="MetricsRegistry">
           <Messages>
-           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Status="Excluded" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
             <Issue Name="Interface">
              <Item>'MetricsRegistry'</Item>
             </Issue>
+            <Notes>
+             <User Name="eti">
+              <Note Id="1" />
+             </User>
+            </Notes>
            </Message>
           </Messages>
           <Members>
@@ -629,6 +669,16 @@
          </Type>
          <Type Name="MetricsReports">
           <Members>
+           <Member Name="#StartHttpListener(System.String)">
+            <Messages>
+             <Message Id="0#" TypeName="UriParametersShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1054" Created="2014-04-12 20:30:07Z">
+              <Issue>
+               <Item>'httpUriPrefix'</Item>
+               <Item>'MetricsReports.StartHttpListener(string)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
            <Member Name="#StoreCSVReports(System.String,System.TimeSpan)">
             <Messages>
              <Message Id="CSV" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2014-04-07 07:29:17Z">
@@ -658,10 +708,15 @@
          </Type>
          <Type Name="Timer">
           <Messages>
-           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Status="Excluded" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
             <Issue Name="Interface">
              <Item>'Timer'</Item>
             </Issue>
+            <Notes>
+             <User Name="eti">
+              <Note Id="1" />
+             </User>
+            </Notes>
            </Message>
           </Messages>
          </Type>
@@ -888,16 +943,6 @@
        </Namespace>
        <Namespace Name="Metrics.Core">
         <Types>
-         <Type Name="ExponentiallyDecayingReservoir">
-          <Messages>
-           <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Created="2014-04-07 07:29:17Z" FixCategory="DependsOnFix">
-            <Issue Name="DependsOnFix">
-             <Item>'ExponentiallyDecayingReservoir'</Item>
-             <Item>'ReaderWriterLockSlim'</Item>
-            </Issue>
-           </Message>
-          </Messages>
-         </Type>
          <Type Name="Registry">
           <Members>
            <Member Name="#.ctor()">
@@ -920,14 +965,29 @@
          </Type>
          <Type Name="Reservoir">
           <Messages>
-           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Status="Excluded" Created="2014-04-07 07:29:17Z" FixCategory="Breaking">
             <Issue Name="Interface">
              <Item>'Reservoir'</Item>
             </Issue>
+            <Notes>
+             <User Name="eti">
+              <Note Id="1" />
+             </User>
+            </Notes>
            </Message>
           </Messages>
          </Type>
          <Type Name="Snapshot">
+          <Messages>
+           <Message TypeName="OverrideEqualsAndOperatorEqualsOnValueTypes" Category="Microsoft.Performance" CheckId="CA1815" Created="2014-04-12 20:50:01Z">
+            <Issue Name="Equals">
+             <Item>'Snapshot'</Item>
+            </Issue>
+            <Issue Name="op_Equality">
+             <Item>'Snapshot'</Item>
+            </Issue>
+           </Message>
+          </Messages>
           <Members>
            <Member Name="#GetValue(System.Double)">
             <Messages>
@@ -945,6 +1005,22 @@
                <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
                <Item>'CultureInfo.CurrentCulture'</Item>
                <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="TimerMetric">
+          <Members>
+           <Member Name="#Record(System.Int64,Metrics.TimeUnit)">
+            <Messages>
+             <Message Id="0#" TypeName="ParameterNamesShouldMatchBaseDeclaration" Category="Microsoft.Naming" CheckId="CA1725" Created="2014-04-12 20:30:07Z">
+              <Issue>
+               <Item>'TimerMetric.Record(long, TimeUnit)'</Item>
+               <Item>'duration'</Item>
+               <Item>'time'</Item>
+               <Item>'Timer.Record(long, TimeUnit)'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -1038,12 +1114,6 @@
              <Item>CounterGauge</Item>
              <Item>'PerformanceCounterGauge'</Item>
              <Item>Countergauge</Item>
-            </Issue>
-           </Message>
-           <Message TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001" Created="2014-04-07 07:29:17Z" FixCategory="DependsOnFix">
-            <Issue Name="DependsOnFix">
-             <Item>'PerformanceCounterGauge'</Item>
-             <Item>'PerformanceCounter'</Item>
             </Issue>
            </Message>
           </Messages>
@@ -1324,6 +1394,33 @@
            </Member>
           </Members>
          </Type>
+         <Type Name="DoubleJsonValue">
+          <Members>
+           <Member Name="#AsJson(System.Boolean,System.Int32)">
+            <Messages>
+             <Message Id="System.Double.ToString(System.String)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-12 20:30:07Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'double.ToString(string)'</Item>
+               <Item>'DoubleJsonValue.AsJson(bool, int)'</Item>
+               <Item>'double.ToString(string, IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-12 20:30:07Z">
+              <Issue>
+               <Item>'DoubleJsonValue.AsJson(bool, int)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="eti">
+                <Note Id="0" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
          <Type Name="HumanReadableReporter">
           <Members>
            <Member Name="#.ctor(System.Int32)">
@@ -1368,15 +1465,167 @@
            </Member>
           </Members>
          </Type>
+         <Type Name="JsonFormatter">
+          <Members>
+           <Member Name="#AddObject(System.Collections.Generic.IEnumerable`1&lt;Metrics.Meta.MeterMeta&gt;)">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-12 20:30:07Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'JsonFormatter.AddObject(IEnumerable&lt;MeterMeta&gt;)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#AddObject(System.Collections.Generic.IEnumerable`1&lt;Metrics.Meta.TimerMeta&gt;)">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-12 20:30:07Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'JsonFormatter.AddObject(IEnumerable&lt;TimerMeta&gt;)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#GetJson(System.Boolean)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-12 20:30:07Z">
+              <Issue>
+               <Item>'JsonFormatter.GetJson(bool)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="eti">
+                <Note Id="0" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="JsonObject">
+          <Members>
+           <Member Name="#AsJson(System.Boolean,System.Int32)">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-12 20:30:07Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object)'</Item>
+               <Item>'JsonObject.AsJson(bool, int)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-12 20:30:07Z">
+              <Issue>
+               <Item>'JsonObject.AsJson(bool, int)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="eti">
+                <Note Id="0" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="JsonProperty">
+          <Members>
+           <Member Name="#AsJson(System.Boolean,System.Int32)">
+            <Messages>
+             <Message Id="indent+2" TypeName="OperationsShouldNotOverflow" Category="Microsoft.Usage" CheckId="CA2233" Created="2014-04-12 20:30:07Z">
+              <Issue>
+               <Item>indent+2</Item>
+               <Item>'JsonProperty.AsJson(bool, int)'</Item>
+              </Issue>
+             </Message>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-12 20:30:07Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object, object)'</Item>
+               <Item>'JsonProperty.AsJson(bool, int)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="JsonValue">
+          <Members>
+           <Member Name="#AsJson(System.Boolean,System.Int32)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-12 20:30:07Z">
+              <Issue>
+               <Item>'JsonValue.AsJson(bool, int)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="eti">
+                <Note Id="0" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="LongJsonValue">
+          <Members>
+           <Member Name="#AsJson(System.Boolean,System.Int32)">
+            <Messages>
+             <Message Id="System.Int64.ToString(System.String)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-12 20:30:07Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'long.ToString(string)'</Item>
+               <Item>'LongJsonValue.AsJson(bool, int)'</Item>
+               <Item>'long.ToString(string, IFormatProvider)'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
+             </Message>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-12 20:30:07Z">
+              <Issue>
+               <Item>'LongJsonValue.AsJson(bool, int)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="eti">
+                <Note Id="0" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="ObjectJsonValue">
+          <Members>
+           <Member Name="#AsJson(System.Boolean,System.Int32)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-12 20:30:07Z">
+              <Issue>
+               <Item>'ObjectJsonValue.AsJson(bool, int)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="eti">
+                <Note Id="0" />
+               </User>
+              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
          <Type Name="RegistrySerializer">
           <Members>
            <Member Name="#GetForSerialization(Metrics.MetricsRegistry)">
             <Messages>
-             <Message TypeName="MarkMembersAsStatic" Category="Microsoft.Performance" CheckId="CA1822" Created="2014-04-07 07:29:17Z" FixCategory="DependsOnFix">
-              <Issue>
-               <Item>'RegistrySerializer.GetForSerialization(MetricsRegistry)'</Item>
-              </Issue>
-             </Message>
              <Message Id="System.String.Format(System.String,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
               <Issue Name="IFormatProviderAlternateString">
                <Item>'string.Format(string, object, object)'</Item>
@@ -1392,6 +1641,24 @@
                <Item>'CultureInfo.CurrentCulture'</Item>
                <Item>'CultureInfo.InvariantCulture'</Item>
               </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="StringJsonValue">
+          <Members>
+           <Member Name="#AsJson(System.Boolean,System.Int32)">
+            <Messages>
+             <Message TypeName="DefaultParametersShouldNotBeUsed" Category="Microsoft.Design" CheckId="CA1026" Status="Excluded" Created="2014-04-12 20:30:07Z">
+              <Issue>
+               <Item>'StringJsonValue.AsJson(bool, int)'</Item>
+              </Issue>
+              <Notes>
+               <User Name="eti">
+                <Note Id="0" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -1436,24 +1703,28 @@
        <Namespace Name="Metrics.Utils">
         <Types>
          <Type Name="AtomicLong">
+          <Messages>
+           <Message TypeName="OverrideEqualsAndOperatorEqualsOnValueTypes" Category="Microsoft.Performance" CheckId="CA1815" Created="2014-04-12 20:30:07Z">
+            <Issue Name="Equals">
+             <Item>'AtomicLong'</Item>
+            </Issue>
+            <Issue Name="op_Equality">
+             <Item>'AtomicLong'</Item>
+            </Issue>
+           </Message>
+          </Messages>
           <Members>
-           <Member Name="#CompareAndSet(System.Int64,System.Int64)">
-            <Messages>
-             <Message Id="expectd" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2014-04-07 07:29:17Z">
-              <Issue Name="MemberParameter">
-               <Item>'AtomicLong.CompareAndSet(long, long)'</Item>
-               <Item>expectd</Item>
-               <Item>'expectd'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#GetAndReset()">
             <Messages>
-             <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue Certainty="50">
                <Item>'AtomicLong.GetAndReset()'</Item>
               </Issue>
+              <Notes>
+               <User Name="eti">
+                <Note Id="3" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -1461,18 +1732,23 @@
          </Type>
          <Type Name="Clock">
           <Members>
-           <Member Name="#System">
+           <Member Name="#Default">
             <Messages>
-             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Excluded" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-12 20:30:07Z">
               <Issue>
-               <Item>'Clock.System'</Item>
+               <Item>'Clock.Default'</Item>
                <Item>'Clock'</Item>
               </Issue>
-              <Notes>
-               <User Name="iulian.margarintescu">
-                <Note Id="1" />
-               </User>
-              </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#SystemDateTime">
+            <Messages>
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2014-04-12 20:30:07Z">
+              <Issue>
+               <Item>'Clock.SystemDateTime'</Item>
+               <Item>'Clock'</Item>
+              </Issue>
              </Message>
             </Messages>
            </Member>
@@ -1483,6 +1759,18 @@
            <Message TypeName="NestedTypesShouldNotBeVisible" Category="Microsoft.Design" CheckId="CA1034" Created="2014-04-07 07:29:17Z">
             <Issue>
              <Item>'Clock.TestClock'</Item>
+            </Issue>
+           </Message>
+          </Messages>
+         </Type>
+         <Type Name="DisposableAction">
+          <Messages>
+           <Message TypeName="OverrideEqualsAndOperatorEqualsOnValueTypes" Category="Microsoft.Performance" CheckId="CA1815" Created="2014-04-12 20:30:07Z">
+            <Issue Name="Equals">
+             <Item>'DisposableAction'</Item>
+            </Issue>
+            <Issue Name="op_Equality">
+             <Item>'DisposableAction'</Item>
             </Issue>
            </Message>
           </Messages>
@@ -1537,7 +1825,7 @@
           <Members>
            <Member Name="#Equals(System.Object)">
             <Messages>
-             <Message Id="obj" TypeName="IdentifiersShouldNotContainTypeNames" Category="Microsoft.Naming" CheckId="CA1720" Created="2014-04-07 07:29:17Z">
+             <Message Id="obj" TypeName="IdentifiersShouldNotContainTypeNames" Category="Microsoft.Naming" CheckId="CA1720" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue Name="LanguageIndependentMemberParameter">
                <Item>'IHideObjectMembers.Equals(object)'</Item>
                <Item>obj</Item>
@@ -1548,15 +1836,41 @@
            </Member>
            <Member Name="#GetType()">
             <Messages>
-             <Message Id="GetType" TypeName="IdentifiersShouldNotMatchKeywords" Category="Microsoft.Naming" CheckId="CA1716" Created="2014-04-07 07:29:17Z">
+             <Message Id="GetType" TypeName="IdentifiersShouldNotMatchKeywords" Category="Microsoft.Naming" CheckId="CA1716" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue Name="Member">
                <Item>'IHideObjectMembers.GetType()'</Item>
                <Item>GetType</Item>
               </Issue>
              </Message>
-             <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Created="2014-04-07 07:29:17Z">
+             <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue Certainty="50">
                <Item>'IHideObjectMembers.GetType()'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
+         <Type Name="Scheduler">
+          <Messages>
+           <Message Id="I" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Status="Excluded" Created="2014-04-12 20:30:07Z" FixCategory="Breaking">
+            <Issue Name="Interface">
+             <Item>'Scheduler'</Item>
+            </Issue>
+            <Notes>
+             <User Name="eti">
+              <Note Id="1" />
+             </User>
+            </Notes>
+           </Message>
+          </Messages>
+          <Members>
+           <Member Name="#Stop()">
+            <Messages>
+             <Message Id="Stop" TypeName="IdentifiersShouldNotMatchKeywords" Category="Microsoft.Naming" CheckId="CA1716" Status="Excluded" Created="2014-04-12 20:30:07Z">
+              <Issue Name="Member">
+               <Item>'Scheduler.Stop()'</Item>
+               <Item>Stop</Item>
               </Issue>
              </Message>
             </Messages>
@@ -1567,11 +1881,16 @@
           <Members>
            <Member Name="#NextLong()">
             <Messages>
-             <Message Id="long" TypeName="IdentifiersShouldNotContainTypeNames" Category="Microsoft.Naming" CheckId="CA1720" Created="2014-04-07 07:29:17Z">
+             <Message Id="long" TypeName="IdentifiersShouldNotContainTypeNames" Category="Microsoft.Naming" CheckId="CA1720" Status="Excluded" Created="2014-04-07 07:29:17Z">
               <Issue Name="LanguageSpecificMember">
                <Item>Long</Item>
                <Item>'ThreadLocalRandom.NextLong()'</Item>
               </Issue>
+              <Notes>
+               <User Name="eti">
+                <Note Id="2" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -1615,23 +1934,6 @@
            </Member>
           </Members>
          </Type>
-         <Type Name="VolatileDouble">
-          <Members>
-           <Member Name="#ToString()">
-            <Messages>
-             <Message Id="System.Double.ToString" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-07 07:29:17Z">
-              <Issue Name="IFormatProviderAlternateString">
-               <Item>'double.ToString()'</Item>
-               <Item>'VolatileDouble.ToString()'</Item>
-               <Item>'double.ToString(IFormatProvider)'</Item>
-               <Item>'CultureInfo.CurrentCulture'</Item>
-               <Item>'CultureInfo.InvariantCulture'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
         </Types>
        </Namespace>
        <Namespace Name="Metrics.Visualization">
@@ -1658,6 +1960,20 @@
            </Member>
           </Members>
          </Type>
+         <Type Name="MetricsHttpListener">
+          <Members>
+           <Member Name="#.ctor(System.String)">
+            <Messages>
+             <Message Id="0#" TypeName="UriParametersShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1054" Created="2014-04-12 20:30:07Z">
+              <Issue>
+               <Item>'listenerUriPrefix'</Item>
+               <Item>'MetricsHttpListener.MetricsHttpListener(string)'</Item>
+              </Issue>
+             </Message>
+            </Messages>
+           </Member>
+          </Members>
+         </Type>
         </Types>
        </Namespace>
       </Namespaces>
@@ -1668,17 +1984,17 @@
     <Modules>
      <Module Name="nancy.metrics.dll">
       <Messages>
-       <Message TypeName="AttributeStringLiteralsShouldParseCorrectly" Category="Microsoft.Usage" CheckId="CA2243" Created="2014-04-07 07:29:17Z">
-        <Issue>
-         <Item>'AssemblyInformationalVersionAttribute'</Item>
-         <Item>'informationalVersion'</Item>
-         <Item>0.0.5-alpha</Item>
-         <Item>'Version'</Item>
-        </Issue>
-       </Message>
        <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Status="Excluded" Created="2014-04-07 07:29:17Z">
         <Issue Name="NoStrongName">
          <Item>'Nancy.Metrics.dll'</Item>
+        </Issue>
+       </Message>
+       <Message TypeName="AttributeStringLiteralsShouldParseCorrectly" Category="Microsoft.Usage" CheckId="CA2243" Status="Excluded" Created="2014-04-07 07:29:17Z">
+        <Issue>
+         <Item>'AssemblyInformationalVersionAttribute'</Item>
+         <Item>'informationalVersion'</Item>
+         <Item>0.0.9-alpha</Item>
+         <Item>'Version'</Item>
         </Issue>
        </Message>
        <Message TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014" Status="Excluded" Created="2014-04-07 07:29:17Z">
@@ -1752,6 +2068,19 @@
                 <Note Id="0" />
                </User>
               </Notes>
+             </Message>
+            </Messages>
+           </Member>
+           <Member Name="#RegisterTimerForEachRequest(Nancy.Bootstrapper.IPipelines)">
+            <Messages>
+             <Message Id="System.String.Format(System.String,System.Object,System.Object,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2014-04-12 20:30:07Z">
+              <Issue Name="IFormatProviderAlternateString">
+               <Item>'string.Format(string, object, object, object)'</Item>
+               <Item>'NancyGlobalMetrics.RegisterTimerForEachRequest(IPipelines)'</Item>
+               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
+               <Item>'CultureInfo.CurrentCulture'</Item>
+               <Item>'CultureInfo.InvariantCulture'</Item>
+              </Issue>
              </Message>
             </Messages>
            </Member>
@@ -1883,6 +2212,13 @@
    </Target>
   </Targets>
   <Notes>
+   <User Name="eti">
+    <Note Id="0" Modified="2014-04-12 20:51:02Z">default parameters are ok</Note>
+    <Note Id="1" Modified="2014-04-12 20:51:20Z">no need for I interfaces</Note>
+    <Note Id="2" Modified="2014-04-12 20:51:43Z">matches method from Random class</Note>
+    <Note Id="3" Modified="2014-04-12 20:52:41Z">operation has method semantic</Note>
+    <Note Id="4" Modified="2014-04-12 20:52:51Z">operations have method semantic</Note>
+   </User>
    <User Name="iulian.margarintescu">
     <Note Id="0" Modified="2014-04-07 07:47:11Z">Default parameters simplify api</Note>
     <Note Id="1" Modified="2014-04-07 07:48:03Z">Unit is imutable</Note>
@@ -1942,11 +2278,11 @@
    <Rule TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014">
     <Resolution Name="Default">Mark {0} with CLSCompliant(true) because it exposes externally visible types.</Resolution>
    </Rule>
-   <Rule TypeName="MarkMembersAsStatic" Category="Microsoft.Performance" CheckId="CA1822">
-    <Resolution Name="Default">The 'this' parameter (or 'Me' in Visual Basic) of {0} is never used. Mark the member as static (or Shared in Visual Basic) or use 'this'/'Me' in the method body or at least one property accessor, if appropriate.</Resolution>
-   </Rule>
    <Rule TypeName="NestedTypesShouldNotBeVisible" Category="Microsoft.Design" CheckId="CA1034">
     <Resolution Name="Default">Do not nest type {0}. Alternatively, change its accessibility so that it is not externally visible.</Resolution>
+   </Rule>
+   <Rule TypeName="OperationsShouldNotOverflow" Category="Microsoft.Usage" CheckId="CA2233">
+    <Resolution Name="Default">Correct the potential overflow in the operation '{0}' in {1}.</Resolution>
    </Rule>
    <Rule TypeName="OverrideEqualsAndOperatorEqualsOnValueTypes" Category="Microsoft.Performance" CheckId="CA1815">
     <Resolution Name="Equals">{0} should override Equals.</Resolution>
@@ -1972,8 +2308,8 @@
    <Rule TypeName="SpecifyStringComparison" Category="Microsoft.Globalization" CheckId="CA1307">
     <Resolution Name="Default">Because the behavior of {0} could vary based on the current user's locale settings, replace this call in {1} with a call to {2}. If the result of {2} will be displayed to the user, such as when sorting a list of items for display in a list box, specify 'StringComparison.CurrentCulture' or 'StringComparison.CurrentCultureIgnoreCase' as the 'StringComparison' parameter. If comparing case-insensitive identifiers, such as file paths, environment variables, or registry keys and values, specify 'StringComparison.OrdinalIgnoreCase'. Otherwise, if comparing case-sensitive identifiers, specify 'StringComparison.Ordinal'.</Resolution>
    </Rule>
-   <Rule TypeName="TypesThatOwnDisposableFieldsShouldBeDisposable" Category="Microsoft.Design" CheckId="CA1001">
-    <Resolution Name="DependsOnFix">Implement IDisposable on {0} because it creates members of the following IDisposable types: {1}. If {0} has previously shipped, adding new members that implement IDisposable to this type is considered a breaking change to existing consumers.</Resolution>
+   <Rule TypeName="UriParametersShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1054">
+    <Resolution Name="Default">Change the type of parameter {0} of method {1} from string to System.Uri, or provide an overload of {1}, that allows {0} to be passed as a System.Uri object.</Resolution>
    </Rule>
    <Rule TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024">
     <Resolution Name="Default">Change {0} to a property if appropriate.</Resolution>
