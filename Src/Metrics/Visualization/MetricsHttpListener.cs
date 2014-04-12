@@ -124,6 +124,7 @@ namespace Metrics.Visualization
         {
             this.Stop();
             this.httpListener.Close();
+            using (this.cts) { }
             using (this.httpListener) { }
         }
     }
