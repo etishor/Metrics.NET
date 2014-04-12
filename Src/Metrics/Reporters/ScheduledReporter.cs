@@ -8,6 +8,7 @@ namespace Metrics.Reporters
     {
         private readonly Timer reportTime = null;
         private readonly ActionScheduler scheduler;
+        private readonly TimeSpan interval;
 
         private readonly Func<Reporter> reporter;
         private readonly MetricsRegistry registry;
@@ -20,7 +21,8 @@ namespace Metrics.Reporters
             }
             this.reporter = reporter;
             this.registry = registry;
-            this.scheduler = new ActionScheduler(interval, RunReport);
+            this.interval = interval;
+            this.scheduler = new ActionScheduler();
         }
 
         private void RunReport(CancellationToken token)
@@ -33,7 +35,7 @@ namespace Metrics.Reporters
 
         public void Start()
         {
-            this.scheduler.Start();
+            this.scheduler.Start(this.interval, RunReport);
         }
 
         public void Stop()

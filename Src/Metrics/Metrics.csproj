@@ -62,7 +62,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Net4.0Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NET40</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -74,7 +74,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Net4.0Release|AnyCPU'">
     <OutputPath>bin\Net4.0Release\</OutputPath>
     <DefineConstants>TRACE;NET40</DefineConstants>
-	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <DocumentationFile>..\..\bin\$(Configuration)\Metrics.XML</DocumentationFile>
     <Optimize>true</Optimize>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -143,6 +143,8 @@
     <Compile Include="Utils\AtomicLong.cs" />
     <Compile Include="TimeUnit.cs" />
     <Compile Include="Utils\IHideObjectMembers.cs" />
+    <Compile Include="Utils\ManualScheduler.cs" />
+    <Compile Include="Utils\Scheduler.cs" />
     <Compile Include="Utils\ThreadLocalRandom.cs" />
     <Compile Include="Utils\TimeUnitExtensions.cs" />
     <Compile Include="Utils\VolatileDouble.cs" />

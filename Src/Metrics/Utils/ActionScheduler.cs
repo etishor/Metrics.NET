@@ -11,20 +11,23 @@ namespace Metrics.Utils
     /// The scheduling code is heavenly inspired form Daniel Crenna's metrics port
     /// https://github.com/danielcrenna/metrics-net/blob/master/src/metrics/Reporting/ReporterBase.cs
     /// </remarks>
-    public sealed class ActionScheduler : IDisposable
+    public sealed class ActionScheduler : Scheduler
     {
-        private readonly TimeSpan interval;
-        private readonly Action<CancellationToken> action;
         private CancellationTokenSource token = null;
 
-        public ActionScheduler(TimeSpan interval, Action<CancellationToken> action)
+        public void Start(TimeSpan interval, Action action)
         {
-            this.interval = interval;
-            this.action = action;
+            Start(interval, t =>
+            {
+                if (!t.IsCancellationRequested)
+                {
+                    action();
+                }
+            });
         }
 
 #if !NET40
-        public void Start()
+        public void Start(TimeSpan interval, Action<CancellationToken> action)
         {
             this.token = new CancellationTokenSource();
             Task.Factory.StartNew(async () =>
@@ -34,13 +37,13 @@ namespace Metrics.Utils
                     await Task.Delay(interval, this.token.Token);
                     if (!this.token.IsCancellationRequested)
                     {
-                        RunAction();
+                        RunAction(action);
                     }
                 }
             }, this.token.Token);
         }
 #else
-        public void Start()
+        public void Start(TimeSpan interval, Action<CancellationToken> action)
         {
             this.token = new CancellationTokenSource();
             Task.Factory.StartNew(() =>
@@ -51,14 +54,14 @@ namespace Metrics.Utils
                     {
                         if (!this.token.IsCancellationRequested)
                         {
-                            RunAction();
+                            RunAction(action);
                         }
                     });
                 }
             }, this.token.Token);
         }
 
-        private static Task Delay(double milliseconds)
+        public static Task Delay(double milliseconds)
         {
             var tcs = new TaskCompletionSource<bool>();
             System.Timers.Timer timer = new System.Timers.Timer();
@@ -81,11 +84,11 @@ namespace Metrics.Utils
             }
         }
 
-        private void RunAction()
+        private void RunAction(Action<CancellationToken> action)
         {
             try
             {
-                this.action(this.token.Token);
+                action(this.token.Token);
             }
             catch (Exception x)
             {
@@ -104,6 +107,7 @@ namespace Metrics.Utils
         {
             if (this.token != null)
             {
+                this.token.Cancel();
                 this.token.Dispose();
                 this.token = null;
             }
