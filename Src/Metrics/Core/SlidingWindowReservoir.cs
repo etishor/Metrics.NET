@@ -4,7 +4,7 @@ using Metrics.Utils;
 
 namespace Metrics.Core
 {
-    public class SlidingWindowReservoir : Reservoir
+    public sealed class SlidingWindowReservoir : Reservoir
     {
         private const int DefaultSize = 1028;
 

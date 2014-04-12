@@ -2,7 +2,7 @@
 
 namespace Metrics.Core
 {
-    public class GaugeMetric : Gauge
+    public sealed class GaugeMetric : Gauge
     {
         private readonly Func<string> valueProvider;
 

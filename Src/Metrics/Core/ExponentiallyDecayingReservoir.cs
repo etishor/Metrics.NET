@@ -7,7 +7,7 @@ using Metrics.Utils;
 
 namespace Metrics.Core
 {
-    public class ExponentiallyDecayingReservoir : Reservoir
+    public sealed class ExponentiallyDecayingReservoir : Reservoir, IDisposable
     {
         private const int DefaultSize = 1028;
         private const double DefaultAlpha = 0.015;
@@ -97,6 +97,11 @@ namespace Metrics.Core
             {
                 this.@lock.ExitReadLock();
             }
+        }
+
+        public void Dispose()
+        {
+            using (this.@lock) { }
         }
 
         private void RescaleIfNeeded()

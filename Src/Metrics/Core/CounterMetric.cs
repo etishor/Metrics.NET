@@ -2,7 +2,7 @@
 
 namespace Metrics.Core
 {
-    public class CounterMetric : Counter
+    public sealed class CounterMetric : Counter
     {
         private AtomicLong value = new AtomicLong();
 

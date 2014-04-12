@@ -3,7 +3,7 @@ using Metrics.Utils;
 
 namespace Metrics.Core
 {
-    public class TimerMetric : Timer
+    public sealed class TimerMetric : Timer
     {
         private readonly Clock clock;
         private readonly Meter meter;

@@ -4,7 +4,7 @@ using System.Linq;
 using Metrics.Utils;
 namespace Metrics.Core
 {
-    public class UniformReservoir : Reservoir
+    public sealed class UniformReservoir : Reservoir
     {
         private const int DefaultSize = 1028;
         private const int BitsPerLong = 63;

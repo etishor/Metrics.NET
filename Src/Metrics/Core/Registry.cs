@@ -7,7 +7,7 @@ using Metrics.Meta;
 
 namespace Metrics.Core
 {
-    public class Registry : MetricsRegistry
+    public sealed class Registry : MetricsRegistry
     {
         private class MetricMetaCatalog<T, TMetric, TMetricValue>
             where T : MetricMeta<TMetric, TMetricValue>
