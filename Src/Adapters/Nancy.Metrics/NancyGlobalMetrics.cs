@@ -1,12 +1,14 @@
 ﻿
 using System;
 using Metrics;
+using Metrics.Utils;
 using Nancy.Bootstrapper;
 namespace Nancy.Metrics
 {
     public class NancyGlobalMetrics : IHideObjectMembers
     {
         private const string TimerItemsKey = "__Mertics.RequestTimer__";
+        private const string RequestStartTimeKey = "__Metrics.RequestStartTime__";
 
         private readonly MetricsRegistry registry;
 
@@ -23,6 +25,9 @@ namespace Nancy.Metrics
         /// processing Nancy requests.
         /// Registers a Timer metric named "NancyFx.Requests" that records how many requests per second are handled and also
         /// keeps a histogram of the request duration.
+        /// Registers a counter for the number of active requests.
+        /// Registers a histogram for the size of the POST and PUT requests.
+        /// Registers a timer metric for each non-error request.
         /// </summary>
         /// <param name="nancyPipelines">Pipelines to hook on.</param>
         public void RegisterAllMetrics(IPipelines nancyPipelines)
@@ -31,6 +36,7 @@ namespace Nancy.Metrics
             RegisterErrorsMeter(nancyPipelines);
             RegisterActiveRequestCounter(nancyPipelines);
             RegisterPostAndPutRequestSizeHistogram(nancyPipelines);
+            RegisterTimerForEachRequest(nancyPipelines);
         }
 
         /// <summary>
@@ -111,6 +117,26 @@ namespace Nancy.Metrics
                     histogram.Update(ctx.Request.Headers.ContentLength);
                 }
                 return null;
+            });
+        }
+
+        public void RegisterTimerForEachRequest(IPipelines nancyPipelines)
+        {
+            nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
+            {
+                ctx.Items["RequestStartTimeKey"] = Clock.Default.Nanoseconds;
+                return null;
+            });
+
+            nancyPipelines.AfterRequest.AddItemToEndOfPipeline(ctx =>
+            {
+                if (ctx.ResolvedRoute != null && !(ctx.ResolvedRoute is Routing.NotFoundRoute))
+                {
+                    string name = string.Format("{0}.{1} [{2}]", this.MetricsPrefix, ctx.ResolvedRoute.Description.Method, ctx.ResolvedRoute.Description.Path);
+                    var startTime = (long)ctx.Items["RequestStartTimeKey"];
+                    var elapsed = Clock.Default.Nanoseconds - startTime;
+                    Metric.Timer(name, Unit.Requests).Record(elapsed, TimeUnit.Nanoseconds);
+                }
             });
         }
 
