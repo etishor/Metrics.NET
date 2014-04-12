@@ -9,6 +9,13 @@ namespace Metrics
     public interface Timer : Metric<TimerValue>
     {
         /// <summary>
+        /// Manualy record timer value
+        /// </summary>
+        /// <param name="time">The value representing the manualy measured time.</param>
+        /// <param name="unit">Unit for the value.</param>
+        void Record(long time, TimeUnit unit);
+
+        /// <summary>
         /// Runs the <paramref name="action"/> and records the time it took.
         /// </summary>
         /// <param name="action">Action to run and record time for.</param>

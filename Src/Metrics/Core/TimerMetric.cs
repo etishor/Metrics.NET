@@ -25,6 +25,16 @@ namespace Metrics.Core
             this.histogram = histogram;
         }
 
+        public void Record(long duration, TimeUnit unit)
+        {
+            var nanos = unit.ToNanoseconds(duration);
+            if (nanos >= 0)
+            {
+                this.histogram.Update(nanos);
+                this.meter.Mark();
+            }
+        }
+
         public void Time(Action action)
         {
             var start = this.clock.Nanoseconds;
@@ -34,7 +44,7 @@ namespace Metrics.Core
             }
             finally
             {
-                Update(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds);
+                Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds);
             }
         }
 
@@ -47,14 +57,14 @@ namespace Metrics.Core
             }
             finally
             {
-                Update(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds);
+                Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds);
             }
         }
 
         public IDisposable NewContext()
         {
             var start = this.clock.Nanoseconds;
-            return new DisposableAction(() => Update(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds));
+            return new DisposableAction(() => Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds));
         }
 
         public TimerValue Value
@@ -62,16 +72,6 @@ namespace Metrics.Core
             get
             {
                 return new TimerValue(this.meter.Value, this.histogram.Value);
-            }
-        }
-
-        private void Update(long duration, TimeUnit unit)
-        {
-            var nanos = unit.ToNanoseconds(duration);
-            if (nanos >= 0)
-            {
-                this.histogram.Update(nanos);
-                this.meter.Mark();
             }
         }
     }
