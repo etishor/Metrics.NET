@@ -4,17 +4,16 @@ using System.Linq;
 
 namespace Metrics.Core
 {
-    public class Snapshot
+    public struct Snapshot
     {
-        private readonly List<long> values;
+        private readonly long[] values;
 
         public Snapshot(IEnumerable<long> values)
         {
-            this.values = new List<long>(values);
-            this.values.Sort();
+            this.values = values.OrderBy(v => v).ToArray();
         }
 
-        public int Size { get { return this.values.Count; } }
+        public int Size { get { return this.values.Length; } }
 
         public long Max { get { return this.values.LastOrDefault(); } }
         public long Min { get { return this.values.FirstOrDefault(); } }
@@ -56,16 +55,16 @@ namespace Metrics.Core
                 return 0;
             }
 
-            double pos = quantile * (values.Count + 1);
+            double pos = quantile * (values.Length + 1);
 
             if (pos < 1)
             {
                 return values[0];
             }
 
-            if (pos >= values.Count)
+            if (pos >= values.Length)
             {
-                return values[values.Count - 1];
+                return values[values.Length - 1];
             }
 
             double lower = values[(int)pos - 1];
