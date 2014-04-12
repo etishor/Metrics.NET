@@ -66,7 +66,7 @@ namespace Metrics.Reporters
             return this;
         }
 
-        private IEnumerable<JsonProperty> Meter(MeterValue value)
+        private static IEnumerable<JsonProperty> Meter(MeterValue value)
         {
             yield return new JsonProperty("Count", value.Count);
             yield return new JsonProperty("MeanRate", value.MeanRate);
@@ -75,7 +75,7 @@ namespace Metrics.Reporters
             yield return new JsonProperty("FifteenMinuteRate", value.FifteenMinuteRate);
         }
 
-        private IEnumerable<JsonProperty> Histogram(HistogramValue value)
+        private static IEnumerable<JsonProperty> Histogram(HistogramValue value)
         {
             yield return new JsonProperty("Count", value.Count);
             yield return new JsonProperty("Min", value.Min);
@@ -91,7 +91,7 @@ namespace Metrics.Reporters
             yield return new JsonProperty("SampleSize", value.SampleSize);
         }
 
-        private JsonValue GetJsonValue(string value)
+        private static JsonValue GetJsonValue(string value)
         {
             long longValue;
             if (long.TryParse(value, out longValue))
