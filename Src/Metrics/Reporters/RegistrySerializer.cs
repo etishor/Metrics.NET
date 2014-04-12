@@ -3,9 +3,9 @@ using Metrics.Utils;
 
 namespace Metrics.Reporters
 {
-    public class RegistrySerializer
+    public static class RegistrySerializer
     {
-        public object GetForSerialization(MetricsRegistry registry)
+        public static object GetForSerialization(MetricsRegistry registry)
         {
             return new
             {
@@ -29,7 +29,7 @@ namespace Metrics.Reporters
             };
         }
 
-        public string ValuesAsJson(MetricsRegistry registry)
+        public static string ValuesAsJson(MetricsRegistry registry)
         {
             return new JsonFormatter()
                 .AddObject(registry.Gauges)

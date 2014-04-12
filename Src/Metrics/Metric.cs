@@ -208,7 +208,7 @@ namespace Metrics
         /// <returns>Object suitable for serialization.</returns>
         public static object GetForSerialization()
         {
-            return new RegistrySerializer().GetForSerialization(registry);
+            return RegistrySerializer.GetForSerialization(registry);
         }
 
         /// <summary>
