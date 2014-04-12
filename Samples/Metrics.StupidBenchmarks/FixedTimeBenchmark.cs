@@ -31,7 +31,6 @@ namespace Metrics.StupidBenchmarks
 
             for (int i = 0; i < threadCount; i++)
             {
-                var x = i;
                 threads.Add(new Thread(s =>
                 {
                     // warm - up
