@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 
 namespace Metrics.StupidBenchmarks
 {
-    public static class Benchmark
+    public static class FixedIterationsBenchmark
     {
         public struct Result
         {
             public TimeSpan Elapsed;
             public long Total;
-            public double PerSecond
+            public long PerSecond
             {
                 get
                 {
-                    return Total / Elapsed.TotalSeconds;
+                    return Convert.ToInt64(Math.Round(Total / Elapsed.TotalSeconds));
                 }
             }
 
@@ -26,25 +26,38 @@ namespace Metrics.StupidBenchmarks
             }
         }
 
-        public static Result Run(Action<int, long> action, int threadCount = 8, long iterations = 1 * 1000 * 1000)
+        public static void Run<T>(Action<T> action, long iterations, int maxThreads = 16)
+           where T : new()
+        {
+            T instance = new T();
+            for (int i = 1; i < maxThreads; i++)
+            {
+                var result = FixedIterationsBenchmark.MeasureDuration(() => action(instance), i, iterations);
+                Console.WriteLine("{0}\t{1}\t{2}\t{3}", typeof(T).Name, i, result.PerSecond, result.Elapsed);
+            }
+        }
+
+
+        public static Result MeasureDuration(Action action, int threadCount, long iterations)
         {
 #if DEBUG
             Console.WriteLine("DEBUG MODE - results are NOT relevant");
 #endif
-            // warm - up
-            for (int i = 0; i < 100; i++) { action(0, 0); }
-
             List<Thread> threads = new List<Thread>();
             TaskCompletionSource<int> tcs = new TaskCompletionSource<int>();
 
             for (int i = 0; i < threadCount; i++)
             {
-                var x = i;
                 threads.Add(new Thread(s =>
                     {
+                        // warm - up
+                        for (int x = 0; x < 100; x++) { action(); }
+
                         tcs.Task.Wait();
                         for (long j = 0; j < iterations; j++)
-                            action(x, j);
+                        {
+                            action();
+                        }
                     }));
             }
             // all thread will be waiting on tcs
@@ -54,7 +67,7 @@ namespace Metrics.StupidBenchmarks
             tcs.SetResult(0);
             threads.ForEach(t => t.Join());
             var elapsed = w.Elapsed;
-            return new Result { Elapsed = elapsed, Total = threadCount * iterations };
+            return new Result { Elapsed = elapsed, Total = iterations };
         }
     }
 }

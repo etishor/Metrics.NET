@@ -8,8 +8,22 @@ namespace Metrics.StupidBenchmarks
 {
     public static class FixedTimeBenchmark
     {
-        public static double MeasureCallsPerSecond(Action action, int threadCount, TimeSpan duration)
+        public static void Run<T>(Action<T> action, int maxThreads = 16)
+           where T : new()
         {
+            T instance = new T();
+            for (int i = 1; i < maxThreads; i++)
+            {
+                var result = FixedTimeBenchmark.MeasureCallsPerSecond(() => action(instance), i, TimeSpan.FromSeconds(2));
+                Console.WriteLine("{0}\t{1}\t{2}", typeof(T).Name, i, result);
+            }
+        }
+
+        public static long MeasureCallsPerSecond(Action action, int threadCount, TimeSpan duration)
+        {
+#if DEBUG
+            Console.WriteLine("DEBUG MODE - results are NOT relevant");
+#endif
             TaskCompletionSource<int> tcs = new TaskCompletionSource<int>();
             List<Thread> threads = new List<Thread>();
 
@@ -33,7 +47,6 @@ namespace Metrics.StupidBenchmarks
                     ActionScheduler.Delay(duration.TotalMilliseconds)
                         .ContinueWith(t => done.Cancel());
 #endif
-
                     while (!done.IsCancellationRequested)
                     {
                         action();
@@ -46,7 +59,7 @@ namespace Metrics.StupidBenchmarks
             threads.ForEach(t => t.Start());
             tcs.SetResult(0);
             threads.ForEach(t => t.Join());
-            return total / (double)duration.TotalSeconds;
+            return Convert.ToInt64(Math.Round(total / duration.TotalSeconds));
         }
     }
 }
