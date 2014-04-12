@@ -60,10 +60,10 @@ namespace Metrics.Utils
             return Interlocked.Exchange(ref this.value, value);
         }
 
-        public bool CompareAndSet(long expectd, long updated)
+        public bool CompareAndSet(long expected, long updated)
         {
-            var value = Interlocked.CompareExchange(ref this.value, updated, expectd);
-            return value == expectd;
+            var value = Interlocked.CompareExchange(ref this.value, updated, expected);
+            return value == expected;
         }
     }
 }
