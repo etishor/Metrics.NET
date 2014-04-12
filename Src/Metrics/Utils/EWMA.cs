@@ -20,7 +20,7 @@ namespace Metrics.Utils
         private static readonly double M15Alpha = 1 - Math.Exp(-Interval / SecondsPerMinute / FifteenMinutes);
 
         private volatile bool initialized = false;
-        private VolatileDouble rate = 0.0;
+        private VolatileDouble rate = new VolatileDouble(0.0);
 
         private AtomicLong uncounted = new AtomicLong();
         private readonly double alpha;
@@ -64,14 +64,14 @@ namespace Metrics.Utils
             }
             else
             {
-                rate = instantRate;
+                rate.Set(instantRate);
                 initialized = true;
             }
         }
 
         public double GetRate(TimeUnit rateUnit)
         {
-            return rate * (double)rateUnit.ToNanoseconds(1L);
+            return rate.Get() * (double)rateUnit.ToNanoseconds(1L);
         }
     }
 }
