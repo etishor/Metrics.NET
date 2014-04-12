@@ -17,6 +17,8 @@ namespace NancyFx.Sample
             Post["/action"] = _ => HttpStatusCode.Accepted;
 
             Get["/error"] = _ => { throw new InvalidOperationException(); };
+
+            Get["/item/{id}"] = p => Response.AsText((string)p.id, "text/plain");
         }
     }
 }
