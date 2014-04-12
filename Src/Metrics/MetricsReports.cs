@@ -6,7 +6,7 @@ using Metrics.Reporters;
 using Metrics.Visualization;
 namespace Metrics
 {
-    public class MetricsReports : Utils.IHideObjectMembers
+    public sealed class MetricsReports : Utils.IHideObjectMembers, IDisposable
     {
         private readonly MetricsRegistry metricsRegistry;
 
@@ -80,6 +80,12 @@ namespace Metrics
         {
             this.reports.ForEach(r => r.Stop());
             this.reports.Clear();
+            using (this.listener) { }
+            this.listener = null;
+        }
+
+        public void Dispose()
+        {
             using (this.listener) { }
             this.listener = null;
         }
