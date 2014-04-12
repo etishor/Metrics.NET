@@ -39,7 +39,9 @@ namespace Metrics.Tests
         public void TimerCanTrackTime()
         {
             Clock.TestClock clock = new Clock.TestClock();
-            Timer timer = new TimerMetric(SamplingType.LongTerm, clock);
+            ManualScheduler scheduler = new ManualScheduler(clock);
+
+            Timer timer = new TimerMetric(SamplingType.LongTerm, new MeterMetric(clock, scheduler), clock);
             using (timer.NewContext())
             {
                 clock.Advance(TimeUnit.Milliseconds, 100);
@@ -52,14 +54,15 @@ namespace Metrics.Tests
         public void TimerContextRecordsTimeOnlyOnFirstDispose()
         {
             Clock.TestClock clock = new Clock.TestClock();
-            Timer timer = new TimerMetric(SamplingType.LongTerm, clock);
+            ManualScheduler scheduler = new ManualScheduler(clock);
+            Timer timer = new TimerMetric(SamplingType.LongTerm, new MeterMetric(clock, scheduler), clock);
 
-            var context = timer.NewContext();            
+            var context = timer.NewContext();
             clock.Advance(TimeUnit.Milliseconds, 100);
             using (context) { }
             clock.Advance(TimeUnit.Milliseconds, 100);
             using (context) { }
-            
+
             timer.Value.Histogram.Count.Should().Be(1);
             timer.Value.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
         }

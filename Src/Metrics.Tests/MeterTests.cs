@@ -27,8 +27,9 @@ namespace Metrics.Tests
         public void MeterCanCalculateMeanRate()
         {
             Clock.TestClock clock = new Clock.TestClock();
+            ManualScheduler scheduler = new ManualScheduler(clock);
 
-            Meter meter = new MeterMetric(clock);
+            Meter meter = new MeterMetric(clock, scheduler);
 
             meter.Mark();
             clock.Advance(TimeUnit.Seconds, 1);
@@ -54,10 +55,15 @@ namespace Metrics.Tests
         public void MeterCanComputeRates()
         {
             Clock.TestClock clock = new Clock.TestClock();
-            Meter meter = new MeterMetric(clock);
+            ManualScheduler scheduler = new ManualScheduler(clock);
+
+            Meter meter = new MeterMetric(clock, scheduler);
 
             meter.Mark();
-            clock.Advance(TimeUnit.Seconds, 10);
+            clock.Advance(TimeUnit.Seconds, 5);
+            scheduler.RunIfNeeded();
+            clock.Advance(TimeUnit.Seconds, 5);
+            scheduler.RunIfNeeded();
             meter.Mark(2);
 
             var value = meter.Value;

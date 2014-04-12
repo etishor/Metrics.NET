@@ -43,7 +43,8 @@ namespace Metrics.Tests.NancyAdapter
         public NancyAdapterModuleMetricsTests()
         {
             this.clock = new Clock.TestClock();
-            this.timer = new TimerMetric(SamplingType.SlidingWindow, clock);
+            ManualScheduler scheduler = new ManualScheduler(clock);
+            this.timer = new TimerMetric(SamplingType.SlidingWindow, new MeterMetric(clock, scheduler), clock);
             this.sizeHistogram = new HistogramMetric();
             NancyMetrics.Configure(new TestRegistry { TimerInstance = timer, HistogramInstance = sizeHistogram });
 

@@ -47,6 +47,7 @@ namespace Metrics.Tests.NancyAdapter
         }
 
         private readonly Clock.TestClock clock;
+        private readonly ManualScheduler scheduler;
         private readonly Timer timer;
         private readonly Meter meter;
         private readonly Counter counter;
@@ -60,8 +61,9 @@ namespace Metrics.Tests.NancyAdapter
         public NancyAdapterGlobalMetrics()
         {
             this.clock = new Clock.TestClock();
-            this.timer = new TimerMetric(SamplingType.SlidingWindow, clock);
-            this.meter = new MeterMetric(clock);
+            this.scheduler = new ManualScheduler(clock);
+            this.timer = new TimerMetric(SamplingType.SlidingWindow, new MeterMetric(clock, scheduler), clock);
+            this.meter = new MeterMetric(clock, scheduler);
             this.counter = new CounterMetric();
             this.size = new HistogramMetric();
 
