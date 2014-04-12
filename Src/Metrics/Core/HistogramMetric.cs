@@ -5,7 +5,7 @@ namespace Metrics.Core
     public class HistogramMetric : Histogram
     {
         private readonly Reservoir reservoir;
-        private readonly AtomicLong counter = new AtomicLong();
+        private AtomicLong counter = new AtomicLong();
 
         public HistogramMetric()
             : this(new ExponentiallyDecayingReservoir()) { }

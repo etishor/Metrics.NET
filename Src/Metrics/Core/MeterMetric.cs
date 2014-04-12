@@ -14,7 +14,7 @@ namespace Metrics.Core
         private readonly Clock clock;
         private readonly long startTime;
 
-        private readonly AtomicLong count = new AtomicLong();
+        private AtomicLong count = new AtomicLong();
         private readonly Scheduler tickScheduler;
 
         public MeterMetric()

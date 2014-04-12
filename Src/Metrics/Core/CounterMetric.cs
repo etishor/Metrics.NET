@@ -4,7 +4,7 @@ namespace Metrics.Core
 {
     public class CounterMetric : Counter
     {
-        private readonly AtomicLong value = new AtomicLong();
+        private AtomicLong value = new AtomicLong();
 
         public long Value { get { return this.value.Value; } }
 

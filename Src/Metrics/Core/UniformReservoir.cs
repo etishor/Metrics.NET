@@ -9,7 +9,7 @@ namespace Metrics.Core
         private const int DefaultSize = 1028;
         private const int BitsPerLong = 63;
 
-        private readonly AtomicLong count = new AtomicLong();
+        private AtomicLong count = new AtomicLong();
         private readonly AtomicLong[] values;
 
         public UniformReservoir()
@@ -46,14 +46,14 @@ namespace Metrics.Core
             long c = this.count.Increment();
             if (c <= this.values.Length)
             {
-                values[(int)c - 1].Value = value;
+                values[(int)c - 1].SetValue(value);
             }
             else
             {
                 long r = NextLong(c);
                 if (r < values.Length)
                 {
-                    values[(int)r].Value = value;
+                    values[(int)r].SetValue(value);
                 }
             }
         }

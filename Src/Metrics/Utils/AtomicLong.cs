@@ -1,20 +1,25 @@
 ﻿
+using System.Runtime.InteropServices;
 using System.Threading;
 namespace Metrics.Utils
 {
     /// <summary>
-    /// TODO: implement optimizations behind LongAdder from 
+    /// Atomic long. Padded to avoid false sharing.
+    /// 
+    /// TBD: implement optimizations behind LongAdder from 
     /// <a href="https://github.com/dropwizard/metrics/blob/master/metrics-core/src/main/java/com/codahale/metrics/LongAdder.java">metrics-core</a>
     /// </summary>
-    public class AtomicLong
+    [StructLayout(LayoutKind.Explicit, Size = 64)]
+    public struct AtomicLong
     {
+        [FieldOffset(64)]
         private long value;
 
-        public AtomicLong() : this(0L) { }
+        //public AtomicLong() : this(0L) { }
 
         public AtomicLong(long value)
         {
-            this.Value = value;
+            this.value = value;
         }
 
         public long Value
@@ -23,10 +28,11 @@ namespace Metrics.Utils
             {
                 return Interlocked.Read(ref this.value);
             }
-            set
-            {
-                Interlocked.Exchange(ref this.value, value);
-            }
+        }
+
+        public void SetValue(long value)
+        {
+            GetAndSet(value);
         }
 
         public long Add(long value)

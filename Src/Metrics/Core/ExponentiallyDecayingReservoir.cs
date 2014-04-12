@@ -17,9 +17,9 @@ namespace Metrics.Core
         private readonly ReaderWriterLockSlim @lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         private readonly double alpha;
         private readonly int size;
-        private readonly AtomicLong count = new AtomicLong();
-        private readonly AtomicLong startTime;
-        private readonly AtomicLong nextScaleTime;
+        private AtomicLong count = new AtomicLong();
+        private AtomicLong startTime;
+        private AtomicLong nextScaleTime;
 
         private readonly Clock clock;
 
@@ -141,7 +141,7 @@ namespace Metrics.Core
                 try
                 {
                     long oldStartTime = startTime.Value;
-                    this.startTime.Value = this.clock.Seconds;
+                    this.startTime.SetValue(this.clock.Seconds);
 
                     var keys = new List<double>(this.values.Keys);
                     foreach (var key in keys)
@@ -152,7 +152,7 @@ namespace Metrics.Core
                         values.AddOrUpdate(newKey, value, (k, v) => value);
                     }
                     // make sure the counter is in sync with the number of stored samples.
-                    this.count.Value = values.Count;
+                    this.count.SetValue(values.Count);
                 }
                 finally
                 {
