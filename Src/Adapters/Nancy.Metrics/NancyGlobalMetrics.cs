@@ -120,6 +120,12 @@ namespace Nancy.Metrics
             });
         }
 
+        /// <summary>
+        /// Registers a timer for each request.
+        /// Timer is created based on route and will be named:
+        /// NanyFx.{HTTP_METHOD_NAME} [{ROUTE_PATH}]
+        /// </summary>
+        /// <param name="nancyPipelines">Pipelines to hook on.</param>
         public void RegisterTimerForEachRequest(IPipelines nancyPipelines)
         {
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
