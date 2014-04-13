@@ -7,13 +7,17 @@ namespace Metrics.Reporters
     public sealed class ScheduledReporter : IDisposable
     {
         private readonly Timer reportTime = null;
-        private readonly ActionScheduler scheduler;
+        private readonly Scheduler scheduler;
         private readonly TimeSpan interval;
 
         private readonly Func<Reporter> reporter;
         private readonly MetricsRegistry registry;
 
+
         public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, TimeSpan interval)
+            : this(name, reporter, registry, interval, new ActionScheduler()) { }
+
+        public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, TimeSpan interval, Scheduler scheduler)
         {
             if (Metric.Reports.EnableReportDiagnosticMetrics)
             {
@@ -22,7 +26,7 @@ namespace Metrics.Reporters
             this.reporter = reporter;
             this.registry = registry;
             this.interval = interval;
-            this.scheduler = new ActionScheduler();
+            this.scheduler = scheduler;
         }
 
         private void RunReport(CancellationToken token)
