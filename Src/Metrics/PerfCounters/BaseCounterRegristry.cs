@@ -22,20 +22,5 @@ namespace Metrics.PerfCounters
         {
             this.registry.Gauge(prefix + "." + name, gauge, unit);
         }
-
-        protected void Register(string name, Func<string> value)
-        {
-            Register(name, value, Unit.None);
-        }
-
-        protected void Register(string name, Func<float> value, Unit unit)
-        {
-            Register(name, () => value().ToString("F"), unit);
-        }
-
-        protected void Register(string name, Func<string> value, Unit unit)
-        {
-            this.registry.Gauge(prefix + "." + name, value, unit);
-        }
     }
 }

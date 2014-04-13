@@ -21,7 +21,7 @@ namespace Metrics.Reporters
 
         public JsonFormatter AddObject(IEnumerable<GaugeValueSource> gauges)
         {
-            root.Add(new JsonProperty("Gauges", gauges.Select(g => new JsonProperty(g.Name, GetJsonValue(g.Value.Value)))));
+            root.Add(new JsonProperty("Gauges", gauges.Select(g => new JsonProperty(g.Name, g.Value))));
             units.Add(new JsonProperty("Gauges", gauges.Select(g => new JsonProperty(g.Name, g.Unit.Name))));
             return this;
         }
@@ -88,23 +88,6 @@ namespace Metrics.Reporters
             yield return new JsonProperty("Percentile99", value.Percentile99);
             yield return new JsonProperty("Percentile999", value.Percentile999);
             yield return new JsonProperty("SampleSize", value.SampleSize);
-        }
-
-        private static JsonValue GetJsonValue(string value)
-        {
-            long longValue;
-            if (long.TryParse(value, out longValue))
-            {
-                return new LongJsonValue(longValue);
-            }
-
-            double doubleValue;
-            if (double.TryParse(value, out doubleValue))
-            {
-                return new DoubleJsonValue(doubleValue);
-            }
-
-            return new StringJsonValue(value);
         }
     }
 }

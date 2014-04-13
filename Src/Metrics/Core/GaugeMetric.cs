@@ -2,24 +2,34 @@
 using System;
 namespace Metrics.Core
 {
-    public abstract class GaugeMetric : Gauge, MetricValueProvider<GaugeValue>
+    public abstract class GaugeMetric : Gauge, MetricValueProvider<double>
     {
-        protected abstract string GetValue();
-        public GaugeValue Value { get { return new GaugeValue(this.GetValue()); } }
+        public abstract double Value { get; }
     }
 
-    public sealed class SimpleGauge : GaugeMetric
+    public sealed class FunctionGauge : GaugeMetric
     {
-        private readonly Func<string> valueProvider;
+        private readonly Func<double> valueProvider;
 
-        public SimpleGauge(Func<string> valueProvider)
+        public FunctionGauge(Func<double> valueProvider)
         {
             this.valueProvider = valueProvider;
         }
 
-        protected override string GetValue()
+        public override double Value { get { return this.valueProvider(); } }
+    }
+
+    public sealed class DerivedGauge : GaugeMetric
+    {
+        private readonly GaugeMetric gauge;
+        private readonly Func<double, double> transformation;
+
+        public DerivedGauge(GaugeMetric gauge, Func<double, double> transformation)
         {
-            return valueProvider();
+            this.gauge = gauge;
+            this.transformation = transformation;
         }
+
+        public override double Value { get { return this.transformation(this.gauge.Value); } }
     }
 }

@@ -8,9 +8,9 @@ namespace Metrics.Core
         public LocalRegistry()
             : base(Process.GetCurrentProcess().ProcessName) { }
 
-        protected override Tuple<Gauge, GaugeValueSource> CreateGauge(string name, Func<string> valueProvider, Unit unit)
+        protected override Tuple<Gauge, GaugeValueSource> CreateGauge(string name, Func<double> valueProvider, Unit unit)
         {
-            var gauge = new SimpleGauge(valueProvider);
+            var gauge = new FunctionGauge(valueProvider);
             return Tuple.Create((Gauge)gauge, new GaugeValueSource(name, gauge, unit));
         }
 

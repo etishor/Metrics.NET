@@ -1,5 +1,6 @@
 ﻿
 using System.Diagnostics;
+using Metrics.Core;
 namespace Metrics.PerfCounters
 {
     public class CLRCounters : BaseCounterRegristry
@@ -13,14 +14,14 @@ namespace Metrics.PerfCounters
 
         public void RegisterGlobalCounters()
         {
-            Register("Mb in all Heaps", () => new PerformanceCounterGauge(Memory, "# Bytes in all Heaps", GlobalInstance, f => (f / (1024 * 1024)).ToString("F")), Unit.Custom("Mb"));
+            Register("Mb in all Heaps", () => new DerivedGauge(new PerformanceCounterGauge(Memory, "# Bytes in all Heaps", GlobalInstance), v => v / (1024 * 1024)), Unit.Custom("Mb"));
             Register("Time in GC", () => new PerformanceCounterGauge(Memory, "% Time in GC", GlobalInstance), Unit.Custom("%"));
         }
 
         public void RegisterAppCounters()
         {
             var app = Process.GetCurrentProcess().ProcessName;
-            Register("Mb in all Heaps", () => new PerformanceCounterGauge(Memory, "# Bytes in all Heaps", app, f => (f / (1024 * 1024)).ToString("F")), Unit.Custom("Mb"));
+            Register("Mb in all Heaps", () => new DerivedGauge(new PerformanceCounterGauge(Memory, "# Bytes in all Heaps", app), v => v / (1024 * 1024)), Unit.Custom("Mb"));
             Register("Time in GC", () => new PerformanceCounterGauge(Memory, "% Time in GC", app), Unit.Custom("%"));
             Register("Total Exceptions", () => new PerformanceCounterGauge(Exceptions, "# of Exceps Thrown", app), Unit.Custom("Exceptions"));
             Register("Exceptions Thrown / Sec", () => new PerformanceCounterGauge(Exceptions, "# of Exceps Thrown / Sec", app), Unit.Custom("Exceptions/s"));

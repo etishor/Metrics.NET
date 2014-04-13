@@ -31,7 +31,7 @@ namespace Metrics.Reporters
             this.appender = appender;
         }
 
-        protected override void ReportGauge(string name, string value, Unit unit)
+        protected override void ReportGauge(string name, double value, Unit unit)
         {
             Write("Gauge", name, GaugeValues(value, unit));
         }
@@ -59,7 +59,7 @@ namespace Metrics.Reporters
             Write("Timer", name, values);
         }
 
-        private static IEnumerable<Value> GaugeValues(string gaugeValue, Unit unit)
+        private static IEnumerable<Value> GaugeValues(double gaugeValue, Unit unit)
         {
             yield return new Value("Value", gaugeValue);
 

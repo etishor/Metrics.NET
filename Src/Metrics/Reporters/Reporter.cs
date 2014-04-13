@@ -21,7 +21,7 @@ namespace Metrics.Reporters
             this.RegistryName = registry.Name;
 
             StartReport();
-            ReportSection("Gauges", registry.Gauges, g => ReportGauge(g.Name, g.Value.Value, g.Unit));
+            ReportSection("Gauges", registry.Gauges, g => ReportGauge(g.Name, g.Value, g.Unit));
             ReportSection("Counters", registry.Counters, c => ReportCounter(c.Name, c.Value, c.Unit));
             ReportSection("Meters", registry.Meters, m => ReportMeter(m.Name, m.Value, m.Unit, m.RateUnit));
             ReportSection("Histograms", registry.Histograms, h => ReportHistogram(h.Name, h.Value, h.Unit));
@@ -37,7 +37,7 @@ namespace Metrics.Reporters
         protected virtual void EndMetricGroup(string metricName) { }
         protected virtual void EndReport() { }
 
-        protected abstract void ReportGauge(string name, string value, Unit unit);
+        protected abstract void ReportGauge(string name, double value, Unit unit);
         protected abstract void ReportCounter(string name, long value, Unit unit);
         protected abstract void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit);
         protected abstract void ReportHistogram(string name, HistogramValue value, Unit unit);

@@ -59,12 +59,11 @@ namespace Metrics
         /// <param name="counterCategory">Category of the performance counter</param>
         /// <param name="counterName">Name of the performance counter</param>
         /// <param name="counterInstance">Instance of the performance counter</param>
-        /// <param name="formatter">Function to format the float value returned by the counter</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the gauge</returns>
-        public static Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Func<float, string> formatter, Unit unit)
+        public static Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
         {
-            return Metric.Registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance, formatter), unit);
+            return Metric.Registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance), unit);
         }
 
         /// <summary>
@@ -77,7 +76,7 @@ namespace Metrics
         /// <param name="valueProvider">Function that returns the value for the gauge.</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the gauge</returns>
-        public static Gauge Gauge<T>(string name, Func<string> valueProvider, Unit unit)
+        public static Gauge Gauge<T>(string name, Func<double> valueProvider, Unit unit)
         {
             return Metric.Registry.Gauge(Name<T>(name), valueProvider, unit);
         }
@@ -89,7 +88,7 @@ namespace Metrics
         /// <param name="valueProvider">Function that returns the value for the gauge.</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the gauge</returns>
-        public static Gauge Gauge(string name, Func<string> valueProvider, Unit unit)
+        public static Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
         {
             return Metric.Registry.Gauge(name, valueProvider, unit);
         }

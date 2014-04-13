@@ -38,7 +38,7 @@ namespace Metrics.Samples
         public SampleMetrics()
         {
             // define a simple gauge that will provide the instant value of this.someValue when requested
-            Metric.Gauge("SampleMetrics.DataValue", () => this.someValue.ToString("F"), new Unit("$"));
+            Metric.Gauge("SampleMetrics.DataValue", () => this.someValue, new Unit("$"));
         }
 
         public void Request(int i)

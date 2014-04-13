@@ -17,13 +17,13 @@ namespace Metrics.Tests.TestUtils
         public Counter CounterInstance { get; set; }
         public Gauge GaugeInstance { get; set; }
 
-        public Func<string, Func<string>, Unit, Gauge> GaugeBuilder { get; set; }
+        public Func<string, Func<double>, Unit, Gauge> GaugeBuilder { get; set; }
         public Func<string, Unit, Counter> CounterBuilder { get; set; }
         public Func<string, Unit, TimeUnit, Meter> MeterBuilder { get; set; }
         public Func<string, Unit, SamplingType, Histogram> HistogramBuilder { get; set; }
         public Func<string, Unit, SamplingType, TimeUnit, TimeUnit, Timer> TimerBuilder { get; set; }
 
-        public Gauge Gauge(string name, Func<string> valueProvider, Unit unit)
+        public Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
         {
             return GaugeInstance != null ? GaugeInstance : GaugeBuilder(name, valueProvider, unit);
         }

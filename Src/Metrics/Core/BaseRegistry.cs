@@ -59,7 +59,7 @@ namespace Metrics.Core
             }
         }
 
-        private readonly MetricMetaCatalog<Gauge, GaugeValueSource, GaugeValue> gauges = new MetricMetaCatalog<Gauge, GaugeValueSource, GaugeValue>();
+        private readonly MetricMetaCatalog<Gauge, GaugeValueSource, double> gauges = new MetricMetaCatalog<Gauge, GaugeValueSource, double>();
         private readonly MetricMetaCatalog<Counter, CounterValueSource, long> counters = new MetricMetaCatalog<Counter, CounterValueSource, long>();
         private readonly MetricMetaCatalog<Meter, MeterValueSource, MeterValue> meters = new MetricMetaCatalog<Meter, MeterValueSource, MeterValue>();
         private readonly MetricMetaCatalog<Histogram, HistogramValueSource, HistogramValue> histograms =
@@ -79,7 +79,7 @@ namespace Metrics.Core
         public IEnumerable<HistogramValueSource> Histograms { get { return this.histograms.All; } }
         public IEnumerable<TimerValueSource> Timers { get { return this.timers.All; } }
 
-        public Gauge Gauge(string name, Func<string> valueProvider, Unit unit)
+        public Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
         {
             return this.gauges.GetOrAdd(name, () => CreateGauge(name, valueProvider, unit));
         }
@@ -110,7 +110,7 @@ namespace Metrics.Core
             return this.timers.GetOrAdd(name, () => CreateTimer(name, unit, samplingType, rateUnit, durationUnit));
         }
 
-        protected abstract Tuple<Gauge, GaugeValueSource> CreateGauge(string name, Func<string> valueProvider, Unit unit);
+        protected abstract Tuple<Gauge, GaugeValueSource> CreateGauge(string name, Func<double> valueProvider, Unit unit);
         protected abstract Tuple<Gauge, GaugeValueSource> CreateGauge<T>(string name, Func<T> gauge, Unit unit) where T : GaugeMetric;
         protected abstract Tuple<Counter, CounterValueSource> CreateCounter(string name, Unit unit);
         protected abstract Tuple<Meter, MeterValueSource> CreateMeter(string name, Unit unit, TimeUnit rateUnit);

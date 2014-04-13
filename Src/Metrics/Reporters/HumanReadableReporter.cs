@@ -30,7 +30,7 @@ namespace Metrics.Reporters
             this.WriteLine("    {0}", name);
         }
 
-        protected override void ReportGauge(string name, string value, Unit unit)
+        protected override void ReportGauge(string name, double value, Unit unit)
         {
             this.WriteMetricName(name);
             this.WriteValue("value", unit.FormatValue(value));
