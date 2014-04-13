@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Metrics.Core;
 using Metrics.Meta;
 
 namespace Metrics
@@ -15,7 +16,7 @@ namespace Metrics
         IEnumerable<TimerMeta> Timers { get; }
 
         Gauge Gauge(string name, Func<string> valueProvider, Unit unit);
-        Gauge Gauge(string name, Func<Gauge> gauge, Unit unit);
+        Gauge Gauge<T>(string name, Func<T> gauge, Unit unit) where T : GaugeMetric;
         Counter Counter(string name, Unit unit);
         Meter Meter(string name, Unit unit, TimeUnit rateUnit);
         Histogram Histogram(string name, Unit unit, SamplingType samplingType);

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using Metrics.Core;
 
 namespace Metrics.PerfCounters
 {
-    public class PerformanceCounterGauge : Gauge
+    public class PerformanceCounterGauge : GaugeMetric
     {
         private static readonly Func<float, string> DefaultFormat = f => f.ToString("F");
 
@@ -30,12 +31,9 @@ namespace Metrics.PerfCounters
                 new PerformanceCounter(category, counter, instance, true);
         }
 
-        public GaugeValue Value
+        protected override string GetValue()
         {
-            get
-            {
-                return new GaugeValue(format(this.performanceCounter.NextValue()));
-            }
+            return format(this.performanceCounter.NextValue());
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Metrics.Tests
         [Fact]
         public void TimerCanCount()
         {
-            Timer timer = new TimerMetric();
+            TimerMetric timer = new TimerMetric();
             timer.Value.Rate.Count.Should().Be(0);
             using (timer.NewContext()) { }
             timer.Value.Rate.Count.Should().Be(1);
@@ -26,7 +26,7 @@ namespace Metrics.Tests
         [Fact]
         public void TimerCountsEvenIfActionThrows()
         {
-            Timer timer = new TimerMetric();
+            TimerMetric timer = new TimerMetric();
 
             Action action = () => timer.Time(() => { throw new InvalidOperationException(); });
 
@@ -41,7 +41,7 @@ namespace Metrics.Tests
             Clock.TestClock clock = new Clock.TestClock();
             ManualScheduler scheduler = new ManualScheduler(clock);
 
-            Timer timer = new TimerMetric(SamplingType.LongTerm, new MeterMetric(clock, scheduler), clock);
+            TimerMetric timer = new TimerMetric(SamplingType.LongTerm, new MeterMetric(clock, scheduler), clock);
             using (timer.NewContext())
             {
                 clock.Advance(TimeUnit.Milliseconds, 100);
@@ -55,7 +55,7 @@ namespace Metrics.Tests
         {
             Clock.TestClock clock = new Clock.TestClock();
             ManualScheduler scheduler = new ManualScheduler(clock);
-            Timer timer = new TimerMetric(SamplingType.LongTerm, new MeterMetric(clock, scheduler), clock);
+            TimerMetric timer = new TimerMetric(SamplingType.LongTerm, new MeterMetric(clock, scheduler), clock);
 
             var context = timer.NewContext();
             clock.Advance(TimeUnit.Milliseconds, 100);

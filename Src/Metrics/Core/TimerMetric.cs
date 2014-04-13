@@ -3,11 +3,13 @@ using Metrics.Utils;
 
 namespace Metrics.Core
 {
-    public sealed class TimerMetric : Timer
+    public sealed class TimerMetric : Timer, MetricValue<TimerValue>
     {
         private readonly Clock clock;
         private readonly Meter meter;
         private readonly Histogram histogram;
+        private readonly MetricValue<MeterValue> meterValue;
+        private readonly MetricValue<HistogramValue> histogramValue;
 
         public TimerMetric()
             : this(new HistogramMetric(), new MeterMetric(), Clock.Default) { }
@@ -23,6 +25,19 @@ namespace Metrics.Core
             this.clock = clock;
             this.meter = meter;
             this.histogram = histogram;
+            this.meterValue = meter as MetricValue<MeterValue>;
+
+            if (meterValue == null)
+            {
+                throw new InvalidOperationException("Meter type must also implement MetricValue<MeterValue>");
+            }
+
+            this.histogramValue = histogram as MetricValue<HistogramValue>;
+
+            if (histogramValue == null)
+            {
+                throw new InvalidOperationException("Histogram type must also implement MetricValue<HistogramValue>");
+            }
         }
 
         public void Record(long duration, TimeUnit unit)
@@ -71,7 +86,7 @@ namespace Metrics.Core
         {
             get
             {
-                return new TimerValue(this.meter.Value, this.histogram.Value);
+                return new TimerValue(this.meterValue.Value, this.histogramValue.Value);
             }
         }
     }

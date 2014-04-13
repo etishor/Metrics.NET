@@ -1,9 +1,18 @@
 ﻿
+using Metrics.Core;
 namespace Metrics.Meta
 {
-    public class TimerMeta : MetricMeta<Timer, TimerValue>
+    public class TimerMeta : TimerMeta<TimerMetric>
     {
-        public TimerMeta(string name, Timer timer, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
+        public TimerMeta(string name, TimerMetric timer, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
+            : base(name, timer, unit, rateUnit, durationUnit)
+        { }
+    }
+
+    public class TimerMeta<T> : MetricMeta<T, Timer, TimerValue>
+        where T : Timer, MetricValue<TimerValue>
+    {
+        public TimerMeta(string name, T timer, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
             : base(name, timer, unit)
         {
             this.RateUnit = rateUnit;

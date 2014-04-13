@@ -19,7 +19,7 @@ namespace Metrics.Tests
         [Fact]
         public void CounterCanIncrement()
         {
-            Counter counter = new CounterMetric();
+            var counter = new CounterMetric();
             counter.Increment();
             counter.Value.Should().Be(1L);
         }
@@ -27,7 +27,7 @@ namespace Metrics.Tests
         [Fact]
         public void CounterCanIncrementWithValue()
         {
-            Counter counter = new CounterMetric();
+            var counter = new CounterMetric();
             counter.Increment(32L);
             counter.Value.Should().Be(32L);
         }
@@ -35,7 +35,7 @@ namespace Metrics.Tests
         [Fact]
         public void CounterCanIncrementMultipleTimes()
         {
-            Counter counter = new CounterMetric();
+            var counter = new CounterMetric();
             counter.Increment();
             counter.Increment();
             counter.Increment();
@@ -45,7 +45,7 @@ namespace Metrics.Tests
         [Fact]
         public void CounterCanDecrement()
         {
-            Counter counter = new CounterMetric();
+            var counter = new CounterMetric();
             counter.Decrement();
             counter.Value.Should().Be(-1L);
         }
@@ -53,7 +53,7 @@ namespace Metrics.Tests
         [Fact]
         public void CounterCanDecrementWithValue()
         {
-            Counter counter = new CounterMetric();
+            var counter = new CounterMetric();
             counter.Decrement(32L);
             counter.Value.Should().Be(-32L);
         }
@@ -61,7 +61,7 @@ namespace Metrics.Tests
         [Fact]
         public void CounterCanDecrementMultipleTimes()
         {
-            Counter counter = new CounterMetric();
+            var counter = new CounterMetric();
             counter.Decrement();
             counter.Decrement();
             counter.Decrement();
@@ -74,7 +74,7 @@ namespace Metrics.Tests
             const int threadCount = 16;
             const long iterations = 1000 * 100;
 
-            Counter counter = new CounterMetric();
+            var counter = new CounterMetric();
 
             List<Thread> threads = new List<Thread>();
             TaskCompletionSource<int> tcs = new TaskCompletionSource<int>();

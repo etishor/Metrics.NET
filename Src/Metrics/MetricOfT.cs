@@ -2,10 +2,10 @@
 namespace Metrics
 {
     /// <summary>
-    /// Marker interface for metric classes
+    /// Indicates the ability to provide the value for a metric
     /// </summary>
     /// <typeparam name="T">Type of the value returned by the metric</typeparam>
-    public interface Metric<T> : Utils.IHideObjectMembers where T : struct
+    public interface MetricValue<T> : Utils.IHideObjectMembers where T : struct
     {
         /// <summary>
         /// Get a 

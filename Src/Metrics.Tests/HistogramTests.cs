@@ -9,7 +9,7 @@ namespace Metrics.Tests
         [Fact]
         public void HistogramCanCount()
         {
-            Histogram histogram = new HistogramMetric(new UniformReservoir());
+            var histogram = new HistogramMetric(new UniformReservoir());
             histogram.Update(1L);
             histogram.Value.Count.Should().Be(1);
             histogram.Update(1L);

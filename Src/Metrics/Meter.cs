@@ -9,7 +9,7 @@ namespace Metrics
     /// divided by the number of seconds the process has been running), it doesn’t offer a sense of recency. 
     /// Luckily, meters also record three different exponentially-weighted moving average rates: the 1-, 5-, and 15-minute moving averages.
     /// </summary>
-    public interface Meter : Metric<MeterValue>
+    public interface Meter
     {
         /// <summary>
         /// Mark the occurrence of an event.

@@ -9,16 +9,16 @@ namespace Metrics.Core
 {
     public sealed class Registry : MetricsRegistry
     {
-        private class MetricMetaCatalog<T, TMetric, TMetricValue>
-            where T : MetricMeta<TMetric, TMetricValue>
-            where TMetric : Metric<TMetricValue>
-            where TMetricValue : struct
+        private class MetricMetaCatalog<TMeta, TMetricImpl, TMetric, TValue>
+            where TMeta : MetricMeta<TMetricImpl, TMetric, TValue>
+            where TMetricImpl : TMetric, MetricValue<TValue>
+            where TValue : struct
         {
-            private readonly ConcurrentDictionary<string, T> metrics = new ConcurrentDictionary<string, T>();
+            private readonly ConcurrentDictionary<string, TMeta> metrics = new ConcurrentDictionary<string, TMeta>();
 
-            public IEnumerable<T> All { get { return this.metrics.Values.OrderBy(m => m.Name).AsEnumerable(); } }
+            public IEnumerable<TMeta> All { get { return this.metrics.Values.OrderBy(m => m.Name).AsEnumerable(); } }
 
-            public TMetric GetOrAdd(string name, Func<T> metricProvider)
+            public TMetric GetOrAdd(string name, Func<TMeta> metricProvider)
             {
                 return this.metrics.GetOrAdd(name, n => metricProvider()).Metric();
             }
@@ -29,11 +29,11 @@ namespace Metrics.Core
             }
         }
 
-        private readonly MetricMetaCatalog<GaugeMeta, Gauge, GaugeValue> gauges = new MetricMetaCatalog<GaugeMeta, Gauge, GaugeValue>();
-        private readonly MetricMetaCatalog<CounterMeta, Counter, long> counters = new MetricMetaCatalog<CounterMeta, Counter, long>();
-        private readonly MetricMetaCatalog<MeterMeta, Meter, MeterValue> meters = new MetricMetaCatalog<MeterMeta, Meter, MeterValue>();
-        private readonly MetricMetaCatalog<HistogramMeta, Histogram, HistogramValue> histograms = new MetricMetaCatalog<HistogramMeta, Histogram, HistogramValue>();
-        private readonly MetricMetaCatalog<TimerMeta, Timer, TimerValue> timers = new MetricMetaCatalog<TimerMeta, Timer, TimerValue>();
+        private readonly MetricMetaCatalog<GaugeMeta, GaugeMetric, Gauge, GaugeValue> gauges = new MetricMetaCatalog<GaugeMeta, GaugeMetric, Gauge, GaugeValue>();
+        private readonly MetricMetaCatalog<CounterMeta, CounterMetric, Counter, long> counters = new MetricMetaCatalog<CounterMeta, CounterMetric, Counter, long>();
+        private readonly MetricMetaCatalog<MeterMeta, MeterMetric, Meter, MeterValue> meters = new MetricMetaCatalog<MeterMeta, MeterMetric, Meter, MeterValue>();
+        private readonly MetricMetaCatalog<HistogramMeta, HistogramMetric, Histogram, HistogramValue> histograms = new MetricMetaCatalog<HistogramMeta, HistogramMetric, Histogram, HistogramValue>();
+        private readonly MetricMetaCatalog<TimerMeta, TimerMetric, Timer, TimerValue> timers = new MetricMetaCatalog<TimerMeta, TimerMetric, Timer, TimerValue>();
 
         public Registry()
             : this(Process.GetCurrentProcess().ProcessName) { }
@@ -53,10 +53,11 @@ namespace Metrics.Core
 
         public Gauge Gauge(string name, Func<string> valueProvider, Unit unit)
         {
-            return this.gauges.GetOrAdd(name, () => new GaugeMeta(name, new GaugeMetric(valueProvider), unit));
+            return this.gauges.GetOrAdd(name, () => new GaugeMeta(name, new SimpleGauge(valueProvider), unit));
         }
 
-        public Gauge Gauge(string name, Func<Gauge> gauge, Unit unit)
+        public Gauge Gauge<T>(string name, Func<T> gauge, Unit unit)
+             where T : GaugeMetric
         {
             return this.gauges.GetOrAdd(name, () => new GaugeMeta(name, gauge(), unit));
         }

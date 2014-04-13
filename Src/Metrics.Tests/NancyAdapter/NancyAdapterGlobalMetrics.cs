@@ -48,10 +48,10 @@ namespace Metrics.Tests.NancyAdapter
 
         private readonly Clock.TestClock clock;
         private readonly ManualScheduler scheduler;
-        private readonly Timer timer;
-        private readonly Meter meter;
-        private readonly Counter counter;
-        private readonly Histogram size;
+        private readonly TimerMetric timer;
+        private readonly MeterMetric meter;
+        private readonly CounterMetric counter;
+        private readonly HistogramMetric size;
         private readonly Browser browser;
 
         private readonly TaskCompletionSource<int> requestTrigger = new TaskCompletionSource<int>();

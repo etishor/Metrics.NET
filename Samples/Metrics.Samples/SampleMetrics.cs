@@ -19,11 +19,6 @@ namespace Metrics.Samples
         private readonly Counter concurrentRequestsCounter = Metric.Counter("SampleMetrics.ConcurrentRequests", Unit.Requests);
 
         /// <summary>
-        /// keep a histogram of the number of concurrent requests
-        /// </summary>
-        private readonly Histogram histogramOfConcurrentRequests = Metric.Histogram("SampleMetrics.ConcurrentRequests", Unit.Requests, SamplingType.FavourRecent);
-
-        /// <summary>
         /// keep a histogram of the input data of our requet method 
         /// </summary>
         private readonly Histogram histogramOfData = Metric.Histogram<SampleMetrics>("ResultsExample", Unit.Items, SamplingType.LongTerm);
@@ -53,7 +48,6 @@ namespace Metrics.Samples
                 someValue *= (i + 1); // will be reflected in the gauge 
 
                 this.concurrentRequestsCounter.Increment(); // increment concurrent requests counter
-                this.histogramOfConcurrentRequests.Update(concurrentRequestsCounter.Value);// update the histogram with the concurrent requests counter 
 
                 this.totalRequestsCounter.Increment(); // increment total requests counter 
 

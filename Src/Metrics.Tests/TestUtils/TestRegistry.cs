@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Metrics.Core;
 using Metrics.Meta;
 
 namespace Metrics.Tests.TestUtils
@@ -28,7 +29,7 @@ namespace Metrics.Tests.TestUtils
             return GaugeInstance != null ? GaugeInstance : GaugeBuilder(name, valueProvider, unit);
         }
 
-        public Gauge Gauge(string name, Func<Gauge> gauge, Unit unit)
+        public Gauge Gauge<T>(string name, Func<T> gauge, Unit unit) where T : GaugeMetric
         {
             return gauge();
         }

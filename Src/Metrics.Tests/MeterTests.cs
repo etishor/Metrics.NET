@@ -11,7 +11,7 @@ namespace Metrics.Tests
         [Fact]
         public void MeterCanCount()
         {
-            Meter meter = new MeterMetric();
+            var meter = new MeterMetric();
             meter.Mark();
 
             meter.Value.Count.Should().Be(1L);
@@ -29,7 +29,7 @@ namespace Metrics.Tests
             Clock.TestClock clock = new Clock.TestClock();
             ManualScheduler scheduler = new ManualScheduler(clock);
 
-            Meter meter = new MeterMetric(clock, scheduler);
+            var meter = new MeterMetric(clock, scheduler);
 
             meter.Mark();
             clock.Advance(TimeUnit.Seconds, 1);
@@ -57,7 +57,7 @@ namespace Metrics.Tests
             Clock.TestClock clock = new Clock.TestClock();
             ManualScheduler scheduler = new ManualScheduler(clock);
 
-            Meter meter = new MeterMetric(clock, scheduler);
+            var meter = new MeterMetric(clock, scheduler);
 
             meter.Mark();
             clock.Advance(TimeUnit.Seconds, 5);

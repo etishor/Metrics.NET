@@ -36,8 +36,8 @@ namespace Metrics.Tests.NancyAdapter
         }
 
         private readonly Clock.TestClock clock;
-        private readonly Timer timer;
-        private readonly Histogram sizeHistogram;
+        private readonly TimerMetric timer;
+        private readonly HistogramMetric sizeHistogram;
         private readonly Browser browser;
 
         public NancyAdapterModuleMetricsTests()

@@ -2,7 +2,7 @@
 
 namespace Metrics.Core
 {
-    public sealed class HistogramMetric : Histogram
+    public sealed class HistogramMetric : Histogram, MetricValue<HistogramValue>
     {
         private readonly Reservoir reservoir;
         private AtomicLong counter = new AtomicLong();

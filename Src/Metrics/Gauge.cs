@@ -4,7 +4,7 @@ namespace Metrics
     /// <summary>
     /// A gauge is the simplest metric type. It just returns a value.
     /// </summary>
-    public interface Gauge : Metric<GaugeValue>
+    public interface Gauge
     {
     }
 

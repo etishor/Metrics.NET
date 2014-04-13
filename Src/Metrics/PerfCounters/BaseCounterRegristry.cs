@@ -1,5 +1,7 @@
 ﻿
 using System;
+using Metrics.Core;
+
 namespace Metrics.PerfCounters
 {
     public abstract class BaseCounterRegristry
@@ -16,7 +18,7 @@ namespace Metrics.PerfCounters
             this.prefix = prefix;
         }
 
-        protected void Register(string name, Func<Gauge> gauge, Unit unit)
+        protected void Register(string name, Func<GaugeMetric> gauge, Unit unit)
         {
             this.registry.Gauge(prefix + "." + name, gauge, unit);
         }
