@@ -10,11 +10,13 @@ _This port is still work in progress and should not be considered ready for prod
 
 The Metrics.NET library provides a way of instrumenting applications with custom metrics (timers, historams, counters etc) that can be reported in various ways and can provide insights on what is happening inside a running application. 
 
-The library is published on NuGet as a pre-release library and can be installed with the following command:
+The library is published on NuGet can be installed with the following command:
 
-    Install-Package Metrics.NET -Pre
+    Install-Package Metrics.NET
 
 Supported runtimes: .NET 4.5.1, .NET 4.5, .NET 4.0, Mono 3.4.0 ( tested on OsX )
+
+The API of the library might change until a 1.X version will be made available.
 
 Documentation:
 * [Available Metrics](https://github.com/etishor/Metrics.NET/wiki/Available-Metrics)
