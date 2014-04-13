@@ -94,8 +94,11 @@
     </Compile>
     <Compile Include="Core\BaseRegistry.cs" />
     <Compile Include="Core\ExponentiallyDecayingReservoir.cs" />
+    <Compile Include="Core\HealthCheck.cs" />
+    <Compile Include="Core\HealthCheckResult.cs" />
     <Compile Include="Counter.cs" />
     <Compile Include="Gauge.cs" />
+    <Compile Include="HealthChecks.cs" />
     <Compile Include="Histogram.cs" />
     <Compile Include="Meter.cs" />
     <Compile Include="MetricsRegistry.cs" />
