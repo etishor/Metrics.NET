@@ -6,21 +6,9 @@ Metrics.NET
 
 _This port is still work in progress and should not be considered ready for production. I'm actively using this library in my work projects, but would like to keep the alpha status a little more so I can change my mind about parts of the API._
 
+###Intro
 
-.NET Port of the awesome [Java metrics library by Coda Hale](https://github.com/dropwizard/metrics)
-
-This port is also inspired and contains some code from [Daniel Crenna's port](https://github.com/danielcrenna/metrics-net) of the same library.
-
-I have decided to write another .NET port of the same library since Daniel does not actively maintain metrics-net. 
-I've also wanted to better understand the internals of the library and try to provide a better API, more suitable for the .NET world.
-
-Intro
------
-
-The entry point in the Metrics library is the [Metric](https://github.com/etishor/Metrics.NET/blob/master/Src/Metrics/Metric.cs) static class. 
-Until some documentation will be provided that is a good starting point.
-
-The [documentation of the Java Library](http://metrics.codahale.com/manual/core/) is also useful for understating the concepts.
+The Metrics.NET library provides a way of instrumenting applications with custom metrics (timers, historams, counters etc) that can be reported in various ways and can provide insights on what is happening inside a running application. 
 
 The library is published on NuGet as a pre-release library and can be installed with the following command:
 
@@ -28,8 +16,12 @@ The library is published on NuGet as a pre-release library and can be installed 
 
 Supported runtimes: .NET 4.5.1, .NET 4.5, .NET 4.0, Mono 3.4.0 ( tested on OsX )
 
-Using the library (see Samples for more examples)
--------------------------------------------------
+Documentation:
+* [Available Metrics](https://github.com/etishor/Metrics.NET/wiki/Available-Metrics)
+* [Metric Visualization](https://github.com/etishor/Metrics.NET/wiki/Metrics-Visualization)
+* [Documentation Wiki](https://github.com/etishor/Metrics.NET/wiki/)
+
+###Quick Usage Sample
 
 ```csharp
     public class SampleMetrics
@@ -45,47 +37,19 @@ Using the library (see Samples for more examples)
         }
     }
 ```
-Display Metrics
----------------
 
-Start a HttpListener that will serve the visualization app
+###Adapters for other applications
 
-```csharp
-    Metric.Reports.StartHttpListener("http://localhost:1234/");
-```
+Adapters integrate Metrics.NET with other libraries & frameworks.
 
-Schedule a console report to be run and displayed every 10 seconds:
+* [NancyFx.Metrics](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter)
 
-```csharp
-    Metric.Reports.PrintConsoleReport(TimeSpan.FromSeconds(10));
-```
+###Visualization App
+A visualization app is now available: [Metrics.NET.FlotVisualization](https://github.com/etishor/Metrics.NET.FlotVisualization). 
 
-Schedule a line to be appended for each metric to a csv file:
+![Sample Visualization](https://raw.githubusercontent.com/etishor/Metrics.NET.FlotVisualization/master/sample.png)
 
-```csharp
-    Metric.Reports.StoreCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(30));
-```
-
-Schedule a human readable text repot to be appended to a file every 30 seconds
-
-```csharp
-    Metric.Reports.AppendToFile(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(30));
-```
-
-Adapters for other applications
--------------------------------
-
-[NancyFx.Metrics](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter) - includes visualization support
-
-
-News
-----
-A visualization app is now available in the Visualization folder. More details on the [wiki](https://github.com/etishor/Metrics.NET/wiki/Metrics.Flot-Visualization)
-
-![Sample Visualization](https://raw.githubusercontent.com/etishor/Metrics.NET/master/Visualization/Metrics.Flot/sample.png)
-
-TODO
-----
+###TODO
 A live list of my future plan
 
 * [done] Provide a few presets to map performance counters to Gauges ( machine info, process info, CLR stats etc )
@@ -94,6 +58,7 @@ A live list of my future plan
 * [done] Re-factor scheduled report to prevent overlapping
 * [done]Provide http endpoint for reporting metrics (based on owin or nancy) together with javascript visualization solution - the idea is to have out-of-the-box metrics visualization in web apps
 * [done] Mono compatibility
+* Push metrics out of process, to dedicated metrics service
 * Improve the javascript visualization app
 * Find/Implement ConcurrentSkipMap like collection form java - low prio as the performance is good for now
 * Provide an adapter for hooking into web api for collecting metrics (this might be delayed as I tend to use NancyFx)
@@ -106,8 +71,13 @@ A live list of my future plan
 * Write more "stupid" benchmarks to be able to keep an eye on how performance changes in time
 * Profile & optimize. Also profile existing apps to see the impact of adding metrics
 
-License
--------
+###License
+.NET Port of the awesome [Java metrics library by Coda Hale](https://github.com/dropwizard/metrics)
+
+This port is also inspired and contains some code from [Daniel Crenna's port](https://github.com/danielcrenna/metrics-net) of the same library.
+
+I have decided to write another .NET port of the same library since Daniel does not actively maintain metrics-net. 
+I've also wanted to better understand the internals of the library and try to provide a better API, more suitable for the .NET world.
 
 This port will always keep the same license as the original Java Metrics library.
 
