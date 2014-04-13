@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Metrics.Core;
-using Metrics.Meta;
 
 namespace Metrics
 {
@@ -9,11 +8,11 @@ namespace Metrics
     {
         string Name { get; }
 
-        IEnumerable<GaugeMeta> Gauges { get; }
-        IEnumerable<CounterMeta> Counters { get; }
-        IEnumerable<MeterMeta> Meters { get; }
-        IEnumerable<HistogramMeta> Histograms { get; }
-        IEnumerable<TimerMeta> Timers { get; }
+        IEnumerable<GaugeValueSource> Gauges { get; }
+        IEnumerable<CounterValueSource> Counters { get; }
+        IEnumerable<MeterValueSource> Meters { get; }
+        IEnumerable<HistogramValueSource> Histograms { get; }
+        IEnumerable<TimerValueSource> Timers { get; }
 
         Gauge Gauge(string name, Func<string> valueProvider, Unit unit);
         Gauge Gauge<T>(string name, Func<T> gauge, Unit unit) where T : GaugeMetric;

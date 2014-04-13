@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Metrics.Core;
-using Metrics.Meta;
 
 namespace Metrics.Tests.TestUtils
 {
@@ -54,11 +53,11 @@ namespace Metrics.Tests.TestUtils
             return TimerInstance != null ? TimerInstance : TimerBuilder(name, unit, samplingType, rateUnit, durationUnit);
         }
 
-        public IEnumerable<GaugeMeta> Gauges { get { yield break; } }
-        public IEnumerable<CounterMeta> Counters { get { yield break; } }
-        public IEnumerable<MeterMeta> Meters { get { yield break; } }
-        public IEnumerable<HistogramMeta> Histograms { get { yield break; } }
-        public IEnumerable<TimerMeta> Timers { get { yield break; } }
+        public IEnumerable<GaugeValueSource> Gauges { get { yield break; } }
+        public IEnumerable<CounterValueSource> Counters { get { yield break; } }
+        public IEnumerable<MeterValueSource> Meters { get { yield break; } }
+        public IEnumerable<HistogramValueSource> Histograms { get { yield break; } }
+        public IEnumerable<TimerValueSource> Timers { get { yield break; } }
 
         public void ClearAllMetrics() { }
     }

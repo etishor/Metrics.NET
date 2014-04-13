@@ -2,7 +2,7 @@
 using System;
 namespace Metrics.Core
 {
-    public abstract class GaugeMetric : Gauge, MetricValue<GaugeValue>
+    public abstract class GaugeMetric : Gauge, MetricValueProvider<GaugeValue>
     {
         protected abstract string GetValue();
         public GaugeValue Value { get { return new GaugeValue(this.GetValue()); } }

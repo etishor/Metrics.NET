@@ -6,7 +6,7 @@ namespace Metrics
     /// A timer is basically a histogram of the duration of a type of event and a meter of the rate of its occurrence.
     /// <seealso cref="Histogram"/> and <seealso cref="Meter"/>
     /// </summary>
-    public interface Timer
+    public interface Timer : Utils.IHideObjectMembers
     {
         /// <summary>
         /// Manualy record timer value
@@ -60,5 +60,21 @@ namespace Metrics
         {
             return new TimerValue(this.Rate.Scale(rate), this.Histogram.Scale(duration));
         }
+    }
+
+    /// <summary>
+    /// Combines the value of the timer with the defined unit and the time units for rate and duration.
+    /// </summary>
+    public class TimerValueSource : MetricValueSource<TimerValue>
+    {
+        public TimerValueSource(string name, MetricValueProvider<TimerValue> value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
+            : base(name, value, unit)
+        {
+            this.RateUnit = rateUnit;
+            this.DurationUnit = durationUnit;
+        }
+
+        public TimeUnit RateUnit { get; private set; }
+        public TimeUnit DurationUnit { get; private set; }
     }
 }

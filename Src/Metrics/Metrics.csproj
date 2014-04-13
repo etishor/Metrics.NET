@@ -92,21 +92,16 @@
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Core\BaseRegistry.cs" />
     <Compile Include="Core\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Counter.cs" />
     <Compile Include="Gauge.cs" />
     <Compile Include="Histogram.cs" />
-    <Compile Include="Meta\CounterMeta.cs" />
-    <Compile Include="Meta\GaugeMeta.cs" />
-    <Compile Include="Meta\HistogramMeta.cs" />
-    <Compile Include="Meta\MeterMeta.cs" />
-    <Compile Include="Meta\MetricMeta.cs" />
-    <Compile Include="Meta\TimerMeta.cs" />
-    <Compile Include="MetricOfT.cs" />
     <Compile Include="Meter.cs" />
     <Compile Include="MetricsRegistry.cs" />
-    <Compile Include="Core\Registry.cs" />
+    <Compile Include="Core\LocalRegistry.cs" />
     <Compile Include="MetricsReports.cs" />
+    <Compile Include="MetricValueSource.cs" />
     <Compile Include="PerfCounters\BaseCounterRegristry.cs" />
     <Compile Include="PerfCounters\CLRCounters.cs" />
     <Compile Include="PerfCounters\PerformanceCounterGauge.cs" />

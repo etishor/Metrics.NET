@@ -9,7 +9,7 @@ namespace Metrics
     /// divided by the number of seconds the process has been running), it doesn’t offer a sense of recency. 
     /// Luckily, meters also record three different exponentially-weighted moving average rates: the 1-, 5-, and 15-minute moving averages.
     /// </summary>
-    public interface Meter
+    public interface Meter : Utils.IHideObjectMembers 
     {
         /// <summary>
         /// Mark the occurrence of an event.
@@ -50,4 +50,17 @@ namespace Metrics
         }
     }
 
+    /// <summary>
+    /// Combines the value of the meter with the defined unit and the rate unit at which the value is reported.
+    /// </summary>
+    public sealed class MeterValueSource : MetricValueSource<MeterValue>
+    {
+        public MeterValueSource(string name, MetricValueProvider<MeterValue> value, Unit unit, TimeUnit rateUnit)
+            : base(name, value, unit)
+        {
+            this.RateUnit = rateUnit;
+        }
+
+        public TimeUnit RateUnit { get; private set; }
+    }
 }

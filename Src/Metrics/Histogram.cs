@@ -6,7 +6,7 @@ namespace Metrics
     /// <summary>
     /// A Histogram measures the distribution of values in a stream of data: e.g., the number of results returned by a search.
     /// </summary>
-    public interface Histogram
+    public interface Histogram : Utils.IHideObjectMembers 
     {
         /// <summary>
         /// Records a value.
@@ -67,5 +67,15 @@ namespace Metrics
         {
             return this.Scale(1.0 / (double)durationUnit.ToNanoseconds(1));
         }
+    }
+
+    /// <summary>
+    /// Combines the value of the histogram with the defined unit for the value.
+    /// </summary>
+    public sealed class HistogramValueSource : MetricValueSource<HistogramValue>
+    {
+        public HistogramValueSource(string name, MetricValueProvider<HistogramValue> value, Unit unit)
+            : base(name, value, unit)
+        { }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Metrics.Meta;
 using Metrics.Utils;
 
 namespace Metrics.Reporters
@@ -20,35 +19,35 @@ namespace Metrics.Reporters
             return new JsonObject(root).AsJson(indented);
         }
 
-        public JsonFormatter AddObject(IEnumerable<GaugeMeta> gauges)
+        public JsonFormatter AddObject(IEnumerable<GaugeValueSource> gauges)
         {
             root.Add(new JsonProperty("Gauges", gauges.Select(g => new JsonProperty(g.Name, GetJsonValue(g.Value.Value)))));
             units.Add(new JsonProperty("Gauges", gauges.Select(g => new JsonProperty(g.Name, g.Unit.Name))));
             return this;
         }
 
-        public JsonFormatter AddObject(IEnumerable<CounterMeta> counters)
+        public JsonFormatter AddObject(IEnumerable<CounterValueSource> counters)
         {
             root.Add(new JsonProperty("Counters", counters.Select(c => new JsonProperty(c.Name, c.Value))));
             units.Add(new JsonProperty("Counters", counters.Select(c => new JsonProperty(c.Name, c.Unit.Name))));
             return this;
         }
 
-        public JsonFormatter AddObject(IEnumerable<MeterMeta> meters)
+        public JsonFormatter AddObject(IEnumerable<MeterValueSource> meters)
         {
             root.Add(new JsonProperty("Meters", meters.Select(m => new JsonProperty(m.Name, Meter(m.Value)))));
             units.Add(new JsonProperty("Meters", meters.Select(m => new JsonProperty(m.Name, string.Format("{0}/{1}", m.Unit.Name, m.RateUnit.Unit())))));
             return this;
         }
 
-        public JsonFormatter AddObject(IEnumerable<HistogramMeta> histograms)
+        public JsonFormatter AddObject(IEnumerable<HistogramValueSource> histograms)
         {
             root.Add(new JsonProperty("Histograms", histograms.Select(m => new JsonProperty(m.Name, Histogram(m.Value)))));
             units.Add(new JsonProperty("Histograms", histograms.Select(m => new JsonProperty(m.Name, m.Unit.Name))));
             return this;
         }
 
-        public JsonFormatter AddObject(IEnumerable<TimerMeta> timers)
+        public JsonFormatter AddObject(IEnumerable<TimerValueSource> timers)
         {
             var properties = timers.Select(t => new { Name = t.Name, Value = t.Value })
                 .Select(t => new JsonProperty(t.Name, new[] { new JsonProperty("Rate", Meter(t.Value.Rate)), new JsonProperty("Histogram", Histogram(t.Value.Histogram)) }));
