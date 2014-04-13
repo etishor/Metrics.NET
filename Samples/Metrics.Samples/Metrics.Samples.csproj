@@ -51,7 +51,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Net4.0Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
     <DefineConstants>DEBUG;TRACE;NET40</DefineConstants>
     <DebugType>full</DebugType>
@@ -60,7 +60,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Net4.0Release|AnyCPU'">
-	<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
     <DefineConstants>TRACE;NET40</DefineConstants>
     <Optimize>true</Optimize>
