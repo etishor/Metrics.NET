@@ -44,6 +44,7 @@ namespace Nancy.Metrics
             Get["/"] = _ => Response.AsText(FlotWebApp.GetFlotApp(new Uri(this.Context.Request.Url, "json")), "text/html");
             Get["/text"] = _ => Response.AsText(Metric.GetAsHumanReadable());
             Get["/json"] = _ => Response.AsText(RegistrySerializer.ValuesAsJson(Config.Registry), "text/json");
+            Get["/ping"] = _ => Response.AsText("pong", "text/plain");
         }
     }
 }

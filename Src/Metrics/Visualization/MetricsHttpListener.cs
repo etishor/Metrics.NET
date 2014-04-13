@@ -56,10 +56,25 @@ namespace Metrics.Visualization
                 case "/text":
                     WriteTextMetrics(context);
                     break;
+                case "/ping":
+                    WritePong(context);
+                    break;
                 default:
                     WriteNotFound(context);
                     break;
             }
+        }
+
+        private static void WritePong(HttpListenerContext context)
+        {
+            context.Response.ContentType = "text/plain";
+            context.Response.StatusCode = 200;
+            context.Response.StatusDescription = "OK";
+            using (var writer = new StreamWriter(context.Response.OutputStream))
+            {
+                writer.Write("pong");
+            }
+            context.Response.Close();
         }
 
         private static void WriteNotFound(HttpListenerContext context)
