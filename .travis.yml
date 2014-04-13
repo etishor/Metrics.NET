@@ -4,9 +4,9 @@ env:
  global:
   - EnableNuGetPackageRestore=true
  matrix:
-  - MONO_VERSION="3.4.0"
+  - MONO_VERSION="3.4.0.185"
 before_install:
- - wget "http://download.xamarin.com/MonoFrameworkMDK/Macx86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
+ - wget "http://download.mono-project.com/archive/3.4.0/macos-10-x86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
  - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg" -target /
 
 script:
