@@ -11,40 +11,41 @@ namespace Metrics
         public readonly bool IsHealty;
         public readonly HealthCheckResult[] Results;
 
-        public HealthStatus(bool isHealthy, IEnumerable<HealthCheckResult> results)
+        public HealthStatus(IEnumerable<HealthCheckResult> results)
         {
-            this.IsHealty = isHealthy;
             this.Results = results.ToArray();
+            this.IsHealty = this.Results.All(r => r.IsHealthy);
         }
     }
 
-    public class HealthChecks
+    public static class HealthChecks
     {
-        private readonly ConcurrentDictionary<string, HealthCheck> checks = new ConcurrentDictionary<string, HealthCheck>();
+        private static readonly ConcurrentDictionary<string, HealthCheck> checks = new ConcurrentDictionary<string, HealthCheck>();
 
-        public void RegisterHealthCheck(string name, Action check)
+        public static void RegisterHealthCheck(string name, Action check)
         {
             RegisterHealthCheck(new HealthCheck(name, check));
         }
 
-        public void RegisterHealthCheck(string name, Func<string> check)
+        public static void RegisterHealthCheck(string name, Func<string> check)
         {
             RegisterHealthCheck(new HealthCheck(name, check));
         }
 
-        public void RegisterHealthCheck(string name, Func<HealthCheckResult> check)
+        public static void RegisterHealthCheck(string name, Func<HealthCheckResult> check)
         {
             RegisterHealthCheck(new HealthCheck(name, check));
         }
 
-        public void RegisterHealthCheck(HealthCheck check)
+        public static void RegisterHealthCheck(HealthCheck check)
         {
-            this.checks.AddOrUpdate(check.Name, check, (n, c) => check);
+            checks.AddOrUpdate(check.Name, check, (n, c) => check);
         }
 
-        public IEnumerable<HealthCheckResult> GetStatus()
+        public static HealthStatus GetStatus()
         {
-            return this.checks.Values.Select(v => v.Execute()).OrderBy(r => r.Name);
+            var results = checks.Values.Select(v => v.Execute()).OrderBy(r => r.Name);
+            return new HealthStatus(results);
         }
     }
 }
