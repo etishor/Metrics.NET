@@ -10,9 +10,26 @@ namespace Metrics
     /// </summary>
     public static class Metric
     {
-        private static readonly MetricsRegistry registry = new Registry();
-        private static readonly MetricsReports reports = new MetricsReports(registry);
-        private static readonly PerformanceCounters machineCounters = new PerformanceCounters(registry);
+        private static Lazy<MetricsRegistry> registry = new Lazy<MetricsRegistry>(() => new Registry(), true);
+
+        private static readonly Lazy<MetricsReports> reports = new Lazy<MetricsReports>(() => new MetricsReports(Metric.Registry));
+        private static readonly Lazy<PerformanceCounters> machineCounters = new Lazy<PerformanceCounters>(() => new PerformanceCounters(Metric.Registry), true);
+
+        /// <summary>
+        /// Configure the Metric static class to use a custom MetricsRegistry.
+        /// </summary>
+        /// <remarks>
+        /// You must call Metric.ConfigureDefaultRegistry before any other Metric call.
+        /// </remarks>
+        /// <param name="registry">The custom registry to use for registring metrics.</param>
+        public static void ConfigureDefaultRegistry(MetricsRegistry registry)
+        {
+            if (Metric.registry.IsValueCreated)
+            {
+                throw new InvalidOperationException("Metrics registry has already been created. You must call Metric.ConfigureDefaultRegistry before any other Metric call.");
+            }
+            Metric.registry = new Lazy<MetricsRegistry>(() => registry);
+        }
 
         /// <summary>
         /// Global error handler for the metrics library. If a handler is registered any error will be passed to the handler.
@@ -23,17 +40,17 @@ namespace Metrics
         /// <summary>
         /// Entry point for metric reporting operations
         /// </summary>
-        public static MetricsReports Reports { get { return reports; } }
+        public static MetricsReports Reports { get { return reports.Value; } }
 
         /// <summary>
         /// Entry point for registering metrics derived from PerformanceCounters.
         /// </summary>
-        public static PerformanceCounters MachineCounters { get { return machineCounters; } }
+        public static PerformanceCounters MachineCounters { get { return machineCounters.Value; } }
 
         /// <summary>
         /// The registry where all the metrics are registered. 
         /// </summary>
-        public static MetricsRegistry Registry { get { return registry; } }
+        public static MetricsRegistry Registry { get { return registry.Value; } }
 
         /// <summary>
         /// Register a performance counter as a Gauge metric.
@@ -47,7 +64,7 @@ namespace Metrics
         /// <returns>Reference to the gauge</returns>
         public static Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Func<float, string> formatter, Unit unit)
         {
-            return registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance, formatter), unit);
+            return Metric.Registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance, formatter), unit);
         }
 
         /// <summary>
@@ -62,7 +79,7 @@ namespace Metrics
         /// <returns>Reference to the gauge</returns>
         public static Gauge Gauge<T>(string name, Func<string> valueProvider, Unit unit)
         {
-            return registry.Gauge(Name<T>(name), valueProvider, unit);
+            return Metric.Registry.Gauge(Name<T>(name), valueProvider, unit);
         }
 
         /// <summary>
@@ -74,7 +91,7 @@ namespace Metrics
         /// <returns>Reference to the gauge</returns>
         public static Gauge Gauge(string name, Func<string> valueProvider, Unit unit)
         {
-            return registry.Gauge(name, valueProvider, unit);
+            return Metric.Registry.Gauge(name, valueProvider, unit);
         }
 
         /// <summary>
@@ -114,7 +131,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public static Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)
         {
-            return registry.Meter(name, unit, rateUnit);
+            return Metric.Registry.Meter(name, unit, rateUnit);
         }
 
         /// <summary>
@@ -138,7 +155,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public static Counter Counter(string name, Unit unit)
         {
-            return registry.Counter(name, unit);
+            return Metric.Registry.Counter(name, unit);
         }
 
         /// <summary>
@@ -164,7 +181,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public static Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
         {
-            return registry.Histogram(name, unit, samplingType);
+            return Metric.Registry.Histogram(name, unit, samplingType);
         }
 
         /// <summary>
@@ -198,7 +215,7 @@ namespace Metrics
         public static Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
             TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
         {
-            return registry.Timer(name, unit, samplingType, rateUnit, durationUnit);
+            return Metric.Registry.Timer(name, unit, samplingType, rateUnit, durationUnit);
         }
 
         /// <summary>
@@ -208,7 +225,7 @@ namespace Metrics
         /// <returns>Object suitable for serialization.</returns>
         public static object GetForSerialization()
         {
-            return RegistrySerializer.GetForSerialization(registry);
+            return RegistrySerializer.GetForSerialization(Metric.Registry);
         }
 
         /// <summary>
@@ -218,7 +235,7 @@ namespace Metrics
         public static string GetAsHumanReadable()
         {
             var report = new StringReporter();
-            report.RunReport(registry);
+            report.RunReport(Metric.Registry);
             return report.Result;
         }
 
