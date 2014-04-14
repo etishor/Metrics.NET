@@ -25,6 +25,7 @@ namespace NancyFx.Sample
                 Process.Start("http://localhost:1234/metrics/");
 
                 SampleMetrics.RunSomeRequests();
+                HealthChecksSample.RegisterHealthChecks();
 
                 Console.ReadKey();
             }
