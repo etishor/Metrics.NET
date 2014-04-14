@@ -69,7 +69,7 @@ namespace Metrics.Reporters
                 status.Results.SelectMany(r => new[]
             {
                 new Value(r.Name + " IsHealthy" ,r.Check.IsHealthy),
-                new Value(r.Name + " Message" ,r.Check.Message)
+                new Value(r.Name + " Message" ,r.Check.Message.Split('\n').First() ) // only first line
             })));
         }
 
