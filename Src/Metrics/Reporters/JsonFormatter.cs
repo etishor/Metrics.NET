@@ -68,11 +68,11 @@ namespace Metrics.Reporters
         public JsonFormatter AddObject(HealthStatus status)
         {
             var properties = new List<JsonProperty>() { new JsonProperty("IsHealthy", status.IsHealty) };
-            var unhealty = status.Results.Where(r => !r.IsHealthy)
-                .Select(r => new JsonProperty(r.Name, r.Message));
+            var unhealty = status.Results.Where(r => !r.Check.IsHealthy)
+                .Select(r => new JsonProperty(r.Name, r.Check.Message));
             properties.Add(new JsonProperty("Unhealthy", unhealty));
-            var healty = status.Results.Where(r => r.IsHealthy)
-                    .Select(r => new JsonProperty(r.Name, r.Message));
+            var healty = status.Results.Where(r => r.Check.IsHealthy)
+                    .Select(r => new JsonProperty(r.Name, r.Check.Message));
             properties.Add(new JsonProperty("Healthy", healty));
             this.root.AddRange(properties);
             return this;

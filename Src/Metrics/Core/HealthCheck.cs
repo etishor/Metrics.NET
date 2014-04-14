@@ -2,16 +2,32 @@
 
 namespace Metrics.Core
 {
-    public sealed class HealthCheck
+    public class HealthCheck
     {
+        public struct Result
+        {
+            public readonly string Name;
+            public readonly HealthCheckResult Check;
+
+            public Result(string name, HealthCheckResult check)
+            {
+                this.Name = name;
+                this.Check = check;
+            }
+        }
+
         private readonly Func<HealthCheckResult> check;
+
+        protected HealthCheck(string name)
+            : this(name, () => { })
+        { }
 
         public HealthCheck(string name, Action check)
             : this(name, () => { check(); return string.Empty; })
         { }
 
         public HealthCheck(string name, Func<string> check)
-            : this(name, MapFunction(name, check))
+            : this(name, () => HealthCheckResult.Healthy(check()))
         { }
 
         public HealthCheck(string name, Func<HealthCheckResult> check)
@@ -22,31 +38,20 @@ namespace Metrics.Core
 
         public string Name { get; private set; }
 
-        private static Func<HealthCheckResult> MapFunction(string name, Func<string> check)
+        protected virtual HealthCheckResult Check()
         {
-            return () =>
-            {
-                try
-                {
-                    var result = check();
-                    return HealthCheckResult.Healthy(name, result);
-                }
-                catch (Exception x)
-                {
-                    return HealthCheckResult.Unhealthy(name, x);
-                }
-            };
+            return this.check();
         }
 
-        public HealthCheckResult Execute()
+        public Result Execute()
         {
             try
             {
-                return this.check();
+                return new Result(this.Name, this.Check());
             }
             catch (Exception x)
             {
-                return HealthCheckResult.Unhealthy(this.Name, x);
+                return new Result(this.Name, HealthCheckResult.Unhealthy(x));
             }
         }
     }
