@@ -1,21 +1,24 @@
-﻿
+﻿#if PADDED_ATOMIC_LONG
 using System.Runtime.InteropServices;
+#endif
 using System.Threading;
 namespace Metrics.Utils
 {
     /// <summary>
-    /// Atomic long. Padded to avoid false sharing.
-    /// 
+    /// Atomic long.
     /// TBD: implement optimizations behind LongAdder from 
     /// <a href="https://github.com/dropwizard/metrics/blob/master/metrics-core/src/main/java/com/codahale/metrics/LongAdder.java">metrics-core</a>
     /// </summary>
-    [StructLayout(LayoutKind.Explicit, Size = 64)]
+#if PADDED_ATOMIC_LONG
+    [StructLayout(LayoutKind.Explicit, Size = 64 * 2)]
+#endif
     public struct AtomicLong
     {
-        [FieldOffset(64)]
-        private long value;
 
-        //public AtomicLong() : this(0L) { }
+#if PADDED_ATOMIC_LONG
+        [FieldOffset(64)]
+#endif
+        private long value;
 
         public AtomicLong(long value)
         {
