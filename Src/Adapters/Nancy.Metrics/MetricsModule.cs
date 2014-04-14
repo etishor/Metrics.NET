@@ -41,10 +41,19 @@ namespace Nancy.Metrics
                 Config.ModuleConfigAction(this);
             }
 
-            Get["/"] = _ => Response.AsText(FlotWebApp.GetFlotApp(new Uri(this.Context.Request.Url, "json")), "text/html");
+            Get["/"] = _ => Response.AsText(FlotWebApp.GetFlotApp(GetJsonUri()), "text/html");
             Get["/text"] = _ => Response.AsText(Metric.GetAsHumanReadable());
             Get["/json"] = _ => Response.AsText(RegistrySerializer.ValuesAsJson(Config.Registry), "text/json");
             Get["/ping"] = _ => Response.AsText("pong", "text/plain");
+        }
+
+        private Uri GetJsonUri()
+        {
+            if (this.Context.Request.Url.Path.EndsWith("/"))
+            {
+                return new Uri(this.Context.Request.Url, "json");
+            }
+            return new Uri(this.Context.Request.Url.SiteBase + this.Context.Request.Url.Path + "/json");
         }
     }
 }
