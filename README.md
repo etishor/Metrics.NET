@@ -20,6 +20,7 @@ The API of the library might change until a 1.X version will be made available.
 
 Documentation:
 * [Available Metrics](https://github.com/etishor/Metrics.NET/wiki/Available-Metrics)
+* [Health Checks](https://github.com/etishor/Metrics.NET/wiki/Health-Checks)
 * [Metric Visualization](https://github.com/etishor/Metrics.NET/wiki/Metrics-Visualization)
 * [Documentation Wiki](https://github.com/etishor/Metrics.NET/wiki/)
 
@@ -60,6 +61,7 @@ A live list of my future plan
 * [done] Re-factor scheduled report to prevent overlapping
 * [done]Provide http endpoint for reporting metrics (based on owin or nancy) together with javascript visualization solution - the idea is to have out-of-the-box metrics visualization in web apps
 * [done] Mono compatibility
+* [done] health checks
 * Push metrics out of process, to dedicated metrics service
 * Improve the javascript visualization app
 * Find/Implement ConcurrentSkipMap like collection form java - low prio as the performance is good for now
