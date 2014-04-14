@@ -50,12 +50,46 @@ namespace Metrics.Samples
                 }
             });
 
-            HealthChecks.RegisterHealthCheck("SampleOperatoin", () => SampleOperation());
+            HealthChecks.RegisterHealthCheck("SampleOperation", () => SampleOperation());
+            HealthChecks.RegisterHealthCheck("AggregateSampleOperation", () => AggregateSampleOperation());
         }
 
         private static void SampleOperation()
         {
-            throw new InvalidOperationException("operation went south");
+            try
+            {
+                try
+                {
+                    throw new InvalidCastException("Sample error");
+                }
+                catch (Exception x)
+                {
+                    throw new FormatException("Another Error", x);
+                }
+            }
+            catch (Exception x)
+            {
+                throw new InvalidOperationException("operation went south", x);
+            }
+        }
+
+        private static void AggregateSampleOperation()
+        {
+            try
+            {
+                SampleOperation();
+            }
+            catch (Exception x1)
+            {
+                try
+                {
+                    SampleOperation();
+                }
+                catch (Exception x2)
+                {
+                    throw new AggregateException(new[] { x1, x2 });
+                }
+            }
         }
 
         public static void CheckDbIsConnected()
