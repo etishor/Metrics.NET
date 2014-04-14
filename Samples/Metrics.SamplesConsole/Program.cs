@@ -11,8 +11,11 @@ namespace Metrics.SamplesConsole
 
             SampleMetrics.RunSomeRequests();
 
-            Metric.Reports.StoreCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(1));
-            Metric.Reports.AppendToFile(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(1));
+            HealthChecksSample.RegisterHealthChecks();
+
+            Metric.Reports.PrintConsoleReport(TimeSpan.FromSeconds(10));
+            Metric.Reports.StoreCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(10));
+            Metric.Reports.AppendToFile(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(10));
 
             Metric.Reports.StartHttpListener("http://localhost:1234/");
 
