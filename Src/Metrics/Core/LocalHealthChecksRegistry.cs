@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
 
 namespace Metrics.Core
@@ -22,7 +23,10 @@ namespace Metrics.Core
 
         public void Register(HealthCheck healthCheck)
         {
-            checks.AddOrUpdate(healthCheck.Name, healthCheck, (n, c) => healthCheck);
+            if (!checks.TryAdd(healthCheck.Name, healthCheck))
+            {
+                throw new InvalidOperationException("HealthCheck named " + healthCheck.Name + " already registered");
+            }
         }
 
         public HealthStatus GetStatus()
