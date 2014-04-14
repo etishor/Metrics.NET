@@ -1,6 +1,7 @@
 rd /S /Q .\Publishing\lib
 
 call build.bat
+if %errorlevel% neq 0 exit /b %errorlevel%
 
 md .\Publishing\lib
 md .\Publishing\lib\net451
@@ -32,4 +33,7 @@ copy .\bin\Net4.0Release\nancy.metrics.xml .\Publishing\lib\net40\
 copy .\bin\Net4.0Release\nancy.metrics.pdb .\Publishing\lib\net40\
 
 .\.nuget\NuGet.exe pack .\Publishing\Metrics.Net.nuspec -OutputDirectory .\Publishing
+if %errorlevel% neq 0 exit /b %errorlevel%
+
 .\.nuget\NuGet.exe pack .\Publishing\NancyFx.Metrics.nuspec -OutputDirectory .\Publishing
+if %errorlevel% neq 0 exit /b %errorlevel%
