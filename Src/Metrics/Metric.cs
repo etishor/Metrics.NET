@@ -21,7 +21,7 @@ namespace Metrics
         /// <remarks>
         /// You must call Metric.ConfigureDefaultRegistry before any other Metric call.
         /// </remarks>
-        /// <param name="registry">The custom registry to use for registring metrics.</param>
+        /// <param name="registry">The custom registry to use for registering metrics.</param>
         public static void ConfigureDefaultRegistry(MetricsRegistry registry)
         {
             if (Metric.registry.IsValueCreated)
