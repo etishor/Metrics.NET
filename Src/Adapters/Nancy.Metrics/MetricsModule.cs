@@ -45,6 +45,17 @@ namespace Nancy.Metrics
             Get["/text"] = _ => Response.AsText(Metric.GetAsHumanReadable());
             Get["/json"] = _ => Response.AsText(RegistrySerializer.ValuesAsJson(Config.Registry), "text/json");
             Get["/ping"] = _ => Response.AsText("pong", "text/plain");
+            Get["/health"] = _ => GetHealthStatus();
+        }
+
+        private dynamic GetHealthStatus()
+        {
+            var status = HealthChecks.GetStatus();
+            var content = HealthCheckSerializer.Serialize(status);
+
+            var response = Response.AsText(content, "application/json");
+            response.StatusCode = status.IsHealty ? HttpStatusCode.OK : HttpStatusCode.InternalServerError;
+            return response;
         }
 
         private Uri GetJsonUri()

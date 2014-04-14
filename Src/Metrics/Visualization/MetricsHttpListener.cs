@@ -59,10 +59,32 @@ namespace Metrics.Visualization
                 case "/ping":
                     WritePong(context);
                     break;
+                case "/health":
+                    WriteHealthStatus(context);
+                    break;
                 default:
                     WriteNotFound(context);
                     break;
             }
+        }
+
+        private static void WriteHealthStatus(HttpListenerContext context)
+        {
+            var status = HealthChecks.GetStatus();
+            var json = HealthCheckSerializer.Serialize(status);
+
+            context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            context.Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            context.Response.ContentType = "application/json";
+
+            context.Response.StatusCode = status.IsHealty ? 200 : 500;
+            context.Response.StatusDescription = status.IsHealty ? "OK" : "Internal Server Error";
+
+            using (var writer = new StreamWriter(context.Response.OutputStream))
+            {
+                writer.Write(json);
+            }
+            context.Response.Close();
         }
 
         private static void WritePong(HttpListenerContext context)
