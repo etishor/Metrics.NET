@@ -87,7 +87,7 @@ namespace Metrics
             if (aggregate != null)
             {
                 builder.AppendFormat("{0}{1}: {2}" + Environment.NewLine, pad, exception.GetType().Name, exception.Message);
-                var aggegate = aggregate.Flatten();
+
                 foreach (var inner in aggregate.InnerExceptions)
                 {
                     builder.AppendLine(FormatStackTrace(inner, indent + 2));
