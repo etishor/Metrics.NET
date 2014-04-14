@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Metrics.Core;
@@ -11,6 +10,11 @@ namespace Metrics
     /// </summary>
     public struct HealthStatus
     {
+        /// <summary>
+        /// Flag indicating whether any checks are registered
+        /// </summary>
+        public readonly bool HasRegisteredChecks;
+
         /// <summary>
         /// All health checks passed.
         /// </summary>
@@ -25,6 +29,7 @@ namespace Metrics
         {
             this.Results = results.ToArray();
             this.IsHealty = this.Results.All(r => r.Check.IsHealthy);
+            this.HasRegisteredChecks = this.Results.Length > 0;
         }
     }
 
@@ -33,7 +38,28 @@ namespace Metrics
     /// </summary>
     public static class HealthChecks
     {
-        private static readonly ConcurrentDictionary<string, HealthCheck> checks = new ConcurrentDictionary<string, HealthCheck>();
+        private static Lazy<HealthChecksRegistry> registry = new Lazy<HealthChecksRegistry>(() => new LocalHealthChecksRegistry(), true);
+
+        /// <summary>
+        /// The registry where the checks are registered.
+        /// </summary>
+        public static HealthChecksRegistry Registry { get { return registry.Value; } }
+
+        /// <summary>
+        /// Configure the HealthChecks static class to use a custom HealthChecksRegistry.
+        /// </summary>
+        /// <remarks>
+        /// You must call HealthChecks.ConfigureDefaultRegistry before any other MetricHealthChecks call.
+        /// </remarks>
+        /// <param name="registry">The custom registry to use for registering health checks.</param>
+        public static void ConfigureDefaultRegistry(HealthChecksRegistry registry)
+        {
+            if (HealthChecks.registry.IsValueCreated)
+            {
+                throw new InvalidOperationException("HealthChecks registry has already been created. You must call HealthChecks.ConfigureDefaultRegistry before any other HealthChecks call.");
+            }
+            HealthChecks.registry = new Lazy<HealthChecksRegistry>(() => registry);
+        }
 
         /// <summary>
         /// Registers an action to monitor. If the action throws the health check fails, otherwise is successful.
@@ -70,10 +96,10 @@ namespace Metrics
         /// <summary>
         /// Registers a custom health check.
         /// </summary>
-        /// <param name="check">Custom health check to register.</param>
-        public static void RegisterHealthCheck(HealthCheck check)
+        /// <param name="healthCheck">Custom health check to register.</param>
+        public static void RegisterHealthCheck(HealthCheck healthCheck)
         {
-            checks.AddOrUpdate(check.Name, check, (n, c) => check);
+            registry.Value.Register(healthCheck);
         }
 
         /// <summary>
@@ -82,8 +108,7 @@ namespace Metrics
         /// <returns>Status of the system.</returns>
         public static HealthStatus GetStatus()
         {
-            var results = checks.Values.Select(v => v.Execute()).OrderBy(r => r.Name);
-            return new HealthStatus(results);
+            return registry.Value.GetStatus();
         }
     }
 }
