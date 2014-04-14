@@ -1,4 +1,5 @@
-﻿
+﻿using System.Linq;
+
 namespace Metrics.Reporters
 {
     public abstract class HumanReadableReporter : Reporter
@@ -59,6 +60,35 @@ namespace Metrics.Reporters
             this.WriteMetricName(name);
             this.WriteMeter(value.Rate.Scale(rateUnit), unit, rateUnit);
             this.WriteHistogram(value.Histogram.Scale(durationUnit), unit, durationUnit);
+        }
+
+        protected override void ReportHealth(string name, HealthStatus status)
+        {
+            WriteLine();
+            WriteValue("Is Healthy", status.IsHealty ? "Yes" : "No");
+            WriteLine();
+
+            var unhealthy = status.Results.Where(r => !r.Check.IsHealthy);
+            if (unhealthy.Any())
+            {
+                WriteMetricName("FAILED CHECKS");
+                WriteLine();
+                foreach (var result in unhealthy)
+                {
+                    WriteValue(result.Name, "FAILED: " + result.Check.Message);
+                }
+            }
+
+            var healthy = status.Results.Where(r => r.Check.IsHealthy);
+            if (healthy.Any())
+            {
+                WriteMetricName("PASSED CHECKS");
+                WriteLine();
+                foreach (var result in healthy)
+                {
+                    WriteValue(result.Name, "PASSED: " + result.Check.Message);
+                }
+            }
         }
 
         private void WriteMeter(MeterValue value, Unit unit, TimeUnit rateUnit)

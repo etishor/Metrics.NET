@@ -9,12 +9,12 @@ namespace Metrics.Reporters
     {
         private CancellationToken token;
 
-        public void RunReport(MetricsRegistry registry)
+        public void RunReport(MetricsRegistry registry, HealthChecksRegistry healthChecks)
         {
-            RunReport(registry, CancellationToken.None);
+            RunReport(registry, healthChecks, CancellationToken.None);
         }
 
-        public void RunReport(MetricsRegistry registry, CancellationToken token)
+        public void RunReport(MetricsRegistry registry, HealthChecksRegistry healthChecks, CancellationToken token)
         {
             this.token = token;
             this.Timestamp = DateTime.Now;
@@ -26,6 +26,7 @@ namespace Metrics.Reporters
             ReportSection("Meters", registry.Meters, m => ReportMeter(m.Name, m.Value, m.Unit, m.RateUnit));
             ReportSection("Histograms", registry.Histograms, h => ReportHistogram(h.Name, h.Value, h.Unit));
             ReportSection("Timers", registry.Timers, t => ReportTimer(t.Name, t.Value, t.Unit, t.RateUnit, t.DurationUnit));
+            ReportHealthStatus(healthChecks);
             EndReport();
         }
 
@@ -42,6 +43,7 @@ namespace Metrics.Reporters
         protected abstract void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit);
         protected abstract void ReportHistogram(string name, HistogramValue value, Unit unit);
         protected abstract void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit);
+        protected abstract void ReportHealth(string name, HealthStatus status);
 
         private void ReportSection<T>(string name, IEnumerable<T> metrics, Action<T> reporter)
         {
@@ -65,5 +67,17 @@ namespace Metrics.Reporters
                 EndMetricGroup(name);
             }
         }
+
+        private void ReportHealthStatus(HealthChecksRegistry healthChecks)
+        {
+            var status = healthChecks.GetStatus();
+            if (!status.HasRegisteredChecks)
+            {
+                return;
+            }
+            StartMetricGroup("Health Checks");
+            ReportHealth(healthChecks.Name, status);
+        }
+
     }
 }

@@ -8,6 +8,9 @@ namespace Metrics.Reporters
     {
         public class Value
         {
+            public Value(string name, bool value)
+                : this(name, value ? "Yes" : "No") { }
+
             public Value(string name, double value)
                 : this(name, value.ToString("F")) { }
 
@@ -57,6 +60,17 @@ namespace Metrics.Reporters
                 .Concat(HistogramValues(value.Histogram.Scale(durationUnit), unit, durationUnit));
 
             Write("Timer", name, values);
+        }
+
+        protected override void ReportHealth(string name, HealthStatus status)
+        {
+            Write("All", "HealthChecks", new[] { 
+                new Value("All Healthy", status.IsHealty) }.Union(
+                status.Results.SelectMany(r => new[]
+            {
+                new Value(r.Name + " IsHealthy" ,r.Check.IsHealthy),
+                new Value(r.Name + " Message" ,r.Check.Message)
+            })));
         }
 
         private static IEnumerable<Value> GaugeValues(double gaugeValue, Unit unit)

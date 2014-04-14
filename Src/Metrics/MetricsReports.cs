@@ -9,13 +9,15 @@ namespace Metrics
     public sealed class MetricsReports : Utils.IHideObjectMembers, IDisposable
     {
         private readonly MetricsRegistry metricsRegistry;
+        private readonly HealthChecksRegistry healthChecks;
 
         private readonly List<ScheduledReporter> reports = new List<ScheduledReporter>();
         private MetricsHttpListener listener;
 
-        public MetricsReports(MetricsRegistry metricsRegistry)
+        public MetricsReports(MetricsRegistry metricsRegistry, HealthChecksRegistry healthChecks)
         {
             this.metricsRegistry = metricsRegistry;
+            this.healthChecks = healthChecks;
         }
 
         /// <summary>
@@ -43,7 +45,7 @@ namespace Metrics
         /// <param name="interval">Interval at which to display the report on the Console.</param>
         public void PrintConsoleReport(TimeSpan interval)
         {
-            var reporter = new ScheduledReporter("Console", () => new ConsoleReporter(), this.metricsRegistry, interval);
+            var reporter = new ScheduledReporter("Console", () => new ConsoleReporter(), this.metricsRegistry, this.healthChecks, interval);
             reporter.Start();
             this.reports.Add(reporter);
         }
@@ -56,7 +58,7 @@ namespace Metrics
         public void StoreCSVReports(string directory, TimeSpan interval)
         {
             Directory.CreateDirectory(directory);
-            var reporter = new ScheduledReporter("CSVFiles", () => new CSVReporter(new CSVFileAppender(directory)), this.metricsRegistry, interval);
+            var reporter = new ScheduledReporter("CSVFiles", () => new CSVReporter(new CSVFileAppender(directory)), this.metricsRegistry, this.healthChecks, interval);
             reporter.Start();
             this.reports.Add(reporter);
         }
@@ -68,7 +70,7 @@ namespace Metrics
         /// <param name="interval">Interval at which to run the report.</param>
         public void AppendToFile(string filePath, TimeSpan interval)
         {
-            var reporter = new ScheduledReporter("TextFile", () => new TextFileReporter(filePath), this.metricsRegistry, interval);
+            var reporter = new ScheduledReporter("TextFile", () => new TextFileReporter(filePath), this.metricsRegistry, this.healthChecks, interval);
             reporter.Start();
             this.reports.Add(reporter);
         }

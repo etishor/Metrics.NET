@@ -12,19 +12,22 @@ namespace Metrics.Reporters
 
         private readonly Func<Reporter> reporter;
         private readonly MetricsRegistry registry;
+        private readonly HealthChecksRegistry healthChecks;
 
 
-        public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, TimeSpan interval)
-            : this(name, reporter, registry, interval, new ActionScheduler()) { }
+        public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, HealthChecksRegistry healthChecks, TimeSpan interval)
+            : this(name, reporter, registry, healthChecks, interval, new ActionScheduler()) { }
 
-        public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, TimeSpan interval, Scheduler scheduler)
+        public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, HealthChecksRegistry healthChecks, TimeSpan interval, Scheduler scheduler)
         {
             if (Metric.Reports.EnableReportDiagnosticMetrics)
             {
                 this.reportTime = registry.Timer("Metrics.Reporter." + name, Unit.Calls, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
             }
+
             this.reporter = reporter;
             this.registry = registry;
+            this.healthChecks = healthChecks;
             this.interval = interval;
             this.scheduler = scheduler;
         }
@@ -33,7 +36,7 @@ namespace Metrics.Reporters
         {
             using (this.reportTime != null ? this.reportTime.NewContext() : null)
             {
-                reporter().RunReport(this.registry, token);
+                reporter().RunReport(this.registry, this.healthChecks, token);
             }
         }
 

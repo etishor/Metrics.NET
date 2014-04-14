@@ -12,7 +12,7 @@ namespace Metrics
     {
         private static Lazy<MetricsRegistry> registry = new Lazy<MetricsRegistry>(() => new LocalRegistry(), true);
 
-        private static readonly Lazy<MetricsReports> reports = new Lazy<MetricsReports>(() => new MetricsReports(Metric.Registry));
+        private static readonly Lazy<MetricsReports> reports = new Lazy<MetricsReports>(() => new MetricsReports(Metric.Registry, HealthChecks.Registry));
         private static readonly Lazy<PerformanceCounters> machineCounters = new Lazy<PerformanceCounters>(() => new PerformanceCounters(Metric.Registry), true);
 
         /// <summary>
@@ -234,7 +234,7 @@ namespace Metrics
         public static string GetAsHumanReadable()
         {
             var report = new StringReporter();
-            report.RunReport(Metric.Registry);
+            report.RunReport(Metric.Registry, HealthChecks.Registry);
             return report.Result;
         }
 
