@@ -11,7 +11,7 @@ namespace Metrics.Reporters
 
         public string GetJson(bool indented = true)
         {
-            if (!root.Any(p => p.Name == "Units"))
+            if (units.Any() && !root.Any(p => p.Name == "Units"))
             {
                 root.Add(new JsonProperty("Units", units));
             }
@@ -62,6 +62,19 @@ namespace Metrics.Reporters
 
             this.units.Add(new JsonProperty("Timers", units));
 
+            return this;
+        }
+
+        public JsonFormatter AddObject(HealthStatus status)
+        {
+            var properties = new List<JsonProperty>() { new JsonProperty("IsHealthy", status.IsHealty) };
+            var unhealty = status.Results.Where(r => !r.IsHealthy)
+                .Select(r => new JsonProperty(r.Name, r.Message));
+            properties.Add(new JsonProperty("Unhealthy", unhealty));
+            var healty = status.Results.Where(r => r.IsHealthy)
+                    .Select(r => new JsonProperty(r.Name, r.Message));
+            properties.Add(new JsonProperty("Healthy", healty));
+            this.root.AddRange(properties);
             return this;
         }
 

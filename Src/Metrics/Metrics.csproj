@@ -113,6 +113,7 @@
     <Compile Include="Reporters\ConsoleReporter.cs" />
     <Compile Include="Reporters\CSVFileAppender.cs" />
     <Compile Include="Reporters\CSVReporter.cs" />
+    <Compile Include="Reporters\HealthCheckSerializer.cs" />
     <Compile Include="Reporters\JsonFormatter.cs" />
     <Compile Include="Reporters\RegistrySerializer.cs" />
     <Compile Include="Reporters\JsonObject.cs" />

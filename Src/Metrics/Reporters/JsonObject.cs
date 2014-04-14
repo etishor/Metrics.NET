@@ -42,6 +42,10 @@ namespace Metrics.Reporters
             : this(name, new DoubleJsonValue(value))
         { }
 
+        public JsonProperty(string name, bool value)
+            : this(name, new BoolJsonValue(value))
+        { }
+
         public JsonProperty(string name, JsonValue value)
         {
             this.Name = name;
@@ -110,6 +114,21 @@ namespace Metrics.Reporters
         public override string AsJson(bool indented = true, int indent = 0)
         {
             return this.Value.ToString("F");
+        }
+    }
+
+    public class BoolJsonValue : JsonValue
+    {
+        public BoolJsonValue(bool value)
+        {
+            this.Value = value;
+        }
+
+        public bool Value { get; private set; }
+
+        public override string AsJson(bool indented = true, int indent = 0)
+        {
+            return this.Value ? "true" : "false";
         }
     }
 
