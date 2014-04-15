@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+#if NET40
+using Metrics.Utils;
+#endif
 
 namespace Metrics.StupidBenchmarks
 {
