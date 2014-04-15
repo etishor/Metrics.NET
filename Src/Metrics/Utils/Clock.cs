@@ -23,7 +23,13 @@ namespace Metrics.Utils
             public void Advance(TimeUnit unit, long value)
             {
                 this.nanoseconds += unit.ToNanoseconds(value);
+                if (Advanced != null)
+                {
+                    Advanced(this, this.nanoseconds);
+                }
             }
+
+            public event EventHandler<long> Advanced;
         }
 
         public static readonly Clock SystemDateTime = new SystemClock();
