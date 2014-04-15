@@ -27,6 +27,17 @@ namespace Metrics.Tests
         }
 
         [Fact]
+        public void AtomicLongCanGetAndSet()
+        {
+            var num = new AtomicLong();
+            num.SetValue(32);
+            long val = num.GetAndSet(64);
+
+            val.Should().Be(32);
+            num.Value.Should().Be(64);
+        }
+
+        [Fact]
         public void AtomicLongCanBeIncremented()
         {
             AtomicLong l = new AtomicLong();
