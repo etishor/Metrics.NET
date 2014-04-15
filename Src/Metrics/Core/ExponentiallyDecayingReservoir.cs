@@ -13,7 +13,7 @@ namespace Metrics.Core
         private const double DefaultAlpha = 0.015;
         private static readonly TimeSpan RescaleInterval = TimeSpan.FromHours(1);
 
-        private readonly ConcurrentDictionary<double, long> values = new ConcurrentDictionary<double, long>(Environment.ProcessorCount, DefaultSize);
+        private readonly ConcurrentDictionary<double, long> values = new ConcurrentDictionary<double, long>();
         private readonly ReaderWriterLockSlim @lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         private readonly double alpha;
         private readonly int size;
