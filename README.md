@@ -27,21 +27,21 @@ Documentation:
 ###Quick Usage Sample
 
 ```csharp
-    public class SampleMetrics
-    {
-        private readonly Timer timer = Metric.Timer("Requests", SamplingType.FavourRecent, Unit.Requests);
-        private readonly Counter counter = Metric.Counter("ConcurrentRequests", Unit.Requests);
+public class SampleMetrics
+{
+    private readonly Timer timer = Metric.Timer("Requests", SamplingType.FavourRecent, Unit.Requests);
+    private readonly Counter counter = Metric.Counter("ConcurrentRequests", Unit.Requests);
 
-        public void Request(int i)
+    public void Request(int i)
+    {
+        this.counter.Increment();
+        using (this.timer.NewContext()) // measure until disposed
         {
-            this.counter.Increment();
-            using (this.timer.NewContext()) // measure until disposed
-            {
-                // do some work
-            }
-            this.counter.Decrement();
+            // do some work
         }
+        this.counter.Decrement();
     }
+}
 ```
 
 ###Adapters for other applications
