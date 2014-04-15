@@ -29,13 +29,13 @@ namespace Metrics.Utils
         {
             get
             {
-                return Interlocked.Read(ref this.value);
+                return Thread.VolatileRead(ref this.value);
             }
         }
 
         public void SetValue(long value)
         {
-            GetAndSet(value);
+            Thread.VolatileWrite(ref this.value, value);
         }
 
         public long Add(long value)
