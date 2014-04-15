@@ -116,7 +116,7 @@ namespace Metrics.Tests
                     throw new InvalidOperationException("boom");
                 });
 
-                tcs.Task.Wait(20);
+                tcs.Task.Wait(1000);
                 scheduler.Stop();
             }
 
