@@ -4,22 +4,30 @@ using Xunit;
 
 namespace Metrics.Tests
 {
-    public class OptimizedLongTests
+    public class AtomicLongTests
     {
         [Fact]
-        public void OptimizedLongDefaultsToZero()
+        public void AtomicLongDefaultsToZero()
         {
             new AtomicLong().Value.Should().Be(0L);
         }
 
         [Fact]
-        public void OptimizedLongCanBeCreatedWithValue()
+        public void AtomicLongCanBeCreatedWithValue()
         {
             new AtomicLong(5L).Value.Should().Be(5L);
         }
 
         [Fact]
-        public void OptimizedLongCanBeIncremented()
+        public void AtomicLongCanSetAndReadValue()
+        {
+            var num = new AtomicLong();
+            num.SetValue(32);
+            num.Value.Should().Be(32);
+        }
+
+        [Fact]
+        public void AtomicLongCanBeIncremented()
         {
             AtomicLong l = new AtomicLong();
             l.Increment();
@@ -27,7 +35,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void OptimizedLongCanBeIncrementedMultipleTimes()
+        public void AtomicLongCanBeIncrementedMultipleTimes()
         {
             AtomicLong l = new AtomicLong();
             l.Increment();
@@ -37,7 +45,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void OptimizedLongCanAddValue()
+        public void AtomicLongCanAddValue()
         {
             AtomicLong l = new AtomicLong();
             l.Add(7L);
@@ -45,7 +53,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void OptimizedLongCanBeDecremented()
+        public void AtomicLongCanBeDecremented()
         {
             AtomicLong l = new AtomicLong(10L);
             l.Decrement();
@@ -53,7 +61,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void OptimizedLongCanBeAssigned()
+        public void AtomicLongCanBeAssigned()
         {
             AtomicLong x = new AtomicLong(10L);
             AtomicLong y = x;
