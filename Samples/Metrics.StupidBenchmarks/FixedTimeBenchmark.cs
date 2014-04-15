@@ -2,19 +2,18 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Metrics.Utils;
 
 namespace Metrics.StupidBenchmarks
 {
     public static class FixedTimeBenchmark
     {
-        public static void Run<T>(Action<T> action, int maxThreads = 16)
+        public static void Run<T>(Action<T> action, int maxThreads = 16, int seconds = 2)
            where T : new()
         {
             T instance = new T();
             for (int i = 1; i < maxThreads; i++)
             {
-                var result = FixedTimeBenchmark.MeasureCallsPerSecond(() => action(instance), i, TimeSpan.FromSeconds(2));
+                var result = FixedTimeBenchmark.MeasureCallsPerSecond(() => action(instance), i, TimeSpan.FromSeconds(seconds));
                 Console.WriteLine("{0}\t{1}\t{2}", typeof(T).Name, i, result);
             }
         }
