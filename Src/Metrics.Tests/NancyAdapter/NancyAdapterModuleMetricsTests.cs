@@ -44,6 +44,8 @@ namespace Metrics.Tests.NancyAdapter
         {
             this.clock = new Clock.TestClock();
             ManualScheduler scheduler = new ManualScheduler(clock);
+            clock.Advanced += (s, l) => scheduler.RunIfNeeded();
+
             this.timer = new TimerMetric(SamplingType.SlidingWindow, new MeterMetric(clock, scheduler), clock);
             this.sizeHistogram = new HistogramMetric();
             NancyMetrics.Configure(new TestRegistry { TimerInstance = timer, HistogramInstance = sizeHistogram });

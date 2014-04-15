@@ -28,6 +28,7 @@ namespace Metrics.Tests
         {
             Clock.TestClock clock = new Clock.TestClock();
             ManualScheduler scheduler = new ManualScheduler(clock);
+            clock.Advanced += (s, l) => scheduler.RunIfNeeded();
 
             var meter = new MeterMetric(clock, scheduler);
 
@@ -56,14 +57,12 @@ namespace Metrics.Tests
         {
             Clock.TestClock clock = new Clock.TestClock();
             ManualScheduler scheduler = new ManualScheduler(clock);
+            clock.Advanced += (s, l) => scheduler.RunIfNeeded();
 
             var meter = new MeterMetric(clock, scheduler);
 
             meter.Mark();
-            clock.Advance(TimeUnit.Seconds, 5);
-            scheduler.RunIfNeeded();
-            clock.Advance(TimeUnit.Seconds, 5);
-            scheduler.RunIfNeeded();
+            clock.Advance(TimeUnit.Seconds, 10);
             meter.Mark(2);
 
             var value = meter.Value;

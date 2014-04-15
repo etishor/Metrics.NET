@@ -40,6 +40,7 @@ namespace Metrics.Tests
         {
             Clock.TestClock clock = new Clock.TestClock();
             ManualScheduler scheduler = new ManualScheduler(clock);
+            clock.Advanced += (s, l) => scheduler.RunIfNeeded();
 
             TimerMetric timer = new TimerMetric(SamplingType.LongTerm, new MeterMetric(clock, scheduler), clock);
             using (timer.NewContext())
@@ -55,6 +56,8 @@ namespace Metrics.Tests
         {
             Clock.TestClock clock = new Clock.TestClock();
             ManualScheduler scheduler = new ManualScheduler(clock);
+            clock.Advanced += (s, l) => scheduler.RunIfNeeded();
+
             TimerMetric timer = new TimerMetric(SamplingType.LongTerm, new MeterMetric(clock, scheduler), clock);
 
             var context = timer.NewContext();

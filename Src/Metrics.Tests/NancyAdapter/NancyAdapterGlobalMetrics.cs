@@ -62,6 +62,8 @@ namespace Metrics.Tests.NancyAdapter
         {
             this.clock = new Clock.TestClock();
             this.scheduler = new ManualScheduler(clock);
+            clock.Advanced += (s, l) => scheduler.RunIfNeeded();
+
             this.timer = new TimerMetric(SamplingType.SlidingWindow, new MeterMetric(clock, scheduler), clock);
             this.meter = new MeterMetric(clock, scheduler);
             this.counter = new CounterMetric();
