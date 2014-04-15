@@ -10,6 +10,8 @@ _This port is still work in progress and should not be considered ready for prod
 
 The Metrics.NET library provides a way of instrumenting applications with custom metrics (timers, histograms, counters etc) that can be reported in various ways and can provide insights on what is happening inside a running application. 
 
+For a very good introduction on why metrics are necesary I highly recommand Coda Hale's [talk about metrics](https://www.youtube.com/watch?v=czes-oa0yik) and [slides](https://dl.dropboxusercontent.com/u/2744222/2011-04-09-Metrics-Metrics-Everywhere.pdf).
+
 The library is published on NuGet can be installed with the following command:
 
     Install-Package Metrics.NET
