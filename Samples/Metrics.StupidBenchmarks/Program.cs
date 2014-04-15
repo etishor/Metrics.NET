@@ -8,7 +8,7 @@ namespace Metrics.StupidBenchmarks
             //FixedTimeBenchmark.Run<CounterMetric>(m => m.Increment());
             //FixedTimeBenchmark.Run<MeterMetric>(m => m.Mark());
             //FixedTimeBenchmark.Run<HistogramMetric>(m => m.Update(1));
-            FixedTimeBenchmark.Run<TimerMetric>(m => { using (m.NewContext()) { } }, maxThreads: 32, seconds: 8);
+            FixedTimeBenchmark.Run<TimerMetric>(m => { using (m.NewContext()) { } }, maxThreads: 32, seconds: 5);
 
             //FixedIterationsBenchmark.Run<TimerMetric>(m => { using (m.NewContext()) { } }, 1000 * 1000);
         }

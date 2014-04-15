@@ -14,10 +14,10 @@ namespace Metrics.StupidBenchmarks
            where T : new()
         {
             T instance = new T();
-            for (int i = 1; i < maxThreads; i++)
+            for (int i = maxThreads; i > 0; i--)
             {
                 var result = FixedTimeBenchmark.MeasureCallsPerSecond(() => action(instance), i, TimeSpan.FromSeconds(seconds));
-                Console.WriteLine("{0}\t{1}\t{2}", typeof(T).Name, i, result);
+                Console.WriteLine("{0}\t{1}\t{2,10:N0}", typeof(T).Name, i, result);
             }
         }
 

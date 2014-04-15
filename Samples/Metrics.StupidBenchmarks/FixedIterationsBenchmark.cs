@@ -22,7 +22,7 @@ namespace Metrics.StupidBenchmarks
 
             public override string ToString()
             {
-                return string.Format("Runs\t{0}\nTotal\t{1}\nRate\t{2}", Total, Elapsed, PerSecond);
+                return string.Format("Runs\t{0}\nTotal\t{1}\nRate\t{2,10:N0}", Total, Elapsed, PerSecond);
             }
         }
 
@@ -30,10 +30,10 @@ namespace Metrics.StupidBenchmarks
            where T : new()
         {
             T instance = new T();
-            for (int i = 1; i < maxThreads; i++)
+            for (int i = maxThreads; i > 0; i--)
             {
                 var result = FixedIterationsBenchmark.MeasureDuration(() => action(instance), i, iterations);
-                Console.WriteLine("{0}\t{1}\t{2}\t{3}", typeof(T).Name, i, result.PerSecond, result.Elapsed);
+                Console.WriteLine("{0}\t{1}\t{2}\t{3,10:N0}", typeof(T).Name, i, result.PerSecond, result.Elapsed);
             }
         }
 
