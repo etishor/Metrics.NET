@@ -29,6 +29,11 @@ namespace Metrics.Utils
 #if !NET40
         public void Start(TimeSpan interval, Action<CancellationToken> action)
         {
+            if (interval.TotalSeconds == 0)
+            {
+                throw new ArgumentException("interval must be > 0 seconds", "interval");
+            }
+
             this.token = new CancellationTokenSource();
             Task.Factory.StartNew(async () =>
             {
@@ -45,6 +50,11 @@ namespace Metrics.Utils
 #else
         public void Start(TimeSpan interval, Action<CancellationToken> action)
         {
+            if (interval.TotalSeconds == 0)
+            {
+                throw new ArgumentException("interval must be > 0 seconds", "interval");
+            }
+
             this.token = new CancellationTokenSource();
             Task.Factory.StartNew(() =>
             {

@@ -4,10 +4,10 @@ using System.Threading;
 namespace Metrics.Utils
 {
     /// <summary>
-    /// Utility class for manualy executing the scheuled task.
+    /// Utility class for manually executing the scheduled task.
     /// </summary>
     /// <remarks>
-    /// This class is usefull for testing.
+    /// This class is useful for testing.
     /// </remarks>
     public sealed class ManualScheduler : Scheduler
     {
@@ -23,6 +23,11 @@ namespace Metrics.Utils
 
         public void Start(TimeSpan interval, Action action)
         {
+            if (interval.TotalSeconds == 0)
+            {
+                throw new ArgumentException("interval must be > 0 seconds", "interval");
+            }
+
             Start(interval, t => action());
         }
 
@@ -36,7 +41,7 @@ namespace Metrics.Utils
         public void RunIfNeeded()
         {
             long elapsed = clock.Seconds - lastRun;
-            var times = elapsed / interval.Seconds;
+            var times = elapsed / interval.TotalSeconds;
             using (CancellationTokenSource ts = new CancellationTokenSource())
                 while (times-- > 0)
                     action(ts.Token);
