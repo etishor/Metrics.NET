@@ -8,7 +8,7 @@ namespace Metrics.Utils
     /// Utility class to schedule an Action to be executed repeatedly according to the interval.
     /// </summary>
     /// <remarks>
-    /// The scheduling code is heavenly inspired form Daniel Crenna's metrics port
+    /// The scheduling code is inspired form Daniel Crenna's metrics port
     /// https://github.com/danielcrenna/metrics-net/blob/master/src/metrics/Reporting/ReporterBase.cs
     /// </remarks>
     public sealed class ActionScheduler : Scheduler
