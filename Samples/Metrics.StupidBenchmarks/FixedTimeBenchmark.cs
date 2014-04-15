@@ -45,7 +45,7 @@ namespace Metrics.StupidBenchmarks
                     var done = new CancellationTokenSource(duration);
 #else
                     var done = new CancellationTokenSource();
-                    ActionScheduler.Delay(duration.TotalMilliseconds)
+                    TaskUtils.Delay(duration)
                         .ContinueWith(t => done.Cancel());
 #endif
                     while (!done.IsCancellationRequested)
