@@ -25,11 +25,11 @@ namespace Metrics.Utils
                 this.nanoseconds += unit.ToNanoseconds(value);
                 if (Advanced != null)
                 {
-                    Advanced(this, this.nanoseconds);
+                    Advanced(this, EventArgs.Empty);
                 }
             }
 
-            public event EventHandler<long> Advanced;
+            public event EventHandler Advanced;
         }
 
         public static readonly Clock SystemDateTime = new SystemClock();
