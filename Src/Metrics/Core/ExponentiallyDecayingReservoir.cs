@@ -11,7 +11,7 @@ namespace Metrics.Core
     {
         private const int DefaultSize = 1028;
         private const double DefaultAlpha = 0.015;
-        private static readonly long RescaleThreshold = TimeUnit.Hours.ToNanoseconds(1);
+        private static readonly TimeSpan RescaleInterval = TimeSpan.FromHours(1);
 
         private readonly ConcurrentDictionary<double, long> values = new ConcurrentDictionary<double, long>(Environment.ProcessorCount, DefaultSize);
         private readonly ReaderWriterLockSlim @lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
@@ -19,26 +19,29 @@ namespace Metrics.Core
         private readonly int size;
         private AtomicLong count = new AtomicLong();
         private AtomicLong startTime;
-        private AtomicLong nextScaleTime;
 
         private readonly Clock clock;
+
+        private readonly Scheduler rescaleScheduler;
 
         public ExponentiallyDecayingReservoir()
             : this(DefaultSize, DefaultAlpha)
         { }
 
         public ExponentiallyDecayingReservoir(int size, double alpha)
-            : this(size, alpha, Clock.Default)
+            : this(size, alpha, Clock.Default, new ActionScheduler())
         { }
 
-        public ExponentiallyDecayingReservoir(int size, double alpha, Clock clock)
+        public ExponentiallyDecayingReservoir(int size, double alpha, Clock clock, Scheduler scheduler)
         {
             this.size = size;
             this.alpha = alpha;
             this.clock = clock;
 
+            this.rescaleScheduler = scheduler;
+            this.rescaleScheduler.Start(RescaleInterval, Rescale);
+
             this.startTime = new AtomicLong(clock.Seconds);
-            this.nextScaleTime = new AtomicLong(clock.Nanoseconds + RescaleThreshold);
         }
 
         public int Size { get { return Math.Min(this.size, (int)this.count.Value); } }
@@ -64,13 +67,15 @@ namespace Metrics.Core
             this.Update(value, this.clock.Seconds);
         }
 
-        public void Update(long value, long timestamp)
+        private void Update(long value, long timestamp)
         {
-            RescaleIfNeeded();
             this.@lock.EnterReadLock();
             try
             {
-                double priority = Weight(timestamp - startTime.Value) / ThreadLocalRandom.NextDouble();
+                long age = timestamp - startTime.Value;
+                double weighted = Math.Exp(alpha * age);
+                double priority = weighted / ThreadLocalRandom.NextDouble();
+
                 long newCount = count.Increment();
                 if (newCount <= size)
                 {
@@ -84,7 +89,6 @@ namespace Metrics.Core
                         this.values.AddOrUpdate(priority, value, (k, v) => v);
 
                         long removed;
-
                         // ensure we always remove an item
                         while (!values.TryRemove(first, out removed))
                         {
@@ -102,22 +106,6 @@ namespace Metrics.Core
         public void Dispose()
         {
             using (this.@lock) { }
-        }
-
-        private void RescaleIfNeeded()
-        {
-            long now = clock.Nanoseconds;
-            long next = nextScaleTime.Value;
-
-            if (now >= next)
-            {
-                Rescale(now, next);
-            }
-        }
-
-        private double Weight(long value)
-        {
-            return Math.Exp(alpha * value);
         }
 
         ///* "A common feature of the above techniques—indeed, the key technique that
@@ -138,31 +126,28 @@ namespace Metrics.Core
         // * landmark L′ (and then use this new L′ at query time). This can be done with
         // * a linear pass over whatever data structure is being used."
         // */
-        private void Rescale(long now, long next)
+        private void Rescale()
         {
-            if (nextScaleTime.CompareAndSet(next, now + RescaleThreshold))
+            this.@lock.EnterWriteLock();
+            try
             {
-                this.@lock.EnterWriteLock();
-                try
-                {
-                    long oldStartTime = startTime.Value;
-                    this.startTime.SetValue(this.clock.Seconds);
+                long oldStartTime = startTime.Value;
+                this.startTime.SetValue(this.clock.Seconds);
 
-                    var keys = new List<double>(this.values.Keys);
-                    foreach (var key in keys)
-                    {
-                        long value;
-                        this.values.TryRemove(key, out value);
-                        double newKey = key * Math.Exp(-alpha * (startTime.Value - oldStartTime));
-                        values.AddOrUpdate(newKey, value, (k, v) => value);
-                    }
-                    // make sure the counter is in sync with the number of stored samples.
-                    this.count.SetValue(values.Count);
-                }
-                finally
+                var keys = new List<double>(this.values.Keys);
+                foreach (var key in keys)
                 {
-                    this.@lock.ExitWriteLock();
+                    long value;
+                    this.values.TryRemove(key, out value);
+                    double newKey = key * Math.Exp(-alpha * (startTime.Value - oldStartTime));
+                    values.AddOrUpdate(newKey, value, (k, v) => value);
                 }
+                // make sure the counter is in sync with the number of stored samples.
+                this.count.SetValue(values.Count);
+            }
+            finally
+            {
+                this.@lock.ExitWriteLock();
             }
         }
     }

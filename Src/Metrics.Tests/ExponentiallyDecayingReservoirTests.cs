@@ -57,7 +57,10 @@ namespace Metrics.Tests
         public void EDRlongPeriodsOfInactivityShouldNotCorruptSamplingState()
         {
             Clock.TestClock clock = new Clock.TestClock();
-            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(10, 0.015, clock);
+            ManualScheduler scheduler = new ManualScheduler(clock);
+            clock.Advanced += (s, l) => scheduler.RunIfNeeded();
+
+            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(10, 0.015, clock, scheduler);
 
             // add 1000 values at a rate of 10 values/second
             for (int i = 0; i < 1000; i++)
