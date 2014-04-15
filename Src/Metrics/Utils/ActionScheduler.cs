@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,65 +27,99 @@ namespace Metrics.Utils
             });
         }
 
-#if !NET40
         public void Start(TimeSpan interval, Action<CancellationToken> action)
+        {
+            Start(interval, t =>
+            {
+                action(t);
+                return Completed();
+            });
+        }
+
+        public void Start(TimeSpan interval, Func<Task> task)
+        {
+            Start(interval, t => t.IsCancellationRequested ? task() : Completed());
+        }
+
+        public void Start(TimeSpan interval, Func<CancellationToken, Task> task)
         {
             if (interval.TotalSeconds == 0)
             {
                 throw new ArgumentException("interval must be > 0 seconds", "interval");
             }
 
+            if (this.token != null)
+            {
+                throw new InvalidOperationException("Scheduler is already started.");
+            }
+
             this.token = new CancellationTokenSource();
+
+            RunScheduler(interval, task, this.token);
+        }
+
+#if !NET40
+        private static void RunScheduler(TimeSpan interval, Func<CancellationToken, Task> action, CancellationTokenSource token)
+        {
             Task.Factory.StartNew(async () =>
             {
-                while (!this.token.IsCancellationRequested)
+                while (!token.IsCancellationRequested)
                 {
-                    await Task.Delay(interval, this.token.Token);
-                    if (!this.token.IsCancellationRequested)
+                    await Task.Delay(interval, token.Token);
+                    try
                     {
-                        RunAction(action);
+                        await action(token.Token);
+                    }
+                    catch (Exception x)
+                    {
+                        HandleException(x);
+                        token.Cancel();
                     }
                 }
-            }, this.token.Token);
+            }, token.Token);
         }
-#else
-        public void Start(TimeSpan interval, Action<CancellationToken> action)
+#else // reminds me of the C / C++ days :)
+        private static void RunScheduler(TimeSpan interval, Func<CancellationToken, Task> task, CancellationTokenSource token)
         {
-            if (interval.TotalSeconds == 0)
-            {
-                throw new ArgumentException("interval must be > 0 seconds", "interval");
-            }
-
-            this.token = new CancellationTokenSource();
             Task.Factory.StartNew(() =>
             {
-                while (!this.token.IsCancellationRequested)
+                while (!token.IsCancellationRequested)
                 {
-                    Delay(interval.Milliseconds).ContinueWith(t =>
+                    TaskUtils.Delay(interval, token.Token).Wait(token.Token);
+                    try
                     {
-                        if (!this.token.IsCancellationRequested)
-                        {
-                            RunAction(action);
-                        }
-                    });
+                        task(token.Token).Wait(token.Token);
+                    }
+                    catch (Exception x)
+                    {
+                        HandleException(x);
+                        token.Cancel();
+                    }
                 }
-            }, this.token.Token);
-        }
-
-        public static Task Delay(double milliseconds)
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Elapsed += (obj, args) =>
-            {
-                tcs.TrySetResult(true);
-            };
-            timer.Interval = milliseconds;
-            timer.AutoReset = false;
-            timer.Start();
-            return tcs.Task;
+            }, token.Token);
         }
 #endif
+
+        private static Task Completed()
+        {
+#if !NET40
+            return Task.FromResult(true);
+#else
+            return TaskUtils.FromResult(true);
+#endif
+        }
+
+        private static void HandleException(Exception x)
+        {
+            if (Metric.ErrorHandler != null)
+            {
+                Metric.ErrorHandler(x);
+            }
+            else
+            {
+                Trace.Fail("Got exception while executing scheduler. You can handle this exception by setting a handler on Metric.ErrorHandler", x.ToString());
+            }
+        }
 
         public void Stop()
         {
@@ -119,7 +154,6 @@ namespace Metrics.Utils
             {
                 this.token.Cancel();
                 this.token.Dispose();
-                this.token = null;
             }
             GC.SuppressFinalize(this);
         }

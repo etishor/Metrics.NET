@@ -42,7 +42,7 @@ namespace Metrics.Reporters
 
         public void Start()
         {
-            this.scheduler.Start(this.interval, RunReport);
+            this.scheduler.Start(this.interval, t => RunReport(t));
         }
 
         public void Stop()

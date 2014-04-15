@@ -26,7 +26,7 @@ namespace Metrics.Core
             this.clock = clock;
             this.startTime = this.clock.Nanoseconds;
             this.tickScheduler = scheduler;
-            this.tickScheduler.Start(TickInterval, Tick);
+            this.tickScheduler.Start(TickInterval, () => Tick());
         }
 
         public void Mark()

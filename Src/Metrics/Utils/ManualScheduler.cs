@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Metrics.Utils
 {
@@ -21,18 +22,28 @@ namespace Metrics.Utils
             this.clock = clock;
         }
 
+        public void Start(TimeSpan interval, Func<CancellationToken, Task> task)
+        {
+            Start(interval, (t) => task(t).Wait());
+        }
+
+        public void Start(TimeSpan interval, Func<Task> task)
+        {
+            Start(interval, () => task().Wait());
+        }
+
         public void Start(TimeSpan interval, Action action)
+        {
+            Start(interval, t => action());
+        }
+
+        public void Start(TimeSpan interval, Action<CancellationToken> action)
         {
             if (interval.TotalSeconds == 0)
             {
                 throw new ArgumentException("interval must be > 0 seconds", "interval");
             }
 
-            Start(interval, t => action());
-        }
-
-        public void Start(TimeSpan interval, Action<CancellationToken> action)
-        {
             this.interval = interval;
             this.lastRun = this.clock.Seconds;
             this.action = action;

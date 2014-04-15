@@ -140,6 +140,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Reservoir.cs" />
     <Compile Include="Core\Snapshot.cs" />
+    <Compile Include="Utils\TaskUtils.cs" />
     <Compile Include="Utils\DisposableAction.cs" />
     <Compile Include="Utils\EWMA.cs" />
     <Compile Include="Utils\AtomicLong.cs" />

@@ -39,7 +39,7 @@ namespace Metrics.Core
             this.clock = clock;
 
             this.rescaleScheduler = scheduler;
-            this.rescaleScheduler.Start(RescaleInterval, Rescale);
+            this.rescaleScheduler.Start(RescaleInterval, () => Rescale());
 
             this.startTime = new AtomicLong(clock.Seconds);
         }
