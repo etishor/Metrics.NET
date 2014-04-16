@@ -3,7 +3,7 @@ namespace Metrics
 {
     /// <summary>
     /// Indicates the ability to provide the value for a metric.
-    /// This is the raw value. Consummers should use <see cref="MetricValueSource{T}"/>
+    /// This is the raw value. Consumers should use <see cref="MetricValueSource{T}"/>
     /// </summary>
     /// <typeparam name="T">Type of the value returned by the metric</typeparam>
     public interface MetricValueProvider<T> : Utils.IHideObjectMembers where T : struct
@@ -16,7 +16,7 @@ namespace Metrics
 
     /// <summary>
     /// Provides the value of a metric and information about units.
-    /// This is the class that metric consummers should use.
+    /// This is the class that metric consumers should use.
     /// </summary>
     /// <typeparam name="T">Type of the metric value</typeparam>
     public abstract class MetricValueSource<T> : Utils.IHideObjectMembers
