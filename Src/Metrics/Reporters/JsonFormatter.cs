@@ -35,7 +35,7 @@ namespace Metrics.Reporters
 
         public JsonFormatter AddObject(IEnumerable<MeterValueSource> meters)
         {
-            root.Add(new JsonProperty("Meters", meters.Select(m => new JsonProperty(m.Name, Meter(m.Value)))));
+            root.Add(new JsonProperty("Meters", meters.Select(m => new JsonProperty(m.Name, Meter(m.Value.Scale(m.RateUnit))))));
             units.Add(new JsonProperty("Meters", meters.Select(m => new JsonProperty(m.Name, string.Format("{0}/{1}", m.Unit.Name, m.RateUnit.Unit())))));
             return this;
         }
@@ -49,8 +49,12 @@ namespace Metrics.Reporters
 
         public JsonFormatter AddObject(IEnumerable<TimerValueSource> timers)
         {
-            var properties = timers.Select(t => new { Name = t.Name, Value = t.Value })
-                .Select(t => new JsonProperty(t.Name, new[] { new JsonProperty("Rate", Meter(t.Value.Rate)), new JsonProperty("Histogram", Histogram(t.Value.Histogram)) }));
+            var properties = timers.Select(t => new { Name = t.Name, Value = t.Value, RateUnit = t.RateUnit, DurationUnit = t.DurationUnit })
+                .Select(t => new JsonProperty(t.Name, new[] 
+                {
+                    new JsonProperty("Rate", Meter(t.Value.Rate.Scale(t.RateUnit))), 
+                    new JsonProperty("Histogram", Histogram(t.Value.Histogram.Scale(t.DurationUnit))) 
+                }));
 
             root.Add(new JsonProperty("Timers", properties));
 
