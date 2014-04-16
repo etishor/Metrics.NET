@@ -5,6 +5,24 @@ namespace Metrics.Reporters
 {
     public static class RegistrySerializer
     {
+        public static string GetAsHumanReadable(MetricsRegistry registry, HealthChecksRegistry healthChecks)
+        {
+            var report = new StringReporter();
+            report.RunReport(registry, healthChecks);
+            return report.Result;
+        }
+
+        public static string GetAsJson(MetricsRegistry registry)
+        {
+            return new JsonFormatter()
+                .AddObject(registry.Gauges)
+                .AddObject(registry.Counters)
+                .AddObject(registry.Meters)
+                .AddObject(registry.Histograms)
+                .AddObject(registry.Timers)
+                .GetJson();
+        }
+
         public static object GetForSerialization(MetricsRegistry registry)
         {
             return new
@@ -27,17 +45,6 @@ namespace Metrics.Reporters
                     })
                 }
             };
-        }
-
-        public static string ValuesAsJson(MetricsRegistry registry)
-        {
-            return new JsonFormatter()
-                .AddObject(registry.Gauges)
-                .AddObject(registry.Counters)
-                .AddObject(registry.Meters)
-                .AddObject(registry.Histograms)
-                .AddObject(registry.Timers)
-                .GetJson();
         }
     }
 }

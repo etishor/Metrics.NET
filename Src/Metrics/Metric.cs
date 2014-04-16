@@ -218,16 +218,6 @@ namespace Metrics
         }
 
         /// <summary>
-        /// Returns an anonymous object representing all the values for all the registered metrics.
-        /// This object is suitable for JSON/XML etc serialization. 
-        /// </summary>
-        /// <returns>Object suitable for serialization.</returns>
-        public static object GetForSerialization()
-        {
-            return RegistrySerializer.GetForSerialization(Metric.Registry);
-        }
-
-        /// <summary>
         /// Returns a string containing a human readable formatted report with all the metrics.
         /// </summary>
         /// <returns>String containing the report.</returns>

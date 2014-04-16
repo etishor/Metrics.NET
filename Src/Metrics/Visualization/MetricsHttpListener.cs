@@ -118,7 +118,7 @@ namespace Metrics.Visualization
             context.Response.StatusDescription = "OK";
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
-                writer.Write(Metric.GetAsHumanReadable());
+                writer.Write(RegistrySerializer.GetAsHumanReadable(Metric.Registry, HealthChecks.Registry));
             }
             context.Response.Close();
         }
@@ -130,7 +130,7 @@ namespace Metrics.Visualization
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
-            var json = RegistrySerializer.ValuesAsJson(Metric.Registry);
+            var json = RegistrySerializer.GetAsJson(Metric.Registry);
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
                 writer.Write(json);
