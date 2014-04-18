@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Metrics.Utils;
 
-namespace Metrics.Utils
+namespace Metrics.Tests.TestUtils
 {
     /// <summary>
     /// Utility class for manually executing the scheduled task.
@@ -10,16 +11,17 @@ namespace Metrics.Utils
     /// <remarks>
     /// This class is useful for testing.
     /// </remarks>
-    public sealed class ManualScheduler : Scheduler
+    public sealed class TestScheduler : Scheduler
     {
-        private readonly Clock clock;
+        private readonly TestClock clock;
         private TimeSpan interval;
         private Action<CancellationToken> action;
         private long lastRun = 0;
 
-        public ManualScheduler(Clock clock)
+        public TestScheduler(TestClock clock)
         {
             this.clock = clock;
+            this.clock.Advanced += (s, l) => this.RunIfNeeded();
         }
 
         public void Start(TimeSpan interval, Func<CancellationToken, Task> task)
@@ -49,7 +51,7 @@ namespace Metrics.Utils
             this.action = action;
         }
 
-        public void RunIfNeeded()
+        private void RunIfNeeded()
         {
             long elapsed = clock.Seconds - lastRun;
             var times = elapsed / interval.TotalSeconds;

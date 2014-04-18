@@ -116,7 +116,9 @@
     <Compile Include="ActionSchedulerTests.cs" />
     <Compile Include="SlidingWindowReservoirTest.cs" />
     <Compile Include="SnapshotTests.cs" />
+    <Compile Include="TestUtils\TestClock.cs" />
     <Compile Include="TestUtils\TestRegistry.cs" />
+    <Compile Include="TestUtils\TestScheduler.cs" />
     <Compile Include="TimerTests.cs" />
     <Compile Include="TimeUnitTests.cs" />
     <Compile Include="UniformReservoirTests.cs" />

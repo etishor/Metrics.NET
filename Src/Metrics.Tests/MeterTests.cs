@@ -1,6 +1,7 @@
 ﻿
 using FluentAssertions;
 using Metrics.Core;
+using Metrics.Tests.TestUtils;
 using Metrics.Utils;
 using Xunit;
 
@@ -26,9 +27,8 @@ namespace Metrics.Tests
         [Fact]
         public void MeterCanCalculateMeanRate()
         {
-            Clock.TestClock clock = new Clock.TestClock();
-            ManualScheduler scheduler = new ManualScheduler(clock);
-            clock.Advanced += (s, l) => scheduler.RunIfNeeded();
+            TestClock clock = new TestClock();
+            TestScheduler scheduler = new TestScheduler(clock);
 
             var meter = new MeterMetric(clock, scheduler);
 
@@ -55,9 +55,8 @@ namespace Metrics.Tests
         [Fact]
         public void MeterCanComputeRates()
         {
-            Clock.TestClock clock = new Clock.TestClock();
-            ManualScheduler scheduler = new ManualScheduler(clock);
-            clock.Advanced += (s, l) => scheduler.RunIfNeeded();
+            TestClock clock = new TestClock();
+            TestScheduler scheduler = new TestScheduler(clock);
 
             var meter = new MeterMetric(clock, scheduler);
 

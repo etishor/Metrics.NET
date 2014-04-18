@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using FluentAssertions;
 using Metrics.Core;
+using Metrics.Tests.TestUtils;
 using Metrics.Utils;
 using Xunit;
 
@@ -56,9 +57,8 @@ namespace Metrics.Tests
         [Fact]
         public void EDRlongPeriodsOfInactivityShouldNotCorruptSamplingState()
         {
-            Clock.TestClock clock = new Clock.TestClock();
-            ManualScheduler scheduler = new ManualScheduler(clock);
-            clock.Advanced += (s, l) => scheduler.RunIfNeeded();
+            TestClock clock = new TestClock();
+            TestScheduler scheduler = new TestScheduler(clock);
 
             ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(10, 0.015, clock, scheduler);
 

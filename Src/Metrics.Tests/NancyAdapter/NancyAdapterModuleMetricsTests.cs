@@ -13,7 +13,7 @@ namespace Metrics.Tests.NancyAdapter
     {
         public class TestModule : NancyModule
         {
-            public TestModule(Clock.TestClock clock)
+            public TestModule(TestClock clock)
                 : base("/test")
             {
                 this.MetricForRequestTimeAndResponseSize("ActionRequest", "Get", "/");
@@ -35,16 +35,15 @@ namespace Metrics.Tests.NancyAdapter
             }
         }
 
-        private readonly Clock.TestClock clock;
+        private readonly TestClock clock;
         private readonly TimerMetric timer;
         private readonly HistogramMetric sizeHistogram;
         private readonly Browser browser;
 
         public NancyAdapterModuleMetricsTests()
         {
-            this.clock = new Clock.TestClock();
-            ManualScheduler scheduler = new ManualScheduler(clock);
-            clock.Advanced += (s, l) => scheduler.RunIfNeeded();
+            this.clock = new TestClock();
+            TestScheduler scheduler = new TestScheduler(clock);
 
             this.timer = new TimerMetric(SamplingType.SlidingWindow, new MeterMetric(clock, scheduler), clock);
             this.sizeHistogram = new HistogramMetric();

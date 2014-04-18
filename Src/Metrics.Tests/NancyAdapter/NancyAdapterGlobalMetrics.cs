@@ -27,7 +27,7 @@ namespace Metrics.Tests.NancyAdapter
 
         public class TestModule : NancyModule
         {
-            public TestModule(Clock.TestClock clock)
+            public TestModule(TestClock clock)
                 : base("/test")
             {
                 Get["/action"] = _ =>
@@ -46,8 +46,8 @@ namespace Metrics.Tests.NancyAdapter
             }
         }
 
-        private readonly Clock.TestClock clock;
-        private readonly ManualScheduler scheduler;
+        private readonly TestClock clock;
+        private readonly TestScheduler scheduler;
         private readonly TimerMetric timer;
         private readonly MeterMetric meter;
         private readonly CounterMetric counter;
@@ -60,9 +60,8 @@ namespace Metrics.Tests.NancyAdapter
 
         public NancyAdapterGlobalMetrics()
         {
-            this.clock = new Clock.TestClock();
-            this.scheduler = new ManualScheduler(clock);
-            clock.Advanced += (s, l) => scheduler.RunIfNeeded();
+            this.clock = new TestClock();
+            this.scheduler = new TestScheduler(clock);
 
             this.timer = new TimerMetric(SamplingType.SlidingWindow, new MeterMetric(clock, scheduler), clock);
             this.meter = new MeterMetric(clock, scheduler);

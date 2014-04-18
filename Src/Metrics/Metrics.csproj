@@ -146,7 +146,6 @@
     <Compile Include="Utils\AtomicLong.cs" />
     <Compile Include="TimeUnit.cs" />
     <Compile Include="Utils\IHideObjectMembers.cs" />
-    <Compile Include="Utils\ManualScheduler.cs" />
     <Compile Include="Utils\Scheduler.cs" />
     <Compile Include="Utils\ThreadLocalRandom.cs" />
     <Compile Include="Utils\TimeUnitExtensions.cs" />

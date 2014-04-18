@@ -16,22 +16,6 @@ namespace Metrics.Utils
             public override long Nanoseconds { get { return DateTime.UtcNow.Ticks * 100L; } }
         }
 
-        public sealed class TestClock : Clock
-        {
-            private long nanoseconds = 0;
-            public override long Nanoseconds { get { return this.nanoseconds; } }
-            public void Advance(TimeUnit unit, long value)
-            {
-                this.nanoseconds += unit.ToNanoseconds(value);
-                if (Advanced != null)
-                {
-                    Advanced(this, EventArgs.Empty);
-                }
-            }
-
-            public event EventHandler Advanced;
-        }
-
         public static readonly Clock SystemDateTime = new SystemClock();
         public static readonly Clock Default = new StopwatchClock();
 
