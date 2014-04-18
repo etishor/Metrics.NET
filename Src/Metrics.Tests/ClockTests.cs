@@ -19,7 +19,7 @@ namespace Metrics.Tests
             var elapsedDefault = TimeUnit.Nanoseconds.ToMilliseconds(endDefault - startDefault);
             var elapsedSystem = TimeUnit.Nanoseconds.ToMilliseconds(endSystem - startSystem);
 
-            ((double)elapsedDefault).Should().BeApproximately(elapsedSystem, 1);
+            ((double)elapsedDefault).Should().BeApproximately(elapsedSystem, 10);
         }
     }
 }
