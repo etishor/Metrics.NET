@@ -10,21 +10,16 @@ namespace Metrics.Tests
         [Fact]
         public void ClockDefaultCanMeasureTime()
         {
-            var start = Clock.Default.Nanoseconds;
+            var startDefault = Clock.Default.Nanoseconds;
+            var startSystem = Clock.SystemDateTime.Nanoseconds;
             Thread.Sleep(20);
-            var end = Clock.Default.Nanoseconds;
-            var elapsed = TimeUnit.Nanoseconds.ToMilliseconds(end - start);
-            elapsed.Should().BeInRange(18, 22);
-        }
+            var endDefault = Clock.Default.Nanoseconds;
+            var endSystem = Clock.SystemDateTime.Nanoseconds;
 
-        [Fact]
-        public void ClockSystemCanMeasureTime()
-        {
-            var start = Clock.SystemDateTime.Nanoseconds;
-            Thread.Sleep(20);
-            var end = Clock.SystemDateTime.Nanoseconds;
-            var elapsed = TimeUnit.Nanoseconds.ToMilliseconds(end - start);
-            elapsed.Should().BeInRange(18, 22);
+            var elapsedDefault = TimeUnit.Nanoseconds.ToMilliseconds(endDefault - startDefault);
+            var elapsedSystem = TimeUnit.Nanoseconds.ToMilliseconds(endSystem - startSystem);
+
+            ((double)elapsedDefault).Should().BeApproximately(elapsedSystem, 1);
         }
     }
 }
