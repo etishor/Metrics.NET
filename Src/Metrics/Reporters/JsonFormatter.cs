@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Metrics.Utils;
 
@@ -17,6 +18,12 @@ namespace Metrics.Reporters
             }
 
             return new JsonObject(root).AsJson(indented);
+        }
+
+        public JsonFormatter AddTimestamp(Clock clock)
+        {
+            root.Add(new JsonProperty("Timestamp", clock.LocalDateTime.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture)));
+            return this;
         }
 
         public JsonFormatter AddObject(IEnumerable<GaugeValueSource> gauges)

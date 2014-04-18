@@ -15,6 +15,7 @@ namespace Metrics.Reporters
         public static string GetAsJson(MetricsRegistry registry)
         {
             return new JsonFormatter()
+                .AddTimestamp(Clock.Default)
                 .AddObject(registry.Gauges)
                 .AddObject(registry.Counters)
                 .AddObject(registry.Meters)

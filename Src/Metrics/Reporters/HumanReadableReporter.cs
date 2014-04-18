@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Globalization;
+using System.Linq;
 
 namespace Metrics.Reporters
 {
@@ -15,7 +16,7 @@ namespace Metrics.Reporters
 
         protected override void StartReport()
         {
-            this.WriteLine("{0} - {1}", base.RegistryName, base.Timestamp.ToString());
+            this.WriteLine("{0} - {1}", base.RegistryName, base.Timestamp.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture));
         }
 
         protected override void StartMetricGroup(string metricType)
