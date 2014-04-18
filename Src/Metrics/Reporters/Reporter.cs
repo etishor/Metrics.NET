@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Metrics.Utils;
 
 namespace Metrics.Reporters
 {
@@ -17,7 +18,7 @@ namespace Metrics.Reporters
         public void RunReport(MetricsRegistry registry, HealthChecksRegistry healthChecks, CancellationToken token)
         {
             this.token = token;
-            this.Timestamp = DateTime.Now;
+            this.Timestamp = Clock.Default.LocalDateTime;
             this.RegistryName = registry.Name;
 
             StartReport();
