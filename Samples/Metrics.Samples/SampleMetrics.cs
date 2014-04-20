@@ -53,11 +53,11 @@ namespace Metrics.Samples
 
                 this.meter.Mark(); // signal a new request to the meter
 
-                this.histogramOfData.Update(i); // update the histogram with the input data
+                this.histogramOfData.Update(ThreadLocalRandom.NextLong() % 5000); // update the histogram with the input data
 
 
                 // simulate doing some work
-                int ms = Math.Abs((int)(ThreadLocalRandom.NextLong() % 1000L));
+                int ms = Math.Abs((int)(ThreadLocalRandom.NextLong() % 3000L));
                 Thread.Sleep(ms);
 
                 this.concurrentRequestsCounter.Decrement(); // decrement number of concurrent requests
