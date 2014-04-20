@@ -69,16 +69,16 @@ A live list of my future plan
 * [done]Provide http endpoint for reporting metrics (based on owin or nancy) together with javascript visualization solution - the idea is to have out-of-the-box metrics visualization in web apps
 * [done] Mono compatibility
 * [done] health checks
+* [done] Improve the javascript visualization app
 * Push metrics out of process, to dedicated metrics service
-* Improve the javascript visualization app
-* Find/Implement ConcurrentSkipMap like collection form java - low prio as the performance is good for now
-* Provide an adapter for hooking into web api for collecting metrics (this might be delayed as I tend to use NancyFx)
+* Investigate the possibility of using zeromq to delegate metrics to another process - for across cluster metrics
+* Provide an adapter for hooking into web api for collecting & exposing metrics (this might be delayed as I tend to use NancyFx - but PRs are welcomed)
 * Provide an adapter for hooking into asp.net mvc
-* Investigate the possibility of using zeromq to delegate metrics to another process - for accross cluster metrics
 * Adapter for graphite and other existing solutions for aggregating metrics
 * Investigate the possibility of using Redis as an off-process metrics container (the collections behind the metrics seem to map to redis data types)
 * Investigate the possibility for backend to receive metrics from client js app (not sure it makes sense to capture metrics from js apps - maybe from SPAs)
 * Write more tests
+* Find/Implement ConcurrentSkipMap like collection form java - low prio as the performance is good for now
 * Write more "stupid" benchmarks to be able to keep an eye on how performance changes in time
 * Profile & optimize. Also profile existing apps to see the impact of adding metrics
 
