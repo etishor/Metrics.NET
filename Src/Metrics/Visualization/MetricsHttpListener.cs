@@ -143,7 +143,7 @@ namespace Metrics.Visualization
             context.Response.ContentType = "text/html";
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
-            var app = FlotWebApp.GetFlotApp(new Uri(context.Request.Url, "json"));
+            var app = FlotWebApp.GetFlotApp(context.Request.Url);
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
                 writer.Write(app);
