@@ -68,7 +68,7 @@ namespace Metrics.Reporters
 
         public static string Escape(string value)
         {
-            return value.Replace("\"", "\\\"").Replace(@"\", @"\\");
+            return value.Replace(@"\", @"\\").Replace("\"", "\\\"").Replace("\r", @"\r").Replace("\n", @"\n");
         }
     }
 
