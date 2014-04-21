@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Metrics.net by etishor</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Metrics.net</h1>
+        <p>.NET Port of the awesome Java metrics library by Coda Hale ( https://github.com/dropwizard/metrics )</p>
+
+        <p class="view"><a href="https://github.com/etishor/Metrics.NET">View the Project on GitHub <small>etishor/Metrics.NET</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/etishor/Metrics.NET/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/etishor/Metrics.NET/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/etishor/Metrics.NET">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="metricsnet" class="anchor" href="#metricsnet"><span class="octicon octicon-link"></span></a>Metrics.NET</h1>
+
+<p><a href="https://ci.appveyor.com/project/etishor/metrics-net"><img src="https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2" alt="Build status"></a>
+<a href="https://travis-ci.org/etishor/Metrics.NET"><img src="https://api.travis-ci.org/etishor/Metrics.NET.svg" alt="Mono Build Status"></a></p>
+
+<p><em>This port is still work in progress and should not be considered ready for production. I'm actively using this library in my work projects, but would like to keep the alpha status a little more so I can change my mind about parts of the API.</em></p>
+
+<h3>
+<a name="intro" class="anchor" href="#intro"><span class="octicon octicon-link"></span></a>Intro</h3>
+
+<p>The Metrics.NET library provides a way of instrumenting applications with custom metrics (timers, histograms, counters etc) that can be reported in various ways and can provide insights on what is happening inside a running application. </p>
+
+<p>This library is a .NET Port of the awesome Java <a href="https://github.com/dropwizard/metrics">metrics library</a> by Coda Hale.</p>
+
+<p>For a very good introduction on why metrics are necesary I highly recommand Coda Hale's <a href="https://www.youtube.com/watch?v=czes-oa0yik">talk about metrics</a> and <a href="https://dl.dropboxusercontent.com/u/2744222/2011-04-09-Metrics-Metrics-Everywhere.pdf">slides</a>.</p>
+
+<p>The library is published on NuGet can be installed with the following command:</p>
+
+<pre><code>Install-Package Metrics.NET
+</code></pre>
+
+<p>Supported runtimes: .NET 4.5.1, .NET 4.5, .NET 4.0, Mono 3.4.0 ( tested on OsX )</p>
+
+<p>The API of the library might change until a 1.X version will be made available.</p>
+
+<p>Documentation:</p>
+
+<ul>
+<li><a href="https://github.com/etishor/Metrics.NET/wiki/Available-Metrics">Available Metrics</a></li>
+<li><a href="https://github.com/etishor/Metrics.NET/wiki/Health-Checks">Health Checks</a></li>
+<li><a href="https://github.com/etishor/Metrics.NET/wiki/Metrics-Visualization">Metric Visualization</a></li>
+<li><a href="https://github.com/etishor/Metrics.NET/wiki/">Documentation Wiki</a></li>
+</ul><h3>
+<a name="quick-usage-sample" class="anchor" href="#quick-usage-sample"><span class="octicon octicon-link"></span></a>Quick Usage Sample</h3>
+
+<div class="highlight highlight-csharp"><pre><span class="k">public</span> <span class="k">class</span> <span class="nc">SampleMetrics</span>
+<span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">Timer</span> <span class="n">timer</span> <span class="p">=</span> <span class="n">Metric</span><span class="p">.</span><span class="n">Timer</span><span class="p">(</span><span class="s">"Requests"</span><span class="p">,</span> <span class="n">SamplingType</span><span class="p">.</span><span class="n">FavourRecent</span><span class="p">,</span> <span class="n">Unit</span><span class="p">.</span><span class="n">Requests</span><span class="p">);</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">Counter</span> <span class="n">counter</span> <span class="p">=</span> <span class="n">Metric</span><span class="p">.</span><span class="n">Counter</span><span class="p">(</span><span class="s">"ConcurrentRequests"</span><span class="p">,</span> <span class="n">Unit</span><span class="p">.</span><span class="n">Requests</span><span class="p">);</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Request</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">counter</span><span class="p">.</span><span class="n">Increment</span><span class="p">();</span>
+        <span class="k">using</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="n">timer</span><span class="p">.</span><span class="n">NewContext</span><span class="p">())</span> <span class="c1">// measure until disposed</span>
+        <span class="p">{</span>
+            <span class="c1">// do some work</span>
+        <span class="p">}</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">counter</span><span class="p">.</span><span class="n">Decrement</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<h3>
+<a name="adapters-for-other-applications" class="anchor" href="#adapters-for-other-applications"><span class="octicon octicon-link"></span></a>Adapters for other applications</h3>
+
+<p>Adapters integrate Metrics.NET with other libraries &amp; frameworks.</p>
+
+<ul>
+<li><a href="https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter">NancyFx.Metrics</a></li>
+</ul><h3>
+<a name="visualization-app" class="anchor" href="#visualization-app"><span class="octicon octicon-link"></span></a>Visualization App</h3>
+
+<p>A visualization app is now available: <a href="https://github.com/etishor/Metrics.NET.FlotVisualization">Metrics.NET.FlotVisualization</a>. </p>
+
+<p><img src="https://raw.githubusercontent.com/etishor/Metrics.NET.FlotVisualization/master/sample.png" alt="Sample Visualization"></p>
+
+<h3>
+<a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h3>
+
+<p>A live list of my future plan</p>
+
+<ul>
+<li>[done] Provide a few presets to map performance counters to Gauges ( machine info, process info, CLR stats etc )</li>
+<li>[done] Provide a way for error reporting (at least for reports that do IO) - maybe a delegate on the Metric class</li>
+<li>[done] Add metrics for NancyFx request/response size</li>
+<li>[done] Re-factor scheduled report to prevent overlapping</li>
+<li>[done]Provide http endpoint for reporting metrics (based on owin or nancy) together with javascript visualization solution - the idea is to have out-of-the-box metrics visualization in web apps</li>
+<li>[done] Mono compatibility</li>
+<li>[done] health checks</li>
+<li>[done] Improve the javascript visualization app</li>
+<li>Push metrics out of process, to dedicated metrics service</li>
+<li>Investigate the possibility of using zeromq to delegate metrics to another process - for across cluster metrics</li>
+<li>Provide an adapter for hooking into web api for collecting &amp; exposing metrics (this might be delayed as I tend to use NancyFx - but PRs are welcomed)</li>
+<li>Provide an adapter for hooking into asp.net mvc</li>
+<li>Adapter for graphite and other existing solutions for aggregating metrics</li>
+<li>Investigate the possibility of using Redis as an off-process metrics container (the collections behind the metrics seem to map to redis data types)</li>
+<li>Investigate the possibility for backend to receive metrics from client js app (not sure it makes sense to capture metrics from js apps - maybe from SPAs)</li>
+<li>Write more tests</li>
+<li>Find/Implement ConcurrentSkipMap like collection form java - low prio as the performance is good for now</li>
+<li>Write more "stupid" benchmarks to be able to keep an eye on how performance changes in time</li>
+<li>Profile &amp; optimize. Also profile existing apps to see the impact of adding metrics</li>
+</ul><h3>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h3>
+
+<p>.NET Port of the awesome <a href="https://github.com/dropwizard/metrics">Java metrics library by Coda Hale</a></p>
+
+<p>This port is also inspired and contains some code from <a href="https://github.com/danielcrenna/metrics-net">Daniel Crenna's port</a> of the same library.</p>
+
+<p>I have decided to write another .NET port of the same library since Daniel does not actively maintain metrics-net. 
+I've also wanted to better understand the internals of the library and try to provide a better API, more suitable for the .NET world.</p>
+
+<p>This port will always keep the same license as the original Java Metrics library.</p>
+
+<p>The original metrics project is released under this therms (<a href="https://github.com/dropwizard/metrics">https://github.com/dropwizard/metrics</a>):
+Copyright (c) 2010-2013 Coda Hale, Yammer.com
+Published under Apache Software License 2.0, see LICENSE</p>
+
+<p>The Daniel Crenna's idiomatic port is released under this therms (<a href="https://github.com/danielcrenna/metrics-net">https://github.com/danielcrenna/metrics-net</a>):
+The original Metrics project is Copyright (c) 2010-2011 Coda Hale, Yammer.com
+This idiomatic port of Metrics to C# and .NET is Copyright (c) 2011 Daniel Crenna
+Both works are published under The MIT License, see LICENSE</p>
+
+<p>This port ( Metrics.NET ) is release under Apache 2.0 License ( see LICENSE ) 
+Copyright (c) 2014 Iulian Margarintescu</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/etishor">etishor</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
