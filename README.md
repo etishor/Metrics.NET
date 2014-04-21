@@ -14,7 +14,7 @@ This library is a .NET Port of the awesome Java [metrics library](https://github
 
 For a very good introduction on why metrics are necesary I highly recommand Coda Hale's [talk about metrics](https://www.youtube.com/watch?v=czes-oa0yik) and [slides](https://dl.dropboxusercontent.com/u/2744222/2011-04-09-Metrics-Metrics-Everywhere.pdf).
 
-The library is published on NuGet can be installed with the following command:
+The library is [published on NuGet](https://www.nuget.org/packages/Metrics.NET/) can be installed with the following command:
 
     Install-Package Metrics.NET
 
