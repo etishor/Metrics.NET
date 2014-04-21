@@ -22,7 +22,14 @@ Supported runtimes: .NET 4.5.1, .NET 4.5, .NET 4.0, Mono 3.4.0 ( tested on OsX )
 
 The API of the library might change until a 1.X version will be made available.
 
-Documentation:
+###Visualization Demo
+
+A demo of the visualization app is available [here](http://www.erata.net/Metrics.NET/demo/). This demo uses fake, generated values for the metrics.
+
+The visualization app is also avaliable on github : [Metrics.NET.FlotVisualization](https://github.com/etishor/Metrics.NET.FlotVisualization). 
+
+###Documentation
+
 * [Available Metrics](https://github.com/etishor/Metrics.NET/wiki/Available-Metrics)
 * [Health Checks](https://github.com/etishor/Metrics.NET/wiki/Health-Checks)
 * [Metric Visualization](https://github.com/etishor/Metrics.NET/wiki/Metrics-Visualization)
@@ -53,11 +60,6 @@ public class SampleMetrics
 Adapters integrate Metrics.NET with other libraries & frameworks.
 
 * [NancyFx.Metrics](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter)
-
-###Visualization App
-A visualization app is now available: [Metrics.NET.FlotVisualization](https://github.com/etishor/Metrics.NET.FlotVisualization). 
-
-![Sample Visualization](https://raw.githubusercontent.com/etishor/Metrics.NET.FlotVisualization/master/sample.png)
 
 ###TODO
 A live list of my future plan
