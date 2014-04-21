@@ -27,7 +27,7 @@ return null==a?b:this.add("y",a-b)},isoWeekYear:function(a){var b=$(this,1,4).ye
 		histo += histo > 40 ? -(Math.random() * 10) : (Math.random() * 10);
 		timerMeter += timerMeter > 30 ? -(Math.random() * 10) : (Math.random() * 10);
 		timerHisto += timerHisto > 50 ? -(Math.random() * 10) : (Math.random() * 10);
-				
+
 		if (count > 20) {
 			count = count - Math.random() * 20;
 		} else {
@@ -98,7 +98,20 @@ return null==a?b:this.add("y",a-b)},isoWeekYear:function(a){var b=$(this,1,4).ye
 	}
 
 	function getHealthDemoData() {
-		return {};
+		return {
+			'IsHealthy': false,
+			'Unhealthy': {
+				'DatabaseCheck': 'EXCEPTION: NullReferenceException - Object reference not set to an'+
+				'instance of an object.\r\n    NullReferenceException: Object reference not set to an instance' +
+				' of an object.\r\n    at Metrics.Samples.HealthChecksSample.DatabaseHealthCheck.Check() ' +
+				'in HealthChecksSample.cs:line ' +
+				'24\r\n    at Metrics.Core.HealthCheck.Execute() in HealthCheck.cs:line 50\r\n',
+				'DiskSpace': 'Not enough disk space: 100kb'
+			},
+			'Healthy': {
+				'DatabaseConnected': 'Database Connection OK'
+			}
+		};
 	}
 
 	angular.module('MainModule')
