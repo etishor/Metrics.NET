@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HealthChecksSample.fs" />
+    <Compile Include="SampleMetrics.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Src\Metrics\Metrics.csproj">

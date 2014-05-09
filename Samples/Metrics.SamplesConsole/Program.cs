@@ -9,7 +9,8 @@ namespace Metrics.SamplesConsole
         {
             Metric.MachineCounters.RegisterAll();
 
-            //SampleMetrics.RunSomeRequests();
+            SampleMetrics.RunSomeRequests();
+            //Metrics.Samples.FSharp.SampleMetrics.RunSomeRequests();
 
             HealthChecksSample.RegisterHealthChecks();
             //Metrics.Samples.FSharp.HealthChecksSample.RegisterHealthChecks();
