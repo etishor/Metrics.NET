@@ -99,6 +99,10 @@
       <Project>{95e29d40-dbec-49e2-9cc5-26b88966dade}</Project>
       <Name>Metrics</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Metrics.Samples.FSharp\Metrics.Samples.FSharp.fsproj">
+      <Project>{daf70394-ce63-4d2f-b52b-839941827b4e}</Project>
+      <Name>Metrics.Samples.FSharp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Metrics.Samples\Metrics.Samples.csproj">
       <Project>{d08a63d0-f440-477c-9565-1264ae0879d0}</Project>
       <Name>Metrics.Samples</Name>
