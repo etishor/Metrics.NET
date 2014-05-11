@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Security.Principal;
 using Metrics.Core;
 
 namespace Metrics.PerfCounters
@@ -13,11 +15,27 @@ namespace Metrics.PerfCounters
 
         public PerformanceCounterGauge(string category, string counter, string instance)
         {
-            this.performanceCounter = instance == null ?
-                new PerformanceCounter(category, counter, true) :
-                new PerformanceCounter(category, counter, instance, true);
+            try
+            {
+                this.performanceCounter = instance == null ?
+                    new PerformanceCounter(category, counter, true) :
+                    new PerformanceCounter(category, counter, instance, true);
+            }
+            catch (Exception x)
+            {
+                if (Metric.ErrorHandler != null)
+                {
+                    Metric.ErrorHandler(x);
+                }
+                else
+                {
+                    Trace.Fail("Error reading performance counter data. The application is currently running as user " + WindowsIdentity.GetCurrent().Name +
+                    ". Make sure the user has access to the performance counters. The user needs to be either Admin or belong to Performance Monitor user group." +
+                    " You can handle this exception by setting a handler on Metric.ErrorHandler", x.ToString());
+                }
+            }
         }
 
-        public override double Value { get { return this.performanceCounter.NextValue(); } }
+        public override double Value { get { return this.performanceCounter != null ? this.performanceCounter.NextValue() : -1; } }
     }
 }
