@@ -21,7 +21,7 @@ namespace Metrics.Reporters
         protected override void EndReport()
         {
             base.EndReport();
-            File.AppendAllLines(this.fileName, this.buffer);
+            File.WriteAllLines(this.fileName, this.buffer);
             buffer.Clear();
         }
     }
