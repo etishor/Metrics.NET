@@ -2,6 +2,8 @@
 using System;
 using Metrics.Core;
 using Metrics.PerfCounters;
+using Metrics.Reports;
+
 namespace Metrics
 {
     public sealed class MetricsConfig : Utils.IHideObjectMembers
@@ -12,7 +14,7 @@ namespace Metrics
         private readonly Lazy<MetricsReports> reports;
         private readonly Lazy<PerformanceCounters> machineCounters;
 
-        public MetricsConfig()
+        internal MetricsConfig()
         {
             this.registry = new Lazy<MetricsRegistry>(() => new LocalRegistry(), true);
             this.reports = new Lazy<MetricsReports>(() => new MetricsReports(this.registry.Value, HealthChecks.Registry));
@@ -105,6 +107,11 @@ namespace Metrics
         }
 
         /// <summary>
+        /// The registry where all the metrics are registered. 
+        /// </summary>
+        public MetricsRegistry Registry { get { return this.registry.Value; } }
+
+        /// <summary>
         /// Configured error handler
         /// </summary>
         internal Action<Exception> ErrorHandler { get; private set; }
@@ -113,10 +120,5 @@ namespace Metrics
         /// Configured reports
         /// </summary>
         internal MetricsReports Reports { get { return this.reports.Value; } }
-
-        /// <summary>
-        /// The registry where all the metrics are registered. 
-        /// </summary>
-        public MetricsRegistry Registry { get { return this.registry.Value; } }
     }
 }

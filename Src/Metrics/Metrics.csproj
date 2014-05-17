@@ -107,7 +107,7 @@
     <Compile Include="Core\MetricsRegistry.cs" />
     <Compile Include="Core\LocalRegistry.cs" />
     <Compile Include="MetricsConfig.cs" />
-    <Compile Include="MetricsReports.cs" />
+    <Compile Include="Reporters\MetricsReports.cs" />
     <Compile Include="MetricValueSource.cs" />
     <Compile Include="PerfCounters\BaseCounterRegristry.cs" />
     <Compile Include="PerfCounters\CLRCounters.cs" />
