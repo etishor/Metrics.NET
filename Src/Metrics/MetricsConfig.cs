@@ -49,10 +49,11 @@ namespace Metrics
             {
                 throw new InvalidOperationException("Metrics registry has already been created. You must call Metric.Config.WithRegistry before any other Metric call.");
             }
+
             this.registry = new Lazy<MetricsRegistry>(() => registry);
+
             return this;
         }
-
 
         /// <summary>
         /// Global error handler for the metrics library. If a handler is registered any error will be passed to the handler.
@@ -67,6 +68,7 @@ namespace Metrics
             }
 
             this.ErrorHandler = errorHandler;
+
             return this;
         }
 

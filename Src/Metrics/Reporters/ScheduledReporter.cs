@@ -15,7 +15,6 @@ namespace Metrics.Reporters
         private readonly MetricsRegistry registry;
         private readonly HealthChecksRegistry healthChecks;
 
-
         public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, HealthChecksRegistry healthChecks, TimeSpan interval)
             : this(name, reporter, registry, healthChecks, interval, new ActionScheduler()) { }
 
