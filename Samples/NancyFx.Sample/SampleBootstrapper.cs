@@ -26,11 +26,10 @@ namespace NancyFx.Sample
             Metric.Config
                 .WithPerformanceCounters(c => c.RegisterAll())
                 .WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30)))
-                .WithNancy(nancy =>
-                {
-                    nancy.WithGlobalMetrics(c => c.RegisterAllMetrics(pipelines));
-                    nancy.WithMetricsModule();
-                });
+                .WithNancy(config => config
+                    .WithGlobalMetrics(c => c.RegisterAllMetrics(pipelines))
+                    .WithMetricsModule()
+                );
 
             pipelines.AfterRequest += ctx =>
             {
