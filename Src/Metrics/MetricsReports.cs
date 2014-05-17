@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Metrics.Core;
 using Metrics.Reporters;
 using Metrics.Visualization;
 namespace Metrics
@@ -35,7 +36,7 @@ namespace Metrics
         public void StartHttpListener(string httpUriPrefix)
         {
             using (this.listener) { }
-            this.listener = new MetricsHttpListener(httpUriPrefix);
+            this.listener = new MetricsHttpListener(httpUriPrefix, this.metricsRegistry, this.healthChecks);
             this.listener.Start();
         }
 

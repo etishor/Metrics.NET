@@ -1,4 +1,5 @@
 ﻿using Metrics;
+using Metrics.Core;
 
 namespace Nancy.Metrics
 {
@@ -15,7 +16,17 @@ namespace Nancy.Metrics
         /// <returns>Instance that handles integration customizations</returns>
         public static NancyMetricsConfig Configure()
         {
-            return Configure(Metric.Registry);
+            return Configure(Metric.Registry, HealthChecks.Registry);
+        }
+
+        /// <summary>
+        /// Start configuring metrics integration into NancyFx
+        /// </summary>
+        /// <param name="metricsRegistry">Custom metrics registry</param>
+        /// <returns>Instance that handles integration customizations</returns>
+        public static NancyMetricsConfig Configure(MetricsRegistry registry)
+        {
+            return Configure(registry, HealthChecks.Registry);
         }
 
         /// <summary>
@@ -26,9 +37,9 @@ namespace Nancy.Metrics
         /// </remarks>
         /// <param name="metricsRegistry">Custom metrics registry</param>
         /// <returns>Instance that handles integration customizations</returns>
-        public static NancyMetricsConfig Configure(MetricsRegistry metricsRegistry)
+        public static NancyMetricsConfig Configure(MetricsRegistry metricsRegistry, HealthChecksRegistry healthChecksRegistry)
         {
-            CurrentConfig = new NancyMetricsConfig(metricsRegistry);
+            CurrentConfig = new NancyMetricsConfig(metricsRegistry, healthChecksRegistry);
             return CurrentConfig;
         }
     }

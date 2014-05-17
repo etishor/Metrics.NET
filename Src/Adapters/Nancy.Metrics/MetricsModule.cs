@@ -1,5 +1,6 @@
 ﻿using System;
 using Metrics;
+using Metrics.Core;
 using Metrics.Reporters;
 using Metrics.Visualization;
 
@@ -12,19 +13,21 @@ namespace Nancy.Metrics
             public readonly string ModulePath;
             public readonly Action<INancyModule> ModuleConfigAction;
             public readonly MetricsRegistry Registry;
+            public readonly HealthChecksRegistry HealthChecks;
 
-            public ModuleConfig(MetricsRegistry registry, Action<INancyModule> moduleConfig, string metricsPath)
+            public ModuleConfig(MetricsRegistry registry, HealthChecksRegistry healthChecks, Action<INancyModule> moduleConfig, string metricsPath)
             {
                 this.Registry = registry;
+                this.HealthChecks = healthChecks;
                 this.ModuleConfigAction = moduleConfig;
                 this.ModulePath = metricsPath;
             }
         }
         private static ModuleConfig Config;
 
-        public static void Configure(MetricsRegistry registry, Action<INancyModule> moduleConfig, string metricsPath)
+        public static void Configure(MetricsRegistry registry, HealthChecksRegistry healthChecks, Action<INancyModule> moduleConfig, string metricsPath)
         {
-            MetricsModule.Config = new ModuleConfig(registry, moduleConfig, metricsPath);
+            MetricsModule.Config = new ModuleConfig(registry, healthChecks, moduleConfig, metricsPath);
         }
 
 
@@ -42,7 +45,7 @@ namespace Nancy.Metrics
             }
 
             Get["/"] = _ => Response.AsText(FlotWebApp.GetFlotApp(this.Context.Request.Url), "text/html");
-            Get["/text"] = _ => Response.AsText(Metric.GetAsHumanReadable());
+            Get["/text"] = _ => Response.AsText(GetAsHumanReadable());
             Get["/json"] = _ => Response.AsText(RegistrySerializer.GetAsJson(Config.Registry), "text/json");
             Get["/ping"] = _ => Response.AsText("pong", "text/plain");
             Get["/health"] = _ => GetHealthStatus();
@@ -50,12 +53,19 @@ namespace Nancy.Metrics
 
         private dynamic GetHealthStatus()
         {
-            var status = HealthChecks.GetStatus();
+            var status = Config.HealthChecks.GetStatus();
             var content = HealthCheckSerializer.Serialize(status);
 
             var response = Response.AsText(content, "application/json");
             response.StatusCode = status.IsHealty ? HttpStatusCode.OK : HttpStatusCode.InternalServerError;
             return response;
+        }
+
+        private static string GetAsHumanReadable()
+        {
+            var report = new StringReporter();
+            report.RunReport(Config.Registry, Config.HealthChecks);
+            return report.Result;
         }
     }
 }

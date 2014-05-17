@@ -1,19 +1,23 @@
 ﻿using System;
 using Metrics;
+using Metrics.Core;
 
 namespace Nancy.Metrics
 {
     public class NancyMetricsConfig
     {
         private readonly MetricsRegistry metricsRegistry;
+        private readonly HealthChecksRegistry healthChecksRegistry;
         private NancyGlobalMetrics globalMetrics;
 
-        public NancyMetricsConfig(MetricsRegistry metricsRegistry)
+        public NancyMetricsConfig(MetricsRegistry metricsRegistry, HealthChecksRegistry healthChecksRegistry)
         {
             this.metricsRegistry = metricsRegistry;
+            this.healthChecksRegistry = healthChecksRegistry;
         }
 
         public MetricsRegistry Registry { get { return this.metricsRegistry; } }
+        public HealthChecksRegistry HealthChecks { get { return this.healthChecksRegistry; } }
 
         /// <summary>
         /// Configure global NancyFx Metrics.
@@ -80,7 +84,7 @@ namespace Nancy.Metrics
         /// <returns>This instance to allow chaining of the configuration.</returns>
         public NancyMetricsConfig WithMetricsEndpoint(Action<INancyModule> moduleConfig, string metricsPath = "/metrics")
         {
-            MetricsModule.Configure(this.metricsRegistry, moduleConfig, metricsPath);
+            MetricsModule.Configure(this.metricsRegistry, this.healthChecksRegistry, moduleConfig, metricsPath);
             return this;
         }
     }
