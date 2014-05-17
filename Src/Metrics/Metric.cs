@@ -217,17 +217,6 @@ namespace Metrics
             return Metric.Registry.Timer(name, unit, samplingType, rateUnit, durationUnit);
         }
 
-        /// <summary>
-        /// Returns a string containing a human readable formatted report with all the metrics.
-        /// </summary>
-        /// <returns>String containing the report.</returns>
-        public static string GetAsHumanReadable()
-        {
-            var report = new StringReporter();
-            report.RunReport(Metric.Registry, HealthChecks.Registry);
-            return report.Result;
-        }
-
         private static string Name<T>(string name)
         {
             return string.Concat(typeof(T).Name, ".", name);

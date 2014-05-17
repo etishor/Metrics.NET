@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Metrics.Core;
 
-namespace Metrics
+namespace Metrics.Core
 {
     public interface MetricsRegistry
     {

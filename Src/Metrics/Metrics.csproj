@@ -101,10 +101,10 @@
     <Compile Include="Counter.cs" />
     <Compile Include="Gauge.cs" />
     <Compile Include="HealthChecks.cs" />
-    <Compile Include="HealthChecksRegistry.cs" />
+    <Compile Include="Core\HealthChecksRegistry.cs" />
     <Compile Include="Histogram.cs" />
     <Compile Include="Meter.cs" />
-    <Compile Include="MetricsRegistry.cs" />
+    <Compile Include="Core\MetricsRegistry.cs" />
     <Compile Include="Core\LocalRegistry.cs" />
     <Compile Include="MetricsReports.cs" />
     <Compile Include="MetricValueSource.cs" />

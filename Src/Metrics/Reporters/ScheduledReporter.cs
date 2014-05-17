@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Metrics.Core;
 using Metrics.Utils;
 
 namespace Metrics.Reporters
