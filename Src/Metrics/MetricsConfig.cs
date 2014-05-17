@@ -70,6 +70,11 @@ namespace Metrics
             return this;
         }
 
+        /// <summary>
+        /// Configure the way metrics are reported
+        /// </summary>
+        /// <param name="reportsConfig">Reports configuration action</param>
+        /// <returns>Chainable configuration object.</returns>
         public MetricsConfig WithReporting(Action<MetricsReports> reportsConfig)
         {
             if (this.isDisabled)
@@ -81,6 +86,11 @@ namespace Metrics
             return this;
         }
 
+        /// <summary>
+        /// Configure the usage of performance counters to report system state.
+        /// </summary>
+        /// <param name="performanceCountersConfig">Action to configure performance counters.</param>
+        /// <returns>Chainable configuration object.</returns>
         public MetricsConfig WithPerformanceCounters(Action<PerformanceCounters> performanceCountersConfig)
         {
             if (this.isDisabled)

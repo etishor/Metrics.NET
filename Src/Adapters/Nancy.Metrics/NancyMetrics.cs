@@ -22,7 +22,7 @@ namespace Nancy.Metrics
         /// <summary>
         /// Start configuring metrics integration into NancyFx
         /// </summary>
-        /// <param name="metricsRegistry">Custom metrics registry</param>
+        /// <param name="registry">Custom metrics registry</param>
         /// <returns>Instance that handles integration customizations</returns>
         public static NancyMetricsConfig Configure(MetricsRegistry registry)
         {
@@ -36,6 +36,7 @@ namespace Nancy.Metrics
         /// This method is useful for testing.
         /// </remarks>
         /// <param name="metricsRegistry">Custom metrics registry</param>
+        /// <param name="healthChecksRegistry">Custom health checks registry</param>
         /// <returns>Instance that handles integration customizations</returns>
         public static NancyMetricsConfig Configure(MetricsRegistry metricsRegistry, HealthChecksRegistry healthChecksRegistry)
         {
