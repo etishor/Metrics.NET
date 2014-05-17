@@ -1,6 +1,7 @@
-﻿using Nancy;
+﻿using System;
+using Metrics;
+using Nancy;
 using Nancy.Bootstrapper;
-using Nancy.Metrics;
 using Nancy.TinyIoc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -22,9 +23,14 @@ namespace NancyFx.Sample
         {
             base.ApplicationStartup(container, pipelines);
 
-            NancyMetrics.Configure()
-                .WithGlobalMetrics(config => config.RegisterAllMetrics(pipelines))
-                .WithMetricsEndpoint();
+            Metric.Config
+                .WithPerformanceCounters(c => c.RegisterAll())
+                .WithReporting(r => r.StartConsoleReport(TimeSpan.FromSeconds(30)))
+                .WithNancy(nancy =>
+                {
+                    nancy.WithGlobalMetrics(c => c.RegisterAllMetrics(pipelines));
+                    nancy.WithMetricsModule();
+                });
 
             pipelines.AfterRequest += ctx =>
             {

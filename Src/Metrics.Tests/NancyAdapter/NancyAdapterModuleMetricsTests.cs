@@ -47,8 +47,8 @@ namespace Metrics.Tests.NancyAdapter
 
             this.timer = new TimerMetric(SamplingType.SlidingWindow, new MeterMetric(clock, scheduler), clock);
             this.sizeHistogram = new HistogramMetric();
-            NancyMetrics.Configure(new TestRegistry { TimerInstance = timer, HistogramInstance = sizeHistogram });
-
+            Metric.Config.WithNancy(new TestRegistry { TimerInstance = timer, HistogramInstance = sizeHistogram }, c => { });
+            
             this.browser = new Browser(with =>
             {
                 with.Module(new TestModule(this.clock));

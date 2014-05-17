@@ -1,5 +1,4 @@
 ﻿using System;
-using Metrics;
 using Metrics.Core;
 
 namespace Nancy.Metrics
@@ -59,9 +58,9 @@ namespace Nancy.Metrics
         /// </summary>
         /// <param name="metricsPath">Path where to expose the metrics</param>
         /// <returns>This instance to allow chaining of the configuration.</returns>
-        public NancyMetricsConfig WithMetricsEndpoint(string metricsPath = "/metrics")
+        public NancyMetricsConfig WithMetricsModule(string metricsPath = "/metrics")
         {
-            return WithMetricsEndpoint(m => { }, metricsPath);
+            return WithMetricsModule(m => { }, metricsPath);
         }
 
         /// <summary>
@@ -82,7 +81,7 @@ namespace Nancy.Metrics
         /// <param name="moduleConfig">Action that can configure the Metrics Module ( for example to apply authentication )</param>
         /// <param name="metricsPath">Path where to expose the metrics</param>
         /// <returns>This instance to allow chaining of the configuration.</returns>
-        public NancyMetricsConfig WithMetricsEndpoint(Action<INancyModule> moduleConfig, string metricsPath = "/metrics")
+        public NancyMetricsConfig WithMetricsModule(Action<INancyModule> moduleConfig, string metricsPath = "/metrics")
         {
             MetricsModule.Configure(this.metricsRegistry, this.healthChecksRegistry, moduleConfig, metricsPath);
             return this;

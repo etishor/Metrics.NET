@@ -113,7 +113,7 @@ namespace Nancy.Metrics
         {
             if (NancyMetrics.CurrentConfig == null)
             {
-                NancyMetrics.Configure();
+                Metric.Config.WithNancy();
             }
         }
 

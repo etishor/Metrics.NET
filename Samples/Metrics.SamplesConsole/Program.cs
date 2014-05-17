@@ -13,12 +13,11 @@ namespace Metrics.SamplesConsole
                 .WithPerformanceCounters(c => c.RegisterAll())
                 .WithReporting(r =>
                 {
-                    r.PrintConsoleReport(TimeSpan.FromSeconds(30));
-                    r.StoreCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(10));
-                    r.AppendToFile(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(10));
-                    r.StartHttpListener("http://localhost:1234/");
+                    r.StartConsoleReport(TimeSpan.FromSeconds(30));
+                    r.StartCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(10));
+                    r.StartTextFileReport(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(10));
                 });
-
+            
             SampleMetrics.RunSomeRequests();
             //Metrics.Samples.FSharp.SampleMetrics.RunSomeRequests();
 

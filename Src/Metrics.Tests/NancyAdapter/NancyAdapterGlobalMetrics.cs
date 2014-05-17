@@ -6,7 +6,6 @@ using Metrics.Core;
 using Metrics.Tests.TestUtils;
 using Metrics.Utils;
 using Nancy;
-using Nancy.Metrics;
 using Nancy.Testing;
 using Xunit;
 
@@ -72,13 +71,13 @@ namespace Metrics.Tests.NancyAdapter
             {
                 with.ApplicationStartup((c, p) =>
                 {
-                    NancyMetrics.Configure(new TestRegistry
+                    Metric.Config.WithNancy(new TestRegistry
                     {
                         TimerInstance = timer,
                         MeterInstance = meter,
                         CounterInstance = counter,
                         HistogramInstance = size
-                    }).WithGlobalMetrics(config => config.RegisterAllMetrics(p));
+                    }, nancy => nancy.WithGlobalMetrics(config => config.RegisterAllMetrics(p)));
                 });
                 with.Module(new TestModule(this.clock));
                 with.Module(new ActiveRequestsModule(this.requestTrigger.Task, result1, result2));

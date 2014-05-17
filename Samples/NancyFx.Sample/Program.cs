@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using Metrics;
 using Metrics.Samples;
 using Metrics.Utils;
 using Nancy.Hosting.Self;
@@ -12,10 +11,6 @@ namespace NancyFx.Sample
     {
         static void Main(string[] args)
         {
-            Metric.Config
-                .WithPerformanceCounters(c => c.RegisterAll())
-                .WithReporting(r => r.PrintConsoleReport(TimeSpan.FromSeconds(30)));
-
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings { Formatting = Formatting.Indented };
 
             using (ActionScheduler scheduler = new ActionScheduler())
