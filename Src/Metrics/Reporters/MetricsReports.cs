@@ -33,22 +33,24 @@ namespace Metrics.Reports
         /// GET /text => metrics in human readable text format
         /// </summary>
         /// <param name="httpUriPrefix">prefix where to start HTTP endpoint</param>
-        public void StartHttpListener(string httpUriPrefix)
+        public MetricsReports WithHttpListenerEndpoint(string httpUriPrefix)
         {
             using (this.listener) { }
             this.listener = new MetricsHttpListener(httpUriPrefix, this.metricsRegistry, this.healthChecks);
             this.listener.Start();
+            return this;
         }
 
         /// <summary>
         /// Schedule a Console Report to be executed and displayed on the console at a fixed <paramref name="interval"/>.
         /// </summary>
         /// <param name="interval">Interval at which to display the report on the Console.</param>
-        public void StartConsoleReport(TimeSpan interval)
+        public MetricsReports WithConsoleReport(TimeSpan interval)
         {
             var reporter = new ScheduledReporter("Console", () => new ConsoleReporter(), this.metricsRegistry, this.healthChecks, interval);
             reporter.Start();
             this.reports.Add(reporter);
+            return this;
         }
 
         /// <summary>
@@ -56,12 +58,13 @@ namespace Metrics.Reports
         /// </summary>
         /// <param name="directory">Directory where to store the CSV files.</param>
         /// <param name="interval">Interval at which to append a line to the files.</param>
-        public void StartCSVReports(string directory, TimeSpan interval)
+        public MetricsReports WithCSVReports(string directory, TimeSpan interval)
         {
             Directory.CreateDirectory(directory);
             var reporter = new ScheduledReporter("CSVFiles", () => new CSVReporter(new CSVFileAppender(directory)), this.metricsRegistry, this.healthChecks, interval);
             reporter.Start();
             this.reports.Add(reporter);
+            return this;
         }
 
         /// <summary>
@@ -69,11 +72,12 @@ namespace Metrics.Reports
         /// </summary>
         /// <param name="filePath">File where to append the report.</param>
         /// <param name="interval">Interval at which to run the report.</param>
-        public void StartTextFileReport(string filePath, TimeSpan interval)
+        public MetricsReports WithTextFileReport(string filePath, TimeSpan interval)
         {
             var reporter = new ScheduledReporter("TextFile", () => new TextFileReporter(filePath), this.metricsRegistry, this.healthChecks, interval);
             reporter.Start();
             this.reports.Add(reporter);
+            return this;
         }
 
         /// <summary>

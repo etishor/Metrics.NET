@@ -25,7 +25,7 @@ namespace NancyFx.Sample
 
             Metric.Config
                 .WithPerformanceCounters(c => c.RegisterAll())
-                .WithReporting(r => r.StartConsoleReport(TimeSpan.FromSeconds(30)))
+                .WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30)))
                 .WithNancy(nancy =>
                 {
                     nancy.WithGlobalMetrics(c => c.RegisterAllMetrics(pipelines));
