@@ -101,6 +101,7 @@ namespace Metrics.Reporters
         private static IEnumerable<JsonProperty> Histogram(HistogramValue value)
         {
             yield return new JsonProperty("Count", value.Count);
+            yield return new JsonProperty("LastValue", value.LastValue);
             yield return new JsonProperty("Min", value.Min);
             yield return new JsonProperty("Mean", value.Mean);
             yield return new JsonProperty("Max", value.Max);
