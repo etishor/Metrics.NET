@@ -1,6 +1,7 @@
 ﻿
 using System;
 using Metrics;
+using Metrics.Core;
 using Metrics.Utils;
 using Nancy.Bootstrapper;
 namespace Nancy.Metrics

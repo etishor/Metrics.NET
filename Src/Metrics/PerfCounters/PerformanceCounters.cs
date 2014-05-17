@@ -1,4 +1,5 @@
 ﻿
+using Metrics.Core;
 namespace Metrics.PerfCounters
 {
     public class PerformanceCounters

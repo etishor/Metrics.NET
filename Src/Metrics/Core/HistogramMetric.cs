@@ -6,6 +6,7 @@ namespace Metrics.Core
     {
         private readonly Reservoir reservoir;
         private AtomicLong counter = new AtomicLong();
+        private AtomicLong last = new AtomicLong();
 
         public HistogramMetric()
             : this(new ExponentiallyDecayingReservoir()) { }
@@ -23,6 +24,7 @@ namespace Metrics.Core
 
         public void Update(long value)
         {
+            this.last.SetValue(value);
             this.counter.Increment();
             this.reservoir.Update(value);
         }
@@ -31,7 +33,7 @@ namespace Metrics.Core
         {
             get
             {
-                return new HistogramValue(this.counter.Value, this.Snapshot);
+                return new HistogramValue(this.counter.Value, this.last.Value, this.Snapshot);
             }
         }
 

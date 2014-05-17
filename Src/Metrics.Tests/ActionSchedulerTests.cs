@@ -104,11 +104,11 @@ namespace Metrics.Tests
             Exception x = null;
             var tcs = new TaskCompletionSource<bool>();
 
-            Metric.ErrorHandler = e =>
+            Metric.Config.WithErrorHandler(e =>
             {
                 x = e;
                 tcs.SetResult(true);
-            };
+            });
 
             using (ActionScheduler scheduler = new ActionScheduler())
             {

@@ -1,6 +1,6 @@
 ﻿using Metrics.Core;
 
-namespace Metrics
+namespace Metrics.Core
 {
     public interface HealthChecksRegistry
     {

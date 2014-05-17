@@ -111,9 +111,9 @@ namespace Metrics.Utils
 
         private static void HandleException(Exception x)
         {
-            if (Metric.ErrorHandler != null)
+            if (Metric.Config.ErrorHandler != null)
             {
-                Metric.ErrorHandler(x);
+                Metric.Config.ErrorHandler(x);
             }
             else
             {
@@ -137,9 +137,9 @@ namespace Metrics.Utils
             }
             catch (Exception x)
             {
-                if (Metric.ErrorHandler != null)
+                if (Metric.Config.ErrorHandler != null)
                 {
-                    Metric.ErrorHandler(x);
+                    Metric.Config.ErrorHandler(x);
                 }
                 else
                 {

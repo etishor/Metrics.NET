@@ -6,7 +6,7 @@ namespace Metrics
     /// <summary>
     /// A Histogram measures the distribution of values in a stream of data: e.g., the number of results returned by a search.
     /// </summary>
-    public interface Histogram : Utils.IHideObjectMembers 
+    public interface Histogram : Utils.IHideObjectMembers
     {
         /// <summary>
         /// Records a value.
@@ -22,6 +22,7 @@ namespace Metrics
     {
         public readonly long Count;
 
+        public readonly double LastValue;
         public readonly double Max;
         public readonly double Mean;
         public readonly double Min;
@@ -34,15 +35,16 @@ namespace Metrics
         public readonly double Percentile999;
         public readonly int SampleSize;
 
-        public HistogramValue(long count, Snapshot snapshot)
-            : this(count, snapshot.Max, snapshot.Mean, snapshot.Min, snapshot.StdDev,
+        public HistogramValue(long count, double lastValue, Snapshot snapshot)
+            : this(count, lastValue, snapshot.Max, snapshot.Mean, snapshot.Min, snapshot.StdDev,
             snapshot.Median, snapshot.Percentile75, snapshot.Percentile95, snapshot.Percentile98, snapshot.Percentile99, snapshot.Percentile999, snapshot.Size)
         { }
 
-        public HistogramValue(long count, double max, double mean, double min, double stdDev,
+        public HistogramValue(long count, double lastValue, double max, double mean, double min, double stdDev,
             double median, double percentile75, double percentile95, double percentile98, double percentile99, double percentile999, int sampleSize)
         {
             this.Count = count;
+            this.LastValue = lastValue;
             this.Max = max;
             this.Mean = mean;
             this.Min = min;
@@ -58,7 +60,7 @@ namespace Metrics
 
         public HistogramValue Scale(double factor)
         {
-            return new HistogramValue(this.Count, this.Max * factor, this.Mean * factor, this.Min * factor, this.StdDev * factor,
+            return new HistogramValue(this.Count, this.LastValue * factor, this.Max * factor, this.Mean * factor, this.Min * factor, this.StdDev * factor,
                 this.Median * factor, this.Percentile75 * factor, this.Percentile95 * factor,
                 this.Percentile98 * factor, this.Percentile99 * factor, this.Percentile999 * factor, this.SampleSize);
         }

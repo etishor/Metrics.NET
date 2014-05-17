@@ -7,19 +7,23 @@ namespace Metrics.SamplesConsole
     {
         static void Main(string[] args)
         {
-            Metric.MachineCounters.RegisterAll();
+            //Metric.Config.CompletelyDisableMetrics();
+
+            Metric.Config
+                .WithPerformanceCounters(c => c.RegisterAll())
+                .WithReporting(r =>
+                {
+                    r.PrintConsoleReport(TimeSpan.FromSeconds(30));
+                    r.StoreCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(10));
+                    r.AppendToFile(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(10));
+                    r.StartHttpListener("http://localhost:1234/");
+                });
 
             SampleMetrics.RunSomeRequests();
             //Metrics.Samples.FSharp.SampleMetrics.RunSomeRequests();
 
             HealthChecksSample.RegisterHealthChecks();
             //Metrics.Samples.FSharp.HealthChecksSample.RegisterHealthChecks();
-
-            Metric.Reports.PrintConsoleReport(TimeSpan.FromSeconds(10));
-            Metric.Reports.StoreCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(10));
-            Metric.Reports.AppendToFile(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(10));
-
-            Metric.Reports.StartHttpListener("http://localhost:1234/");
 
             Console.WriteLine("done setting things up");
             Console.ReadKey();

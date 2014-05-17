@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Metrics.Core;
 using Metrics.Reporters;
 namespace Metrics.Visualization
 {
@@ -12,11 +13,15 @@ namespace Metrics.Visualization
         private const string NotFoundResponse = "<!doctype html><html><body>Resource not found</body></html>";
         private readonly HttpListener httpListener;
         private readonly CancellationTokenSource cts = new CancellationTokenSource();
+        private readonly MetricsRegistry registry;
+        private readonly HealthChecksRegistry healthChecks;
 
-        public MetricsHttpListener(string listenerUriPrefix)
+        public MetricsHttpListener(string listenerUriPrefix, MetricsRegistry registry, HealthChecksRegistry healthChecks)
         {
             this.httpListener = new HttpListener();
             this.httpListener.Prefixes.Add(listenerUriPrefix);
+            this.registry = registry;
+            this.healthChecks = healthChecks;
         }
 
         public void Start()
@@ -43,7 +48,7 @@ namespace Metrics.Visualization
             }
         }
 
-        private static void ProcessRequest(HttpListenerContext context)
+        private void ProcessRequest(HttpListenerContext context)
         {
             switch (context.Request.RawUrl)
             {
@@ -51,16 +56,16 @@ namespace Metrics.Visualization
                     WriteFlotApp(context);
                     break;
                 case "/json":
-                    WriteJsonMetrics(context);
+                    WriteJsonMetrics(context, this.registry);
                     break;
                 case "/text":
-                    WriteTextMetrics(context);
+                    WriteTextMetrics(context, this.registry, this.healthChecks);
                     break;
                 case "/ping":
                     WritePong(context);
                     break;
                 case "/health":
-                    WriteHealthStatus(context);
+                    WriteHealthStatus(context, this.healthChecks);
                     break;
                 default:
                     WriteNotFound(context);
@@ -68,9 +73,9 @@ namespace Metrics.Visualization
             }
         }
 
-        private static void WriteHealthStatus(HttpListenerContext context)
+        private static void WriteHealthStatus(HttpListenerContext context, HealthChecksRegistry healthChecks)
         {
-            var status = HealthChecks.GetStatus();
+            var status = healthChecks.GetStatus();
             var json = HealthCheckSerializer.Serialize(status);
 
             context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
@@ -111,26 +116,26 @@ namespace Metrics.Visualization
             context.Response.Close();
         }
 
-        private static void WriteTextMetrics(HttpListenerContext context)
+        private static void WriteTextMetrics(HttpListenerContext context, MetricsRegistry registry, HealthChecksRegistry healthChecks)
         {
             context.Response.ContentType = "text/plain";
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
-                writer.Write(RegistrySerializer.GetAsHumanReadable(Metric.Registry, HealthChecks.Registry));
+                writer.Write(RegistrySerializer.GetAsHumanReadable(registry, healthChecks));
             }
             context.Response.Close();
         }
 
-        private static void WriteJsonMetrics(HttpListenerContext context)
+        private static void WriteJsonMetrics(HttpListenerContext context, MetricsRegistry registry)
         {
             context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
             context.Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
-            var json = RegistrySerializer.GetAsJson(Metric.Registry);
+            var json = RegistrySerializer.GetAsJson(registry);
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
                 writer.Write(json);

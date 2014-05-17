@@ -109,6 +109,7 @@ namespace Metrics.Reporters
 
         private static IEnumerable<Value> HistogramValues(HistogramValue value, Unit unit, TimeUnit? timeUnit = null)
         {
+            yield return new Value("Last", value.LastValue);
             yield return new Value("Min", value.Min);
             yield return new Value("Max", value.Max);
             yield return new Value("Mean", value.Mean);

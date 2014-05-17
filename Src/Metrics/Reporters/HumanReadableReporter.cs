@@ -104,6 +104,7 @@ namespace Metrics.Reporters
         private void WriteHistogram(HistogramValue value, Unit unit, TimeUnit? durationUnit = null)
         {
             WriteValue("Count", unit.FormatCount(value.Count));
+            WriteValue("Last", unit.FormatDuration(value.LastValue, durationUnit));
             WriteValue("Min", unit.FormatDuration(value.Min, durationUnit));
             WriteValue("Max", unit.FormatDuration(value.Max, durationUnit));
             WriteValue("Mean", unit.FormatDuration(value.Mean, durationUnit));
