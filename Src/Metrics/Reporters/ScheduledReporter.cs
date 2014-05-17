@@ -21,7 +21,7 @@ namespace Metrics.Reporters
 
         public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, HealthChecksRegistry healthChecks, TimeSpan interval, Scheduler scheduler)
         {
-            if (Metric.Reports.EnableReportDiagnosticMetrics)
+            if (Metric.Config.Reports.EnableReportDiagnosticMetrics)
             {
                 this.reportTime = registry.Timer("Metrics.Reporter." + name, Unit.Calls, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
             }

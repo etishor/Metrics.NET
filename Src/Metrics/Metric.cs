@@ -1,7 +1,5 @@
 ﻿using System;
-using Metrics.Core;
 using Metrics.PerfCounters;
-using Metrics.Reporters;
 
 namespace Metrics
 {
@@ -10,47 +8,18 @@ namespace Metrics
     /// </summary>
     public static class Metric
     {
-        private static Lazy<MetricsRegistry> registry = new Lazy<MetricsRegistry>(() => new LocalRegistry(), true);
-
-        private static readonly Lazy<MetricsReports> reports = new Lazy<MetricsReports>(() => new MetricsReports(Metric.Registry, HealthChecks.Registry));
-        private static readonly Lazy<PerformanceCounters> machineCounters = new Lazy<PerformanceCounters>(() => new PerformanceCounters(Metric.Registry), true);
+        private static MetricsConfig config = new MetricsConfig();
 
         /// <summary>
-        /// Configure the Metric static class to use a custom MetricsRegistry.
+        /// Entrypoint for Metrics Configuration.
+        /// <code>
+        /// Metric.Config
+        ///     .WithErrorHandler(x => Console.WriteLine(x))
+        ///     .WithReporting( reports => reports.StartHttpListener("http://localhost:8080/"))
+        ///     .WithPerformanceCounters( counters => counters.RegisterAll());
+        /// </code>
         /// </summary>
-        /// <remarks>
-        /// You must call Metric.ConfigureDefaultRegistry before any other Metric call.
-        /// </remarks>
-        /// <param name="registry">The custom registry to use for registering metrics.</param>
-        public static void ConfigureDefaultRegistry(MetricsRegistry registry)
-        {
-            if (Metric.registry.IsValueCreated)
-            {
-                throw new InvalidOperationException("Metrics registry has already been created. You must call Metric.ConfigureDefaultRegistry before any other Metric call.");
-            }
-            Metric.registry = new Lazy<MetricsRegistry>(() => registry);
-        }
-
-        /// <summary>
-        /// Global error handler for the metrics library. If a handler is registered any error will be passed to the handler.
-        /// If no error handler is registered the exception will be re-thrown.
-        /// </summary>
-        public static Action<Exception> ErrorHandler { get; set; }
-
-        /// <summary>
-        /// Entry point for metric reporting operations
-        /// </summary>
-        public static MetricsReports Reports { get { return reports.Value; } }
-
-        /// <summary>
-        /// Entry point for registering metrics derived from PerformanceCounters.
-        /// </summary>
-        public static PerformanceCounters MachineCounters { get { return machineCounters.Value; } }
-
-        /// <summary>
-        /// The registry where all the metrics are registered. 
-        /// </summary>
-        public static MetricsRegistry Registry { get { return registry.Value; } }
+        public static MetricsConfig Config { get { return config; } }
 
         /// <summary>
         /// Register a performance counter as a Gauge metric.
@@ -63,7 +32,7 @@ namespace Metrics
         /// <returns>Reference to the gauge</returns>
         public static Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
         {
-            return Metric.Registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance), unit);
+            return config.Registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance), unit);
         }
 
         /// <summary>
@@ -78,7 +47,7 @@ namespace Metrics
         /// <returns>Reference to the gauge</returns>
         public static Gauge Gauge<T>(string name, Func<double> valueProvider, Unit unit)
         {
-            return Metric.Registry.Gauge(Name<T>(name), valueProvider, unit);
+            return config.Registry.Gauge(Name<T>(name), valueProvider, unit);
         }
 
         /// <summary>
@@ -90,7 +59,7 @@ namespace Metrics
         /// <returns>Reference to the gauge</returns>
         public static Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
         {
-            return Metric.Registry.Gauge(name, valueProvider, unit);
+            return config.Registry.Gauge(name, valueProvider, unit);
         }
 
         /// <summary>
@@ -130,7 +99,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public static Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)
         {
-            return Metric.Registry.Meter(name, unit, rateUnit);
+            return config.Registry.Meter(name, unit, rateUnit);
         }
 
         /// <summary>
@@ -154,7 +123,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public static Counter Counter(string name, Unit unit)
         {
-            return Metric.Registry.Counter(name, unit);
+            return config.Registry.Counter(name, unit);
         }
 
         /// <summary>
@@ -180,7 +149,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public static Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
         {
-            return Metric.Registry.Histogram(name, unit, samplingType);
+            return config.Registry.Histogram(name, unit, samplingType);
         }
 
         /// <summary>
@@ -214,7 +183,7 @@ namespace Metrics
         public static Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
             TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
         {
-            return Metric.Registry.Timer(name, unit, samplingType, rateUnit, durationUnit);
+            return config.Registry.Timer(name, unit, samplingType, rateUnit, durationUnit);
         }
 
         private static string Name<T>(string name)

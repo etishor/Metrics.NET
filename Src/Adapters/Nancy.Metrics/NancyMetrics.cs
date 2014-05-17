@@ -16,7 +16,7 @@ namespace Nancy.Metrics
         /// <returns>Instance that handles integration customizations</returns>
         public static NancyMetricsConfig Configure()
         {
-            return Configure(Metric.Registry, HealthChecks.Registry);
+            return Configure(Metric.Config.Registry, HealthChecks.Registry);
         }
 
         /// <summary>

@@ -23,9 +23,9 @@ namespace Metrics.PerfCounters
             }
             catch (Exception x)
             {
-                if (Metric.ErrorHandler != null)
+                if (Metric.Config.ErrorHandler != null)
                 {
-                    Metric.ErrorHandler(x);
+                    Metric.Config.ErrorHandler(x);
                 }
                 else
                 {
