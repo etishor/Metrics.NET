@@ -24,7 +24,7 @@ namespace NancyFx.Sample
             base.ApplicationStartup(container, pipelines);
 
             Metric.Config
-                .WithPerformanceCounters(c => c.RegisterAll())
+                .WithAllCounters()
                 .WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30)))
                 .WithNancy(config => config
                     .WithGlobalMetrics(c => c.RegisterAllMetrics(pipelines))

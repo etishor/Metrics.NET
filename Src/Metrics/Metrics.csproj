@@ -109,11 +109,9 @@
     <Compile Include="MetricsConfig.cs" />
     <Compile Include="Reporters\MetricsReports.cs" />
     <Compile Include="MetricValueSource.cs" />
-    <Compile Include="PerfCounters\BaseCounterRegristry.cs" />
-    <Compile Include="PerfCounters\CLRCounters.cs" />
-    <Compile Include="PerfCounters\PerformanceCounterGauge.cs" />
     <Compile Include="PerfCounters\PerformanceCounters.cs" />
-    <Compile Include="PerfCounters\SystemInfo.cs" />
+    <Compile Include="PerfCounters\PerformanceCounterGauge.cs" />
+    <Compile Include="PerfCounters\PerformanceCountersConfigExtensions.cs" />
     <Compile Include="Reporters\ConsoleReporter.cs" />
     <Compile Include="Reporters\CSVFileAppender.cs" />
     <Compile Include="Reporters\CSVReporter.cs" />

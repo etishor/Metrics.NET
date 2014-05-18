@@ -12,7 +12,7 @@ namespace Metrics.SamplesConsole
             Metric.Config
                 .WithHttpEndpoint("http://localhost:1234/")
                 .WithErrorHandler(x => Console.WriteLine(x.ToString()))
-                .WithPerformanceCounters(c => c.RegisterAll())
+                .WithAllCounters()
                 .WithReporting(config => config
                     .WithConsoleReport(TimeSpan.FromSeconds(30))
                     .WithCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(10))

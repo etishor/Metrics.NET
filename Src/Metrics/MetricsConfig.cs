@@ -13,7 +13,6 @@ namespace Metrics
 
         private Lazy<MetricsRegistry> registry;
         private readonly Lazy<MetricsReports> reports;
-        private readonly Lazy<PerformanceCounters> machineCounters;
 
         private MetricsHttpListener listener;
 
@@ -21,7 +20,6 @@ namespace Metrics
         {
             this.registry = new Lazy<MetricsRegistry>(() => new LocalRegistry(), true);
             this.reports = new Lazy<MetricsReports>(() => new MetricsReports(this.registry.Value, HealthChecks.Registry));
-            this.machineCounters = new Lazy<PerformanceCounters>(() => new PerformanceCounters(this.registry.Value), true);
         }
 
         /// <summary>
@@ -111,22 +109,6 @@ namespace Metrics
             }
 
             reportsConfig(this.reports.Value);
-            return this;
-        }
-
-        /// <summary>
-        /// Configure the usage of performance counters to report system state.
-        /// </summary>
-        /// <param name="performanceCountersConfig">Action to configure performance counters.</param>
-        /// <returns>Chainable configuration object.</returns>
-        public MetricsConfig WithPerformanceCounters(Action<PerformanceCounters> performanceCountersConfig)
-        {
-            if (this.isDisabled)
-            {
-                return this;
-            }
-
-            performanceCountersConfig(this.machineCounters.Value);
             return this;
         }
 
