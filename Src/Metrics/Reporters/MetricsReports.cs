@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.IO;
 using Metrics.Core;
 using Metrics.Reporters;
-using Metrics.Visualization;
 namespace Metrics.Reports
 {
     public sealed class MetricsReports : Utils.IHideObjectMembers, IDisposable
@@ -13,7 +12,6 @@ namespace Metrics.Reports
         private readonly HealthChecksRegistry healthChecks;
 
         private readonly List<ScheduledReporter> reports = new List<ScheduledReporter>();
-        private MetricsHttpListener listener;
 
         public MetricsReports(MetricsRegistry metricsRegistry, HealthChecksRegistry healthChecks)
         {
@@ -25,21 +23,6 @@ namespace Metrics.Reports
         /// Enable or disable the registration of Report timer metrics.
         /// </summary>
         public bool EnableReportDiagnosticMetrics { get; set; }
-
-        /// <summary>
-        /// Create HTTP endpoint where metrics will be available in various formats:
-        /// GET / => visualization application
-        /// GET /json => metrics serialized as JSON
-        /// GET /text => metrics in human readable text format
-        /// </summary>
-        /// <param name="httpUriPrefix">prefix where to start HTTP endpoint</param>
-        public MetricsReports WithHttpListenerEndpoint(string httpUriPrefix)
-        {
-            using (this.listener) { }
-            this.listener = new MetricsHttpListener(httpUriPrefix, this.metricsRegistry, this.healthChecks);
-            this.listener.Start();
-            return this;
-        }
 
         /// <summary>
         /// Schedule a Console Report to be executed and displayed on the console at a fixed <paramref name="interval"/>.
@@ -87,14 +70,12 @@ namespace Metrics.Reports
         {
             this.reports.ForEach(r => r.Stop());
             this.reports.Clear();
-            using (this.listener) { }
-            this.listener = null;
         }
 
         public void Dispose()
         {
-            using (this.listener) { }
-            this.listener = null;
+            this.reports.ForEach(r => r.Dispose());
+            this.reports.Clear();
         }
     }
 }

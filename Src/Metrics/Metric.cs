@@ -12,13 +12,20 @@ namespace Metrics
 
         /// <summary>
         /// Entrypoint for Metrics Configuration.
+        /// </summary>
+        /// <example>
         /// <code>
         /// Metric.Config
-        ///     .WithErrorHandler(x => Console.WriteLine(x))
-        ///     .WithReporting( reports => reports.StartHttpListener("http://localhost:8080/"))
-        ///     .WithPerformanceCounters( counters => counters.RegisterAll());
+        ///     .WithHttpEndpoint("http://localhost:1234/")
+        ///     .WithErrorHandler(x => Console.WriteLine(x.ToString()))
+        ///     .WithPerformanceCounters(c => c.RegisterAll())
+        ///     .WithReporting(config => config
+        ///         .WithConsoleReport(TimeSpan.FromSeconds(30))
+        ///         .WithCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(10))
+        ///         .WithTextFileReport(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(10))
+        ///     );
         /// </code>
-        /// </summary>
+        /// </example>
         public static MetricsConfig Config { get { return config; } }
 
         /// <summary>

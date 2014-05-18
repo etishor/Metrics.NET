@@ -10,9 +10,10 @@ namespace Metrics.SamplesConsole
             //Metric.Config.CompletelyDisableMetrics();
 
             Metric.Config
+                .WithHttpEndpoint("http://localhost:1234/")
+                .WithErrorHandler(x => Console.WriteLine(x.ToString()))
                 .WithPerformanceCounters(c => c.RegisterAll())
                 .WithReporting(config => config
-                    .WithHttpListenerEndpoint("http://localhost:1234/")
                     .WithConsoleReport(TimeSpan.FromSeconds(30))
                     .WithCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(10))
                     .WithTextFileReport(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(10))

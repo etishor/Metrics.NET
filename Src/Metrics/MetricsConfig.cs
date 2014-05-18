@@ -3,10 +3,11 @@ using System;
 using Metrics.Core;
 using Metrics.PerfCounters;
 using Metrics.Reports;
+using Metrics.Visualization;
 
 namespace Metrics
 {
-    public sealed class MetricsConfig : Utils.IHideObjectMembers
+    public sealed class MetricsConfig : IDisposable, Utils.IHideObjectMembers
     {
         private bool isDisabled = false;
 
@@ -14,12 +15,19 @@ namespace Metrics
         private readonly Lazy<MetricsReports> reports;
         private readonly Lazy<PerformanceCounters> machineCounters;
 
+        private MetricsHttpListener listener;
+
         internal MetricsConfig()
         {
             this.registry = new Lazy<MetricsRegistry>(() => new LocalRegistry(), true);
             this.reports = new Lazy<MetricsReports>(() => new MetricsReports(this.registry.Value, HealthChecks.Registry));
             this.machineCounters = new Lazy<PerformanceCounters>(() => new PerformanceCounters(this.registry.Value), true);
         }
+
+        /// <summary>
+        /// The registry where all the metrics are registered. 
+        /// </summary>
+        public MetricsRegistry Registry { get { return this.registry.Value; } }
 
         /// <summary>
         /// All metrics operations will be NO-OP.
@@ -31,6 +39,22 @@ namespace Metrics
             WithRegistry(new NullMetricsRegistry());
             this.isDisabled = true;
         }
+
+        /// <summary>
+        /// Create HTTP endpoint where metrics will be available in various formats:
+        /// GET / => visualization application
+        /// GET /json => metrics serialized as JSON
+        /// GET /text => metrics in human readable text format
+        /// </summary>
+        /// <param name="httpUriPrefix">prefix where to start HTTP endpoint</param>
+        public MetricsConfig WithHttpEndpoint(string httpUriPrefix)
+        {
+            using (this.listener) { }
+            this.listener = new MetricsHttpListener(httpUriPrefix, this.Registry, HealthChecks.Registry);
+            this.listener.Start();
+            return this;
+        }
+
 
         /// <summary>
         /// Configure the Metric static class to use a custom MetricsRegistry.
@@ -106,10 +130,11 @@ namespace Metrics
             return this;
         }
 
-        /// <summary>
-        /// The registry where all the metrics are registered. 
-        /// </summary>
-        public MetricsRegistry Registry { get { return this.registry.Value; } }
+        public void Dispose()
+        {
+            using (this.listener) { }
+            this.listener = null;
+        }
 
         /// <summary>
         /// Configured error handler
