@@ -53,6 +53,11 @@ namespace Metrics
         /// <param name="httpUriPrefix">prefix where to start HTTP endpoint</param>
         public MetricsConfig WithHttpEndpoint(string httpUriPrefix)
         {
+            if (this.isDisabled)
+            {
+                return this;
+            }
+
             using (this.listener) { }
             this.listener = new MetricsHttpListener(httpUriPrefix, this.Registry, this.healthStatus);
             this.listener.Start();
@@ -142,6 +147,6 @@ namespace Metrics
         /// <summary>
         /// Configured error handler
         /// </summary>
-        internal Action<Exception> ErrorHandler { get; private set; }       
+        internal Action<Exception> ErrorHandler { get; private set; }
     }
 }
