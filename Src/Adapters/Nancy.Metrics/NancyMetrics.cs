@@ -18,8 +18,7 @@ namespace Metrics
         /// <returns>Chainable configuration object.</returns>
         public static MetricsConfig WithNancy(this MetricsConfig config)
         {
-            CurrentConfig = new NancyMetricsConfig(Metric.Config.Registry, HealthChecks.Registry);
-            return config;
+            return config.WithNancy(c => { });
         }
 
         /// <summary>
@@ -30,9 +29,7 @@ namespace Metrics
         /// <returns>Chainable configuration object.</returns>
         public static MetricsConfig WithNancy(this MetricsConfig config, Action<NancyMetricsConfig> nancyConfig)
         {
-            CurrentConfig = new NancyMetricsConfig(Metric.Config.Registry, HealthChecks.Registry);
-            nancyConfig(CurrentConfig);
-            return config;
+            return config.WithNancy(config.Registry, nancyConfig);
         }
 
         /// <summary>
@@ -44,9 +41,7 @@ namespace Metrics
         /// <returns>Chainable configuration object.</returns>
         public static MetricsConfig WithNancy(this MetricsConfig config, MetricsRegistry registry, Action<NancyMetricsConfig> nancyConfig)
         {
-            CurrentConfig = new NancyMetricsConfig(registry, HealthChecks.Registry);
-            nancyConfig(CurrentConfig);
-            return config;
+            return config.WithNancy(registry, config.HealthStatus, nancyConfig);
         }
 
         /// <summary>
@@ -57,10 +52,10 @@ namespace Metrics
         /// <param name="healthChecksRegistry">Custom health checks registry</param>
         /// <param name="nancyConfig">Action to configure NancyFx integration.</param>
         /// <returns>Chainable configuration object.</returns>
-        public static MetricsConfig WithNancy(this MetricsConfig config, MetricsRegistry registry, HealthChecksRegistry healthChecksRegistry,
+        public static MetricsConfig WithNancy(this MetricsConfig config, MetricsRegistry registry, Func<HealthStatus> healthStatus,
             Action<NancyMetricsConfig> nancyConfig)
         {
-            CurrentConfig = new NancyMetricsConfig(registry, healthChecksRegistry);
+            CurrentConfig = new NancyMetricsConfig(registry, healthStatus);
             nancyConfig(CurrentConfig);
             return config;
         }

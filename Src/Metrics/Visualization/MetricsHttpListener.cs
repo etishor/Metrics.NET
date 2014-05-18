@@ -14,14 +14,14 @@ namespace Metrics.Visualization
         private readonly HttpListener httpListener;
         private readonly CancellationTokenSource cts = new CancellationTokenSource();
         private readonly MetricsRegistry registry;
-        private readonly HealthChecksRegistry healthChecks;
+        private readonly Func<HealthStatus> healthStatus;
 
-        public MetricsHttpListener(string listenerUriPrefix, MetricsRegistry registry, HealthChecksRegistry healthChecks)
+        public MetricsHttpListener(string listenerUriPrefix, MetricsRegistry registry, Func<HealthStatus> healthStatus)
         {
             this.httpListener = new HttpListener();
             this.httpListener.Prefixes.Add(listenerUriPrefix);
             this.registry = registry;
-            this.healthChecks = healthChecks;
+            this.healthStatus = healthStatus;
         }
 
         public void Start()
@@ -59,13 +59,13 @@ namespace Metrics.Visualization
                     WriteJsonMetrics(context, this.registry);
                     break;
                 case "/text":
-                    WriteTextMetrics(context, this.registry, this.healthChecks);
+                    WriteTextMetrics(context, this.registry, this.healthStatus);
                     break;
                 case "/ping":
                     WritePong(context);
                     break;
                 case "/health":
-                    WriteHealthStatus(context, this.healthChecks);
+                    WriteHealthStatus(context, this.healthStatus);
                     break;
                 default:
                     WriteNotFound(context);
@@ -73,9 +73,9 @@ namespace Metrics.Visualization
             }
         }
 
-        private static void WriteHealthStatus(HttpListenerContext context, HealthChecksRegistry healthChecks)
+        private static void WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
         {
-            var status = healthChecks.GetStatus();
+            var status = healthStatus();
             var json = HealthCheckSerializer.Serialize(status);
 
             context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
@@ -116,14 +116,14 @@ namespace Metrics.Visualization
             context.Response.Close();
         }
 
-        private static void WriteTextMetrics(HttpListenerContext context, MetricsRegistry registry, HealthChecksRegistry healthChecks)
+        private static void WriteTextMetrics(HttpListenerContext context, MetricsRegistry registry, Func<HealthStatus> healthStatus)
         {
             context.Response.ContentType = "text/plain";
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
-                writer.Write(RegistrySerializer.GetAsHumanReadable(registry, healthChecks));
+                writer.Write(RegistrySerializer.GetAsHumanReadable(registry, healthStatus));
             }
             context.Response.Close();
         }

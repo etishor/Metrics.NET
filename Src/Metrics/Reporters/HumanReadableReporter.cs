@@ -63,7 +63,7 @@ namespace Metrics.Reporters
             this.WriteHistogram(value.Histogram.Scale(durationUnit), unit, durationUnit);
         }
 
-        protected override void ReportHealth(string name, HealthStatus status)
+        protected override void ReportHealth(HealthStatus status)
         {
             WriteLine();
             WriteValue("Is Healthy", status.IsHealty ? "Yes" : "No");

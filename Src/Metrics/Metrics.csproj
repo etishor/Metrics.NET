@@ -95,13 +95,11 @@
     <Compile Include="Core\BaseRegistry.cs" />
     <Compile Include="Core\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Core\HealthCheck.cs" />
-    <Compile Include="Core\LocalHealthChecksRegistry.cs" />
     <Compile Include="Core\NullMetricsRegistry.cs" />
     <Compile Include="HealthCheckResult.cs" />
     <Compile Include="Counter.cs" />
     <Compile Include="Gauge.cs" />
     <Compile Include="HealthChecks.cs" />
-    <Compile Include="Core\HealthChecksRegistry.cs" />
     <Compile Include="Histogram.cs" />
     <Compile Include="Meter.cs" />
     <Compile Include="Core\MetricsRegistry.cs" />

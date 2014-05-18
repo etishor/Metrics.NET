@@ -9,14 +9,14 @@ namespace Metrics.Reports
     public sealed class MetricsReports : Utils.IHideObjectMembers, IDisposable
     {
         private readonly MetricsRegistry metricsRegistry;
-        private readonly HealthChecksRegistry healthChecks;
+        private readonly Func<HealthStatus> healthStatus;
 
         private readonly List<ScheduledReporter> reports = new List<ScheduledReporter>();
 
-        public MetricsReports(MetricsRegistry metricsRegistry, HealthChecksRegistry healthChecks)
+        public MetricsReports(MetricsRegistry metricsRegistry, Func<HealthStatus> healthStatus)
         {
             this.metricsRegistry = metricsRegistry;
-            this.healthChecks = healthChecks;
+            this.healthStatus = healthStatus;
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace Metrics.Reports
         /// <param name="interval">Interval at which to display the report on the Console.</param>
         public MetricsReports WithConsoleReport(TimeSpan interval)
         {
-            var reporter = new ScheduledReporter("Console", () => new ConsoleReporter(), this.metricsRegistry, this.healthChecks, interval);
+            var reporter = new ScheduledReporter("Console", () => new ConsoleReporter(), this.metricsRegistry, this.healthStatus, interval);
             reporter.Start();
             this.reports.Add(reporter);
             return this;
@@ -44,7 +44,7 @@ namespace Metrics.Reports
         public MetricsReports WithCSVReports(string directory, TimeSpan interval)
         {
             Directory.CreateDirectory(directory);
-            var reporter = new ScheduledReporter("CSVFiles", () => new CSVReporter(new CSVFileAppender(directory)), this.metricsRegistry, this.healthChecks, interval);
+            var reporter = new ScheduledReporter("CSVFiles", () => new CSVReporter(new CSVFileAppender(directory)), this.metricsRegistry, this.healthStatus, interval);
             reporter.Start();
             this.reports.Add(reporter);
             return this;
@@ -57,7 +57,7 @@ namespace Metrics.Reports
         /// <param name="interval">Interval at which to run the report.</param>
         public MetricsReports WithTextFileReport(string filePath, TimeSpan interval)
         {
-            var reporter = new ScheduledReporter("TextFile", () => new TextFileReporter(filePath), this.metricsRegistry, this.healthChecks, interval);
+            var reporter = new ScheduledReporter("TextFile", () => new TextFileReporter(filePath), this.metricsRegistry, this.healthStatus, interval);
             reporter.Start();
             this.reports.Add(reporter);
             return this;

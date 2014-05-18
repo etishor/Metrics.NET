@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Metrics.Core;
@@ -38,28 +39,7 @@ namespace Metrics
     /// </summary>
     public static class HealthChecks
     {
-        private static Lazy<HealthChecksRegistry> registry = new Lazy<HealthChecksRegistry>(() => new LocalHealthChecksRegistry(), true);
-
-        /// <summary>
-        /// The registry where the checks are registered.
-        /// </summary>
-        public static HealthChecksRegistry Registry { get { return registry.Value; } }
-
-        /// <summary>
-        /// Configure the HealthChecks static class to use a custom HealthChecksRegistry.
-        /// </summary>
-        /// <remarks>
-        /// You must call HealthChecks.ConfigureDefaultRegistry before any other MetricHealthChecks call.
-        /// </remarks>
-        /// <param name="registry">The custom registry to use for registering health checks.</param>
-        public static void ConfigureDefaultRegistry(HealthChecksRegistry registry)
-        {
-            if (HealthChecks.registry.IsValueCreated)
-            {
-                throw new InvalidOperationException("HealthChecks registry has already been created. You must call HealthChecks.ConfigureDefaultRegistry before any other HealthChecks call.");
-            }
-            HealthChecks.registry = new Lazy<HealthChecksRegistry>(() => registry);
-        }
+        private static readonly ConcurrentDictionary<string, HealthCheck> checks = new ConcurrentDictionary<string, HealthCheck>();
 
         /// <summary>
         /// Registers an action to monitor. If the action throws the health check fails, otherwise is successful.
@@ -99,7 +79,10 @@ namespace Metrics
         /// <param name="healthCheck">Custom health check to register.</param>
         public static void RegisterHealthCheck(HealthCheck healthCheck)
         {
-            registry.Value.Register(healthCheck);
+            if (!checks.TryAdd(healthCheck.Name, healthCheck))
+            {
+                throw new InvalidOperationException("HealthCheck named " + healthCheck.Name + " already registered");
+            }
         }
 
         /// <summary>
@@ -108,7 +91,17 @@ namespace Metrics
         /// <returns>Status of the system.</returns>
         public static HealthStatus GetStatus()
         {
-            return registry.Value.GetStatus();
+            var results = checks.Values.Select(v => v.Execute()).OrderBy(r => r.Name);
+            return new HealthStatus(results);
         }
+
+        /// <summary>
+        /// Remove all the registered health checks.
+        /// </summary>
+        public static void UnregisterAllHealthChecks()
+        {
+            checks.Clear();
+        }
+
     }
 }

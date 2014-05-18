@@ -1,7 +1,6 @@
 ﻿
 using System;
 using Metrics.Core;
-using Metrics.PerfCounters;
 using Metrics.Reports;
 using Metrics.Visualization;
 
@@ -12,20 +11,27 @@ namespace Metrics
         private bool isDisabled = false;
 
         private Lazy<MetricsRegistry> registry;
-        private readonly Lazy<MetricsReports> reports;
+        private Func<HealthStatus> healthStatus;
 
+        private readonly Lazy<MetricsReports> reports;
         private MetricsHttpListener listener;
 
         internal MetricsConfig()
         {
             this.registry = new Lazy<MetricsRegistry>(() => new LocalRegistry(), true);
-            this.reports = new Lazy<MetricsReports>(() => new MetricsReports(this.registry.Value, HealthChecks.Registry));
+            this.healthStatus = () => HealthChecks.GetStatus();
+            this.reports = new Lazy<MetricsReports>(() => new MetricsReports(this.Registry, this.HealthStatus));
         }
 
         /// <summary>
         /// The registry where all the metrics are registered. 
         /// </summary>
         public MetricsRegistry Registry { get { return this.registry.Value; } }
+
+        /// <summary>
+        /// Function that provides the current health status.
+        /// </summary>
+        public Func<HealthStatus> HealthStatus { get { return this.healthStatus; } }
 
         /// <summary>
         /// All metrics operations will be NO-OP.
@@ -48,14 +54,14 @@ namespace Metrics
         public MetricsConfig WithHttpEndpoint(string httpUriPrefix)
         {
             using (this.listener) { }
-            this.listener = new MetricsHttpListener(httpUriPrefix, this.Registry, HealthChecks.Registry);
+            this.listener = new MetricsHttpListener(httpUriPrefix, this.Registry, this.healthStatus);
             this.listener.Start();
             return this;
         }
 
 
         /// <summary>
-        /// Configure the Metric static class to use a custom MetricsRegistry.
+        /// Configure the Metrics library to use a custom MetricsRegistry.
         /// </summary>
         /// <remarks>
         /// You must call Metric.Config.WithRegistry before any other Metric call.
@@ -76,6 +82,21 @@ namespace Metrics
 
             this.registry = new Lazy<MetricsRegistry>(() => registry);
 
+            return this;
+        }
+
+        /// <summary>
+        /// Configure Metrics library to use a custom health status reporter. By default HealthChecks.GetStatus() is used.
+        /// </summary>
+        /// <param name="healthStatus">Function that provides the current health status.</param>
+        /// <returns>Chainable configuration object.</returns>
+        public MetricsConfig WithHealthStatus(Func<HealthStatus> healthStatus)
+        {
+            if (this.registry.IsValueCreated)
+            {
+                throw new InvalidOperationException("Metrics registry has already been created. You must call Metric.Config.WithHealthStatus before any Report configuration other Metric call.");
+            }
+            this.healthStatus = healthStatus;
             return this;
         }
 

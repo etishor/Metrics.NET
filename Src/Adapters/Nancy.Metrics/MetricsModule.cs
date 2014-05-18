@@ -13,21 +13,21 @@ namespace Nancy.Metrics
             public readonly string ModulePath;
             public readonly Action<INancyModule> ModuleConfigAction;
             public readonly MetricsRegistry Registry;
-            public readonly HealthChecksRegistry HealthChecks;
+            public readonly Func<HealthStatus> HealthStatus;
 
-            public ModuleConfig(MetricsRegistry registry, HealthChecksRegistry healthChecks, Action<INancyModule> moduleConfig, string metricsPath)
+            public ModuleConfig(MetricsRegistry registry, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
             {
                 this.Registry = registry;
-                this.HealthChecks = healthChecks;
+                this.HealthStatus = healthStatus;
                 this.ModuleConfigAction = moduleConfig;
                 this.ModulePath = metricsPath;
             }
         }
         private static ModuleConfig Config;
 
-        public static void Configure(MetricsRegistry registry, HealthChecksRegistry healthChecks, Action<INancyModule> moduleConfig, string metricsPath)
+        public static void Configure(MetricsRegistry registry, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
         {
-            MetricsModule.Config = new ModuleConfig(registry, healthChecks, moduleConfig, metricsPath);
+            MetricsModule.Config = new ModuleConfig(registry, healthStatus, moduleConfig, metricsPath);
         }
 
 
@@ -53,7 +53,7 @@ namespace Nancy.Metrics
 
         private dynamic GetHealthStatus()
         {
-            var status = Config.HealthChecks.GetStatus();
+            var status = Config.HealthStatus();
             var content = HealthCheckSerializer.Serialize(status);
 
             var response = Response.AsText(content, "application/json");
@@ -64,7 +64,7 @@ namespace Nancy.Metrics
         private static string GetAsHumanReadable()
         {
             var report = new StringReporter();
-            report.RunReport(Config.Registry, Config.HealthChecks);
+            report.RunReport(Config.Registry, Config.HealthStatus);
             return report.Result;
         }
     }

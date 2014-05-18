@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Metrics.Core;
 using Metrics.Utils;
 
@@ -6,10 +7,10 @@ namespace Metrics.Reporters
 {
     public static class RegistrySerializer
     {
-        public static string GetAsHumanReadable(MetricsRegistry registry, HealthChecksRegistry healthChecks)
+        public static string GetAsHumanReadable(MetricsRegistry registry, Func<HealthStatus> healthStatus)
         {
             var report = new StringReporter();
-            report.RunReport(registry, healthChecks);
+            report.RunReport(registry, healthStatus);
             return report.Result;
         }
 

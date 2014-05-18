@@ -62,7 +62,7 @@ namespace Metrics.Reporters
             Write("Timer", name, values);
         }
 
-        protected override void ReportHealth(string name, HealthStatus status)
+        protected override void ReportHealth(HealthStatus status)
         {
             Write("All", "HealthChecks", new[] { 
                 new Value("All Healthy", status.IsHealty) }.Union(

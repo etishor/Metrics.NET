@@ -11,12 +11,12 @@ namespace Metrics.Reporters
     {
         private CancellationToken token;
 
-        public void RunReport(MetricsRegistry registry, HealthChecksRegistry healthChecks)
+        public void RunReport(MetricsRegistry registry, Func<HealthStatus> healthStatus)
         {
-            RunReport(registry, healthChecks, CancellationToken.None);
+            RunReport(registry, healthStatus, CancellationToken.None);
         }
 
-        public void RunReport(MetricsRegistry registry, HealthChecksRegistry healthChecks, CancellationToken token)
+        public void RunReport(MetricsRegistry registry, Func<HealthStatus> healthStatus, CancellationToken token)
         {
             this.token = token;
             this.Timestamp = Clock.Default.LocalDateTime;
@@ -28,7 +28,7 @@ namespace Metrics.Reporters
             ReportSection("Meters", registry.Meters, m => ReportMeter(m.Name, m.Value, m.Unit, m.RateUnit));
             ReportSection("Histograms", registry.Histograms, h => ReportHistogram(h.Name, h.Value, h.Unit));
             ReportSection("Timers", registry.Timers, t => ReportTimer(t.Name, t.Value, t.Unit, t.RateUnit, t.DurationUnit));
-            ReportHealthStatus(healthChecks);
+            ReportHealthStatus(healthStatus);
             EndReport();
         }
 
@@ -45,7 +45,7 @@ namespace Metrics.Reporters
         protected abstract void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit);
         protected abstract void ReportHistogram(string name, HistogramValue value, Unit unit);
         protected abstract void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit);
-        protected abstract void ReportHealth(string name, HealthStatus status);
+        protected abstract void ReportHealth(HealthStatus status);
 
         private void ReportSection<T>(string name, IEnumerable<T> metrics, Action<T> reporter)
         {
@@ -70,15 +70,15 @@ namespace Metrics.Reporters
             }
         }
 
-        private void ReportHealthStatus(HealthChecksRegistry healthChecks)
+        private void ReportHealthStatus(Func<HealthStatus> healthStatus)
         {
-            var status = healthChecks.GetStatus();
+            var status = healthStatus();
             if (!status.HasRegisteredChecks)
             {
                 return;
             }
             StartMetricGroup("Health Checks");
-            ReportHealth(healthChecks.Name, status);
+            ReportHealth(status);
         }
 
     }
