@@ -6,7 +6,7 @@ namespace Metrics
     {
         /// <summary>
         /// Register all pre-defined performance counters as Gauge metrics.
-        /// This includes System Counters, CLR Global Counters & CLR App Counters.
+        /// This includes System Counters, CLR Global Counters and CLR App Counters.
         /// </summary>
         public static MetricsConfig WithAllCounters(this MetricsConfig config)
         {
@@ -27,7 +27,7 @@ namespace Metrics
 
         /// <summary>
         /// Register global, CLR related performance counters as Gauge metrics.
-        /// This includes: total .NET Mb in all heaps & total .NET time spent in GC
+        /// This includes: total .NET Mb in all heaps and total .NET time spent in GC
         /// </summary>
         public static MetricsConfig WithCLRGlobalCounters(this MetricsConfig config)
         {

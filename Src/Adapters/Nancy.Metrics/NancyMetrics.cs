@@ -49,7 +49,7 @@ namespace Metrics
         /// </summary>
         /// <param name="config">Chainable configuration object.</param>
         /// <param name="registry">Custom metrics registry.</param>
-        /// <param name="healthChecksRegistry">Custom health checks registry</param>
+        /// <param name="healthStatus">Custom health checks status</param>
         /// <param name="nancyConfig">Action to configure NancyFx integration.</param>
         /// <returns>Chainable configuration object.</returns>
         public static MetricsConfig WithNancy(this MetricsConfig config, MetricsRegistry registry, Func<HealthStatus> healthStatus,
