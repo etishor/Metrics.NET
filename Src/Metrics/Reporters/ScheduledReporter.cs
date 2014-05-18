@@ -7,7 +7,6 @@ namespace Metrics.Reporters
 {
     public sealed class ScheduledReporter : IDisposable
     {
-        private readonly Timer reportTime = null;
         private readonly Scheduler scheduler;
         private readonly TimeSpan interval;
 
@@ -20,11 +19,6 @@ namespace Metrics.Reporters
 
         public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, Func<HealthStatus> healthStatus, TimeSpan interval, Scheduler scheduler)
         {
-            if (Metric.Config.Reports.EnableReportDiagnosticMetrics)
-            {
-                this.reportTime = registry.Timer("Metrics.Reporter." + name, Unit.Calls, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
-            }
-
             this.reporter = reporter;
             this.registry = registry;
             this.healthStatus = healthStatus;
@@ -34,10 +28,7 @@ namespace Metrics.Reporters
 
         private void RunReport(CancellationToken token)
         {
-            using (this.reportTime != null ? this.reportTime.NewContext() : null)
-            {
-                reporter().RunReport(this.registry, this.healthStatus, token);
-            }
+            reporter().RunReport(this.registry, this.healthStatus, token);
         }
 
         public void Start()

@@ -142,11 +142,6 @@ namespace Metrics
         /// <summary>
         /// Configured error handler
         /// </summary>
-        internal Action<Exception> ErrorHandler { get; private set; }
-
-        /// <summary>
-        /// Configured reports
-        /// </summary>
-        internal MetricsReports Reports { get { return this.reports.Value; } }
+        internal Action<Exception> ErrorHandler { get; private set; }       
     }
 }
