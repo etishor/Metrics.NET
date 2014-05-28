@@ -53,7 +53,15 @@ namespace Metrics.Visualization
             switch (context.Request.RawUrl)
             {
                 case "/":
-                    WriteFlotApp(context);
+                    if (context.Request.Url.ToString().EndsWith("/"))
+                    {
+                        WriteFlotApp(context);
+                    }
+                    else
+                    {
+                        context.Response.Redirect(context.Request.Url.ToString() + "/");
+                        context.Response.Close();
+                    }
                     break;
                 case "/json":
                     WriteJsonMetrics(context, this.registry);
@@ -148,7 +156,7 @@ namespace Metrics.Visualization
             context.Response.ContentType = "text/html";
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
-            var app = FlotWebApp.GetFlotApp(context.Request.Url);
+            var app = FlotWebApp.GetFlotApp();
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
                 writer.Write(app);

@@ -19,15 +19,9 @@ namespace Metrics.Visualization
 
         private static Lazy<string> htmlContent = new Lazy<string>(() => ReadFromEmbededResource());
 
-        public static string GetFlotApp(Uri metricsEndpoint)
+        public static string GetFlotApp()
         {
-            var uri = metricsEndpoint.ToString();
-            if (uri.EndsWith("/"))
-            {
-                uri = uri.Substring(0, uri.Length - 1);
-            }
-
-            return htmlContent.Value.Replace("http://localhost:1234/metrics", uri);
+            return htmlContent.Value;
         }
     }
 }
