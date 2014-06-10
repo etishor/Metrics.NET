@@ -55,14 +55,14 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void HealthCheckRegistryThrowsOnDuplicateRegistration()
+        public void HealthCheckRegistryDoesNotThrowOnDuplicateRegistration()
         {
             HealthChecks.UnregisterAllHealthChecks();
 
             HealthChecks.RegisterHealthCheck(new HealthCheck("test", () => { }));
 
             Action action = () => HealthChecks.RegisterHealthCheck(new HealthCheck("test", () => { }));
-            action.ShouldThrow<InvalidOperationException>();
+            action.ShouldNotThrow<InvalidOperationException>();
         }
     }
 }

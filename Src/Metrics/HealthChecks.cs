@@ -79,10 +79,7 @@ namespace Metrics
         /// <param name="healthCheck">Custom health check to register.</param>
         public static void RegisterHealthCheck(HealthCheck healthCheck)
         {
-            if (!checks.TryAdd(healthCheck.Name, healthCheck))
-            {
-                throw new InvalidOperationException("HealthCheck named " + healthCheck.Name + " already registered");
-            }
+            checks.TryAdd(healthCheck.Name, healthCheck);
         }
 
         /// <summary>
