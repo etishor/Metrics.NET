@@ -58,8 +58,12 @@ namespace Nancy.Metrics
 
             nancyPipelines.AfterRequest.AddItemToEndOfPipeline(ctx =>
             {
-                using (ctx.Items[TimerItemsKey] as IDisposable) { }
-                ctx.Items.Remove(TimerItemsKey);
+                object timer;
+                if (ctx.Items.TryGetValue(TimerItemsKey, out timer))
+                {
+                    using (timer as IDisposable) { }
+                    ctx.Items.Remove(TimerItemsKey);
+                }
             });
         }
 
