@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-#if NET40
-using Metrics.Utils;
-#endif
 
 namespace Metrics.StupidBenchmarks
 {
@@ -41,13 +38,8 @@ namespace Metrics.StupidBenchmarks
                     tcs.Task.Wait();
                     long count = 0;
 
-#if !NET40
                     var done = new CancellationTokenSource(duration);
-#else
-                    var done = new CancellationTokenSource();
-                    TaskUtils.Delay(duration)
-                        .ContinueWith(t => done.Cancel());
-#endif
+
                     while (!done.IsCancellationRequested)
                     {
                         action();

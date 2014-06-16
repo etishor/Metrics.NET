@@ -66,31 +66,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
     <DocumentationFile>..\..\..\bin\Release\Nancy.Metrics.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Net4.0Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <OutputPath>..\..\..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NET40</DefineConstants>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Net4.0Release|AnyCPU'">
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <OutputPath>..\..\..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;NET40</DefineConstants>
-    <DocumentationFile>..\..\..\bin\Release\Nancy.Metrics.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
+  </PropertyGroup>  
   <ItemGroup>
     <Reference Include="Nancy, Version=0.23.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

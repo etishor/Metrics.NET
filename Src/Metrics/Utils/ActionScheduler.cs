@@ -58,7 +58,6 @@ namespace Metrics.Utils
             RunScheduler(interval, task, this.token);
         }
 
-#if !NET40
         private static void RunScheduler(TimeSpan interval, Func<CancellationToken, Task> action, CancellationTokenSource token)
         {
             Task.Factory.StartNew(async () =>
@@ -78,35 +77,10 @@ namespace Metrics.Utils
                 }
             }, token.Token);
         }
-#else // reminds me of the C / C++ days :)
-        private static void RunScheduler(TimeSpan interval, Func<CancellationToken, Task> task, CancellationTokenSource token)
-        {
-            Task.Factory.StartNew(() =>
-            {
-                while (!token.IsCancellationRequested)
-                {
-                    TaskUtils.Delay(interval, token.Token).Wait(token.Token);
-                    try
-                    {
-                        task(token.Token).Wait(token.Token);
-                    }
-                    catch (Exception x)
-                    {
-                        HandleException(x);
-                        token.Cancel();
-                    }
-                }
-            }, token.Token);
-        }
-#endif
 
         private static Task Completed()
         {
-#if !NET40
             return Task.FromResult(true);
-#else
-            return TaskUtils.FromResult(true);
-#endif
         }
 
         private static void HandleException(Exception x)

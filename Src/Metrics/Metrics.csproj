@@ -60,30 +60,6 @@
     <DocumentationFile>..\..\bin\MonoRelease\Metrics.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Net4.0Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <OutputPath>..\..\bin\$(Configuration)\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;NET40</DefineConstants>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Net4.0Release|AnyCPU'">
-    <OutputPath>bin\Net4.0Release\</OutputPath>
-    <DefineConstants>TRACE;NET40</DefineConstants>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <DocumentationFile>..\..\bin\$(Configuration)\Metrics.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>1591</NoWarn>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -138,7 +114,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Reservoir.cs" />
     <Compile Include="Core\Snapshot.cs" />
-    <Compile Include="Utils\TaskUtils.cs" />
     <Compile Include="Utils\DisposableAction.cs" />
     <Compile Include="Utils\EWMA.cs" />
     <Compile Include="Utils\AtomicLong.cs" />

@@ -97,7 +97,6 @@ namespace Metrics.Tests
             }
         }
 
-#if !NET40 // for some odd reason this test fails when it is runned from build.bat on .net 4.0
         [Fact]
         public void ActionSchedulerReportsExceptionWithGlobalMetricHandler()
         {
@@ -123,6 +122,5 @@ namespace Metrics.Tests
 
             x.Should().NotBeNull();
         }
-#endif
     }
 }

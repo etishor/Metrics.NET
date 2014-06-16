@@ -6,7 +6,6 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 md .\Publishing\lib
 md .\Publishing\lib\net451
 md .\Publishing\lib\net45
-md .\Publishing\lib\net40
 
 copy .\bin\release\metrics.dll .\Publishing\lib\net451\
 copy .\bin\release\metrics.xml .\Publishing\lib\net451\
@@ -27,10 +26,6 @@ copy .\bin\release\nancy.metrics.pdb .\Publishing\lib\net451\
 copy .\bin\MonoRelease\nancy.metrics.dll .\Publishing\lib\net45\
 copy .\bin\MonoRelease\nancy.metrics.xml .\Publishing\lib\net45\
 copy .\bin\MonoRelease\nancy.metrics.pdb .\Publishing\lib\net45\
-
-copy .\bin\Net4.0Release\nancy.metrics.dll .\Publishing\lib\net40\
-copy .\bin\Net4.0Release\nancy.metrics.xml .\Publishing\lib\net40\
-copy .\bin\Net4.0Release\nancy.metrics.pdb .\Publishing\lib\net40\
 
 .\.nuget\NuGet.exe pack .\Publishing\Metrics.Net.nuspec -OutputDirectory .\Publishing
 if %errorlevel% neq 0 exit /b %errorlevel%

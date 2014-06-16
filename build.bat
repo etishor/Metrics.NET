@@ -15,11 +15,6 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 %MSBUILD% Metrics.Sln /p:Configuration="MonoRelease"
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-%MSBUILD% Metrics.Sln /p:Configuration="Net4.0Debug"
-if %errorlevel% neq 0 exit /b %errorlevel%
-
-%MSBUILD% Metrics.Sln /p:Configuration="Net4.0Release"
-if %errorlevel% neq 0 exit /b %errorlevel%
 
 %XUNIT% .\bin\Debug\Tests\Metrics.Tests.dll
 if %errorlevel% neq 0 exit /b %errorlevel%
@@ -31,10 +26,4 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 %XUNIT% .\bin\MonoRelease\Tests\Metrics.Tests.dll
-if %errorlevel% neq 0 exit /b %errorlevel%
-
-%XUNIT% .\bin\Net4.0Debug\Tests\Metrics.Tests.dll
-if %errorlevel% neq 0 exit /b %errorlevel%
-
-%XUNIT% .\bin\Net4.0Release\Tests\Metrics.Tests.dll
 if %errorlevel% neq 0 exit /b %errorlevel%
