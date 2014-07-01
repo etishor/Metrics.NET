@@ -5,8 +5,8 @@ using Metrics.Utils;
 
 namespace Metrics.Reporters
 {
-    public sealed class ScheduledReporter : IDisposable
-    {
+  public class ScheduledReporter : IScheduledReporter
+  {
         private readonly Scheduler scheduler;
         private readonly TimeSpan interval;
 
@@ -26,7 +26,7 @@ namespace Metrics.Reporters
             this.scheduler = scheduler;
         }
 
-        private void RunReport(CancellationToken token)
+        public void RunReport(CancellationToken token)
         {
             reporter().RunReport(this.registry, this.healthStatus, token);
         }

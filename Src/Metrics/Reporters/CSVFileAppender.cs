@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 namespace Metrics.Reporters
 {
-    public class CSVFileAppender
-    {
+  public class CSVFileAppender : ICSVFileAppender
+  {
         private readonly string directory;
 
         public CSVFileAppender(string directory)

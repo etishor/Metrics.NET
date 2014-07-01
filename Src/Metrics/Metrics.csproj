@@ -81,6 +81,8 @@
     <Compile Include="Core\MetricsRegistry.cs" />
     <Compile Include="Core\LocalRegistry.cs" />
     <Compile Include="MetricsConfig.cs" />
+    <Compile Include="Reporters\ICSVFileAppender.cs" />
+    <Compile Include="Reporters\IScheduledReporter.cs" />
     <Compile Include="Reporters\MetricsReports.cs" />
     <Compile Include="MetricValueSource.cs" />
     <Compile Include="PerfCounters\PerformanceCounters.cs" />
@@ -93,6 +95,7 @@
     <Compile Include="Reporters\JsonFormatter.cs" />
     <Compile Include="Reporters\RegistrySerializer.cs" />
     <Compile Include="Reporters\JsonObject.cs" />
+    <Compile Include="Reporters\RollingCsv.cs" />
     <Compile Include="Reporters\StringReporter.cs" />
     <Compile Include="Reporters\TextFileReporter.cs" />
     <Compile Include="Reporters\Reporter.cs" />
