@@ -8,12 +8,12 @@ using log4net.Repository.Hierarchy;
 
 namespace Metrics.RollingCsvReporter
 {
-  public class RollingLogger
+  public class RuntimeConfiguredCsvRollingLogger
   {
     private readonly int maxFileSize;
     private readonly int rollBackups;
 
-    public RollingLogger(int maxFileSize = 1000000, int rollBackups = 10)
+    public RuntimeConfiguredCsvRollingLogger(int maxFileSize = 1000000, int rollBackups = 10)
     {
       this.maxFileSize = maxFileSize;
       this.rollBackups = rollBackups;
@@ -22,7 +22,7 @@ namespace Metrics.RollingCsvReporter
     public ILog GetLogger(string loggerName, string csvHeader, string fileName)
     {
       var logger = LogManager.GetLogger(loggerName);
-      
+
       var myLogger = ((Logger)logger.Logger);
 
       if (myLogger.Appenders.Count == 0)

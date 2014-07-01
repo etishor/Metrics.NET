@@ -7,7 +7,7 @@ using log4net;
 
 namespace Metrics.RollingCsvReporter.Tests
 {
-    public class RollingCsvFileAppenderIntegrationTest
+    public class RollingCsvFileAppenderIntegration
     {
 
       [Fact]
@@ -15,7 +15,7 @@ namespace Metrics.RollingCsvReporter.Tests
       {
         using (var tempDirectory = new TemporaryDirectoryFixture())
         {
-          var sut = new RollingCsvFileAppender(tempDirectory.DirectoryPath, new RollingLogger().GetLogger, ";");
+          var sut = new RollingCsvFileAppender(tempDirectory.DirectoryPath, new RuntimeConfiguredCsvRollingLogger().GetLogger, ";");
           sut.AppendLine(DateTime.Now, "Timer", "Metric", new List<CSVReporter.Value> {new CSVReporter.Value("Test", 1)});
 
           LogManager.ShutdownRepository();
@@ -30,7 +30,7 @@ namespace Metrics.RollingCsvReporter.Tests
       {
         using (var tempDirectory = new TemporaryDirectoryFixture())
         {
-          var sut = new RollingCsvFileAppender(tempDirectory.DirectoryPath, new RollingLogger(maxFileSize: 100, rollBackups: 1).GetLogger, ";");
+          var sut = new RollingCsvFileAppender(tempDirectory.DirectoryPath, new RuntimeConfiguredCsvRollingLogger(maxFileSize: 100, rollBackups: 1).GetLogger, ";");
           for (int i = 0; i < 100; i++)
           {
             sut.AppendLine(DateTime.Now, "Timer", "Metric",
@@ -45,3 +45,4 @@ namespace Metrics.RollingCsvReporter.Tests
       }
     }
 }
+
