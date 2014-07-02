@@ -7,17 +7,24 @@ namespace Metrics.Reporters
     public class CSVFileAppender
     {
         private readonly string directory;
+        private readonly string delimiter;
 
-        public CSVFileAppender(string directory)
+        public CSVFileAppender(string directory, string delimiter)
         {
+            Directory.CreateDirectory(directory);
             this.directory = directory;
+            this.delimiter = delimiter;
+        }
+
+        protected virtual string FormatFileName(string directory, string metricName, string metricType)
+        {
+            var name = string.Format("{0}.{1}.csv", metricName, metricType);
+            return Path.Combine(directory, CleanFileName(name));
         }
 
         public virtual void AppendLine(DateTime timestamp, string metricType, string metricName, IEnumerable<CSVReporter.Value> values)
         {
-            var name = string.Format("{0}.{1}.csv", metricName, metricType);
-
-            var fileName = Path.Combine(this.directory, CleanFileName(name));
+            var fileName = FormatFileName(this.directory, metricName, metricType);
 
             if (!File.Exists(fileName))
             {
@@ -29,7 +36,7 @@ namespace Metrics.Reporters
             }
         }
 
-        private string CleanFileName(string name)
+        protected virtual string CleanFileName(string name)
         {
             var invalid = Path.GetInvalidFileNameChars();
             foreach (var c in invalid)
@@ -39,20 +46,20 @@ namespace Metrics.Reporters
             return name;
         }
 
-        protected static string GetHeader(IEnumerable<CSVReporter.Value> values)
+        protected virtual string GetHeader(IEnumerable<CSVReporter.Value> values)
         {
-            return string.Join(",", new[] { "Date", "Ticks" }.Concat(values.Select(v => v.Name)));
+            return string.Join(this.delimiter, new[] { "Date", "Ticks" }.Concat(values.Select(v => v.Name)));
         }
 
-        protected static string GetValues(DateTime timestamp, IEnumerable<CSVReporter.Value> values)
+        protected virtual string GetValues(DateTime timestamp, IEnumerable<CSVReporter.Value> values)
         {
-            return string.Join(",", new[] { timestamp.ToString(), timestamp.Ticks.ToString("D") }.Concat(values.Select(v => v.FormattedValue)));
+            return string.Join(this.delimiter, new[] { timestamp.ToString(), timestamp.Ticks.ToString("D") }.Concat(values.Select(v => v.FormattedValue)));
         }
     }
 
     public class ConsoleCSVAppender : CSVFileAppender
     {
-        public ConsoleCSVAppender() : base(null) { }
+        public ConsoleCSVAppender() : base(null, ",") { }
 
         public override void AppendLine(DateTime timestamp, string metricType, string metricName, IEnumerable<CSVReporter.Value> values)
         {
