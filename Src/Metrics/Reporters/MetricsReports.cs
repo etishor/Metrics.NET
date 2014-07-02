@@ -1,22 +1,21 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using Metrics.Core;
 using Metrics.Reporters;
 namespace Metrics.Reports
 {
-    public sealed class MetricsReports : Utils.IHideObjectMembers, IDisposable
+    public class MetricsReports : Utils.IHideObjectMembers, IDisposable
     {
-        private readonly MetricsRegistry metricsRegistry;
-        private readonly Func<HealthStatus> healthStatus;
+        public readonly MetricsRegistry MetricsRegistry;
+        public readonly Func<HealthStatus> HealthStatus;
 
-        private readonly List<ScheduledReporter> reports = new List<ScheduledReporter>();
+        public readonly List<IScheduledReporter> Reports = new List<IScheduledReporter>();
 
         public MetricsReports(MetricsRegistry metricsRegistry, Func<HealthStatus> healthStatus)
         {
-            this.metricsRegistry = metricsRegistry;
-            this.healthStatus = healthStatus;
+            this.MetricsRegistry = metricsRegistry;
+            this.HealthStatus = healthStatus;
         }
 
         /// <summary>
@@ -25,9 +24,9 @@ namespace Metrics.Reports
         /// <param name="interval">Interval at which to display the report on the Console.</param>
         public MetricsReports WithConsoleReport(TimeSpan interval)
         {
-            var reporter = new ScheduledReporter("Console", () => new ConsoleReporter(), this.metricsRegistry, this.healthStatus, interval);
+            var reporter = new ScheduledReporter("Console", () => new ConsoleReporter(), this.MetricsRegistry, this.HealthStatus, interval);
             reporter.Start();
-            this.reports.Add(reporter);
+            this.Reports.Add(reporter);
             return this;
         }
 
@@ -39,11 +38,12 @@ namespace Metrics.Reports
         public MetricsReports WithCSVReports(string directory, TimeSpan interval)
         {
             Directory.CreateDirectory(directory);
-            var reporter = new ScheduledReporter("CSVFiles", () => new CSVReporter(new CSVFileAppender(directory)), this.metricsRegistry, this.healthStatus, interval);
+            var reporter = new ScheduledReporter("CSVFiles", () => new CSVReporter(new CSVFileAppender(directory)), this.MetricsRegistry, this.HealthStatus, interval);
             reporter.Start();
-            this.reports.Add(reporter);
+            this.Reports.Add(reporter);
             return this;
         }
+
 
         /// <summary>
         /// Schedule a Human Readable report to be executed and appended to a text file.
@@ -52,9 +52,9 @@ namespace Metrics.Reports
         /// <param name="interval">Interval at which to run the report.</param>
         public MetricsReports WithTextFileReport(string filePath, TimeSpan interval)
         {
-            var reporter = new ScheduledReporter("TextFile", () => new TextFileReporter(filePath), this.metricsRegistry, this.healthStatus, interval);
+            var reporter = new ScheduledReporter("TextFile", () => new TextFileReporter(filePath), this.MetricsRegistry, this.HealthStatus, interval);
             reporter.Start();
-            this.reports.Add(reporter);
+            this.Reports.Add(reporter);
             return this;
         }
 
@@ -63,14 +63,14 @@ namespace Metrics.Reports
         /// </summary>
         public void StopAndClearAllReports()
         {
-            this.reports.ForEach(r => r.Stop());
-            this.reports.Clear();
+            this.Reports.ForEach(r => r.Stop());
+            this.Reports.Clear();
         }
 
         public void Dispose()
         {
-            this.reports.ForEach(r => r.Dispose());
-            this.reports.Clear();
+            this.Reports.ForEach(r => r.Dispose());
+            this.Reports.Clear();
         }
     }
 }

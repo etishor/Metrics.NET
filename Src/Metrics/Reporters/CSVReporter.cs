@@ -27,9 +27,9 @@ namespace Metrics.Reporters
             public string FormattedValue { get; private set; }
         }
 
-        private readonly CSVFileAppender appender;
+        private readonly ICSVFileAppender appender;
 
-        public CSVReporter(CSVFileAppender appender)
+        public CSVReporter(ICSVFileAppender appender)
         {
             this.appender = appender;
         }

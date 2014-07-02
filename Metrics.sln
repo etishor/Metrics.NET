@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metrics", "Src\Metrics\Metrics.csproj", "{95E29D40-DBEC-49E2-9CC5-26B88966DADE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metrics.Tests", "Src\Metrics.Tests\Metrics.Tests.csproj", "{4E0F8CB9-6919-48B8-8212-BCE75D04E0D9}"
@@ -42,6 +40,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Metrics.Samples.FSharp", "Samples\Metrics.Samples.FSharp\Metrics.Samples.FSharp.fsproj", "{DAF70394-CE63-4D2F-B52B-839941827B4E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reporters", "Reporters", "{0D1F2FCA-9A26-4DAF-A289-FDB4860272FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metrics.RollingCsvReporter", "Src\Reporters\Metrics.RollingCsvReporter\Metrics.RollingCsvReporter.csproj", "{D8C1DEED-C61A-4101-A0B3-3E54C334DC44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metrics.RollingCsvReporter.Tests", "Src\Reporters\Metrics.RollingCsvReporter.Tests\Metrics.RollingCsvReporter.Tests.csproj", "{9D984573-972A-408E-A890-4F66212B3061}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -115,6 +119,22 @@ Global
 		{DAF70394-CE63-4D2F-B52B-839941827B4E}.MonoRelease|Any CPU.Build.0 = MonoRelease|Any CPU
 		{DAF70394-CE63-4D2F-B52B-839941827B4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DAF70394-CE63-4D2F-B52B-839941827B4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8C1DEED-C61A-4101-A0B3-3E54C334DC44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8C1DEED-C61A-4101-A0B3-3E54C334DC44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8C1DEED-C61A-4101-A0B3-3E54C334DC44}.MonoDebug|Any CPU.ActiveCfg = MonoDebug|Any CPU
+		{D8C1DEED-C61A-4101-A0B3-3E54C334DC44}.MonoDebug|Any CPU.Build.0 = MonoDebug|Any CPU
+		{D8C1DEED-C61A-4101-A0B3-3E54C334DC44}.MonoRelease|Any CPU.ActiveCfg = MonoRelease|Any CPU
+		{D8C1DEED-C61A-4101-A0B3-3E54C334DC44}.MonoRelease|Any CPU.Build.0 = MonoRelease|Any CPU
+		{D8C1DEED-C61A-4101-A0B3-3E54C334DC44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8C1DEED-C61A-4101-A0B3-3E54C334DC44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D984573-972A-408E-A890-4F66212B3061}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D984573-972A-408E-A890-4F66212B3061}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D984573-972A-408E-A890-4F66212B3061}.MonoDebug|Any CPU.ActiveCfg = MonoDebug|Any CPU
+		{9D984573-972A-408E-A890-4F66212B3061}.MonoDebug|Any CPU.Build.0 = MonoDebug|Any CPU
+		{9D984573-972A-408E-A890-4F66212B3061}.MonoRelease|Any CPU.ActiveCfg = MonoRelease|Any CPU
+		{9D984573-972A-408E-A890-4F66212B3061}.MonoRelease|Any CPU.Build.0 = MonoRelease|Any CPU
+		{9D984573-972A-408E-A890-4F66212B3061}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D984573-972A-408E-A890-4F66212B3061}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,8 +144,10 @@ Global
 		{D08A63D0-F440-477C-9565-1264AE0879D0} = {30108C17-0671-4786-90D0-0564718C3F70}
 		{7416F90D-FFD6-4E34-8638-5234C8B9EC39} = {30108C17-0671-4786-90D0-0564718C3F70}
 		{A9074D3E-3421-483D-AF98-4AAEEED11ECA} = {30108C17-0671-4786-90D0-0564718C3F70}
-		{FBFF51D8-52F4-4EEF-8498-122A14B37D6C} = {443860DA-6378-47D0-A4AE-4E79975C5E1C}
 		{DAF70394-CE63-4D2F-B52B-839941827B4E} = {30108C17-0671-4786-90D0-0564718C3F70}
+		{FBFF51D8-52F4-4EEF-8498-122A14B37D6C} = {443860DA-6378-47D0-A4AE-4E79975C5E1C}
+		{D8C1DEED-C61A-4101-A0B3-3E54C334DC44} = {0D1F2FCA-9A26-4DAF-A289-FDB4860272FF}
+		{9D984573-972A-408E-A890-4F66212B3061} = {0D1F2FCA-9A26-4DAF-A289-FDB4860272FF}
 	EndGlobalSection
 	GlobalSection(CodealikeProperties) = postSolution
 		SolutionGuid = 169deccf-e8f8-4868-80f4-f7f0bb71cb4b
