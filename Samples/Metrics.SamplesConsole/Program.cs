@@ -1,4 +1,6 @@
 ﻿using System;
+using Metrics.Reporters;
+using Metrics.SampleReporter;
 using Metrics.Samples;
 
 namespace Metrics.SamplesConsole
@@ -14,6 +16,7 @@ namespace Metrics.SamplesConsole
                 .WithErrorHandler(x => Console.WriteLine(x.ToString()))
                 .WithAllCounters()
                 .WithReporting(config => config
+                    //.WithReporter("CSV Reports", () => new CSVReporter(new RollingCSVFileAppender(@"c:\temp\csv")), TimeSpan.FromSeconds(10))
                     .WithConsoleReport(TimeSpan.FromSeconds(30))
                     .WithCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(10))
                     .WithTextFileReport(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(10))
@@ -29,4 +32,5 @@ namespace Metrics.SamplesConsole
             Console.ReadKey();
         }
     }
+
 }
