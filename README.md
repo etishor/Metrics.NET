@@ -61,21 +61,6 @@ Adapters integrate Metrics.NET with other libraries & frameworks.
 
 * [NancyFx.Metrics](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter)
 
-###Changelog
-
-0.1.9
-* make reporting more extensible
-
-0.1.8
-* remove support for .NET 4.0
-
-0.1.6
-* for histograms also store last value
-* refactor configuration ( use Metric.Config.With...() )
-* add option to completely disable metrics Metric.Config.CompletelyDisableMetrics() (usefull for measuring metrics impact)
-* simplify health checks
-
-
 ###TODO
 A live list of my future plan
 
