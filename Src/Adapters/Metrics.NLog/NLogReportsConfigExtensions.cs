@@ -27,16 +27,15 @@ namespace Metrics
             return reports;
         }
 
+        /// <summary>
+        /// Write human readable text using NLog
+        /// </summary>
+        /// <param name="reports">Instance to configure</param>
+        /// <param name="interval">Interval at which to report values</param>
+        /// <returns>Same Reports instance for chaining</returns>
         public static MetricsReports WithNLogTextReports(this MetricsReports reports, TimeSpan interval)
         {
-            global::NLog.Config.ConfigurationItemFactory.Default.Layouts.RegisterDefinition("CsvGaugeLayout", typeof(CsvGaugeLayout));
-            global::NLog.Config.ConfigurationItemFactory.Default.Layouts.RegisterDefinition("CsvCounterLayout", typeof(CsvCounterLayout));
-            global::NLog.Config.ConfigurationItemFactory.Default.Layouts.RegisterDefinition("CsvMeterLayout", typeof(CsvMeterLayout));
-            global::NLog.Config.ConfigurationItemFactory.Default.Layouts.RegisterDefinition("CsvHistogramLayout", typeof(CsvHistogramLayout));
-            global::NLog.Config.ConfigurationItemFactory.Default.Layouts.RegisterDefinition("CsvTimerLayout", typeof(CsvTimerLayout));
-
             reports.WithReporter("NLog Text Report", () => new NLogTextReporter(), interval);
-
             return reports;
         }
     }
