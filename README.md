@@ -18,7 +18,7 @@ The library is [published on NuGet](https://www.nuget.org/packages/Metrics.NET/)
 
     Install-Package Metrics.NET
 
-Supported runtimes: .NET 4.5.1, .NET 4.5, .NET 4.0, Mono 3.4.0 ( tested on OsX )
+Supported runtimes: .NET 4.5.1, .NET 4.5, Mono 3.4.0 ( tested on OsX )
 
 The API of the library might change until a 1.X version will be made available.
 
@@ -65,6 +65,9 @@ Adapters integrate Metrics.NET with other libraries & frameworks.
 
 0.1.9
 * make reporting more extensible
+
+0.1.8
+* remove support for .NET 4.0
 
 0.1.6
 * for histograms also store last value
