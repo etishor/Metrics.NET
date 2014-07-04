@@ -71,8 +71,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Src\Adapters\Metrics.NLog\Metrics.NLog.csproj">
+      <Project>{68f25a01-af00-4d57-9d1a-81213e4ef56f}</Project>
+      <Name>Metrics.NLog</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Src\Metrics\Metrics.csproj">
       <Project>{95e29d40-dbec-49e2-9cc5-26b88966dade}</Project>
       <Name>Metrics</Name>

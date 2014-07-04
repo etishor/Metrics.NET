@@ -19,7 +19,7 @@ namespace Metrics.SampleReporter
         private readonly string directory;
         private readonly Func<string, string, string, ILog> getLogger;
 
-        public RollingCSVFileAppender(string directory, string delimiter = ",", int maxFileSize = 1000000, int rollBackups = 10)
+        public RollingCSVFileAppender(string directory, string delimiter = CSVAppender.CommaDelimiter, int maxFileSize = 1000000, int rollBackups = 10)
             : this(directory, new RuntimeConfiguredCsvRollingLogger(maxFileSize, rollBackups).GetLogger, delimiter)
         { }
 
