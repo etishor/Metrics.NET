@@ -63,6 +63,9 @@ Adapters integrate Metrics.NET with other libraries & frameworks.
 
 ###Changelog
 
+0.1.9
+* make reporting more extensible
+
 0.1.6
 * for histograms also store last value
 * refactor configuration ( use Metric.Config.With...() )
