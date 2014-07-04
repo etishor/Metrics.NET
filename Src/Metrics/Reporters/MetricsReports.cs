@@ -47,7 +47,7 @@ namespace Metrics.Reports
         /// <param name="directory">Directory where to store the CSV files.</param>
         /// <param name="interval">Interval at which to append a line to the files.</param>
         /// <param name="delimiter">CSV delimiter to use</param>
-        public MetricsReports WithCSVReports(string directory, TimeSpan interval, string delimiter = ",")
+        public MetricsReports WithCSVReports(string directory, TimeSpan interval, string delimiter = CSVAppender.CommaDelimiter)
         {
             return WithReporter("CSVFiles", () => new CSVReporter(new CSVFileAppender(directory, delimiter)), interval);
         }

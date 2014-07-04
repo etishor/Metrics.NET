@@ -27,9 +27,9 @@ namespace Metrics.Reporters
             public string FormattedValue { get; private set; }
         }
 
-        private readonly CSVFileAppender appender;
+        private readonly CSVAppender appender;
 
-        public CSVReporter(CSVFileAppender appender)
+        public CSVReporter(CSVAppender appender)
         {
             this.appender = appender;
         }
@@ -89,7 +89,7 @@ namespace Metrics.Reporters
 
             if (!string.IsNullOrEmpty(unit.Name))
             {
-                yield return new Value("Counted Unit", unit.Name);
+                yield return new Value("Unit", unit.Name);
             }
         }
 
