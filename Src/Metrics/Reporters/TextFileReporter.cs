@@ -10,6 +10,7 @@ namespace Metrics.Reporters
 
         public TextFileReporter(string fileName)
         {
+            Directory.CreateDirectory(Path.GetDirectoryName(fileName));
             this.fileName = fileName;
         }
 

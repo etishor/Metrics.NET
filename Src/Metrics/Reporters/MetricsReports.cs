@@ -1,21 +1,35 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
-using System.IO;
 using Metrics.Core;
 using Metrics.Reporters;
 namespace Metrics.Reports
 {
-    public class MetricsReports : Utils.IHideObjectMembers, IDisposable
+    public sealed class MetricsReports : Utils.IHideObjectMembers, IDisposable
     {
-        public readonly MetricsRegistry MetricsRegistry;
-        public readonly Func<HealthStatus> HealthStatus;
+        private readonly MetricsRegistry metricsRegistry;
+        private readonly Func<HealthStatus> healthStatus;
 
-        public readonly List<IScheduledReporter> Reports = new List<IScheduledReporter>();
+        private readonly List<ScheduledReporter> reports = new List<ScheduledReporter>();
 
         public MetricsReports(MetricsRegistry metricsRegistry, Func<HealthStatus> healthStatus)
         {
-            this.MetricsRegistry = metricsRegistry;
-            this.HealthStatus = healthStatus;
+            this.metricsRegistry = metricsRegistry;
+            this.healthStatus = healthStatus;
+        }
+
+        /// <summary>
+        /// Schedule a generic reporter to be executed at a fixed <paramref name="interval"/>
+        /// </summary>
+        /// <param name="reporterName">Name of the reporter</param>
+        /// <param name="reporter">Function that returns an instance of a reporter</param>
+        /// <param name="interval">Interval at which to run the report.</param>
+        public MetricsReports WithReporter(string reporterName, Func<Reporter> reporter, TimeSpan interval)
+        {
+            var report = new ScheduledReporter(reporterName, reporter, this.metricsRegistry, this.healthStatus, interval);
+            report.Start();
+            this.reports.Add(report);
+            return this;
         }
 
         /// <summary>
@@ -24,10 +38,7 @@ namespace Metrics.Reports
         /// <param name="interval">Interval at which to display the report on the Console.</param>
         public MetricsReports WithConsoleReport(TimeSpan interval)
         {
-            var reporter = new ScheduledReporter("Console", () => new ConsoleReporter(), this.MetricsRegistry, this.HealthStatus, interval);
-            reporter.Start();
-            this.Reports.Add(reporter);
-            return this;
+            return WithReporter("Console", () => new ConsoleReporter(), interval);
         }
 
         /// <summary>
@@ -35,15 +46,21 @@ namespace Metrics.Reports
         /// </summary>
         /// <param name="directory">Directory where to store the CSV files.</param>
         /// <param name="interval">Interval at which to append a line to the files.</param>
-        public MetricsReports WithCSVReports(string directory, TimeSpan interval)
+        /// <param name="delimiter">CSV delimiter to use</param>
+        public MetricsReports WithCSVReports(string directory, TimeSpan interval, string delimiter = CSVAppender.CommaDelimiter)
         {
-            Directory.CreateDirectory(directory);
-            var reporter = new ScheduledReporter("CSVFiles", () => new CSVReporter(new CSVFileAppender(directory)), this.MetricsRegistry, this.HealthStatus, interval);
-            reporter.Start();
-            this.Reports.Add(reporter);
-            return this;
+            return WithReporter("CSVFiles", () => new CSVReporter(new CSVFileAppender(directory, delimiter)), interval);
         }
 
+        ///// <summary>
+        ///// Configure Metrics to append a line for each metric to a CSV file using the custom <paramref name="fileAppender"/>.
+        ///// </summary>
+        ///// <param name="fileAppender">Custom file appender to write the CSV files.</param>
+        ///// <param name="interval">Interval at which to append a line to the files.</param>
+        //public MetricsReports WithCSVReports(CSVFileAppender fileAppender, TimeSpan interval)
+        //{
+        //    return WithReporter("CSVFiles", () => new CSVReporter(fileAppender), interval);
+        //}
 
         /// <summary>
         /// Schedule a Human Readable report to be executed and appended to a text file.
@@ -52,10 +69,7 @@ namespace Metrics.Reports
         /// <param name="interval">Interval at which to run the report.</param>
         public MetricsReports WithTextFileReport(string filePath, TimeSpan interval)
         {
-            var reporter = new ScheduledReporter("TextFile", () => new TextFileReporter(filePath), this.MetricsRegistry, this.HealthStatus, interval);
-            reporter.Start();
-            this.Reports.Add(reporter);
-            return this;
+            return WithReporter("TextFile", () => new TextFileReporter(filePath), interval);
         }
 
         /// <summary>
@@ -63,14 +77,14 @@ namespace Metrics.Reports
         /// </summary>
         public void StopAndClearAllReports()
         {
-            this.Reports.ForEach(r => r.Stop());
-            this.Reports.Clear();
+            this.reports.ForEach(r => r.Stop());
+            this.reports.Clear();
         }
 
         public void Dispose()
         {
-            this.Reports.ForEach(r => r.Dispose());
-            this.Reports.Clear();
+            this.reports.ForEach(r => r.Dispose());
+            this.reports.Clear();
         }
     }
 }
