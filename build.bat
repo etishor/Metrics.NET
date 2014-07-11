@@ -27,3 +27,17 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 
 %XUNIT% .\bin\MonoRelease\Tests\Metrics.Tests.dll
 if %errorlevel% neq 0 exit /b %errorlevel%
+
+
+
+%XUNIT% .\bin\Debug\Tests\Metrics.Log4Net.Tests.dll
+if %errorlevel% neq 0 exit /b %errorlevel%
+
+%XUNIT% .\bin\Release\Tests\Metrics.Log4Net.Tests.dll
+if %errorlevel% neq 0 exit /b %errorlevel%
+
+%XUNIT% .\bin\MonoDebug\Tests\Metrics.Log4Net.Tests.dll
+if %errorlevel% neq 0 exit /b %errorlevel%
+
+%XUNIT% .\bin\MonoRelease\Tests\Metrics.Log4Net.Tests.dll
+if %errorlevel% neq 0 exit /b %errorlevel%
