@@ -5,7 +5,7 @@ using Metrics.Utils;
 
 namespace Metrics.Reporters
 {
-  public class ScheduledReporter : IScheduledReporter
+  public class ScheduledReporter 
   {
         private readonly Scheduler scheduler;
         private readonly TimeSpan interval;
