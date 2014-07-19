@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.30324.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metrics", "Src\Metrics\Metrics.csproj", "{95E29D40-DBEC-49E2-9CC5-26B88966DADE}"
 EndProject
@@ -45,6 +45,10 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Metrics.Samples.FSharp", "Samples\Metrics.Samples.FSharp\Metrics.Samples.FSharp.fsproj", "{DAF70394-CE63-4D2F-B52B-839941827B4E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metrics.SampleReporter", "Samples\Metrics.SampleReporter\Metrics.SampleReporter.csproj", "{18E808CB-98F9-4754-9872-D3D00F9CE72B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Sample", "Samples\Owin.Sample\Owin.Sample.csproj", "{828188F9-26C2-4C93-A156-D9EA13D7E2FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Metrics", "Src\Adapters\Owin.Metrics\Owin.Metrics.csproj", "{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -126,6 +130,22 @@ Global
 		{18E808CB-98F9-4754-9872-D3D00F9CE72B}.MonoRelease|Any CPU.Build.0 = MonoRelease|Any CPU
 		{18E808CB-98F9-4754-9872-D3D00F9CE72B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18E808CB-98F9-4754-9872-D3D00F9CE72B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.MonoDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.MonoDebug|Any CPU.Build.0 = Debug|Any CPU
+		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.MonoRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.MonoRelease|Any CPU.Build.0 = Release|Any CPU
+		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.MonoDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.MonoDebug|Any CPU.Build.0 = Debug|Any CPU
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.MonoRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.MonoRelease|Any CPU.Build.0 = Release|Any CPU
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -138,6 +158,8 @@ Global
 		{FBFF51D8-52F4-4EEF-8498-122A14B37D6C} = {443860DA-6378-47D0-A4AE-4E79975C5E1C}
 		{DAF70394-CE63-4D2F-B52B-839941827B4E} = {30108C17-0671-4786-90D0-0564718C3F70}
 		{18E808CB-98F9-4754-9872-D3D00F9CE72B} = {30108C17-0671-4786-90D0-0564718C3F70}
+		{828188F9-26C2-4C93-A156-D9EA13D7E2FA} = {30108C17-0671-4786-90D0-0564718C3F70}
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210} = {443860DA-6378-47D0-A4AE-4E79975C5E1C}
 	EndGlobalSection
 	GlobalSection(CodealikeProperties) = postSolution
 		SolutionGuid = 169deccf-e8f8-4868-80f4-f7f0bb71cb4b
