@@ -44,21 +44,6 @@ namespace Owin.Metrics.Middleware
                 var elapsed = Clock.Default.Nanoseconds - startTime;
                 Metric.Timer(name, Unit.Requests).Record(elapsed, TimeUnit.Nanoseconds);
             }
-
-            var errorMeter = _registry.Meter(Name("Errors"), Unit.Errors, TimeUnit.Seconds);
-            if (httpResponseStatusCode == (int)HttpStatusCode.InternalServerError)
-            {
-                errorMeter.Mark();
-            }
-        }
-
-        private string Name(string name)
-        {
-            if (!string.IsNullOrEmpty(MetricsPrefix))
-            {
-                return MetricsPrefix + "." + name;
-            }
-            return name;
         }
     }
 }

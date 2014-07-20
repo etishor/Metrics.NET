@@ -10,8 +10,6 @@ namespace Owin.Metrics.Middleware
     using AppFunc = Func<IDictionary<string, object>, Task>;
     public class ErrorMeterMiddleware
     {
-        private const string TimerItemsKey = "__Mertics.RequestTimer__";
-        private const string RequestStartTimeKey = "__Metrics.RequestStartTime__";
         private readonly MetricsRegistry _registry;
         public string MetricsPrefix { get; set; }
         private AppFunc _next;

@@ -1,10 +1,11 @@
 ﻿using Metrics;
 using Microsoft.Owin;
+using Microsoft.Owin.Cors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Owin.Metrics;
 using System;
 using System.Web.Http;
+using Owin.Metrics;
 
 [assembly: OwinStartup(typeof(Owin.Sample.Startup))]
 
@@ -19,6 +20,8 @@ namespace Owin.Sample
                 Formatting = Formatting.Indented,
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
+
+            app.UseCors(CorsOptions.AllowAll);
 
             app.UseMetrics(metrics => metrics.WithAllCounters().WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30))),
                 owinMetrics => owinMetrics.RegisterAllMetrics());

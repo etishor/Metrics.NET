@@ -55,7 +55,6 @@
     <Compile Include="Middleware\ErrorMeterMiddleware.cs" />
     <Compile Include="Middleware\RequestTimerMiddleware.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="OwinMetrics.cs" />
     <Compile Include="OwinMetricsConfig.cs" />
   </ItemGroup>
   <ItemGroup>
