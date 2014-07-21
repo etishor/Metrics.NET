@@ -11,16 +11,13 @@ namespace Owin.Metrics.Middleware
 
     public class ErrorMeterMiddleware
     {
-        private readonly MetricsRegistry registry;
+        private readonly Meter errorMeter;
         private AppFunc next;
 
-        public ErrorMeterMiddleware(MetricsRegistry registry)
+        public ErrorMeterMiddleware(MetricsRegistry registry, string metricName)
         {
-            this.registry = registry;
-            MetricsPrefix = "Owin";
+            this.errorMeter = registry.Meter(metricName, Unit.Errors, TimeUnit.Seconds);
         }
-
-        public string MetricsPrefix { get; set; }
 
         public void Initialize(AppFunc next)
         {
@@ -32,20 +29,11 @@ namespace Owin.Metrics.Middleware
             await next(environment);
 
             var httpResponseStatusCode = int.Parse(environment["owin.ResponseStatusCode"].ToString());
-            var errorMeter = registry.Meter(Name("Errors"), Unit.Errors, TimeUnit.Seconds);
+
             if (httpResponseStatusCode == (int)HttpStatusCode.InternalServerError)
             {
                 errorMeter.Mark();
             }
-        }
-
-        private string Name(string name)
-        {
-            if (!string.IsNullOrEmpty(MetricsPrefix))
-            {
-                return MetricsPrefix + "." + name;
-            }
-            return name;
         }
     }
 }

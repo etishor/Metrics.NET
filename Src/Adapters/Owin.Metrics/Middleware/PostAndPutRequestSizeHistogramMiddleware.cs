@@ -8,18 +8,16 @@ using Metrics.Core;
 namespace Owin.Metrics.Middleware
 {
     using AppFunc = Func<IDictionary<string, object>, Task>;
+
     public class PostAndPutRequestSizeHistogramMiddleware
     {
-        private readonly MetricsRegistry registry;
+        private readonly Histogram histogram;
         private AppFunc next;
 
-        public PostAndPutRequestSizeHistogramMiddleware(MetricsRegistry registry)
+        public PostAndPutRequestSizeHistogramMiddleware(MetricsRegistry registry, string metricName)
         {
-            this.registry = registry;
-            this.MetricsPrefix = "Owin";
+            this.histogram = registry.Histogram(metricName, Unit.Bytes, SamplingType.FavourRecent);
         }
-
-        public string MetricsPrefix { get; set; }
 
         public void Initialize(AppFunc next)
         {
@@ -28,26 +26,18 @@ namespace Owin.Metrics.Middleware
 
         public async Task Invoke(IDictionary<string, object> environment)
         {
-            // start post and put request size
-            var histogram = registry.Histogram(Name("PostAndPutRequestsSize"), Unit.Custom("bytes"), SamplingType.FavourRecent);
             var httpMethod = environment["owin.RequestMethod"].ToString().ToUpper();
+
             if (httpMethod == "POST" || httpMethod == "PUT")
             {
                 var headers = (IDictionary<string, string[]>)environment["owin.RequestHeaders"];
                 if (headers != null && headers.ContainsKey("Content-Length"))
+                {
                     histogram.Update(long.Parse(headers["Content-Length"].First()));
+                }
             }
 
             await next(environment);
-        }
-
-        private string Name(string name)
-        {
-            if (!string.IsNullOrEmpty(MetricsPrefix))
-            {
-                return MetricsPrefix + "." + name;
-            }
-            return name;
         }
     }
 }

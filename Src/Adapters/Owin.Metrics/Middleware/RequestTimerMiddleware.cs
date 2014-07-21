@@ -10,16 +10,14 @@ namespace Owin.Metrics.Middleware
     public class RequestTimerMiddleware
     {
         private const string TimerItemsKey = "__Mertics.RequestTimer__";
-        private readonly MetricsRegistry registry;
+
+        private readonly Timer requestTimer;
         private AppFunc next;
 
-        public RequestTimerMiddleware(MetricsRegistry registry)
+        public RequestTimerMiddleware(MetricsRegistry registry, string metricName)
         {
-            this.registry = registry;
-            this.MetricsPrefix = "Owin";
+            this.requestTimer = registry.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
         }
-
-        public string MetricsPrefix { get; set; }
 
         public void Initialize(AppFunc next)
         {
@@ -28,23 +26,13 @@ namespace Owin.Metrics.Middleware
 
         public async Task Invoke(IDictionary<string, object> environment)
         {
-            var requestTimer = registry.Timer(Name("Requests"), Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
-            environment[TimerItemsKey] = requestTimer.NewContext();
+            environment[TimerItemsKey] = this.requestTimer.NewContext();
 
             await next(environment);
 
             var timer = environment[TimerItemsKey];
             using (timer as IDisposable) { }
             environment.Remove(TimerItemsKey);
-        }
-
-        private string Name(string name)
-        {
-            if (!string.IsNullOrEmpty(MetricsPrefix))
-            {
-                return MetricsPrefix + "." + name;
-            }
-            return name;
         }
     }
 }

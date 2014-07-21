@@ -12,16 +12,17 @@ namespace Owin.Metrics.Middleware
     public class TimerForEachRequestMiddleware
     {
         private const string RequestStartTimeKey = "__Metrics.RequestStartTime__";
+
         private readonly MetricsRegistry registry;
+        private readonly string metricPrefix;
+        
         private AppFunc next;
 
-        public TimerForEachRequestMiddleware(MetricsRegistry registry)
+        public TimerForEachRequestMiddleware(MetricsRegistry registry, string metricPrefix)
         {
             this.registry = registry;
-            this.MetricsPrefix = "Owin";
+            this.metricPrefix = metricPrefix;
         }
-
-        public string MetricsPrefix { get; set; }
 
         public void Initialize(AppFunc next)
         {
@@ -40,7 +41,7 @@ namespace Owin.Metrics.Middleware
             if (httpResponseStatusCode != (int)HttpStatusCode.NotFound)
             {
                 var httpRequestPath = environment["owin.RequestPath"].ToString().ToUpper();
-                var name = string.Format("{0}.{1} [{2}]", MetricsPrefix, httpMethod, httpRequestPath);
+                var name = string.Format("{0}.{1} [{2}]", metricPrefix, httpMethod, httpRequestPath);
                 var startTime = (long)environment[RequestStartTimeKey];
                 var elapsed = Clock.Default.Nanoseconds - startTime;
                 Metric.Timer(name, Unit.Requests).Record(elapsed, TimeUnit.Nanoseconds);

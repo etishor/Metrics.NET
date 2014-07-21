@@ -6,18 +6,18 @@ using Metrics.Core;
 
 namespace Owin.Metrics.Middleware
 {
+    /// <summary>
+    /// Owin middleware that counts the number of active requests.
+    /// </summary>
     public class ActiveRequestCounterMiddleware
     {
-        private readonly MetricsRegistry registry;
+        private readonly Counter activeRequests;
         private Func<IDictionary<string, object>, Task> next;
 
-        public ActiveRequestCounterMiddleware(MetricsRegistry registry)
+        public ActiveRequestCounterMiddleware(MetricsRegistry registry, string metricName)
         {
-            this.registry = registry;
-            this.MetricsPrefix = "Owin";
+            this.activeRequests = registry.Counter(metricName, Unit.Custom("ActiveRequests"));
         }
-
-        public string MetricsPrefix { get; set; }
 
         public void Initialize(Func<IDictionary<string, object>, Task> next)
         {
@@ -26,21 +26,11 @@ namespace Owin.Metrics.Middleware
 
         public async Task Invoke(IDictionary<string, object> environment)
         {
-            var counter = registry.Counter(Name("ActiveRequests"), Unit.Custom("ActiveRequests"));
-            counter.Increment();
+            this.activeRequests.Increment();
 
-            await next(environment);
+            await this.next(environment);
 
-            counter.Decrement();
-        }
-
-        private string Name(string name)
-        {
-            if (!string.IsNullOrEmpty(MetricsPrefix))
-            {
-                return MetricsPrefix + "." + name;
-            }
-            return name;
+            this.activeRequests.Decrement();
         }
     }
 }
