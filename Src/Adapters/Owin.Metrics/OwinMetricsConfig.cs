@@ -5,16 +5,16 @@ namespace Owin.Metrics
 {
     public class OwinMetricsConfig
     {
-        private readonly MetricsRegistry _metricsRegistry;
-        private IAppBuilder _app;
+        private readonly MetricsRegistry metricsRegistry;
+        private IAppBuilder app;
 
         public OwinMetricsConfig(IAppBuilder app, MetricsRegistry metricsRegistry)
         {
-            _app = app;
-            _metricsRegistry = metricsRegistry;
+            this.app = app;
+            this.metricsRegistry = metricsRegistry;
         }
 
-        public MetricsRegistry Registry { get { return _metricsRegistry; } }
+        public MetricsRegistry Registry { get { return metricsRegistry; } }
 
         /// <summary>
         /// Configure global WebApi Metrics.
@@ -35,36 +35,36 @@ namespace Owin.Metrics
 
         public OwinMetricsConfig RegisterRequestTimer()
         {
-            var metricsMiddleware = new RequestTimerMiddleware(_metricsRegistry);
-            _app.Use(metricsMiddleware);
+            var metricsMiddleware = new RequestTimerMiddleware(metricsRegistry);
+            app.Use(metricsMiddleware);
             return this;
         }
 
         public OwinMetricsConfig RegisterActiveRequestCounter()
         {
-            var metricsMiddleware = new ActiveRequestCounterMiddleware(_metricsRegistry);
-            _app.Use(metricsMiddleware);
+            var metricsMiddleware = new ActiveRequestCounterMiddleware(metricsRegistry);
+            app.Use(metricsMiddleware);
             return this;
         }
 
         public OwinMetricsConfig RegisterPostAndPutRequestSizeHistogram()
         {
-            var metricsMiddleware = new PostAndPutRequestSizeHistogramMiddleware(_metricsRegistry);
-            _app.Use(metricsMiddleware);
+            var metricsMiddleware = new PostAndPutRequestSizeHistogramMiddleware(metricsRegistry);
+            app.Use(metricsMiddleware);
             return this;
         }
 
         public OwinMetricsConfig RegisterTimerForEachRequest()
         {
-            var metricsMiddleware = new TimerForEachRequestMiddleware(_metricsRegistry);
-            _app.Use(metricsMiddleware);
+            var metricsMiddleware = new TimerForEachRequestMiddleware(metricsRegistry);
+            app.Use(metricsMiddleware);
             return this;
         }
 
         public OwinMetricsConfig RegisterErrorsMeter()
         {
-            var metricsMiddleware = new ErrorMeterMiddleware(_metricsRegistry);
-            _app.Use(metricsMiddleware);
+            var metricsMiddleware = new ErrorMeterMiddleware(metricsRegistry);
+            app.Use(metricsMiddleware);
             return this;
         }
     }

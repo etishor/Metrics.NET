@@ -1,8 +1,8 @@
-﻿using Metrics;
-using Metrics.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Metrics;
+using Metrics.Core;
 
 namespace Owin.Metrics.Middleware
 {
@@ -10,27 +10,28 @@ namespace Owin.Metrics.Middleware
     public class RequestTimerMiddleware
     {
         private const string TimerItemsKey = "__Mertics.RequestTimer__";
-        private readonly MetricsRegistry _registry;
-        public string MetricsPrefix { get; set; }
-        private AppFunc _next;
+        private readonly MetricsRegistry registry;
+        private AppFunc next;
 
         public RequestTimerMiddleware(MetricsRegistry registry)
         {
-            _registry = registry;
-            MetricsPrefix = "Owin";
+            this.registry = registry;
+            this.MetricsPrefix = "Owin";
         }
+
+        public string MetricsPrefix { get; set; }
 
         public void Initialize(AppFunc next)
         {
-            _next = next;
+            this.next = next;
         }
 
         public async Task Invoke(IDictionary<string, object> environment)
         {
-            var requestTimer = _registry.Timer(Name("Requests"), Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+            var requestTimer = registry.Timer(Name("Requests"), Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
             environment[TimerItemsKey] = requestTimer.NewContext();
 
-            await _next(environment);
+            await next(environment);
 
             var timer = environment[TimerItemsKey];
             using (timer as IDisposable) { }

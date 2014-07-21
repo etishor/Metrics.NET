@@ -1,34 +1,35 @@
-﻿using Metrics;
-using Metrics.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Metrics;
+using Metrics.Core;
 
 namespace Owin.Metrics.Middleware
 {
     using AppFunc = Func<IDictionary<string, object>, Task>;
     public class PostAndPutRequestSizeHistogramMiddleware
     {
-        private readonly MetricsRegistry _registry;
-        public string MetricsPrefix { get; set; }
-        private AppFunc _next;
+        private readonly MetricsRegistry registry;
+        private AppFunc next;
 
         public PostAndPutRequestSizeHistogramMiddleware(MetricsRegistry registry)
         {
-            _registry = registry;
-            MetricsPrefix = "Owin";
+            this.registry = registry;
+            this.MetricsPrefix = "Owin";
         }
+
+        public string MetricsPrefix { get; set; }
 
         public void Initialize(AppFunc next)
         {
-            _next = next;
+            this.next = next;
         }
 
         public async Task Invoke(IDictionary<string, object> environment)
         {
             // start post and put request size
-            var histogram = _registry.Histogram(Name("PostAndPutRequestsSize"), Unit.Custom("bytes"), SamplingType.FavourRecent);
+            var histogram = registry.Histogram(Name("PostAndPutRequestsSize"), Unit.Custom("bytes"), SamplingType.FavourRecent);
             var httpMethod = environment["owin.RequestMethod"].ToString().ToUpper();
             if (httpMethod == "POST" || httpMethod == "PUT")
             {
@@ -37,7 +38,7 @@ namespace Owin.Metrics.Middleware
                     histogram.Update(long.Parse(headers["Content-Length"].First()));
             }
 
-            await _next(environment);
+            await next(environment);
         }
 
         private string Name(string name)

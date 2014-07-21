@@ -1,10 +1,10 @@
-﻿using Metrics;
-using Metrics.Core;
-using Metrics.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Metrics;
+using Metrics.Core;
+using Metrics.Utils;
 
 namespace Owin.Metrics.Middleware
 {
@@ -12,26 +12,27 @@ namespace Owin.Metrics.Middleware
     public class TimerForEachRequestMiddleware
     {
         private const string RequestStartTimeKey = "__Metrics.RequestStartTime__";
-        private readonly MetricsRegistry _registry;
-        public string MetricsPrefix { get; set; }
-        private AppFunc _next;
+        private readonly MetricsRegistry registry;
+        private AppFunc next;
 
         public TimerForEachRequestMiddleware(MetricsRegistry registry)
         {
-            _registry = registry;
-            MetricsPrefix = "Owin";
+            this.registry = registry;
+            this.MetricsPrefix = "Owin";
         }
+
+        public string MetricsPrefix { get; set; }
 
         public void Initialize(AppFunc next)
         {
-            _next = next;
+            this.next = next;
         }
 
         public async Task Invoke(IDictionary<string, object> environment)
         {
             environment[RequestStartTimeKey] = Clock.Default.Nanoseconds;
 
-            await _next(environment);
+            await next(environment);
 
             var httpResponseStatusCode = int.Parse(environment["owin.ResponseStatusCode"].ToString());
             var httpMethod = environment["owin.RequestMethod"].ToString().ToUpper();

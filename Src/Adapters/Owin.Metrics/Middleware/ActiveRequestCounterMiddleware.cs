@@ -1,34 +1,35 @@
-﻿using Metrics;
-using Metrics.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Metrics;
+using Metrics.Core;
 
 namespace Owin.Metrics.Middleware
 {
     public class ActiveRequestCounterMiddleware
     {
-        private readonly MetricsRegistry _registry;
-        public string MetricsPrefix { get; set; }
-        private Func<IDictionary<string, object>, Task> _next;
+        private readonly MetricsRegistry registry;
+        private Func<IDictionary<string, object>, Task> next;
 
         public ActiveRequestCounterMiddleware(MetricsRegistry registry)
         {
-            _registry = registry;
-            MetricsPrefix = "Owin";
+            this.registry = registry;
+            this.MetricsPrefix = "Owin";
         }
+
+        public string MetricsPrefix { get; set; }
 
         public void Initialize(Func<IDictionary<string, object>, Task> next)
         {
-            _next = next;
+            this.next = next;
         }
 
         public async Task Invoke(IDictionary<string, object> environment)
         {
-            var counter = _registry.Counter(Name("ActiveRequests"), Unit.Custom("ActiveRequests"));
+            var counter = registry.Counter(Name("ActiveRequests"), Unit.Custom("ActiveRequests"));
             counter.Increment();
 
-            await _next(environment);
+            await next(environment);
 
             counter.Decrement();
         }
