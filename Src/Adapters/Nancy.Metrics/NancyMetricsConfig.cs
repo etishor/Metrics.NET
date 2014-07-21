@@ -17,7 +17,6 @@ namespace Nancy.Metrics
         }
 
         public MetricsRegistry Registry { get { return this.metricsRegistry; } }
-        //public HealthChecksRegistry HealthChecks { get { return this.healthChecksRegistry; } }
 
         /// <summary>
         /// Configure global NancyFx Metrics.
