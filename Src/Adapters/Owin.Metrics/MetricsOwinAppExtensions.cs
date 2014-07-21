@@ -1,10 +1,10 @@
-﻿using Metrics;
+﻿using System;
+using System.Net;
+using System.Threading.Tasks;
+using Metrics;
 using Metrics.Reporters;
 using Metrics.Visualization;
 using Microsoft.Owin;
-using System;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace Owin.Metrics
 {
@@ -20,15 +20,29 @@ namespace Owin.Metrics
             app.Use((context, next) =>
             {
                 if (context.Request.Path.Value.EndsWith("/metrics"))
+                {
                     return GetFlotWebApp(context.Response);
+                }
+
                 if (context.Request.Path.Value.EndsWith("/json"))
+                {
                     return GetJsonContent(context.Response, config);
+                }
+
                 if (context.Request.Path.Value.EndsWith("/health"))
+                {
                     return GetHealthStatus(context.Response, config);
+                }
+
                 if (context.Request.Path.Value.EndsWith("/text"))
+                {
                     return GetAsHumanReadable(context.Response, config);
+                }
+
                 if (context.Request.Path.Value.EndsWith("/ping"))
+                {
                     return GetPingContent(context.Response);
+                }
 
                 return next();
             });
