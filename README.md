@@ -60,6 +60,7 @@ public class SampleMetrics
 Adapters integrate Metrics.NET with other libraries & frameworks.
 
 * [NancyFx.Metrics](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter)
+* [Owin.Metrics](https://github.com/etishor/Metrics.NET/wiki/OWIN-Metrics-Adapter) ( thanks to [Allan Hardy](https://github.com/alhardy) | @alhardy )
 
 ###TODO
 A live list of my future plan
@@ -72,9 +73,9 @@ A live list of my future plan
 * [done] Mono compatibility
 * [done] health checks
 * [done] Improve the javascript visualization app
+* [done] OWIN should take care of this: Provide an adapter for hooking into web api for collecting & exposing metrics (this might be delayed as I tend to use NancyFx - but PRs are welcomed)
 * Push metrics out of process, to dedicated metrics service
 * Investigate the possibility of using zeromq to delegate metrics to another process - for across cluster metrics
-* Provide an adapter for hooking into web api for collecting & exposing metrics (this might be delayed as I tend to use NancyFx - but PRs are welcomed)
 * Provide an adapter for hooking into asp.net mvc
 * Adapter for graphite and other existing solutions for aggregating metrics
 * Investigate the possibility of using Redis as an off-process metrics container (the collections behind the metrics seem to map to redis data types)
