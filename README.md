@@ -60,7 +60,7 @@ public class SampleMetrics
 Adapters integrate Metrics.NET with other libraries & frameworks.
 
 * [NancyFx.Metrics](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter)
-* [Owin.Metrics](https://github.com/etishor/Metrics.NET/wiki/OWIN-Metrics-Adapter) ( thanks to [Allan Hardy](https://github.com/alhardy) | @alhardy )
+* [Owin.Metrics](https://github.com/etishor/Metrics.NET/wiki/OWIN-Metrics-Adapter) - thanks to [@alhardy - Allan Hardy](https://github.com/alhardy)
 
 ###TODO
 A live list of my future plan
