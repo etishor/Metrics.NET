@@ -1,13 +1,10 @@
 ﻿using Metrics;
-using Microsoft.Owin;
 using Microsoft.Owin.Cors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Owin.Metrics;
 using System;
 using System.Web.Http;
-using Owin.Metrics;
-
-[assembly: OwinStartup(typeof(Owin.Sample.Startup))]
 
 namespace Owin.Sample
 {
