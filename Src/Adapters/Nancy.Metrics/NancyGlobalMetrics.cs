@@ -112,7 +112,7 @@ namespace Nancy.Metrics
         /// <param name="metricName">Name of the metric.</param>
         public void RegisterPostAndPutRequestSizeHistogram(IPipelines nancyPipelines, string metricName = "PostAndPutRequestsSize")
         {
-            var histogram = this.registry.Histogram(Name(metricName), Unit.Custom("bytes"), SamplingType.FavourRecent);
+            var histogram = this.registry.Histogram(Name(metricName), Unit.Bytes, SamplingType.FavourRecent);
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {

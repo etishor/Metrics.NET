@@ -13,6 +13,7 @@ namespace Metrics
         public static readonly Unit Items = new Unit("Items");
         public static readonly Unit MegaBytes = new Unit("Mb");
         public static readonly Unit KiloBytes = new Unit("Kb");
+        public static readonly Unit Bytes = new Unit("bytes");
 
         public static Unit Custom(string name)
         {
