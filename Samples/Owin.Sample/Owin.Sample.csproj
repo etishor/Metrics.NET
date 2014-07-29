@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Owin.Sample</RootNamespace>
     <AssemblyName>Owin.Sample</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -112,10 +112,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Src\Adapters\Owin.Metrics\Owin.Metrics.csproj">
-      <Project>{025cd6d0-1a1e-4b14-a7db-af5dff887210}</Project>
-      <Name>Owin.Metrics</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Src\Metrics\Metrics.csproj">
       <Project>{95e29d40-dbec-49e2-9cc5-26b88966dade}</Project>
       <Name>Metrics</Name>

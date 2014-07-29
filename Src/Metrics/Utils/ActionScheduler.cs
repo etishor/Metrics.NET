@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace Metrics.Utils
 {
+    using Timer = System.Timers.Timer;
+
     /// <summary>
     /// Utility class to schedule an Action to be executed repeatedly according to the interval.
     /// </summary>
@@ -14,7 +16,7 @@ namespace Metrics.Utils
     /// </remarks>
     public sealed class ActionScheduler : Scheduler
     {
-        private CancellationTokenSource token = null;
+        private readonly Timer timer = new Timer();
 
         public void Start(TimeSpan interval, Action action)
         {
@@ -48,48 +50,21 @@ namespace Metrics.Utils
                 throw new ArgumentException("interval must be > 0 seconds", "interval");
             }
 
-            if (this.token != null)
+            this.timer.Elapsed += (obj, args) =>
             {
-                throw new InvalidOperationException("Scheduler is already started.");
-            }
-
-            this.token = new CancellationTokenSource();
-
-            RunScheduler(interval, task, this.token);
-        }
-
-        private static void RunScheduler(TimeSpan interval, Func<CancellationToken, Task> action, CancellationTokenSource token)
-        {
-            Task.Factory.StartNew(async () =>
-            {
-                while (!token.IsCancellationRequested)
+                try
                 {
-                    await Delay(interval, token.Token);
-                    try
-                    {
-                        await action(token.Token);
-                    }
-                    catch (Exception x)
-                    {
-                        HandleException(x);
-                        token.Cancel();
-                    }
+                    task(CancellationToken.None).Wait();
                 }
-            }, token.Token);
-        }
-
-        public static Task Delay(TimeSpan interval, CancellationToken token)
-        {
-            var tcs = new TaskCompletionSource<bool>();
-            System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Elapsed += (obj, args) =>
-            {
-                tcs.TrySetResult(true);
+                catch (Exception x)
+                {
+                    HandleException(x);
+                    timer.Stop();
+                }
             };
+
             timer.Interval = interval.TotalMilliseconds;
-            timer.AutoReset = false;
             timer.Start();
-            return tcs.Task;
         }
 
         private static Task Completed()
@@ -113,38 +88,12 @@ namespace Metrics.Utils
 
         public void Stop()
         {
-            if (this.token != null)
-            {
-                token.Cancel();
-            }
-        }
-
-        private void RunAction(Action<CancellationToken> action)
-        {
-            try
-            {
-                action(this.token.Token);
-            }
-            catch (Exception x)
-            {
-                if (Metric.Config.ErrorHandler != null)
-                {
-                    Metric.Config.ErrorHandler(x);
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            this.timer.Stop();
         }
 
         public void Dispose()
         {
-            if (this.token != null)
-            {
-                this.token.Cancel();
-                this.token.Dispose();
-            }
+            this.timer.Dispose();
             GC.SuppressFinalize(this);
         }
     }
