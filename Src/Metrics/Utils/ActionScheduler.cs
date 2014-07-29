@@ -64,7 +64,7 @@ namespace Metrics.Utils
             {
                 while (!token.IsCancellationRequested)
                 {
-                    await Task.Delay(interval, token.Token);
+                    await Delay(interval, token.Token);
                     try
                     {
                         await action(token.Token);
@@ -78,9 +78,25 @@ namespace Metrics.Utils
             }, token.Token);
         }
 
+        public static Task Delay(TimeSpan interval, CancellationToken token)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            System.Timers.Timer timer = new System.Timers.Timer();
+            timer.Elapsed += (obj, args) =>
+            {
+                tcs.TrySetResult(true);
+            };
+            timer.Interval = interval.TotalMilliseconds;
+            timer.AutoReset = false;
+            timer.Start();
+            return tcs.Task;
+        }
+
         private static Task Completed()
         {
-            return Task.FromResult(true);
+            var taskSource = new TaskCompletionSource<bool>();
+            taskSource.SetResult(true);
+            return taskSource.Task;
         }
 
         private static void HandleException(Exception x)
