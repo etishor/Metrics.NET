@@ -1,45 +1,51 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-using Metrics;
+﻿using Metrics;
 using Metrics.Reporters;
 using Metrics.Visualization;
 using Microsoft.Owin;
+using System;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Owin.Metrics
 {
     public static class MetricsOwinAppExtensions
     {
         public static IAppBuilder UseMetrics(this IAppBuilder app, Action<MetricsConfig> metricsConfigCallback,
-            Action<OwinMetricsConfig> owinMetricsConfigCallback)
+            Action<OwinMetricsConfig> owinMetricsConfigCallback,
+            Action<OwinMetricsEndpointConfig> owinMetricsEndpointConfigCallback = null)
         {
             var config = Metric.Config;
 
             metricsConfigCallback(config);
 
+            var endpointConfig = new OwinMetricsEndpointConfig();
+
+            if (owinMetricsEndpointConfigCallback != null)
+                owinMetricsEndpointConfigCallback(endpointConfig);
+
             app.Use((context, next) =>
             {
-                if (context.Request.Path.Value.EndsWith("/metrics"))
+                if (context.Request.Path.Value.EndsWith("/" + endpointConfig.MetricsEndpointName) && endpointConfig.MetricsEndpointEnabled)
                 {
                     return GetFlotWebApp(context.Response);
                 }
 
-                if (context.Request.Path.Value.EndsWith("/json"))
+                if (context.Request.Path.Value.EndsWith("/" + endpointConfig.MetricsJsonEndpointName) && endpointConfig.MetricsJsonEndpointEnabled)
                 {
                     return GetJsonContent(context.Response, config);
                 }
 
-                if (context.Request.Path.Value.EndsWith("/health"))
+                if (context.Request.Path.Value.EndsWith("/" + endpointConfig.MetricsHealthEndpointName) && endpointConfig.MetricsHealthEndpointEnabled)
                 {
                     return GetHealthStatus(context.Response, config);
                 }
 
-                if (context.Request.Path.Value.EndsWith("/text"))
+                if (context.Request.Path.Value.EndsWith("/" + endpointConfig.MetricsTextEndpointName) && endpointConfig.MetricsTextEndpointEnabled)
                 {
                     return GetAsHumanReadable(context.Response, config);
                 }
 
-                if (context.Request.Path.Value.EndsWith("/ping"))
+                if (context.Request.Path.Value.EndsWith("/" + endpointConfig.MetricsPingEndpointName) && endpointConfig.MetricsPingEndpointEnabled)
                 {
                     return GetPingContent(context.Response);
                 }
