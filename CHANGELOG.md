@@ -1,3 +1,6 @@
+###0.1.10 / 2014-07-30
+* fix json formating (thanks to Evgeniy Kucheruk @kpoxa)
+
 ###0.1.9 / 2014-07-04
 * make reporting more extensible
 
