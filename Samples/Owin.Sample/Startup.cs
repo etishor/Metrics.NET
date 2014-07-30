@@ -20,7 +20,8 @@ namespace Owin.Sample
 
             app.UseCors(CorsOptions.AllowAll);
 
-            app.UseMetrics(metrics => metrics.WithAllCounters().WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30))),
+            app.UseMetrics(Metric.Config.WithAllCounters()
+                .WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30))),
                 owinMetrics => owinMetrics.RegisterAllMetrics());
 
             var httpConfig = new HttpConfiguration();

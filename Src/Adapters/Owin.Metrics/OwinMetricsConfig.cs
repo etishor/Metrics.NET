@@ -25,9 +25,9 @@ namespace Owin.Metrics
         /// <returns>
         /// This instance to allow chaining of the configuration.
         /// </returns>
-        public OwinMetricsConfig RegisterAllMetrics(string metricsPrexix = "Owin")
+        public OwinMetricsConfig RegisterAllMetrics(string metricsPrefix = "Owin")
         {
-            this.MetricsPrefix = metricsPrexix;
+            this.MetricsPrefix = metricsPrefix;
             RegisterRequestTimer();
             RegisterActiveRequestCounter();
             RegisterPostAndPutRequestSizeHistogram();

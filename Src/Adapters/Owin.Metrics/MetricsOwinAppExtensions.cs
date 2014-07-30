@@ -10,14 +10,10 @@ namespace Owin.Metrics
 {
     public static class MetricsOwinAppExtensions
     {
-        public static IAppBuilder UseMetrics(this IAppBuilder app, Action<MetricsConfig> metricsConfigCallback,
+        public static IAppBuilder UseMetrics(this IAppBuilder app, MetricsConfig config,
             Action<OwinMetricsConfig> owinMetricsConfigCallback,
             Action<OwinMetricsEndpointConfig> owinMetricsEndpointConfigCallback = null)
         {
-            var config = Metric.Config;
-
-            metricsConfigCallback(config);
-
             var endpointConfig = new OwinMetricsEndpointConfig();
 
             if (owinMetricsEndpointConfigCallback != null)
