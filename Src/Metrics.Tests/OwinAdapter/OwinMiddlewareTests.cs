@@ -8,13 +8,13 @@ namespace Metrics.Tests.OwinAdapter
         private OwinMetricsTestData data;
 
         [Fact]
-        public void ShouldBeAbleToMonitorErrors()
+        public void ShouldBeAbleToRecordErrors()
         {
             this.data.MeterMetric.Value.Count.Should().Be(data.ExpectedResults.ErrorCount);
         }
 
         [Fact]
-        public void ShouldBeAbleToMonitorActiveRequestCounts()
+        public void ShouldBeAbleToRecordActiveRequestCounts()
         {
             this.data.CounterMetric.Value.Should().Be(data.ExpectedResults.RequestCount);
         }

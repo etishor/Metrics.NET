@@ -1,11 +1,11 @@
-using System.Net;
-using System.Net.Http;
 using FluentAssertions;
 using Metrics.Core;
 using Metrics.Tests.TestUtils;
 using Microsoft.Owin.Testing;
 using Owin;
 using Owin.Metrics;
+using System.Net;
+using System.Net.Http;
 
 namespace Metrics.Tests.OwinAdapter
 {
@@ -33,15 +33,16 @@ namespace Metrics.Tests.OwinAdapter
 
             var server = TestServer.Create(app =>
             {
-                var config = Metric.Config.WithRegistry(new TestRegistry
+                var config = Metric.Config;
+                var registery = new TestRegistry
                 {
                     TimerInstance = TimerMetric,
                     CounterInstance = CounterMetric,
                     HistogramInstance = HistogramMetric,
                     MeterInstance = MeterMetric
-                });
+                };
 
-                app.UseMetrics(config, owinMetricsConfig => owinMetricsConfig.RegisterAllMetrics());
+                app.UseMetrics(config, owinMetricsConfig => owinMetricsConfig.RegisterAllMetrics(), registry: registery);
 
                 app.Run(context =>
                 {
