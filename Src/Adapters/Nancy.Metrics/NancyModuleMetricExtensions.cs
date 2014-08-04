@@ -124,7 +124,8 @@ namespace Nancy.Metrics
                 throw new ArgumentException("pathPrefix must start with / ", pathPrefix);
             }
 
-            var path = (module.ModulePath + pathPrefix).ToUpper();
+            var modulePath = module.ModulePath == "/" ? string.Empty : module.ModulePath;
+            var path = (modulePath + pathPrefix).ToUpper();
 
             return d => (string.IsNullOrEmpty(methodName) || methodName.ToUpper() == "ANY" || d.Method.ToUpper() == methodName.ToUpper())
                 && d.Path.ToUpper().StartsWith(path);
