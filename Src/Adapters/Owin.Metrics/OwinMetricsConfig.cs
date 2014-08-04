@@ -6,7 +6,7 @@ namespace Owin.Metrics
     public class OwinMetricsConfig
     {
         private readonly MetricsRegistry metricsRegistry;
-        private IAppBuilder app;
+        private readonly IAppBuilder app;
 
         public OwinMetricsConfig(IAppBuilder app, MetricsRegistry metricsRegistry)
         {
@@ -36,6 +36,11 @@ namespace Owin.Metrics
             return this;
         }
 
+        /// <summary>
+        /// Registers a Timer metric named "Owin.Requests" that records how many requests per second are handled and also
+        /// keeps a histogram of the request duration.
+        /// </summary>
+        /// <param name="metricName">Name of the metric.</param>
         public OwinMetricsConfig RegisterRequestTimer(string metricName = "Requests")
         {
             var metricsMiddleware = new RequestTimerMiddleware(metricsRegistry, Name(metricName));
@@ -43,6 +48,10 @@ namespace Owin.Metrics
             return this;
         }
 
+        /// <summary>
+        /// Registers a Counter metric named "Owin.ActiveRequests" that shows the current number of active requests
+        /// </summary>
+        /// <param name="metricName">Name of the metric.</param>
         public OwinMetricsConfig RegisterActiveRequestCounter(string metricName = "ActiveRequests")
         {
             var metricsMiddleware = new ActiveRequestCounterMiddleware(metricsRegistry, Name(metricName));
@@ -50,6 +59,10 @@ namespace Owin.Metrics
             return this;
         }
 
+        /// <summary>
+        /// Register a Histogram metric named "Owin.PostAndPutRequestsSize" on the size of the POST and PUT requests
+        /// </summary>
+        /// <param name="metricName">Name of the metric.</param>
         public OwinMetricsConfig RegisterPostAndPutRequestSizeHistogram(string metricName = "PostAndPutRequestsSize")
         {
             var metricsMiddleware = new PostAndPutRequestSizeHistogramMiddleware(metricsRegistry, Name(metricName));
@@ -57,6 +70,11 @@ namespace Owin.Metrics
             return this;
         }
 
+        /// <summary>
+        /// Registers a timer for each request.
+        /// Timer is created based on route and will be named:
+        /// Owin.{HTTP_METHOD_NAME} [{ROUTE_PATH}]
+        /// </summary>
         public OwinMetricsConfig RegisterTimerForEachRequest(string metricPrefix = "Owin")
         {
             var metricsMiddleware = new TimerForEachRequestMiddleware(metricsRegistry, metricPrefix);
@@ -64,6 +82,11 @@ namespace Owin.Metrics
             return this;
         }
 
+        /// <summary>
+        /// Registers a Meter metric named "Owin.Errors" that records the rate at witch unhanded errors occurred while 
+        /// processing Nancy requests.
+        /// </summary>
+        /// <param name="metricName">Name of the metric.</param>
         public OwinMetricsConfig RegisterErrorsMeter(string metricName = "Errors")
         {
             var metricsMiddleware = new ErrorMeterMiddleware(metricsRegistry, Name(metricName));
