@@ -23,13 +23,19 @@ namespace Nancy.Metrics
                 this.ModulePath = metricsPath;
             }
         }
+
         private static ModuleConfig Config;
+        private static bool healthChecksAlwaysReturnHttpStatusOk = false;
 
         public static void Configure(MetricsRegistry registry, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
         {
             MetricsModule.Config = new ModuleConfig(registry, healthStatus, moduleConfig, metricsPath);
         }
 
+        public static void ConfigureHealthChecks(bool alwaysReturnOk)
+        {
+            healthChecksAlwaysReturnHttpStatusOk = alwaysReturnOk;
+        }
 
         public MetricsModule()
             : base(Config.ModulePath ?? "/")
@@ -67,7 +73,14 @@ namespace Nancy.Metrics
             var content = HealthCheckSerializer.Serialize(status);
 
             var response = Response.AsText(content, "application/json");
-            response.StatusCode = status.IsHealty ? HttpStatusCode.OK : HttpStatusCode.InternalServerError;
+            if (!healthChecksAlwaysReturnHttpStatusOk)
+            {
+                response.StatusCode = status.IsHealty ? HttpStatusCode.OK : HttpStatusCode.InternalServerError;
+            }
+            else
+            {
+                response.StatusCode = HttpStatusCode.OK;
+            }
             return response;
         }
 
@@ -77,5 +90,6 @@ namespace Nancy.Metrics
             report.RunReport(Config.Registry, Config.HealthStatus);
             return report.Result;
         }
+
     }
 }
