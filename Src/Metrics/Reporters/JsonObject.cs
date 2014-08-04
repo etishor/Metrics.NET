@@ -99,17 +99,12 @@ namespace Metrics.Reporters
 
         public override string AsJson(bool indented = true, int indent = 0)
         {
-            return this.Value.ToString("D");
+            return this.Value.ToString("D", CultureInfo.InvariantCulture);
         }
     }
 
     public class DoubleJsonValue : JsonValue
     {
-        private static NumberFormatInfo jsonNumbers = new NumberFormatInfo()
-        {
-            NumberDecimalSeparator = "."
-        };
-
         public DoubleJsonValue(double value)
         {
             this.Value = value;
@@ -119,7 +114,7 @@ namespace Metrics.Reporters
 
         public override string AsJson(bool indented = true, int indent = 0)
         {
-            return this.Value.ToString("F", jsonNumbers);
+            return this.Value.ToString("F", CultureInfo.InvariantCulture);
         }
     }
 
