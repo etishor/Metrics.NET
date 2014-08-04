@@ -84,6 +84,7 @@
     <Compile Include="Middleware\ActiveRequestCounterMiddleware.cs" />
     <Compile Include="Middleware\ErrorMeterMiddleware.cs" />
     <Compile Include="Middleware\RequestTimerMiddleware.cs" />
+    <Compile Include="OwinMetricsEndpointConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OwinMetricsConfig.cs" />
   </ItemGroup>
