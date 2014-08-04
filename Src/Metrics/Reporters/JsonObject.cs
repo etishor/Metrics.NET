@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Metrics.Reporters
@@ -104,6 +105,11 @@ namespace Metrics.Reporters
 
     public class DoubleJsonValue : JsonValue
     {
+        private static NumberFormatInfo jsonNumbers = new NumberFormatInfo()
+        {
+            NumberDecimalSeparator = "."
+        };
+
         public DoubleJsonValue(double value)
         {
             this.Value = value;
@@ -113,7 +119,7 @@ namespace Metrics.Reporters
 
         public override string AsJson(bool indented = true, int indent = 0)
         {
-            return this.Value.ToString("F");
+            return this.Value.ToString("F", jsonNumbers);
         }
     }
 
