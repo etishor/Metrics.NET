@@ -9,6 +9,10 @@ namespace Metrics.SamplesConsole
         {
             //Metric.Config.CompletelyDisableMetrics();
 
+            MultiRegistryMetrics multi = new MultiRegistryMetrics();
+            multi.Run();
+            multi.Report();
+
             Metric.Config
                 .WithHttpEndpoint("http://localhost:1234/")
                 .WithErrorHandler(x => Console.WriteLine(x.ToString()))
