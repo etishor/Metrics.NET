@@ -1,4 +1,5 @@
 ﻿using Metrics;
+using Metrics.Core;
 using Metrics.Reporters;
 using Metrics.Visualization;
 using Microsoft.Owin;
@@ -10,14 +11,11 @@ namespace Owin.Metrics
 {
     public static class MetricsOwinAppExtensions
     {
-        public static IAppBuilder UseMetrics(this IAppBuilder app, Action<MetricsConfig> metricsConfigCallback,
+        public static IAppBuilder UseMetrics(this IAppBuilder app, MetricsConfig config,
             Action<OwinMetricsConfig> owinMetricsConfigCallback,
-            Action<OwinMetricsEndpointConfig> owinMetricsEndpointConfigCallback = null)
+            Action<OwinMetricsEndpointConfig> owinMetricsEndpointConfigCallback = null,
+            MetricsRegistry registry = null)
         {
-            var config = Metric.Config;
-
-            metricsConfigCallback(config);
-
             var endpointConfig = new OwinMetricsEndpointConfig();
 
             if (owinMetricsEndpointConfigCallback != null)
@@ -53,7 +51,9 @@ namespace Owin.Metrics
                 return next();
             });
 
-            owinMetricsConfigCallback(new OwinMetricsConfig(app, config.Registry));
+            var metricsRegistery = registry ?? config.Registry;
+
+            owinMetricsConfigCallback(new OwinMetricsConfig(app, metricsRegistery));
 
             return app;
         }
