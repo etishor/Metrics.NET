@@ -5,6 +5,9 @@ namespace Metrics.Core
 {
     public sealed class LocalRegistry : BaseRegistry
     {
+        public LocalRegistry(string registryName)
+            : base(registryName) { }
+
         public LocalRegistry()
             : base(Process.GetCurrentProcess().ProcessName) { }
 

@@ -48,7 +48,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>  
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HealthChecksSample.cs" />
+    <Compile Include="MultiRegistryMetrics.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleMetrics.cs" />
   </ItemGroup>
