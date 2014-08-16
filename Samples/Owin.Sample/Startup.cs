@@ -27,11 +27,7 @@ namespace Owin.Sample
                     .WithRequestMetricsConfig(c => c.RegisterAllMetrics())
                     .WithMetricsEndpoint()
                 );
-
-            //app.UseMetrics(Metric.Config.WithAllCounters()
-            //    .WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30))),
-            //    owinMetrics => owinMetrics.RegisterAllMetrics());
-
+            
             var httpConfig = new HttpConfiguration();
             httpConfig.MapHttpAttributeRoutes();
             app.UseWebApi(httpConfig);
