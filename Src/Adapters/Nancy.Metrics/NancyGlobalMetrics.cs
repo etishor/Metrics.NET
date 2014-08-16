@@ -146,7 +146,8 @@ namespace Nancy.Metrics
                     string name = string.Format("{0}.{1} [{2}]", this.MetricsPrefix, ctx.ResolvedRoute.Description.Method, ctx.ResolvedRoute.Description.Path);
                     var startTime = (long)ctx.Items["RequestStartTimeKey"];
                     var elapsed = Clock.Default.Nanoseconds - startTime;
-                    Metric.Timer(name, Unit.Requests).Record(elapsed, TimeUnit.Nanoseconds);
+                    this.registry.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds)
+                        .Record(elapsed, TimeUnit.Nanoseconds);
                 }
             });
         }

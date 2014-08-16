@@ -1,11 +1,11 @@
+using System.Net;
+using System.Net.Http;
 using FluentAssertions;
 using Metrics.Core;
 using Metrics.Tests.TestUtils;
 using Microsoft.Owin.Testing;
 using Owin;
 using Owin.Metrics;
-using System.Net;
-using System.Net.Http;
 
 namespace Metrics.Tests.OwinAdapter
 {
@@ -33,7 +33,6 @@ namespace Metrics.Tests.OwinAdapter
 
             var server = TestServer.Create(app =>
             {
-                var config = Metric.Config;
                 var registery = new TestRegistry
                 {
                     TimerInstance = TimerMetric,
@@ -42,7 +41,8 @@ namespace Metrics.Tests.OwinAdapter
                     MeterInstance = MeterMetric
                 };
 
-                app.UseMetrics(config, owinMetricsConfig => owinMetricsConfig.RegisterAllMetrics(), registry: registery);
+                OwinMetricsConfig owin = new OwinMetricsConfig(middleware => app.Use(middleware), registery, Metric.Config.HealthStatus);
+                owin.WithRequestMetricsConfig(c => c.RegisterAllMetrics());
 
                 app.Run(context =>
                 {
@@ -76,14 +76,14 @@ namespace Metrics.Tests.OwinAdapter
 
             ExpectedResults = new OwinExpectedMetrics(timePerRequest, 6, 1);
 
-            server.HttpClient.GetAsync("/test/error").Result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-            server.HttpClient.GetAsync("/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
-            server.HttpClient.GetAsync("/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
-            server.HttpClient.GetAsync("/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
-            server.HttpClient.GetAsync("/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            server.HttpClient.GetAsync("http://local.test/test/error").Result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            server.HttpClient.GetAsync("http://local.test/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            server.HttpClient.GetAsync("http://local.test/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            server.HttpClient.GetAsync("http://local.test/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            server.HttpClient.GetAsync("http://local.test/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
             var postContent = new StringContent(json);
             postContent.Headers.Add("Content-Length", json.Length.ToString());
-            server.HttpClient.PostAsync("/test/post", postContent);
+            server.HttpClient.PostAsync("http://local.test/test/post", postContent);
         }
     }
 }

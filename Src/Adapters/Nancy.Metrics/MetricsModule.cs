@@ -50,6 +50,12 @@ namespace Nancy.Metrics
                 Config.ModuleConfigAction(this);
             }
 
+            var noCacheHeaders = new[] { 
+                new { Header = "Cache-Control", Value = "no-cache, no-store, must-revalidate" },
+                new { Header = "Pragma", Value = "no-cache" },
+                new { Header = "Expires", Value = "0" }
+            };
+
             Get["/"] = _ =>
             {
                 if (this.Request.Url.Path.EndsWith("/"))
@@ -61,13 +67,14 @@ namespace Nancy.Metrics
                     return Response.AsRedirect(this.Request.Url.ToString() + "/");
                 }
             };
-            Get["/text"] = _ => Response.AsText(GetAsHumanReadable());
-            Get["/json"] = _ => Response.AsText(RegistrySerializer.GetAsJson(Config.Registry), "text/json");
-            Get["/ping"] = _ => Response.AsText("pong", "text/plain");
-            Get["/health"] = _ => GetHealthStatus();
+
+            Get["/text"] = _ => Response.AsText(GetAsHumanReadable()).WithHeaders(noCacheHeaders);
+            Get["/json"] = _ => Response.AsText(RegistrySerializer.GetAsJson(Config.Registry), "text/json").WithHeaders(noCacheHeaders);
+            Get["/ping"] = _ => Response.AsText("pong", "text/plain").WithHeaders(noCacheHeaders);
+            Get["/health"] = _ => GetHealthStatus().WithHeaders(noCacheHeaders);
         }
 
-        private dynamic GetHealthStatus()
+        private Response GetHealthStatus()
         {
             var status = Config.HealthStatus();
             var content = HealthCheckSerializer.Serialize(status);

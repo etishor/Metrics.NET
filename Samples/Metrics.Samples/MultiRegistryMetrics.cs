@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Metrics.Core;
 using Metrics.Reporters;
 
@@ -31,7 +32,11 @@ namespace Metrics.Samples
 
             var countersFromFirst = this.first.Counters.Select(c => new { Name = c.Name, Value = c.Value })
                 .ToArray();
-        }
 
+            Console.WriteLine(jsonFirst);
+            Console.WriteLine(jsonSecond);
+
+            Console.WriteLine(countersFromFirst.Length);
+        }
     }
 }
