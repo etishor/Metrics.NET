@@ -86,5 +86,15 @@ namespace Nancy.Metrics
             MetricsModule.Configure(this.metricsRegistry, this.healthStatus, moduleConfig, metricsPath);
             return this;
         }
+
+        /// <summary>
+        /// Make the Health Checks endpoint return HTTP Status 200 even if checks fail.
+        /// </summary>
+        /// <returns>This instance to allow chaining of the configuration.</returns>
+        public NancyMetricsConfig WithHealthChecksThatAlwaysReturnHttpStatusOk()
+        {
+            MetricsModule.ConfigureHealthChecks(alwaysReturnOk: true);
+            return this;
+        }
     }
 }

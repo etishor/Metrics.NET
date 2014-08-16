@@ -15,7 +15,7 @@ namespace Owin.Metrics.Middleware
 
         private readonly MetricsRegistry registry;
         private readonly string metricPrefix;
-        
+
         private AppFunc next;
 
         public TimerForEachRequestMiddleware(MetricsRegistry registry, string metricPrefix)
@@ -44,7 +44,7 @@ namespace Owin.Metrics.Middleware
                 var name = string.Format("{0}.{1} [{2}]", metricPrefix, httpMethod, httpRequestPath);
                 var startTime = (long)environment[RequestStartTimeKey];
                 var elapsed = Clock.Default.Nanoseconds - startTime;
-                Metric.Timer(name, Unit.Requests).Record(elapsed, TimeUnit.Nanoseconds);
+                this.registry.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds).Record(elapsed, TimeUnit.Nanoseconds);
             }
         }
     }

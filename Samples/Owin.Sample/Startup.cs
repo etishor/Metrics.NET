@@ -20,9 +20,14 @@ namespace Owin.Sample
 
             app.UseCors(CorsOptions.AllowAll);
 
-            app.UseMetrics(metrics => metrics.WithAllCounters().WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30))),
-                owinMetrics => owinMetrics.RegisterAllMetrics());
-
+            Metric.Config
+                .WithAllCounters()
+                .WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30)))
+                .WithOwin(middleware => app.Use(middleware), config => config
+                    .WithRequestMetricsConfig(c => c.RegisterAllMetrics())
+                    .WithMetricsEndpoint()
+                );
+            
             var httpConfig = new HttpConfiguration();
             httpConfig.MapHttpAttributeRoutes();
             app.UseWebApi(httpConfig);

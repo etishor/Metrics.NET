@@ -23,13 +23,19 @@ namespace Nancy.Metrics
                 this.ModulePath = metricsPath;
             }
         }
+
         private static ModuleConfig Config;
+        private static bool healthChecksAlwaysReturnHttpStatusOk = false;
 
         public static void Configure(MetricsRegistry registry, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
         {
             MetricsModule.Config = new ModuleConfig(registry, healthStatus, moduleConfig, metricsPath);
         }
 
+        public static void ConfigureHealthChecks(bool alwaysReturnOk)
+        {
+            healthChecksAlwaysReturnHttpStatusOk = alwaysReturnOk;
+        }
 
         public MetricsModule()
             : base(Config.ModulePath ?? "/")
@@ -44,6 +50,12 @@ namespace Nancy.Metrics
                 Config.ModuleConfigAction(this);
             }
 
+            var noCacheHeaders = new[] { 
+                new { Header = "Cache-Control", Value = "no-cache, no-store, must-revalidate" },
+                new { Header = "Pragma", Value = "no-cache" },
+                new { Header = "Expires", Value = "0" }
+            };
+
             Get["/"] = _ =>
             {
                 if (this.Request.Url.Path.EndsWith("/"))
@@ -55,19 +67,27 @@ namespace Nancy.Metrics
                     return Response.AsRedirect(this.Request.Url.ToString() + "/");
                 }
             };
-            Get["/text"] = _ => Response.AsText(GetAsHumanReadable());
-            Get["/json"] = _ => Response.AsText(RegistrySerializer.GetAsJson(Config.Registry), "text/json");
-            Get["/ping"] = _ => Response.AsText("pong", "text/plain");
-            Get["/health"] = _ => GetHealthStatus();
+
+            Get["/text"] = _ => Response.AsText(GetAsHumanReadable()).WithHeaders(noCacheHeaders);
+            Get["/json"] = _ => Response.AsText(RegistrySerializer.GetAsJson(Config.Registry), "text/json").WithHeaders(noCacheHeaders);
+            Get["/ping"] = _ => Response.AsText("pong", "text/plain").WithHeaders(noCacheHeaders);
+            Get["/health"] = _ => GetHealthStatus().WithHeaders(noCacheHeaders);
         }
 
-        private dynamic GetHealthStatus()
+        private Response GetHealthStatus()
         {
             var status = Config.HealthStatus();
             var content = HealthCheckSerializer.Serialize(status);
 
             var response = Response.AsText(content, "application/json");
-            response.StatusCode = status.IsHealty ? HttpStatusCode.OK : HttpStatusCode.InternalServerError;
+            if (!healthChecksAlwaysReturnHttpStatusOk)
+            {
+                response.StatusCode = status.IsHealty ? HttpStatusCode.OK : HttpStatusCode.InternalServerError;
+            }
+            else
+            {
+                response.StatusCode = HttpStatusCode.OK;
+            }
             return response;
         }
 
@@ -77,5 +97,6 @@ namespace Nancy.Metrics
             report.RunReport(Config.Registry, Config.HealthStatus);
             return report.Result;
         }
+
     }
 }

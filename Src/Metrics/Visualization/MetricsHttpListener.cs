@@ -81,6 +81,13 @@ namespace Metrics.Visualization
             }
         }
 
+        private static void AddNoCacheHeaders(HttpListenerResponse response)
+        {
+            response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.Headers.Add("Pragma", "no-cache");
+            response.Headers.Add("Expires", "0");
+        }
+
         private static void WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
         {
             var status = healthStatus();
@@ -88,6 +95,9 @@ namespace Metrics.Visualization
 
             context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
             context.Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
+            AddNoCacheHeaders(context.Response);
+
             context.Response.ContentType = "application/json";
 
             context.Response.StatusCode = status.IsHealty ? 200 : 500;
@@ -105,6 +115,9 @@ namespace Metrics.Visualization
             context.Response.ContentType = "text/plain";
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
+
+            AddNoCacheHeaders(context.Response);
+
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
                 writer.Write("pong");
@@ -129,6 +142,9 @@ namespace Metrics.Visualization
             context.Response.ContentType = "text/plain";
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
+
+            AddNoCacheHeaders(context.Response);
+
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
                 writer.Write(RegistrySerializer.GetAsHumanReadable(registry, healthStatus));
@@ -143,6 +159,9 @@ namespace Metrics.Visualization
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
+
+            AddNoCacheHeaders(context.Response);
+
             var json = RegistrySerializer.GetAsJson(registry);
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
