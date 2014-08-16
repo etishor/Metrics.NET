@@ -1,5 +1,8 @@
 language: objective-c
 
+branches:
+  except:
+    - net40
 env:
  global:
   - EnableNuGetPackageRestore=true
