@@ -76,14 +76,14 @@ namespace Metrics.Tests.OwinAdapter
 
             ExpectedResults = new OwinExpectedMetrics(timePerRequest, 6, 1);
 
-            server.HttpClient.GetAsync("/test/error").Result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
-            server.HttpClient.GetAsync("/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
-            server.HttpClient.GetAsync("/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
-            server.HttpClient.GetAsync("/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
-            server.HttpClient.GetAsync("/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            server.HttpClient.GetAsync("http://local.test/test/error").Result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            server.HttpClient.GetAsync("http://local.test/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            server.HttpClient.GetAsync("http://local.test/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            server.HttpClient.GetAsync("http://local.test/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            server.HttpClient.GetAsync("http://local.test/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
             var postContent = new StringContent(json);
             postContent.Headers.Add("Content-Length", json.Length.ToString());
-            server.HttpClient.PostAsync("/test/post", postContent);
+            server.HttpClient.PostAsync("http://local.test/test/post", postContent);
         }
     }
 }
