@@ -1,43 +1,28 @@
-﻿using System;
+﻿
+using System;
 using Metrics.Core;
 using Metrics.PerfCounters;
-
 namespace Metrics
 {
-    /// <summary>
-    /// Helper class to ease interaction with metrics
-    /// </summary>
-    public static class Metric
+    public class MetricContext : IDisposable
     {
-        private static readonly MultiContextRegistry registry = new MultiContextRegistry();
+        private readonly MetricsConfig config;
 
-        public static MetricContext Context(string contextName)
+        public MetricContext(string context)
+            : this(new LocalRegistry(context))
+        { }
+
+        public MetricContext(MetricsRegistry registry)
         {
-            return registry.Context(contextName);
+            this.config = new MetricsConfig().WithRegistry(registry);
         }
 
-        public static void ShutdownContext(string contextName)
-        {
-            registry.Shutdown(contextName);
-        }
+        public MetricsRegistry Registry { get { return config.Registry; } }
 
-        /// <summary>
-        /// Entrypoint for Metrics Configuration.
-        /// </summary>
-        /// <example>
-        /// <code>
-        /// Metric.Config
-        ///     .WithHttpEndpoint("http://localhost:1234/")
-        ///     .WithErrorHandler(x => Console.WriteLine(x.ToString()))
-        ///     .WithPerformanceCounters(c => c.RegisterAll())
-        ///     .WithReporting(config => config
-        ///         .WithConsoleReport(TimeSpan.FromSeconds(30))
-        ///         .WithCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(10))
-        ///         .WithTextFileReport(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(10))
-        ///     );
-        /// </code>
-        /// </example>
-        public static MetricsConfig Config { get { return registry.Config; } }
+        public void Dispose()
+        {
+            this.config.Dispose();
+        }
 
         /// <summary>
         /// Register a performance counter as a Gauge metric.
@@ -48,9 +33,9 @@ namespace Metrics
         /// <param name="counterInstance">Instance of the performance counter</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the gauge</returns>
-        public static Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
+        public Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
         {
-            return Config.Registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance), unit);
+            return config.Registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance), unit);
         }
 
         /// <summary>
@@ -63,9 +48,9 @@ namespace Metrics
         /// <param name="valueProvider">Function that returns the value for the gauge.</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the gauge</returns>
-        public static Gauge Gauge<T>(string name, Func<double> valueProvider, Unit unit)
+        public Gauge Gauge<T>(string name, Func<double> valueProvider, Unit unit)
         {
-            return Config.Registry.Gauge(Name<T>(name), valueProvider, unit);
+            return config.Registry.Gauge(Name<T>(name), valueProvider, unit);
         }
 
         /// <summary>
@@ -75,9 +60,9 @@ namespace Metrics
         /// <param name="valueProvider">Function that returns the value for the gauge.</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the gauge</returns>
-        public static Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
+        public Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
         {
-            return Config.Registry.Gauge(name, valueProvider, unit);
+            return config.Registry.Gauge(name, valueProvider, unit);
         }
 
         /// <summary>
@@ -96,7 +81,7 @@ namespace Metrics
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <returns>Reference to the metric</returns>
-        public static Meter Meter<T>(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)
+        public Meter Meter<T>(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)
         {
             return Meter(Name<T>(name), unit, rateUnit);
         }
@@ -115,9 +100,9 @@ namespace Metrics
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <returns>Reference to the metric</returns>
-        public static Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)
+        public Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)
         {
-            return Config.Registry.Meter(name, unit, rateUnit);
+            return config.Registry.Meter(name, unit, rateUnit);
         }
 
         /// <summary>
@@ -128,7 +113,7 @@ namespace Metrics
         /// <param name="name">Name of the metric. Must be unique across all counters.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the metric</returns>
-        public static Counter Counter<T>(string name, Unit unit)
+        public Counter Counter<T>(string name, Unit unit)
         {
             return Counter(Name<T>(name), unit);
         }
@@ -139,9 +124,9 @@ namespace Metrics
         /// <param name="name">Name of the metric. Must be unique across all counters.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the metric</returns>
-        public static Counter Counter(string name, Unit unit)
+        public Counter Counter(string name, Unit unit)
         {
-            return Config.Registry.Counter(name, unit);
+            return config.Registry.Counter(name, unit);
         }
 
         /// <summary>
@@ -153,7 +138,7 @@ namespace Metrics
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <returns>Reference to the metric</returns>
-        public static Histogram Histogram<T>(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
+        public Histogram Histogram<T>(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
         {
             return Histogram(Name<T>(name), unit, samplingType);
         }
@@ -165,9 +150,9 @@ namespace Metrics
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <returns>Reference to the metric</returns>
-        public static Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
+        public Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
         {
-            return Config.Registry.Histogram(name, unit, samplingType);
+            return config.Registry.Histogram(name, unit, samplingType);
         }
 
         /// <summary>
@@ -182,7 +167,7 @@ namespace Metrics
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <param name="durationUnit">Time unit for reporting durations. Defaults to Milliseconds. </param>
         /// <returns>Reference to the metric</returns>
-        public static Timer Timer<T>(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
+        public Timer Timer<T>(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
              TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
         {
             return Timer(Name<T>(name), unit, samplingType, rateUnit, durationUnit);
@@ -198,13 +183,13 @@ namespace Metrics
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <param name="durationUnit">Time unit for reporting durations. Defaults to Milliseconds. </param>
         /// <returns>Reference to the metric</returns>
-        public static Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
+        public Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
             TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
         {
-            return Config.Registry.Timer(name, unit, samplingType, rateUnit, durationUnit);
+            return config.Registry.Timer(name, unit, samplingType, rateUnit, durationUnit);
         }
 
-        private static string Name<T>(string name)
+        private string Name<T>(string name)
         {
             return string.Concat(typeof(T).Name, ".", name);
         }

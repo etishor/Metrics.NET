@@ -140,6 +140,17 @@ namespace Metrics
 
         public void Dispose()
         {
+            if (this.registry.IsValueCreated)
+            {
+                this.registry.Value.ClearAllMetrics();
+            }
+
+            if (this.reports.IsValueCreated)
+            {
+                this.reports.Value.StopAndClearAllReports();
+                this.reports.Value.Dispose();
+            }
+
             using (this.listener) { }
             this.listener = null;
         }

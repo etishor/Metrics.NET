@@ -71,6 +71,7 @@
     <Compile Include="Core\BaseRegistry.cs" />
     <Compile Include="Core\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Core\HealthCheck.cs" />
+    <Compile Include="Core\MultiContextRegistry.cs" />
     <Compile Include="Core\NullMetricsRegistry.cs" />
     <Compile Include="HealthCheckResult.cs" />
     <Compile Include="Counter.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="Meter.cs" />
     <Compile Include="Core\MetricsRegistry.cs" />
     <Compile Include="Core\LocalRegistry.cs" />
+    <Compile Include="MetricContext.cs" />
     <Compile Include="MetricsConfig.cs" />
     <Compile Include="Reporters\CSVAppender.cs" />
     <Compile Include="Reporters\MetricsReports.cs" />
