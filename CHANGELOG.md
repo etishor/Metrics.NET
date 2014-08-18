@@ -1,3 +1,8 @@
+###0.1.11 / 2014-08-18
+* update to latest visualization app (fixes checkboxes being outside dropdown)
+* fix json caching in IE
+* allow defining custom names for metric registry
+
 ###0.1.10 / 2014-07-30
 * fix json formating (thanks to Evgeniy Kucheruk @kpoxa)
 
