@@ -4,7 +4,7 @@ namespace Metrics
     /// <summary>
     /// A counter is a simple incrementing and decrementing 64-bit integer.
     /// </summary>
-    public interface Counter : Utils.IHideObjectMembers 
+    public interface Counter : Utils.IHideObjectMembers
     {
         void Increment();
         void Increment(long value);
@@ -18,8 +18,8 @@ namespace Metrics
     /// </summary>
     public sealed class CounterValueSource : MetricValueSource<long>
     {
-        public CounterValueSource(string name, MetricValueProvider<long> value, Unit unit)
-            : base(name, value, unit)
+        public CounterValueSource(string context, string name, MetricValueProvider<long> value, Unit unit)
+            : base(context, name, value, unit)
         { }
     }
 }
