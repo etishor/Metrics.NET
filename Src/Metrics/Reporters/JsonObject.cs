@@ -27,6 +27,10 @@ namespace Metrics.Reporters
 
     public class JsonProperty
     {
+        public JsonProperty(string name, IEnumerable<JsonObject> objects)
+            : this(name, new CollectionJsonValue(objects))
+        { }
+
         public JsonProperty(string name, IEnumerable<JsonProperty> properties)
             : this(name, new ObjectJsonValue(properties))
         { }
@@ -144,11 +148,26 @@ namespace Metrics.Reporters
             this.Value = value;
         }
 
-        public JsonObject Value { get; set; }
+        public JsonObject Value { get; private set; }
 
         public override string AsJson(bool indented = true, int indent = 0)
         {
             return this.Value.AsJson(indented, indent);
+        }
+    }
+
+    public class CollectionJsonValue : JsonValue
+    {
+        public CollectionJsonValue(IEnumerable<JsonObject> elements)
+        {
+            this.Elements = elements;
+        }
+
+        public IEnumerable<JsonObject> Elements { get; private set; }
+
+        public override string AsJson(bool indented = true, int indent = 0)
+        {
+            return "[" + string.Join(",", this.Elements.Select(e => e.AsJson(indented, indent))) + "]";
         }
     }
 }
