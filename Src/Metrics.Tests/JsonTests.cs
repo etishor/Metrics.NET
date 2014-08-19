@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Threading;
 using FluentAssertions;
-using Metrics.Reporters;
+using Metrics.Json;
 using Xunit;
 
 namespace Metrics.Tests

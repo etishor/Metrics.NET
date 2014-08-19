@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Metrics.Core;
+using Metrics.Json;
 using Metrics.Utils;
 
 namespace Metrics.Reporters

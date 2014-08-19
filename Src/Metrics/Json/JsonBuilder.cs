@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Linq;
 using Metrics.Utils;
 
-namespace Metrics.Reporters
+namespace Metrics.Json
 {
-    public class JsonBuilder
+    public sealed class JsonBuilder
     {
         private readonly List<JsonProperty> root = new List<JsonProperty>();
 

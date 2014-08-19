@@ -1,4 +1,5 @@
 ﻿
+using Metrics.Json;
 namespace Metrics.Reporters
 {
     public static class HealthCheckSerializer

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using Metrics.Utils;
 
-namespace Metrics.Reporters
+namespace Metrics.Json
 {
     public class JsonFormatter
     {
