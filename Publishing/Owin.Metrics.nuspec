@@ -4,7 +4,7 @@
 		<id>Owin.Metrics</id>
 		<version>0.1.0-alpha</version>
 		<title>Owin.Metrics</title>
-		<authors>allan hardy</authors>
+		<authors>al_hardy</authors>
 		<owners>Iulian Margarintescu</owners>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>The library provides support for integrating Owin with the Metrics.NET Library</description>
