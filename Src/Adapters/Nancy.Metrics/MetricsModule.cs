@@ -1,6 +1,7 @@
 ﻿using System;
 using Metrics;
 using Metrics.Core;
+using Metrics.Json;
 using Metrics.Reporters;
 using Metrics.Visualization;
 
@@ -69,7 +70,8 @@ namespace Nancy.Metrics
             };
 
             Get["/text"] = _ => Response.AsText(GetAsHumanReadable()).WithHeaders(noCacheHeaders);
-            Get["/json"] = _ => Response.AsText(RegistrySerializer.GetAsJson(Config.Registry), "text/json").WithHeaders(noCacheHeaders);
+            Get["/jsonold"] = _ => Response.AsText(RegistrySerializer.GetAsJson(Config.Registry), "text/json").WithHeaders(noCacheHeaders);
+            Get["/json"] = _ => Response.AsText(JsonMetrics.Serialize(Config.Registry), "text/json").WithHeaders(noCacheHeaders);
             Get["/ping"] = _ => Response.AsText("pong", "text/plain").WithHeaders(noCacheHeaders);
             Get["/health"] = _ => GetHealthStatus().WithHeaders(noCacheHeaders);
         }

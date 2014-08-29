@@ -76,5 +76,13 @@ namespace Metrics.Core
 
         public void ClearAllMetrics()
         { }
+
+        public MetricsData MetricsData
+        {
+            get
+            {
+                return MetricsData.Empty;
+            }
+        }
     }
 }

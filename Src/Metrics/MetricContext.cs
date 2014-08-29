@@ -1,23 +1,62 @@
 ﻿
 using System;
+using System.Collections.Concurrent;
+using System.Linq;
 using Metrics.Core;
 using Metrics.PerfCounters;
 namespace Metrics
 {
-    public class MetricContext : IDisposable
+    public sealed class MetricContext : IDisposable
     {
+        private readonly ConcurrentDictionary<string, MetricContext> childContexts = new ConcurrentDictionary<string, MetricContext>();
+
+        private readonly string context;
+        private readonly MetricsRegistry registry;
         private readonly MetricsConfig config;
 
+        public MetricContext()
+            : this(string.Empty) { }
+
         public MetricContext(string context)
-            : this(new LocalRegistry(context))
+            : this(context, new LocalRegistry(context))
         { }
 
-        public MetricContext(MetricsRegistry registry)
+        public MetricContext(string context, MetricsRegistry registry)
         {
-            this.config = new MetricsConfig().WithRegistry(registry);
+            this.context = context;
+            this.registry = registry;
+            this.config = new MetricsConfig(this);
         }
 
-        public MetricsRegistry Registry { get { return config.Registry; } }
+        public MetricContext Context(string contextName)
+        {
+            return this.childContexts.GetOrAdd(contextName, c => new MetricContext(contextName));
+        }
+
+        public void ShutdownContext(string contextName)
+        {
+            if (string.IsNullOrEmpty(contextName))
+            {
+                throw new ArgumentException("contextName must not be null or empty", contextName);
+            }
+
+            MetricContext context;
+            if (this.childContexts.TryRemove(contextName, out context))
+            {
+                using (context) { }
+            }
+        }
+
+        public MetricsData MetricsData
+        {
+            get
+            {
+                return new MetricsData(this.context, this.registry.MetricsData, this.childContexts.Values.Select(c => c.MetricsData));
+            }
+        }
+
+        public MetricsConfig Config { get { return this.config; } }
+        public MetricsRegistry Registry { get { return this.Registry; } }
 
         public void Dispose()
         {
@@ -35,7 +74,7 @@ namespace Metrics
         /// <returns>Reference to the gauge</returns>
         public Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
         {
-            return config.Registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance), unit);
+            return this.registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance), unit);
         }
 
         /// <summary>
@@ -50,7 +89,7 @@ namespace Metrics
         /// <returns>Reference to the gauge</returns>
         public Gauge Gauge<T>(string name, Func<double> valueProvider, Unit unit)
         {
-            return config.Registry.Gauge(Name<T>(name), valueProvider, unit);
+            return this.registry.Gauge(Name<T>(name), valueProvider, unit);
         }
 
         /// <summary>
@@ -62,7 +101,7 @@ namespace Metrics
         /// <returns>Reference to the gauge</returns>
         public Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
         {
-            return config.Registry.Gauge(name, valueProvider, unit);
+            return this.registry.Gauge(name, valueProvider, unit);
         }
 
         /// <summary>
@@ -102,7 +141,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)
         {
-            return config.Registry.Meter(name, unit, rateUnit);
+            return this.registry.Meter(name, unit, rateUnit);
         }
 
         /// <summary>
@@ -126,7 +165,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public Counter Counter(string name, Unit unit)
         {
-            return config.Registry.Counter(name, unit);
+            return this.registry.Counter(name, unit);
         }
 
         /// <summary>
@@ -152,7 +191,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
         {
-            return config.Registry.Histogram(name, unit, samplingType);
+            return this.registry.Histogram(name, unit, samplingType);
         }
 
         /// <summary>
@@ -186,7 +225,7 @@ namespace Metrics
         public Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
             TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
         {
-            return config.Registry.Timer(name, unit, samplingType, rateUnit, durationUnit);
+            return this.registry.Timer(name, unit, samplingType, rateUnit, durationUnit);
         }
 
         private string Name<T>(string name)

@@ -78,14 +78,17 @@
     <Compile Include="Gauge.cs" />
     <Compile Include="HealthChecks.cs" />
     <Compile Include="Histogram.cs" />
+    <Compile Include="Json\JsonMetrics.cs" />
     <Compile Include="Json\JsonProperty.cs" />
     <Compile Include="Json\JsonValue.cs" />
     <Compile Include="Meter.cs" />
     <Compile Include="Core\MetricsRegistry.cs" />
     <Compile Include="Core\LocalRegistry.cs" />
     <Compile Include="MetricContext.cs" />
+    <Compile Include="MetricFilter.cs" />
     <Compile Include="MetricsConfig.cs" />
     <Compile Include="Json\JsonBuilder.cs" />
+    <Compile Include="MetricsData.cs" />
     <Compile Include="Reporters\CSVAppender.cs" />
     <Compile Include="Reporters\MetricsReports.cs" />
     <Compile Include="MetricValueSource.cs" />

@@ -21,7 +21,7 @@ namespace Metrics
         /// </summary>
         public static MetricsConfig WithSystemCounters(this MetricsConfig config)
         {
-            PerformanceCounters.RegisterSystemCounters(config.Registry);
+            PerformanceCounters.RegisterSystemCounters(config.Context);
             return config;
         }
 
@@ -31,7 +31,7 @@ namespace Metrics
         /// </summary>
         public static MetricsConfig WithCLRGlobalCounters(this MetricsConfig config)
         {
-            PerformanceCounters.RegisterCLRGlobalCounters(config.Registry);
+            PerformanceCounters.RegisterCLRGlobalCounters(config.Context);
             return config;
         }
 
@@ -41,7 +41,7 @@ namespace Metrics
         /// </summary>
         public static MetricsConfig WithCLRAppCounters(this MetricsConfig config)
         {
-            PerformanceCounters.RegisterCLRAppCounters(config.Registry);
+            PerformanceCounters.RegisterCLRAppCounters(config.Context);
             return config;
         }
     }

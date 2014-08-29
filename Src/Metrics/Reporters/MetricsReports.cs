@@ -7,14 +7,14 @@ namespace Metrics.Reports
 {
     public sealed class MetricsReports : Utils.IHideObjectMembers, IDisposable
     {
-        private readonly MetricsRegistry metricsRegistry;
+        private readonly MetricsData metricsData;
         private readonly Func<HealthStatus> healthStatus;
 
         private readonly List<ScheduledReporter> reports = new List<ScheduledReporter>();
 
-        public MetricsReports(MetricsRegistry metricsRegistry, Func<HealthStatus> healthStatus)
+        public MetricsReports(MetricsData metricsData, Func<HealthStatus> healthStatus)
         {
-            this.metricsRegistry = metricsRegistry;
+            this.metricsData = metricsData;
             this.healthStatus = healthStatus;
         }
 
@@ -26,7 +26,7 @@ namespace Metrics.Reports
         /// <param name="interval">Interval at which to run the report.</param>
         public MetricsReports WithReporter(string reporterName, Func<Reporter> reporter, TimeSpan interval)
         {
-            var report = new ScheduledReporter(reporterName, reporter, this.metricsRegistry, this.healthStatus, interval);
+            var report = new ScheduledReporter(reporterName, reporter, this.metricsData, this.healthStatus, interval);
             report.Start();
             this.reports.Add(report);
             return this;

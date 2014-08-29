@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Metrics.Core;
+using Metrics.Json;
 using Metrics.Reporters;
 namespace Metrics.Visualization
 {
@@ -13,14 +14,14 @@ namespace Metrics.Visualization
         private const string NotFoundResponse = "<!doctype html><html><body>Resource not found</body></html>";
         private readonly HttpListener httpListener;
         private readonly CancellationTokenSource cts = new CancellationTokenSource();
-        private readonly MetricsRegistry registry;
+        private readonly MetricsData metricsData;
         private readonly Func<HealthStatus> healthStatus;
 
-        public MetricsHttpListener(string listenerUriPrefix, MetricsRegistry registry, Func<HealthStatus> healthStatus)
+        public MetricsHttpListener(string listenerUriPrefix, MetricsData metricsData, Func<HealthStatus> healthStatus)
         {
             this.httpListener = new HttpListener();
             this.httpListener.Prefixes.Add(listenerUriPrefix);
-            this.registry = registry;
+            this.metricsData = metricsData;
             this.healthStatus = healthStatus;
         }
 
@@ -64,10 +65,13 @@ namespace Metrics.Visualization
                     }
                     break;
                 case "/json":
-                    WriteJsonMetrics(context, this.registry);
+                    WriteJsonMetrics(context, this.metricsData);
+                    break;
+                case "/jsonfull":
+                    WriteFullJsonMetrics(context, this.metricsData);
                     break;
                 case "/text":
-                    WriteTextMetrics(context, this.registry, this.healthStatus);
+                    WriteTextMetrics(context, this.metricsData, this.healthStatus);
                     break;
                 case "/ping":
                     WritePong(context);
@@ -137,7 +141,7 @@ namespace Metrics.Visualization
             context.Response.Close();
         }
 
-        private static void WriteTextMetrics(HttpListenerContext context, MetricsRegistry registry, Func<HealthStatus> healthStatus)
+        private static void WriteTextMetrics(HttpListenerContext context, MetricsData metricsData, Func<HealthStatus> healthStatus)
         {
             context.Response.ContentType = "text/plain";
             context.Response.StatusCode = 200;
@@ -147,12 +151,12 @@ namespace Metrics.Visualization
 
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
-                writer.Write(RegistrySerializer.GetAsHumanReadable(registry, healthStatus));
+                writer.Write(RegistrySerializer.GetAsHumanReadable(metricsData, healthStatus));
             }
             context.Response.Close();
         }
 
-        private static void WriteJsonMetrics(HttpListenerContext context, MetricsRegistry registry)
+        private static void WriteJsonMetrics(HttpListenerContext context, MetricsData metricsData)
         {
             context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
             context.Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -162,13 +166,34 @@ namespace Metrics.Visualization
 
             AddNoCacheHeaders(context.Response);
 
-            var json = RegistrySerializer.GetAsJson(registry);
+            var json = RegistrySerializer.GetAsJson(metricsData);
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
                 writer.Write(json);
             }
             context.Response.Close();
         }
+
+        private void WriteFullJsonMetrics(HttpListenerContext context, MetricsData metricsData)
+        {
+            context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            context.Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = 200;
+            context.Response.StatusDescription = "OK";
+
+            AddNoCacheHeaders(context.Response);
+
+            var json = JsonMetrics.Serialize(metricsData);
+
+            using (var writer = new StreamWriter(context.Response.OutputStream))
+            {
+                writer.Write(json);
+            }
+
+            context.Response.Close();
+        }
+
 
         private static void WriteFlotApp(HttpListenerContext context)
         {

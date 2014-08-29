@@ -60,5 +60,10 @@ namespace Metrics.Tests.TestUtils
         public IEnumerable<TimerValueSource> Timers { get { yield break; } }
 
         public void ClearAllMetrics() { }
+
+        public MetricsData MetricsData
+        {
+            get { throw new NotImplementedException(); }
+        }
     }
 }

@@ -7,7 +7,7 @@ namespace Metrics.Tests
 {
     public class MetricsRegistryTests
     {
-        private static void AddMetrics(MetricsRegistry registry)
+        private static void AddMetrics(LocalRegistry registry)
         {
             var name = "Test";
             registry.Gauge(name, () => 0.0, Unit.Calls);

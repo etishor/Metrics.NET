@@ -11,16 +11,16 @@ namespace Metrics.Reporters
         private readonly TimeSpan interval;
 
         private readonly Func<Reporter> reporter;
-        private readonly MetricsRegistry registry;
+        private readonly MetricsData metricsData;
         private readonly Func<HealthStatus> healthStatus;
 
-        public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, Func<HealthStatus> healthStatus, TimeSpan interval)
-            : this(name, reporter, registry, healthStatus, interval, new ActionScheduler()) { }
+        public ScheduledReporter(string name, Func<Reporter> reporter, MetricsData metricsData, Func<HealthStatus> healthStatus, TimeSpan interval)
+            : this(name, reporter, metricsData, healthStatus, interval, new ActionScheduler()) { }
 
-        public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, Func<HealthStatus> healthStatus, TimeSpan interval, Scheduler scheduler)
+        public ScheduledReporter(string name, Func<Reporter> reporter, MetricsData metricsData, Func<HealthStatus> healthStatus, TimeSpan interval, Scheduler scheduler)
         {
             this.reporter = reporter;
-            this.registry = registry;
+            this.metricsData = metricsData;
             this.healthStatus = healthStatus;
             this.interval = interval;
             this.scheduler = scheduler;
@@ -28,7 +28,7 @@ namespace Metrics.Reporters
 
         private void RunReport(CancellationToken token)
         {
-            reporter().RunReport(this.registry, this.healthStatus, token);
+            reporter().RunReport(this.metricsData, this.healthStatus, token);
         }
 
         public void Start()

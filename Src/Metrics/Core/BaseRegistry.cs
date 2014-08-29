@@ -79,6 +79,14 @@ namespace Metrics.Core
         public IEnumerable<HistogramValueSource> Histograms { get { return this.histograms.All; } }
         public IEnumerable<TimerValueSource> Timers { get { return this.timers.All; } }
 
+        public MetricsData MetricsData
+        {
+            get
+            {
+                return new MetricsData(this.Name, this.gauges.All, this.counters.All, this.meters.All, this.histograms.All, this.timers.All);
+            }
+        }
+
         public Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
         {
             return this.gauges.GetOrAdd(name, () => CreateGauge(name, valueProvider, unit));

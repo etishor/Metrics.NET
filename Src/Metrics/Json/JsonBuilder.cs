@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Metrics.Core;
 using Metrics.Utils;
 
 namespace Metrics.Json
@@ -8,6 +10,35 @@ namespace Metrics.Json
     public sealed class JsonBuilder
     {
         private readonly List<JsonProperty> root = new List<JsonProperty>();
+
+        private readonly Dictionary<string, List<JsonProperty>> contextRoot = new Dictionary<string, List<JsonProperty>>();
+
+        public class ContextResult
+        {
+            public string Context { get; set; }
+            public IEnumerable<GaugeValueSource> Gauges { get; set; }
+            public IEnumerable<CounterValueSource> Counters { get; set; }
+            public IEnumerable<MeterValueSource> Meters { get; set; }
+            public IEnumerable<HistogramValueSource> Histograms { get; set; }
+            public IEnumerable<TimerValueSource> Timers { get; set; }
+        }
+
+        public string BuildJson(MetricsRegistry registry, MetricFilter filter, bool indented = true)
+        {
+            Dictionary<string, ContextResult> contexts = new Dictionary<string, ContextResult>();
+
+            registry.Gauges
+                .Where(g => filter.IsMatch(g))
+                .GroupBy(g => g.Context)
+                .Select(g => new
+                {
+                    Context = g.Key,
+                    Gauges = g.AsEnumerable()
+                });
+
+            throw new NotImplementedException();
+
+        }
 
         public string GetJson(bool indented = true)
         {

@@ -1,24 +1,22 @@
 ﻿using System;
-using Metrics.Core;
-using Metrics.PerfCounters;
 
 namespace Metrics
 {
     /// <summary>
-    /// Helper class to ease interaction with metrics
+    /// Static wrapper around a global MetricContext instance.
     /// </summary>
     public static class Metric
     {
-        private static readonly MultiContextRegistry registry = new MultiContextRegistry();
+        private static readonly MetricContext globalContext = new MetricContext();
 
         public static MetricContext Context(string contextName)
         {
-            return registry.Context(contextName);
+            return globalContext.Context(contextName);
         }
 
         public static void ShutdownContext(string contextName)
         {
-            registry.Shutdown(contextName);
+            globalContext.ShutdownContext(contextName);
         }
 
         /// <summary>
@@ -37,7 +35,7 @@ namespace Metrics
         ///     );
         /// </code>
         /// </example>
-        public static MetricsConfig Config { get { return registry.Config; } }
+        public static MetricsConfig Config { get { return globalContext.Config; } }
 
         /// <summary>
         /// Register a performance counter as a Gauge metric.
@@ -50,7 +48,7 @@ namespace Metrics
         /// <returns>Reference to the gauge</returns>
         public static Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
         {
-            return Config.Registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance), unit);
+            return globalContext.PerformanceCounter(name, counterCategory, counterName, counterInstance, unit);
         }
 
         /// <summary>
@@ -65,7 +63,7 @@ namespace Metrics
         /// <returns>Reference to the gauge</returns>
         public static Gauge Gauge<T>(string name, Func<double> valueProvider, Unit unit)
         {
-            return Config.Registry.Gauge(Name<T>(name), valueProvider, unit);
+            return globalContext.Gauge<T>(name, valueProvider, unit);
         }
 
         /// <summary>
@@ -77,7 +75,7 @@ namespace Metrics
         /// <returns>Reference to the gauge</returns>
         public static Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
         {
-            return Config.Registry.Gauge(name, valueProvider, unit);
+            return globalContext.Gauge(name, valueProvider, unit);
         }
 
         /// <summary>
@@ -98,7 +96,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public static Meter Meter<T>(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)
         {
-            return Meter(Name<T>(name), unit, rateUnit);
+            return globalContext.Meter<T>(name, unit, rateUnit);
         }
 
         /// <summary>
@@ -117,7 +115,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public static Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)
         {
-            return Config.Registry.Meter(name, unit, rateUnit);
+            return globalContext.Meter(name, unit, rateUnit);
         }
 
         /// <summary>
@@ -130,7 +128,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public static Counter Counter<T>(string name, Unit unit)
         {
-            return Counter(Name<T>(name), unit);
+            return globalContext.Counter<T>(name, unit);
         }
 
         /// <summary>
@@ -141,7 +139,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public static Counter Counter(string name, Unit unit)
         {
-            return Config.Registry.Counter(name, unit);
+            return globalContext.Counter(name, unit);
         }
 
         /// <summary>
@@ -155,7 +153,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public static Histogram Histogram<T>(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
         {
-            return Histogram(Name<T>(name), unit, samplingType);
+            return globalContext.Histogram<T>(name, unit, samplingType);
         }
 
         /// <summary>
@@ -167,7 +165,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         public static Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
         {
-            return Config.Registry.Histogram(name, unit, samplingType);
+            return globalContext.Histogram(name, unit, samplingType);
         }
 
         /// <summary>
@@ -185,7 +183,7 @@ namespace Metrics
         public static Timer Timer<T>(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
              TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
         {
-            return Timer(Name<T>(name), unit, samplingType, rateUnit, durationUnit);
+            return globalContext.Timer<T>(name, unit, samplingType, rateUnit, durationUnit);
         }
 
         /// <summary>
@@ -201,12 +199,7 @@ namespace Metrics
         public static Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
             TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
         {
-            return Config.Registry.Timer(name, unit, samplingType, rateUnit, durationUnit);
-        }
-
-        private static string Name<T>(string name)
-        {
-            return string.Concat(typeof(T).Name, ".", name);
+            return globalContext.Timer(name, unit, samplingType, rateUnit, durationUnit);
         }
     }
 }

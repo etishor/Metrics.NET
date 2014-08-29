@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Metrics.Core;
 
 namespace Metrics.Core
 {
     public interface MetricsRegistry
     {
         string Name { get; }
+
+        MetricsData MetricsData { get; }
 
         IEnumerable<GaugeValueSource> Gauges { get; }
         IEnumerable<CounterValueSource> Counters { get; }

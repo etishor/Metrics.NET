@@ -125,6 +125,7 @@
     <Compile Include="HistogramTests.cs" />
     <Compile Include="JsonTests.cs" />
     <Compile Include="MeterTests.cs" />
+    <Compile Include="MetricContextTests.cs" />
     <Compile Include="MetricsRegistryTests.cs" />
     <Compile Include="NancyAdapter\NancyAdapterGlobalMetrics.cs" />
     <Compile Include="NancyAdapter\NancyAdapterModuleMetricsTests.cs" />
