@@ -266,6 +266,7 @@ namespace Metrics
             this.registry = new NullMetricsRegistry();
             this.config.DisableAllReports();
 
+            oldRegistry.ClearAllMetrics();
             foreach (var context in this.childContexts.Values)
             {
                 context.CompletelyDisableMetrics();
