@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Metrics.Core;
 using Metrics.Utils;
 
 namespace Metrics.Json
@@ -11,74 +9,105 @@ namespace Metrics.Json
     {
         private readonly List<JsonProperty> root = new List<JsonProperty>();
 
-        private readonly Dictionary<string, List<JsonProperty>> contextRoot = new Dictionary<string, List<JsonProperty>>();
-
-        public class ContextResult
+        public string BuildJson(MetricsData data, Clock clock, bool indented = true)
         {
-            public string Context { get; set; }
-            public IEnumerable<GaugeValueSource> Gauges { get; set; }
-            public IEnumerable<CounterValueSource> Counters { get; set; }
-            public IEnumerable<MeterValueSource> Meters { get; set; }
-            public IEnumerable<HistogramValueSource> Histograms { get; set; }
-            public IEnumerable<TimerValueSource> Timers { get; set; }
+            return this
+                .AddTimestamp(clock)
+                .AddData(data)
+                .GetJson();
         }
 
-        public string BuildJson(MetricsRegistry registry, MetricsFilter filter, bool indented = true)
+        private JsonBuilder AddTimestamp(Clock clock)
         {
-            Dictionary<string, ContextResult> contexts = new Dictionary<string, ContextResult>();
-
-            throw new NotImplementedException();
-
+            root.Add(new JsonProperty("Timestamp", clock.UTCDateTime.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture)));
+            return this;
         }
 
-        public string GetJson(bool indented = true)
+        private JsonBuilder AddData(MetricsData data)
+        {
+            this.AddContext(data.Context)
+                .Add(data.Gauges)
+                .Add(data.Counters)
+                .Add(data.Meters)
+                .Add(data.Histograms)
+                .Add(data.Timers)
+                .Add(data.ChildMetrics);
+
+            return this;
+        }
+
+        private JsonBuilder AddContext(string context)
+        {
+            if (!string.IsNullOrEmpty(context))
+            {
+                root.Add(new JsonProperty("Context", context));
+            }
+            return this;
+        }
+
+        private JsonObject GetObject()
+        {
+            return new JsonObject(this.root);
+        }
+
+        private JsonBuilder Add(IEnumerable<MetricsData> childData)
+        {
+            if (childData.Any())
+            {
+                var childObjects = childData.Select(d => new JsonBuilder().AddData(d).GetObject());
+                root.Add(new JsonProperty("ChildContexts", childObjects));
+            }
+            return this;
+        }
+
+        private string GetJson(bool indented = true)
         {
             return new JsonObject(root).AsJson(indented);
         }
 
-        public JsonBuilder AddTimestamp(Clock clock)
+        private JsonBuilder Add(IEnumerable<GaugeValueSource> gauges)
         {
-            root.Add(new JsonProperty("Timestamp", clock.LocalDateTime.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture)));
-            return this;
-        }
-
-        public JsonBuilder Add(IEnumerable<GaugeValueSource> gauges)
-        {
-            root.Add(new JsonProperty("Gauges", gauges.Select(g => new JsonObject(ToJsonProperties(g)))));
+            if (gauges.Any())
+            {
+                root.Add(new JsonProperty("Gauges", gauges.Select(g => new JsonObject(ToJsonProperties(g)))));
+            }
             return this;
         }
 
         private static IEnumerable<JsonProperty> ToJsonProperties(GaugeValueSource gauge)
         {
-            yield return new JsonProperty("Context", gauge.Context);
             yield return new JsonProperty("Name", gauge.Name);
             yield return new JsonProperty("Value", gauge.Value);
             yield return new JsonProperty("Unit", gauge.Unit.Name);
         }
 
-        public JsonBuilder Add(IEnumerable<CounterValueSource> counters)
+        private JsonBuilder Add(IEnumerable<CounterValueSource> counters)
         {
-            root.Add(new JsonProperty("Counters", counters.Select(c => new JsonObject(ToJsonProperties(c)))));
+            if (counters.Any())
+            {
+                root.Add(new JsonProperty("Counters", counters.Select(c => new JsonObject(ToJsonProperties(c)))));
+            }
             return this;
         }
 
         private static IEnumerable<JsonProperty> ToJsonProperties(CounterValueSource counter)
         {
-            yield return new JsonProperty("Context", counter.Context);
             yield return new JsonProperty("Name", counter.Name);
             yield return new JsonProperty("Value", counter.Value);
             yield return new JsonProperty("Unit", counter.Unit.Name);
         }
 
-        public JsonBuilder Add(IEnumerable<MeterValueSource> meters)
+        private JsonBuilder Add(IEnumerable<MeterValueSource> meters)
         {
-            root.Add(new JsonProperty("Meters", meters.Select(m => new JsonObject(ToJsonProperties(m)))));
+            if (meters.Any())
+            {
+                root.Add(new JsonProperty("Meters", meters.Select(m => new JsonObject(ToJsonProperties(m)))));
+            }
             return this;
         }
 
         private static IEnumerable<JsonProperty> ToJsonProperties(MeterValueSource meter)
         {
-            yield return new JsonProperty("Context", meter.Context);
             yield return new JsonProperty("Name", meter.Name);
             foreach (var property in ToJsonProperties(meter.Value))
             {
@@ -97,20 +126,24 @@ namespace Metrics.Json
             yield return new JsonProperty("FifteenMinuteRate", value.FifteenMinuteRate);
         }
 
-        public JsonBuilder Add(IEnumerable<HistogramValueSource> histograms)
+        private JsonBuilder Add(IEnumerable<HistogramValueSource> histograms)
         {
-            root.Add(new JsonProperty("Histograms", histograms.Select(h => new JsonObject(ToJsonProperties(h)))));
+            if (histograms.Any())
+            {
+                root.Add(new JsonProperty("Histograms", histograms.Select(h => new JsonObject(ToJsonProperties(h)))));
+            }
             return this;
         }
 
         private static IEnumerable<JsonProperty> ToJsonProperties(HistogramValueSource histogram)
         {
-            yield return new JsonProperty("Context", histogram.Context);
             yield return new JsonProperty("Name", histogram.Name);
+
             foreach (var property in ToJsonProperties(histogram.Value))
             {
                 yield return property;
             }
+
             yield return new JsonProperty("Unit", histogram.Unit.Name);
         }
 
@@ -131,15 +164,17 @@ namespace Metrics.Json
             yield return new JsonProperty("SampleSize", value.SampleSize);
         }
 
-        public JsonBuilder Add(IEnumerable<TimerValueSource> timers)
+        private JsonBuilder Add(IEnumerable<TimerValueSource> timers)
         {
-            root.Add(new JsonProperty("Timers", timers.Select(t => new JsonObject(ToJsonProperties(t)))));
+            if (timers.Any())
+            {
+                root.Add(new JsonProperty("Timers", timers.Select(t => new JsonObject(ToJsonProperties(t)))));
+            }
             return this;
         }
 
         private static IEnumerable<JsonProperty> ToJsonProperties(TimerValueSource timer)
         {
-            yield return new JsonProperty("Context", timer.Context);
             yield return new JsonProperty("Name", timer.Name);
             yield return new JsonProperty("Rate", ToJsonProperties(timer.Value.Rate.Scale(timer.RateUnit)));
             yield return new JsonProperty("Histogram", ToJsonProperties(timer.Value.Histogram.Scale(timer.DurationUnit)));

@@ -77,7 +77,7 @@ namespace Metrics.Tests.NancyAdapter
                         CounterInstance = counter,
                         HistogramInstance = size
                     };
-                    var context = new MetricsContext("test", registry);
+                    var context = new DefaultMetricsContext("test", registry);
 
                     context.Config.WithNancy(nancy => nancy.WithNancyMetrics(config => config.RegisterAllMetrics(p)), contextName: string.Empty);
                 });

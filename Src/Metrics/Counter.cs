@@ -18,8 +18,8 @@ namespace Metrics
     /// </summary>
     public sealed class CounterValueSource : MetricValueSource<long>
     {
-        public CounterValueSource(string context, string name, MetricValueProvider<long> value, Unit unit)
-            : base(context, name, value, unit)
+        public CounterValueSource(string name, MetricValueProvider<long> value, Unit unit)
+            : base(name, value, unit)
         { }
     }
 }

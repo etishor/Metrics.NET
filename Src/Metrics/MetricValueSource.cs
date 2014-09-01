@@ -24,18 +24,12 @@ namespace Metrics
     {
         private readonly MetricValueProvider<T> value;
 
-        protected MetricValueSource(string context, string name, MetricValueProvider<T> value, Unit unit)
+        protected MetricValueSource(string name, MetricValueProvider<T> value, Unit unit)
         {
-            this.Context = context;
             this.Name = name;
             this.Unit = unit;
             this.value = value;
         }
-
-        /// <summary>
-        /// Context of the metric.
-        /// </summary>
-        public string Context { get; private set; }
 
         /// <summary>
         /// Name of the metric.

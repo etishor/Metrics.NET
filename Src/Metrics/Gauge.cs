@@ -16,8 +16,8 @@ namespace Metrics
     /// </summary>
     public sealed class GaugeValueSource : MetricValueSource<double>
     {
-        public GaugeValueSource(string context, string name, MetricValueProvider<double> value, Unit unit)
-            : base(context, name, value, unit)
+        public GaugeValueSource(string name, MetricValueProvider<double> value, Unit unit)
+            : base(name, value, unit)
         { }
     }
 }

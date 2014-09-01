@@ -50,7 +50,7 @@ namespace Metrics
         public MetricsConfig WithHttpEndpoint(string httpUriPrefix)
         {
             using (this.listener) { }
-            this.listener = new MetricsHttpListener(httpUriPrefix, this.context.MetricsData, this.healthStatus);
+            this.listener = new MetricsHttpListener(httpUriPrefix, this.context, this.healthStatus);
             this.listener.Start();
             return this;
         }

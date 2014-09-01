@@ -9,7 +9,7 @@ namespace Metrics.Tests
         [Fact]
         public void ContextEmptyChildContextIsSameContext()
         {
-            MetricsContext context = new MetricsContext();
+            MetricsContext context = new DefaultMetricsContext();
 
             var child = context.Context(string.Empty);
 
@@ -23,20 +23,19 @@ namespace Metrics.Tests
         [Fact]
         public void ContextCanCreateSubcontext()
         {
-            MetricsContext context = new MetricsContext();
+            MetricsContext context = new DefaultMetricsContext();
 
             context.Context("test").Counter("counter", Unit.Requests);
 
             var counterValue = context.MetricsData.ChildMetrics.SelectMany(c => c.Counters).Single();
 
-            counterValue.Context.Should().Be("test");
             counterValue.Name.Should().Be("counter");
         }
 
         [Fact]
         public void ContextMetricsArePresentInMetricsData()
         {
-            MetricsContext context = new MetricsContext();
+            MetricsContext context = new DefaultMetricsContext();
 
             var counter = context.Counter("test", Unit.Requests);
 
@@ -48,5 +47,6 @@ namespace Metrics.Tests
             counterValue.Unit.Should().Be(Unit.Requests);
             counterValue.Value.Should().Be(1);
         }
+
     }
 }

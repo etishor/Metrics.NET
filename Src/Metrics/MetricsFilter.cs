@@ -92,7 +92,7 @@ namespace Metrics
             {
                 return false;
             }
-            return IsMatch(gauge.Context, gauge.Name);
+            return IsNameMatch(gauge.Name);
         }
 
         public bool IsMatch(CounterValueSource counter)
@@ -101,7 +101,7 @@ namespace Metrics
             {
                 return false;
             }
-            return IsMatch(counter.Context, counter.Name);
+            return IsNameMatch(counter.Name);
         }
 
         public bool IsMatch(MeterValueSource meter)
@@ -110,7 +110,7 @@ namespace Metrics
             {
                 return false;
             }
-            return IsMatch(meter.Context, meter.Name);
+            return IsNameMatch(meter.Name);
         }
 
         public bool IsMatch(HistogramValueSource histogram)
@@ -119,7 +119,7 @@ namespace Metrics
             {
                 return false;
             }
-            return IsMatch(histogram.Context, histogram.Name);
+            return IsNameMatch(histogram.Name);
         }
 
         public bool IsMatch(TimerValueSource timer)
@@ -128,16 +128,11 @@ namespace Metrics
             {
                 return false;
             }
-            return IsMatch(timer.Context, timer.Name);
+            return IsNameMatch(timer.Name);
         }
 
-        private bool IsMatch(string context, string name)
+        private bool IsNameMatch(string name)
         {
-            if (this.context != null && !this.context(context))
-            {
-                return false;
-            }
-
             if (this.name != null && !this.name(name))
             {
                 return false;

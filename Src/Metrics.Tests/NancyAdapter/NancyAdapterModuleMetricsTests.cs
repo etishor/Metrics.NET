@@ -49,7 +49,7 @@ namespace Metrics.Tests.NancyAdapter
             this.sizeHistogram = new HistogramMetric();
 
             var registry = new TestRegistry { TimerInstance = timer, HistogramInstance = sizeHistogram };
-            var context = new MetricsContext("test", registry);
+            var context = new DefaultMetricsContext("test", registry);
 
             context.Config.WithNancy(c => { }, contextName: string.Empty);
 

@@ -57,5 +57,16 @@ namespace Metrics
                 this.Timers.Where(t => filter.IsMatch(t)),
                 this.ChildMetrics.Select(m => m.Filter(filter)));
         }
+
+        public MetricsData Flaten()
+        {
+            return new MetricsData(this.Context,
+                this.Gauges.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Gauges)),
+                this.Counters.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Counters)),
+                this.Meters.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Meters)),
+                this.Histograms.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Histograms)),
+                this.Timers.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Timers))
+            );
+        }
     }
 }

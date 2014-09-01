@@ -55,8 +55,8 @@ namespace Metrics
     /// </summary>
     public sealed class MeterValueSource : MetricValueSource<MeterValue>
     {
-        public MeterValueSource(string context, string name, MetricValueProvider<MeterValue> value, Unit unit, TimeUnit rateUnit)
-            : base(context, name, value, unit)
+        public MeterValueSource(string name, MetricValueProvider<MeterValue> value, Unit unit, TimeUnit rateUnit)
+            : base(name, value, unit)
         {
             this.RateUnit = rateUnit;
         }

@@ -11,7 +11,7 @@ type SampleMetrics () =
     /// <summary>
     /// keep the total count of the requests
     /// </summary>
-    let totalRequestsCounter = Metric.Counter<SampleMetrics>("Requests", Unit.Requests)
+    let totalRequestsCounter = Metric.Counter("Requests", Unit.Requests)
     
     /// <summary>
     /// count the current concurrent requests
@@ -21,24 +21,24 @@ type SampleMetrics () =
     /// <summary>
     /// keep a histogram of the input data of our requet method 
     /// </summary>
-    let histogramOfData = Metric.Histogram<SampleMetrics>("ResultsExample", Unit.Items, SamplingType.LongTerm)
+    let histogramOfData = Metric.Histogram("ResultsExample", Unit.Items, SamplingType.LongTerm)
 
     /// <summary>
     /// measure the rate at which requests come in
     /// </summary>
-    let meter = Metric.Meter<SampleMetrics>("Requests", Unit.Requests)
+    let meter = Metric.Meter("Requests", Unit.Requests)
 
     /// <summary>
     /// measure the time rate and duration of requests
     /// </summary>
-    let timer = Metric.Timer<SampleMetrics>("Requests", Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds)
+    let timer = Metric.Timer("Requests", Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds)
 
     let mutable someValue : double = 1.0;
 
-    do
-        // define a simple gauge that will provide the instant value of this.someValue when requested
-        let valProvider = fun () -> someValue
-        ignore <| Metric.Gauge ("SampleMetrics.DataValue", valProvider, new Unit("$"))
+//    do
+//        // define a simple gauge that will provide the instant value of this.someValue when requested
+//        let valProvider = fun () -> someValue
+//        ignore <| Metric.Gauge ("SampleMetrics.DataValue", valProvider , new Unit("$"))
 
     member this.Request (i : int) : unit =
         use ctxt = timer.NewContext() // measure until disposed

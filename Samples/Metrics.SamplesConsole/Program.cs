@@ -11,9 +11,9 @@ namespace Metrics.SamplesConsole
 
 
             Metric.Config
-                .WithHttpEndpoint("http://localhost:1234/");
-            //    .WithErrorHandler(x => Console.WriteLine(x.ToString()))
-            //    .WithAllCounters()
+                .WithHttpEndpoint("http://localhost:1234/")
+                .WithErrorHandler(x => Console.WriteLine(x.ToString()))
+                .WithAllCounters();
             //    .WithReporting(config => config
             //        .WithNLogCSVReports(TimeSpan.FromSeconds(5))
             //        .WithNLogTextReports(TimeSpan.FromSeconds(5))

@@ -1,52 +1,88 @@
-﻿using System;
-using System.Diagnostics;
-
+﻿
+using System;
+using System.Collections.Concurrent;
+using System.Linq;
+using Metrics.Core;
+using Metrics.PerfCounters;
 namespace Metrics
 {
-    /// <summary>
-    /// Static wrapper around a global MetricContext instance.
-    /// </summary>
-    public static class Metric
+    public sealed class DefaultMetricsContext : MetricsContext
     {
-        private static readonly MetricsContext globalContext = new DefaultMetricsContext(Process.GetCurrentProcess().ProcessName);
+        private readonly ConcurrentDictionary<string, MetricsContext> childContexts = new ConcurrentDictionary<string, MetricsContext>();
 
-        public static MetricsContext Context(string contextName, Func<string, MetricsContext> contextCreator)
+        private readonly string context;
+        private readonly MetricsConfig config;
+
+        private MetricsRegistry registry;
+        private bool isDisabled;
+
+        public DefaultMetricsContext()
+            : this(string.Empty) { }
+
+        public DefaultMetricsContext(string context)
+            : this(context, new LocalRegistry(context))
+        { }
+
+        public DefaultMetricsContext(string context, MetricsRegistry registry)
         {
-            return globalContext.Context(contextName, contextCreator);
+            this.context = context;
+            this.registry = registry;
+            this.config = new MetricsConfig(this);
         }
 
-        public static MetricsContext Context(string contextName)
+        public MetricsContext Context(string contextName, Func<string, MetricsContext> contextCreator)
         {
-            return globalContext.Context(contextName);
+            if (this.isDisabled)
+            {
+                return this;
+            }
+            return this.childContexts.GetOrAdd(contextName, contextCreator);
         }
 
-        public static void ShutdownContext(string contextName)
+        public MetricsContext Context(string contextName)
         {
-            globalContext.ShutdownContext(contextName);
+            if (string.IsNullOrEmpty(contextName))
+            {
+                return this;
+            }
+
+            return this.Context(contextName, c => new DefaultMetricsContext(contextName));
         }
 
-        public static void CompletelyDisableMetrics()
+        public void ShutdownContext(string contextName)
         {
-            globalContext.CompletelyDisableMetrics();
+            if (string.IsNullOrEmpty(contextName))
+            {
+                throw new ArgumentException("contextName must not be null or empty", contextName);
+            }
+
+            MetricsContext context;
+            if (this.childContexts.TryRemove(contextName, out context))
+            {
+                using (context) { }
+            }
         }
 
-        /// <summary>
-        /// Entrypoint for Metrics Configuration.
-        /// </summary>
-        /// <example>
-        /// <code>
-        /// Metric.Config
-        ///     .WithHttpEndpoint("http://localhost:1234/")
-        ///     .WithErrorHandler(x => Console.WriteLine(x.ToString()))
-        ///     .WithPerformanceCounters(c => c.RegisterAll())
-        ///     .WithReporting(config => config
-        ///         .WithConsoleReport(TimeSpan.FromSeconds(30))
-        ///         .WithCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(10))
-        ///         .WithTextFileReport(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(10))
-        ///     );
-        /// </code>
-        /// </example>
-        public static MetricsConfig Config { get { return globalContext.Config; } }
+        public MetricsData MetricsData
+        {
+            get
+            {
+                if (this.isDisabled)
+                {
+                    return MetricsData.Empty;
+                }
+
+                return new MetricsData(this.context, this.registry.MetricsData, this.childContexts.Values.Select(c => c.MetricsData));
+            }
+        }
+
+        public MetricsConfig Config
+        {
+            get
+            {
+                return this.config;
+            }
+        }
 
         /// <summary>
         /// Register a performance counter as a Gauge metric.
@@ -57,9 +93,9 @@ namespace Metrics
         /// <param name="counterInstance">Instance of the performance counter</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the gauge</returns>
-        public static Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
+        public Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
         {
-            return globalContext.PerformanceCounter(name, counterCategory, counterName, counterInstance, unit);
+            return this.registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance), unit);
         }
 
         /// <summary>
@@ -69,9 +105,9 @@ namespace Metrics
         /// <param name="valueProvider">Function that returns the value for the gauge.</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the gauge</returns>
-        public static Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
+        public Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
         {
-            return globalContext.Gauge(name, valueProvider, unit);
+            return this.registry.Gauge(name, valueProvider, unit);
         }
 
         /// <summary>
@@ -88,9 +124,9 @@ namespace Metrics
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <returns>Reference to the metric</returns>
-        public static Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)
+        public Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)
         {
-            return globalContext.Meter(name, unit, rateUnit);
+            return this.registry.Meter(name, unit, rateUnit);
         }
 
         /// <summary>
@@ -99,9 +135,9 @@ namespace Metrics
         /// <param name="name">Name of the metric. Must be unique across all counters.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the metric</returns>
-        public static Counter Counter(string name, Unit unit)
+        public Counter Counter(string name, Unit unit)
         {
-            return globalContext.Counter(name, unit);
+            return this.registry.Counter(name, unit);
         }
 
         /// <summary>
@@ -111,9 +147,9 @@ namespace Metrics
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <returns>Reference to the metric</returns>
-        public static Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
+        public Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
         {
-            return globalContext.Histogram(name, unit, samplingType);
+            return this.registry.Histogram(name, unit, samplingType);
         }
 
         /// <summary>
@@ -126,10 +162,39 @@ namespace Metrics
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <param name="durationUnit">Time unit for reporting durations. Defaults to Milliseconds. </param>
         /// <returns>Reference to the metric</returns>
-        public static Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
+        public Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
             TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
         {
-            return globalContext.Timer(name, unit, samplingType, rateUnit, durationUnit);
+            return this.registry.Timer(name, unit, samplingType, rateUnit, durationUnit);
+        }
+
+        /// <summary>
+        /// All metrics operations will be NO-OP.
+        /// This is useful for measuring the impact of the metrics library on the application.
+        /// If you think the Metrics library is causing issues, this will disable all Metrics operations.
+        /// </summary>
+        public void CompletelyDisableMetrics()
+        {
+            if (this.isDisabled)
+            {
+                return;
+            }
+
+            this.isDisabled = true;
+            var oldRegistry = this.registry;
+            this.registry = new NullMetricsRegistry();
+            this.config.DisableAllReports();
+
+            oldRegistry.ClearAllMetrics();
+            foreach (var context in this.childContexts.Values)
+            {
+                context.CompletelyDisableMetrics();
+            }
+        }
+
+        public void Dispose()
+        {
+            using (this.config) { }
         }
     }
 }
