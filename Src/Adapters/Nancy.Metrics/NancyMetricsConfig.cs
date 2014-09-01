@@ -5,17 +5,17 @@ namespace Nancy.Metrics
 {
     public class NancyMetricsConfig
     {
-        private readonly MetricContext metricsContext;
+        private readonly MetricsContext metricsContext;
         private readonly Func<HealthStatus> healthStatus;
         private NancyGlobalMetrics globalMetrics;
 
-        public NancyMetricsConfig(MetricContext metricsContext, Func<HealthStatus> healthStatus)
+        public NancyMetricsConfig(MetricsContext metricsContext, Func<HealthStatus> healthStatus)
         {
             this.metricsContext = metricsContext;
             this.healthStatus = healthStatus;
         }
 
-        public MetricContext Context { get { return this.metricsContext; } }
+        public MetricsContext Context { get { return this.metricsContext; } }
 
         /// <summary>
         /// Configure global NancyFx Metrics.

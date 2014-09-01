@@ -7,14 +7,14 @@ namespace Metrics
     /// </summary>
     public static class Metric
     {
-        private static readonly MetricContext globalContext = new MetricContext();
+        private static readonly MetricsContext globalContext = new MetricsContext();
 
-        public static MetricContext Context(string contextName, Func<string, MetricContext> contextCreator)
+        public static MetricsContext Context(string contextName, Func<string, MetricsContext> contextCreator)
         {
             return globalContext.Context(contextName, contextCreator);
         }
 
-        public static MetricContext Context(string contextName)
+        public static MetricsContext Context(string contextName)
         {
             return globalContext.Context(contextName);
         }

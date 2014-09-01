@@ -13,7 +13,7 @@ namespace Metrics.PerfCounters
         private const string Memory = ".NET CLR Memory";
         private const string LocksAndThreads = ".NET CLR LocksAndThreads";
 
-        public static void RegisterSystemCounters(MetricContext registry)
+        public static void RegisterSystemCounters(MetricsContext registry)
         {
             registry.Register("System AvailableRAM", () => new PerformanceCounterGauge("Memory", "Available MBytes"), Unit.Custom("Mb"));
             registry.Register("System CPU Usage", () => new PerformanceCounterGauge("Processor", "% Processor Time", TotalInstance), Unit.Custom("%"));
@@ -21,13 +21,13 @@ namespace Metrics.PerfCounters
             registry.Register("System Disk Reads/sec", () => new DerivedGauge(new PerformanceCounterGauge("PhysicalDisk", "Disk Writes/sec", TotalInstance), f => f / 1024), Unit.Custom("kb/s"));
         }
 
-        public static void RegisterCLRGlobalCounters(MetricContext registry)
+        public static void RegisterCLRGlobalCounters(MetricsContext registry)
         {
             registry.Register(".NET Mb in all Heaps", () => new DerivedGauge(new PerformanceCounterGauge(Memory, "# Bytes in all Heaps", GlobalInstance), v => v / (1024 * 1024)), Unit.Custom("Mb"));
             registry.Register(".NET Time in GC", () => new PerformanceCounterGauge(Memory, "% Time in GC", GlobalInstance), Unit.Custom("%"));
         }
 
-        public static void RegisterCLRAppCounters(MetricContext registry)
+        public static void RegisterCLRAppCounters(MetricsContext registry)
         {
             var app = Process.GetCurrentProcess().ProcessName;
             registry.Register("Mb in all Heaps", () => new DerivedGauge(new PerformanceCounterGauge(Memory, "# Bytes in all Heaps", app), v => v / (1024 * 1024)), Unit.Custom("Mb"));
@@ -40,7 +40,7 @@ namespace Metrics.PerfCounters
             registry.Register("Queue Length / sec", () => new PerformanceCounterGauge(LocksAndThreads, "Queue Length / sec", app), Unit.Custom("Threads/s"));
         }
 
-        private static void Register(this MetricContext registry, string name, Func<GaugeMetric> gauge, Unit unit)
+        private static void Register(this MetricsContext registry, string name, Func<GaugeMetric> gauge, Unit unit)
         {
             registry.Gauge(name, () => gauge().Value, unit);
         }

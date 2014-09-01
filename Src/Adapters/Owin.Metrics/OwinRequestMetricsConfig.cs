@@ -7,17 +7,17 @@ namespace Owin.Metrics
 {
     public class OwinRequestMetricsConfig
     {
-        private readonly MetricContext metricsContext;
+        private readonly MetricsContext metricsContext;
         private readonly Action<object> middlewareRegistration;
 
-        public OwinRequestMetricsConfig(Action<object> middlewareRegistration, MetricContext metricsContext)
+        public OwinRequestMetricsConfig(Action<object> middlewareRegistration, MetricsContext metricsContext)
         {
             this.middlewareRegistration = middlewareRegistration;
             this.metricsContext = metricsContext;
             this.MetricsPrefix = "Owin";
         }
 
-        public MetricContext Context { get { return metricsContext; } }
+        public MetricsContext Context { get { return metricsContext; } }
         public string MetricsPrefix { get; set; }
 
         /// <summary>

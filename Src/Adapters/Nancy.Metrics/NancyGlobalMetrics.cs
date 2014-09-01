@@ -10,9 +10,9 @@ namespace Nancy.Metrics
         private const string TimerItemsKey = "__Mertics.RequestTimer__";
         private const string RequestStartTimeKey = "__Metrics.RequestStartTime__";
 
-        private readonly MetricContext context;
+        private readonly MetricsContext context;
 
-        public NancyGlobalMetrics(MetricContext context)
+        public NancyGlobalMetrics(MetricsContext context)
         {
             this.context = context;
             this.MetricsPrefix = "NancyFx";

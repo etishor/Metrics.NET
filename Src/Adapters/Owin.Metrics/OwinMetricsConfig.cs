@@ -8,10 +8,10 @@ namespace Owin.Metrics
     public class OwinMetricsConfig
     {
         private readonly Action<object> middlewareRegistration;
-        private readonly MetricContext context;
+        private readonly MetricsContext context;
         private readonly Func<HealthStatus> healthStatus;
 
-        public OwinMetricsConfig(Action<object> middlewareRegistration, MetricContext context, Func<HealthStatus> healthStatus)
+        public OwinMetricsConfig(Action<object> middlewareRegistration, MetricsContext context, Func<HealthStatus> healthStatus)
         {
             this.middlewareRegistration = middlewareRegistration;
             this.context = context;

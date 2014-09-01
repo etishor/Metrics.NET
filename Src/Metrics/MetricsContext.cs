@@ -6,9 +6,9 @@ using Metrics.Core;
 using Metrics.PerfCounters;
 namespace Metrics
 {
-    public sealed class MetricContext : IDisposable
+    public sealed class MetricsContext : IDisposable
     {
-        private readonly ConcurrentDictionary<string, MetricContext> childContexts = new ConcurrentDictionary<string, MetricContext>();
+        private readonly ConcurrentDictionary<string, MetricsContext> childContexts = new ConcurrentDictionary<string, MetricsContext>();
 
         private readonly string context;
         private readonly MetricsConfig config;
@@ -16,21 +16,21 @@ namespace Metrics
         private MetricsRegistry registry;
         private bool isDisabled;
 
-        public MetricContext()
+        public MetricsContext()
             : this(string.Empty) { }
 
-        public MetricContext(string context)
+        public MetricsContext(string context)
             : this(context, new LocalRegistry(context))
         { }
 
-        public MetricContext(string context, MetricsRegistry registry)
+        public MetricsContext(string context, MetricsRegistry registry)
         {
             this.context = context;
             this.registry = registry;
             this.config = new MetricsConfig(this);
         }
 
-        public MetricContext Context(string contextName, Func<string, MetricContext> contextCreator)
+        public MetricsContext Context(string contextName, Func<string, MetricsContext> contextCreator)
         {
             if (this.isDisabled)
             {
@@ -39,14 +39,14 @@ namespace Metrics
             return this.childContexts.GetOrAdd(contextName, contextCreator);
         }
 
-        public MetricContext Context(string contextName)
+        public MetricsContext Context(string contextName)
         {
             if (string.IsNullOrEmpty(contextName))
             {
                 return this;
             }
 
-            return this.Context(contextName, c => new MetricContext(contextName));
+            return this.Context(contextName, c => new MetricsContext(contextName));
         }
 
         public void ShutdownContext(string contextName)
@@ -56,7 +56,7 @@ namespace Metrics
                 throw new ArgumentException("contextName must not be null or empty", contextName);
             }
 
-            MetricContext context;
+            MetricsContext context;
             if (this.childContexts.TryRemove(contextName, out context))
             {
                 using (context) { }

@@ -13,7 +13,7 @@ namespace Owin.Metrics.Middleware
         private readonly Timer requestTimer;
         private AppFunc next;
 
-        public RequestTimerMiddleware(MetricContext context, string metricName)
+        public RequestTimerMiddleware(MetricsContext context, string metricName)
         {
             this.requestTimer = context.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
         }

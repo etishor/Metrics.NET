@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using Metrics.Utils;
+﻿using Metrics.Utils;
 
 namespace Metrics.Json
 {
@@ -7,6 +6,7 @@ namespace Metrics.Json
     {
         public static string Serialize(MetricsData metricsData)
         {
+
             return new JsonBuilder()
                 .AddTimestamp(Clock.Default)
                 .Add(metricsData.Gauges)

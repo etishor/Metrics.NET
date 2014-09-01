@@ -13,7 +13,7 @@ namespace Owin.Metrics.Middleware
         private readonly Histogram histogram;
         private AppFunc next;
 
-        public PostAndPutRequestSizeHistogramMiddleware(MetricContext context, string metricName)
+        public PostAndPutRequestSizeHistogramMiddleware(MetricsContext context, string metricName)
         {
             this.histogram = context.Histogram(metricName, Unit.Bytes, SamplingType.FavourRecent);
         }

@@ -13,7 +13,7 @@ namespace Owin.Metrics.Middleware
         private readonly Counter activeRequests;
         private Func<IDictionary<string, object>, Task> next;
 
-        public ActiveRequestCounterMiddleware(MetricContext context, string metricName)
+        public ActiveRequestCounterMiddleware(MetricsContext context, string metricName)
         {
             this.activeRequests = context.Counter(metricName, Unit.Custom("ActiveRequests"));
         }

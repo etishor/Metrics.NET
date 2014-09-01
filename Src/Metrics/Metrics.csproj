@@ -84,7 +84,7 @@
     <Compile Include="Meter.cs" />
     <Compile Include="Core\MetricsRegistry.cs" />
     <Compile Include="Core\LocalRegistry.cs" />
-    <Compile Include="MetricContext.cs" />
+    <Compile Include="MetricsContext.cs" />
     <Compile Include="MetricsFilter.cs" />
     <Compile Include="MetricsConfig.cs" />
     <Compile Include="Json\JsonBuilder.cs" />

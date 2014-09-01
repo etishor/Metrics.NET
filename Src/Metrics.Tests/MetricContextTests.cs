@@ -9,7 +9,7 @@ namespace Metrics.Tests
         [Fact]
         public void ContextEmptyChildContextIsSameContext()
         {
-            MetricContext context = new MetricContext();
+            MetricsContext context = new MetricsContext();
 
             var child = context.Context(string.Empty);
 
@@ -23,7 +23,7 @@ namespace Metrics.Tests
         [Fact]
         public void ContextCanCreateSubcontext()
         {
-            MetricContext context = new MetricContext();
+            MetricsContext context = new MetricsContext();
 
             context.Context("test").Counter("counter", Unit.Requests);
 
@@ -36,7 +36,7 @@ namespace Metrics.Tests
         [Fact]
         public void ContextMetricsArePresentInMetricsData()
         {
-            MetricContext context = new MetricContext();
+            MetricsContext context = new MetricsContext();
 
             var counter = context.Counter("test", Unit.Requests);
 

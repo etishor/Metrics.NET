@@ -12,12 +12,12 @@ namespace Owin.Metrics.Middleware
     {
         private const string RequestStartTimeKey = "__Metrics.RequestStartTime__";
 
-        private readonly MetricContext context;
+        private readonly MetricsContext context;
         private readonly string metricPrefix;
 
         private AppFunc next;
 
-        public TimerForEachRequestMiddleware(MetricContext context, string metricPrefix)
+        public TimerForEachRequestMiddleware(MetricsContext context, string metricPrefix)
         {
             this.context = context;
             this.metricPrefix = metricPrefix;

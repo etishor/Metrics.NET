@@ -7,35 +7,35 @@ namespace Metrics
 {
     public sealed class MetricsConfig : IDisposable, Utils.IHideObjectMembers
     {
-        private readonly MetricContext context;
+        private readonly MetricsContext context;
         private readonly MetricsReports reports;
 
         private Func<HealthStatus> healthStatus;
         private MetricsHttpListener listener;
 
-        internal MetricsConfig(MetricContext context)
+        internal MetricsConfig(MetricsContext context)
         {
             this.context = context;
             this.reports = new MetricsReports(this.context.MetricsData, this.healthStatus);
             this.healthStatus = () => HealthChecks.GetStatus();
         }
 
-        public T Configure<T>(Func<MetricContext, T> config)
+        public T Configure<T>(Func<MetricsContext, T> config)
         {
             return config(this.context);
         }
 
-        public void Configure(Action<MetricContext> config)
+        public void Configure(Action<MetricsContext> config)
         {
             config(this.context);
         }
 
-        public void Configure(Action<MetricContext, Func<HealthStatus>> config)
+        public void Configure(Action<MetricsContext, Func<HealthStatus>> config)
         {
             config(this.context, this.healthStatus);
         }
 
-        public T Configure<T>(Func<MetricContext, Func<HealthStatus>, T> config)
+        public T Configure<T>(Func<MetricsContext, Func<HealthStatus>, T> config)
         {
             return config(this.context, this.healthStatus);
         }

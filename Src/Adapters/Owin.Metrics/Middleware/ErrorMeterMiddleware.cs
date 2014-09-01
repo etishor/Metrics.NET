@@ -13,7 +13,7 @@ namespace Owin.Metrics.Middleware
         private readonly Meter errorMeter;
         private AppFunc next;
 
-        public ErrorMeterMiddleware(MetricContext context, string metricName)
+        public ErrorMeterMiddleware(MetricsContext context, string metricName)
         {
             this.errorMeter = context.Meter(metricName, Unit.Errors, TimeUnit.Seconds);
         }

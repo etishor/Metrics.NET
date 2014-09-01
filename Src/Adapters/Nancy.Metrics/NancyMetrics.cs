@@ -10,7 +10,7 @@ namespace Metrics
     {
         internal static NancyMetricsConfig CurrentConfig { get; private set; }
 
-        internal static MetricContext Context { get { return CurrentConfig.Context; } }
+        internal static MetricsContext Context { get { return CurrentConfig.Context; } }
 
         /// <summary>
         /// Configure NancyFx integration
