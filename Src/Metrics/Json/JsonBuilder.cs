@@ -27,15 +27,6 @@ namespace Metrics.Json
         {
             Dictionary<string, ContextResult> contexts = new Dictionary<string, ContextResult>();
 
-            registry.Gauges
-                .Where(g => filter.IsMatch(g))
-                .GroupBy(g => g.Context)
-                .Select(g => new
-                {
-                    Context = g.Key,
-                    Gauges = g.AsEnumerable()
-                });
-
             throw new NotImplementedException();
 
         }

@@ -73,12 +73,6 @@ namespace Metrics.Core
 
         public string Name { get; private set; }
 
-        public IEnumerable<GaugeValueSource> Gauges { get { return this.gauges.All; } }
-        public IEnumerable<CounterValueSource> Counters { get { return this.counters.All; } }
-        public IEnumerable<MeterValueSource> Meters { get { return this.meters.All; } }
-        public IEnumerable<HistogramValueSource> Histograms { get { return this.histograms.All; } }
-        public IEnumerable<TimerValueSource> Timers { get { return this.timers.All; } }
-
         public MetricsData MetricsData
         {
             get
