@@ -9,6 +9,11 @@ namespace Metrics
     {
         private static readonly MetricContext globalContext = new MetricContext();
 
+        public static MetricContext Context(string contextName, Func<string, MetricContext> contextCreator)
+        {
+            return globalContext.Context(contextName, contextCreator);
+        }
+
         public static MetricContext Context(string contextName)
         {
             return globalContext.Context(contextName);
@@ -17,6 +22,11 @@ namespace Metrics
         public static void ShutdownContext(string contextName)
         {
             globalContext.ShutdownContext(contextName);
+        }
+
+        public static void CompletelyDisableMetrics()
+        {
+            globalContext.CompletelyDisableMetrics();
         }
 
         /// <summary>

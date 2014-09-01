@@ -7,13 +7,6 @@ namespace Metrics.Json
     {
         public static string Serialize(MetricsData metricsData)
         {
-            metricsData.Gauges.GroupBy(g => g.Context)
-                .Select(g => new
-                {
-                    Context = g.Key,
-                    Gauges = g.AsEnumerable()
-                });
-
             return new JsonBuilder()
                 .AddTimestamp(Clock.Default)
                 .Add(metricsData.Gauges)

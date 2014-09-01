@@ -1,7 +1,6 @@
 ﻿
 using System;
 using Metrics;
-using Metrics.Core;
 using Metrics.Utils;
 using Nancy.Bootstrapper;
 namespace Nancy.Metrics
@@ -11,11 +10,11 @@ namespace Nancy.Metrics
         private const string TimerItemsKey = "__Mertics.RequestTimer__";
         private const string RequestStartTimeKey = "__Metrics.RequestStartTime__";
 
-        private readonly MetricsRegistry registry;
+        private readonly MetricContext context;
 
-        public NancyGlobalMetrics(MetricsRegistry repository)
+        public NancyGlobalMetrics(MetricContext context)
         {
-            this.registry = repository;
+            this.context = context;
             this.MetricsPrefix = "NancyFx";
         }
 
@@ -48,7 +47,7 @@ namespace Nancy.Metrics
         /// <param name="nancyPipelines">Pipelines to hook on.</param>
         public void RegisterRequestTimer(IPipelines nancyPipelines, string metricName = "Requests")
         {
-            var requestTimer = this.registry.Timer(Name(metricName), Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+            var requestTimer = this.context.Timer(Name(metricName), Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
@@ -75,7 +74,7 @@ namespace Nancy.Metrics
         /// <param name="metricName">Name of the metric.</param>
         public void RegisterErrorsMeter(IPipelines nancyPipelines, string metricName = "Errors")
         {
-            var errorMeter = this.registry.Meter(Name(metricName), Unit.Errors, TimeUnit.Seconds);
+            var errorMeter = this.context.Meter(Name(metricName), Unit.Errors, TimeUnit.Seconds);
 
             nancyPipelines.OnError.AddItemToStartOfPipeline((ctx, ex) =>
             {
@@ -91,7 +90,7 @@ namespace Nancy.Metrics
         /// <param name="metricName">Name of the metric.</param>
         public void RegisterActiveRequestCounter(IPipelines nancyPipelines, string metricName = "ActiveRequests")
         {
-            var counter = this.registry.Counter(Name(metricName), Unit.Custom("ActiveRequests"));
+            var counter = this.context.Counter(Name(metricName), Unit.Custom("ActiveRequests"));
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
@@ -112,7 +111,7 @@ namespace Nancy.Metrics
         /// <param name="metricName">Name of the metric.</param>
         public void RegisterPostAndPutRequestSizeHistogram(IPipelines nancyPipelines, string metricName = "PostAndPutRequestsSize")
         {
-            var histogram = this.registry.Histogram(Name(metricName), Unit.Bytes, SamplingType.FavourRecent);
+            var histogram = this.context.Histogram(Name(metricName), Unit.Bytes, SamplingType.FavourRecent);
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
@@ -146,7 +145,7 @@ namespace Nancy.Metrics
                     string name = string.Format("{0}.{1} [{2}]", this.MetricsPrefix, ctx.ResolvedRoute.Description.Method, ctx.ResolvedRoute.Description.Path);
                     var startTime = (long)ctx.Items["RequestStartTimeKey"];
                     var elapsed = Clock.Default.Nanoseconds - startTime;
-                    this.registry.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds)
+                    this.context.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds)
                         .Record(elapsed, TimeUnit.Nanoseconds);
                 }
             });

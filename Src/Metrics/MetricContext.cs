@@ -11,8 +11,10 @@ namespace Metrics
         private readonly ConcurrentDictionary<string, MetricContext> childContexts = new ConcurrentDictionary<string, MetricContext>();
 
         private readonly string context;
-        private readonly MetricsRegistry registry;
         private readonly MetricsConfig config;
+
+        private MetricsRegistry registry;
+        private bool isDisabled;
 
         public MetricContext()
             : this(string.Empty) { }
@@ -28,9 +30,23 @@ namespace Metrics
             this.config = new MetricsConfig(this);
         }
 
+        public MetricContext Context(string contextName, Func<string, MetricContext> contextCreator)
+        {
+            if (this.isDisabled)
+            {
+                return this;
+            }
+            return this.childContexts.GetOrAdd(contextName, contextCreator);
+        }
+
         public MetricContext Context(string contextName)
         {
-            return this.childContexts.GetOrAdd(contextName, c => new MetricContext(contextName));
+            if (string.IsNullOrEmpty(contextName))
+            {
+                return this;
+            }
+
+            return this.Context(contextName, c => new MetricContext(contextName));
         }
 
         public void ShutdownContext(string contextName)
@@ -51,16 +67,21 @@ namespace Metrics
         {
             get
             {
+                if (this.isDisabled)
+                {
+                    return MetricsData.Empty;
+                }
+
                 return new MetricsData(this.context, this.registry.MetricsData, this.childContexts.Values.Select(c => c.MetricsData));
             }
         }
 
-        public MetricsConfig Config { get { return this.config; } }
-        public MetricsRegistry Registry { get { return this.Registry; } }
-
-        public void Dispose()
+        public MetricsConfig Config
         {
-            this.config.Dispose();
+            get
+            {
+                return this.config;
+            }
         }
 
         /// <summary>
@@ -226,6 +247,34 @@ namespace Metrics
             TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
         {
             return this.registry.Timer(name, unit, samplingType, rateUnit, durationUnit);
+        }
+
+        /// <summary>
+        /// All metrics operations will be NO-OP.
+        /// This is useful for measuring the impact of the metrics library on the application.
+        /// If you think the Metrics library is causing issues, this will disable all Metrics operations.
+        /// </summary>
+        public void CompletelyDisableMetrics()
+        {
+            if (this.isDisabled)
+            {
+                return;
+            }
+
+            this.isDisabled = true;
+            var oldRegistry = this.registry;
+            this.registry = new NullMetricsRegistry();
+            this.config.DisableAllReports();
+
+            foreach (var context in this.childContexts.Values)
+            {
+                context.CompletelyDisableMetrics();
+            }
+        }
+
+        public void Dispose()
+        {
+            using (this.config) { }
         }
 
         private string Name<T>(string name)

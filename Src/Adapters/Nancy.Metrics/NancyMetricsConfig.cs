@@ -1,22 +1,21 @@
 ﻿using System;
 using Metrics;
-using Metrics.Core;
 
 namespace Nancy.Metrics
 {
     public class NancyMetricsConfig
     {
-        private readonly MetricsRegistry metricsRegistry;
+        private readonly MetricContext metricsContext;
         private readonly Func<HealthStatus> healthStatus;
         private NancyGlobalMetrics globalMetrics;
 
-        public NancyMetricsConfig(MetricsRegistry metricsRegistry, Func<HealthStatus> healthStatus)
+        public NancyMetricsConfig(MetricContext metricsContext, Func<HealthStatus> healthStatus)
         {
-            this.metricsRegistry = metricsRegistry;
+            this.metricsContext = metricsContext;
             this.healthStatus = healthStatus;
         }
 
-        public MetricsRegistry Registry { get { return this.metricsRegistry; } }
+        public MetricContext Context { get { return this.metricsContext; } }
 
         /// <summary>
         /// Configure global NancyFx Metrics.
@@ -34,9 +33,9 @@ namespace Nancy.Metrics
         /// </summary>
         /// <param name="config">Action to configure which global metrics to enable</param>
         /// <returns>This instance to allow chaining of the configuration.</returns>
-        public NancyMetricsConfig WithGlobalMetrics(Action<NancyGlobalMetrics> config)
+        public NancyMetricsConfig WithNancyMetrics(Action<NancyGlobalMetrics> config)
         {
-            this.globalMetrics = new NancyGlobalMetrics(this.metricsRegistry);
+            this.globalMetrics = new NancyGlobalMetrics(this.metricsContext);
             config(this.globalMetrics);
             return this;
         }
@@ -83,7 +82,7 @@ namespace Nancy.Metrics
         /// <returns>This instance to allow chaining of the configuration.</returns>
         public NancyMetricsConfig WithMetricsModule(Action<INancyModule> moduleConfig, string metricsPath = "/metrics")
         {
-            MetricsModule.Configure(this.metricsRegistry, this.healthStatus, moduleConfig, metricsPath);
+            MetricsModule.Configure(this.metricsContext.MetricsData, this.healthStatus, moduleConfig, metricsPath);
             return this;
         }
 

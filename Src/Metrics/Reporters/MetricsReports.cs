@@ -1,7 +1,6 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using Metrics.Core;
 using Metrics.Reporters;
 namespace Metrics.Reports
 {
@@ -52,16 +51,6 @@ namespace Metrics.Reports
             return WithReporter("CSVFiles", () => new CSVReporter(new CSVFileAppender(directory, delimiter)), interval);
         }
 
-        ///// <summary>
-        ///// Configure Metrics to append a line for each metric to a CSV file using the custom <paramref name="fileAppender"/>.
-        ///// </summary>
-        ///// <param name="fileAppender">Custom file appender to write the CSV files.</param>
-        ///// <param name="interval">Interval at which to append a line to the files.</param>
-        //public MetricsReports WithCSVReports(CSVFileAppender fileAppender, TimeSpan interval)
-        //{
-        //    return WithReporter("CSVFiles", () => new CSVReporter(fileAppender), interval);
-        //}
-
         /// <summary>
         /// Schedule a Human Readable report to be executed and appended to a text file.
         /// </summary>
@@ -77,14 +66,13 @@ namespace Metrics.Reports
         /// </summary>
         public void StopAndClearAllReports()
         {
-            this.reports.ForEach(r => r.Stop());
+            this.reports.ForEach(r => r.Dispose());
             this.reports.Clear();
         }
 
         public void Dispose()
         {
-            this.reports.ForEach(r => r.Dispose());
-            this.reports.Clear();
+            StopAndClearAllReports();
         }
     }
 }

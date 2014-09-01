@@ -12,8 +12,10 @@ namespace Metrics
         Timer
     }
 
-    public interface MetricFilter
+    public interface MetricsFilter
     {
+        bool IsMatch(string context);
+
         bool IsMatch(GaugeValueSource gauge);
         bool IsMatch(CounterValueSource counter);
         bool IsMatch(MeterValueSource meter);
@@ -21,14 +23,15 @@ namespace Metrics
         bool IsMatch(TimerValueSource timer);
     }
 
-    public class Filter : MetricFilter
+    public class Filter : MetricsFilter
     {
         private Predicate<string> context = null;
         private Predicate<string> name = null;
         private HashSet<MetricType> types = null;
 
-        private class NoOpFilter : MetricFilter
+        private class NoOpFilter : MetricsFilter
         {
+            public bool IsMatch(string context) { return true; }
             public bool IsMatch(GaugeValueSource gauge) { return true; }
             public bool IsMatch(CounterValueSource counter) { return true; }
             public bool IsMatch(MeterValueSource meter) { return true; }
@@ -36,7 +39,7 @@ namespace Metrics
             public bool IsMatch(TimerValueSource timer) { return true; }
         }
 
-        public static MetricFilter All = new NoOpFilter();
+        public static MetricsFilter All = new NoOpFilter();
 
         private Filter() { }
 
@@ -71,6 +74,16 @@ namespace Metrics
         {
             this.types = new HashSet<MetricType>(types);
             return this;
+        }
+
+        public bool IsMatch(string context)
+        {
+            if (this.context != null && !this.context(context))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public bool IsMatch(GaugeValueSource gauge)

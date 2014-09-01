@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using Metrics.Core;
 using Metrics.Utils;
 
 namespace Metrics.Reporters
@@ -43,6 +42,7 @@ namespace Metrics.Reporters
 
         public void Dispose()
         {
+            this.Stop();
             this.scheduler.Dispose();
         }
     }

@@ -27,7 +27,7 @@ namespace Nancy.Metrics
         {
             var name = string.Format("{0}.{1}", module.GetType().Name, metricName);
             CheckNancyMetricsIsConfigured();
-            var timer = NancyMetrics.CurrentConfig.Registry.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+            var timer = NancyMetrics.CurrentConfig.Context.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
             var key = "Metrics.Nancy.Request.Timer." + metricName;
 
             module.Before.AddItemToStartOfPipeline(ctx =>
@@ -58,7 +58,7 @@ namespace Nancy.Metrics
         {
             var name = string.Format("{0}.{1}", module.GetType().Name, metricName);
             CheckNancyMetricsIsConfigured();
-            var histogram = NancyMetrics.CurrentConfig.Registry.Histogram(name, Unit.Custom("bytes"), SamplingType.FavourRecent);
+            var histogram = NancyMetrics.CurrentConfig.Context.Histogram(name, Unit.Custom("bytes"), SamplingType.FavourRecent);
 
             module.After.AddItemToEndOfPipeline(ctx =>
             {
@@ -97,7 +97,7 @@ namespace Nancy.Metrics
         {
             var name = string.Format("{0}.{1}", module.GetType().Name, metricName);
             CheckNancyMetricsIsConfigured();
-            var histogram = NancyMetrics.CurrentConfig.Registry.Histogram(name, Unit.Custom("bytes"), SamplingType.FavourRecent);
+            var histogram = NancyMetrics.CurrentConfig.Context.Histogram(name, Unit.Custom("bytes"), SamplingType.FavourRecent);
 
             module.Before.AddItemToStartOfPipeline(ctx =>
             {

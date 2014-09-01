@@ -23,7 +23,7 @@ namespace Metrics.Json
             public IEnumerable<TimerValueSource> Timers { get; set; }
         }
 
-        public string BuildJson(MetricsRegistry registry, MetricFilter filter, bool indented = true)
+        public string BuildJson(MetricsRegistry registry, MetricsFilter filter, bool indented = true)
         {
             Dictionary<string, ContextResult> contexts = new Dictionary<string, ContextResult>();
 

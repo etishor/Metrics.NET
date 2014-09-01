@@ -27,7 +27,7 @@ namespace NancyFx.Sample
                 .WithAllCounters()
                 .WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30)))
                 .WithNancy(config => config
-                    .WithGlobalMetrics(c => c.RegisterAllMetrics(pipelines))
+                    .WithNancyMetrics(c => c.RegisterAllMetrics(pipelines))
                     .WithMetricsModule()
                 );
 

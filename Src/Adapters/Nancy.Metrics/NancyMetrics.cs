@@ -1,5 +1,4 @@
 ﻿using System;
-using Metrics.Core;
 using Nancy.Metrics;
 
 namespace Metrics
@@ -11,6 +10,8 @@ namespace Metrics
     {
         internal static NancyMetricsConfig CurrentConfig { get; private set; }
 
+        internal static MetricContext Context { get { return CurrentConfig.Context; } }
+
         /// <summary>
         /// Configure NancyFx integration
         /// </summary>
@@ -21,41 +22,9 @@ namespace Metrics
             return config.WithNancy(c => { });
         }
 
-        /// <summary>
-        /// Configure NancyFx integration
-        /// </summary>
-        /// <param name="config">Chainable configuration object.</param>
-        /// <param name="nancyConfig">Action to configure NancyFx integration.</param>
-        /// <returns>Chainable configuration object.</returns>
-        public static MetricsConfig WithNancy(this MetricsConfig config, Action<NancyMetricsConfig> nancyConfig)
+        public static MetricsConfig WithNancy(this MetricsConfig config, Action<NancyMetricsConfig> nancyConfig, string contextName = "NancyFx")
         {
-            return config.WithNancy(config.Registry, nancyConfig);
-        }
-
-        /// <summary>
-        /// Configure NancyFx integration
-        /// </summary>
-        /// <param name="config">Chainable configuration object.</param>
-        /// <param name="registry">Custom metrics registry.</param>
-        /// <param name="nancyConfig">Action to configure NancyFx integration.</param>
-        /// <returns>Chainable configuration object.</returns>
-        public static MetricsConfig WithNancy(this MetricsConfig config, MetricsRegistry registry, Action<NancyMetricsConfig> nancyConfig)
-        {
-            return config.WithNancy(registry, config.HealthStatus, nancyConfig);
-        }
-
-        /// <summary>
-        /// Configure NancyFx integration
-        /// </summary>
-        /// <param name="config">Chainable configuration object.</param>
-        /// <param name="registry">Custom metrics registry.</param>
-        /// <param name="healthStatus">Custom health checks status</param>
-        /// <param name="nancyConfig">Action to configure NancyFx integration.</param>
-        /// <returns>Chainable configuration object.</returns>
-        public static MetricsConfig WithNancy(this MetricsConfig config, MetricsRegistry registry, Func<HealthStatus> healthStatus,
-            Action<NancyMetricsConfig> nancyConfig)
-        {
-            CurrentConfig = new NancyMetricsConfig(registry, healthStatus);
+            CurrentConfig = config.Configure((ctx, hs) => new NancyMetricsConfig(ctx.Context(contextName), hs));
             nancyConfig(CurrentConfig);
             return config;
         }

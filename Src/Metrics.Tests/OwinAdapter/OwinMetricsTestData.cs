@@ -41,7 +41,9 @@ namespace Metrics.Tests.OwinAdapter
                     MeterInstance = MeterMetric
                 };
 
-                OwinMetricsConfig owin = new OwinMetricsConfig(middleware => app.Use(middleware), registery, Metric.Config.HealthStatus);
+                var metricsContext = new MetricContext("test", registery);
+
+                OwinMetricsConfig owin = new OwinMetricsConfig(middleware => app.Use(middleware), metricsContext, () => HealthChecks.GetStatus());
                 owin.WithRequestMetricsConfig(c => c.RegisterAllMetrics());
 
                 app.Run(context =>

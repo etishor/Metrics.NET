@@ -13,12 +13,12 @@ namespace Nancy.Metrics
         {
             public readonly string ModulePath;
             public readonly Action<INancyModule> ModuleConfigAction;
-            public readonly MetricsRegistry Registry;
+            public readonly MetricsData MetricsData;
             public readonly Func<HealthStatus> HealthStatus;
 
-            public ModuleConfig(MetricsRegistry registry, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
+            public ModuleConfig(MetricsData metricsData, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
             {
-                this.Registry = registry;
+                this.MetricsData = metricsData;
                 this.HealthStatus = healthStatus;
                 this.ModuleConfigAction = moduleConfig;
                 this.ModulePath = metricsPath;
@@ -28,9 +28,9 @@ namespace Nancy.Metrics
         private static ModuleConfig Config;
         private static bool healthChecksAlwaysReturnHttpStatusOk = false;
 
-        public static void Configure(MetricsRegistry registry, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
+        public static void Configure(MetricsData metricsData, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
         {
-            MetricsModule.Config = new ModuleConfig(registry, healthStatus, moduleConfig, metricsPath);
+            MetricsModule.Config = new ModuleConfig(metricsData, healthStatus, moduleConfig, metricsPath);
         }
 
         public static void ConfigureHealthChecks(bool alwaysReturnOk)
@@ -70,8 +70,8 @@ namespace Nancy.Metrics
             };
 
             Get["/text"] = _ => Response.AsText(GetAsHumanReadable()).WithHeaders(noCacheHeaders);
-            Get["/jsonold"] = _ => Response.AsText(RegistrySerializer.GetAsJson(Config.Registry), "text/json").WithHeaders(noCacheHeaders);
-            Get["/json"] = _ => Response.AsText(JsonMetrics.Serialize(Config.Registry), "text/json").WithHeaders(noCacheHeaders);
+            Get["/jsonold"] = _ => Response.AsText(RegistrySerializer.GetAsJson(Config.MetricsData), "text/json").WithHeaders(noCacheHeaders);
+            Get["/json"] = _ => Response.AsText(JsonMetrics.Serialize(Config.MetricsData), "text/json").WithHeaders(noCacheHeaders);
             Get["/ping"] = _ => Response.AsText("pong", "text/plain").WithHeaders(noCacheHeaders);
             Get["/health"] = _ => GetHealthStatus().WithHeaders(noCacheHeaders);
         }
@@ -96,7 +96,7 @@ namespace Nancy.Metrics
         private static string GetAsHumanReadable()
         {
             var report = new StringReporter();
-            report.RunReport(Config.Registry, Config.HealthStatus);
+            report.RunReport(Config.MetricsData, Config.HealthStatus);
             return report.Result;
         }
 

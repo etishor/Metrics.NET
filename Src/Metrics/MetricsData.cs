@@ -41,5 +41,21 @@ namespace Metrics
             this.Timers = timers;
             this.ChildMetrics = childMetrics;
         }
+
+        public MetricsData Filter(MetricsFilter filter)
+        {
+            if (!filter.IsMatch(this.Context))
+            {
+                return MetricsData.Empty;
+            }
+
+            return new MetricsData(this.Context,
+                this.Gauges.Where(g => filter.IsMatch(g)),
+                this.Counters.Where(c => filter.IsMatch(c)),
+                this.Meters.Where(m => filter.IsMatch(m)),
+                this.Histograms.Where(h => filter.IsMatch(h)),
+                this.Timers.Where(t => filter.IsMatch(t)),
+                this.ChildMetrics.Select(m => m.Filter(filter)));
+        }
     }
 }

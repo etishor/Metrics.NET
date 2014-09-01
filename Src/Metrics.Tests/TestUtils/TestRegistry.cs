@@ -63,7 +63,7 @@ namespace Metrics.Tests.TestUtils
 
         public MetricsData MetricsData
         {
-            get { throw new NotImplementedException(); }
+            get { return MetricsData.Empty; }
         }
     }
 }
