@@ -1,69 +1,74 @@
 ﻿using System;
-using System.Collections.Generic;
 using Metrics.Core;
+using Metrics.Utils;
 
 namespace Metrics.Tests.TestUtils
 {
-    public class TestRegistry : MetricsRegistry
+    public class TestRegistry : BaseRegistry
     {
-        public TestRegistry()
-        { }
+        private readonly Clock clock;
+        private readonly Scheduler scheduler;
 
-        public string Name { get { return "test"; } }
-
-        public Timer TimerInstance { get; set; }
-        public Meter MeterInstance { get; set; }
-        public Histogram HistogramInstance { get; set; }
-        public Counter CounterInstance { get; set; }
-        public Gauge GaugeInstance { get; set; }
-
-        public Func<string, Func<double>, Unit, Gauge> GaugeBuilder { get; set; }
-        public Func<string, Unit, Counter> CounterBuilder { get; set; }
-        public Func<string, Unit, TimeUnit, Meter> MeterBuilder { get; set; }
-        public Func<string, Unit, SamplingType, Histogram> HistogramBuilder { get; set; }
-        public Func<string, Unit, SamplingType, TimeUnit, TimeUnit, Timer> TimerBuilder { get; set; }
-
-        public Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
+        public TestRegistry(string registryName, Clock clock, Scheduler scheduler)
+            : base(registryName)
         {
-            return GaugeInstance != null ? GaugeInstance : GaugeBuilder(name, valueProvider, unit);
+            this.clock = clock;
+            this.scheduler = scheduler;
         }
 
-        public Gauge Gauge<T>(string name, Func<T> gauge, Unit unit) where T : GaugeMetric
+        //public new FunctionGauge FindGauge(string name) { return base.FindGauge(name) as FunctionGauge; }
+        //public new CounterMetric FindCounter(string name) { return base.FindCounter(name) as CounterMetric; }
+        //public new MeterMetric FindMeter(string name) { return base.FindMeter(name) as MeterMetric; }
+        //public new HistogramMetric FindHistogram(string name) { return base.FindHistogram(name) as HistogramMetric; }
+        //public new TimerMetric FindTimer(string name) { return base.FindTimer(name) as TimerMetric; }
+
+        protected override Tuple<Gauge, GaugeValueSource> CreateGauge(string name, Func<double> valueProvider, Unit unit)
         {
-            return gauge();
+            var gauge = new FunctionGauge(valueProvider);
+            return Tuple.Create((Gauge)gauge, new GaugeValueSource(name, gauge, unit));
         }
 
-        public Counter Counter(string name, Unit unit)
+        protected override Tuple<Gauge, GaugeValueSource> CreateGauge<T>(string name, Func<T> gauge, Unit unit)
         {
-            return CounterInstance != null ? CounterInstance : CounterBuilder(name, unit);
+            var gaugeMetric = gauge();
+            return Tuple.Create((Gauge)gaugeMetric, new GaugeValueSource(name, gaugeMetric, unit));
         }
 
-        public Meter Meter(string name, Unit unit, TimeUnit rateUnit)
+        protected override Tuple<Counter, CounterValueSource> CreateCounter(string name, Unit unit)
         {
-            return MeterInstance != null ? MeterInstance : MeterBuilder(name, unit, rateUnit);
+
+            var counter = new CounterMetric();
+            return Tuple.Create((Counter)counter, new CounterValueSource(name, counter, unit));
         }
 
-        public Histogram Histogram(string name, Unit unit, SamplingType samplingType)
+        protected override Tuple<Meter, MeterValueSource> CreateMeter(string name, Unit unit, TimeUnit rateUnit)
         {
-            return HistogramInstance != null ? HistogramInstance : HistogramBuilder(name, unit, samplingType);
+            var meter = new MeterMetric(this.clock, this.scheduler);
+            return Tuple.Create((Meter)meter, new MeterValueSource(name, meter, unit, rateUnit));
         }
 
-        public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit)
+        protected override Tuple<Histogram, HistogramValueSource> CreateHistogram(string name, Unit unit, SamplingType samplingType)
         {
-            return TimerInstance != null ? TimerInstance : TimerBuilder(name, unit, samplingType, rateUnit, durationUnit);
+            var histogram = new HistogramMetric(SamplingTypeToReservoir(samplingType));
+            return Tuple.Create((Histogram)histogram, new HistogramValueSource(name, histogram, unit));
         }
 
-        public IEnumerable<GaugeValueSource> Gauges { get { yield break; } }
-        public IEnumerable<CounterValueSource> Counters { get { yield break; } }
-        public IEnumerable<MeterValueSource> Meters { get { yield break; } }
-        public IEnumerable<HistogramValueSource> Histograms { get { yield break; } }
-        public IEnumerable<TimerValueSource> Timers { get { yield break; } }
-
-        public void ClearAllMetrics() { }
-
-        public MetricsData MetricsData
+        protected override Tuple<Timer, TimerValueSource> CreateTimer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit)
         {
-            get { return MetricsData.Empty; }
+            var timer = new TimerMetric(new HistogramMetric(SamplingTypeToReservoir(samplingType)), new MeterMetric(this.clock, this.scheduler), this.clock);
+            return Tuple.Create((Timer)timer, new TimerValueSource(name, timer, unit, rateUnit, durationUnit));
+        }
+
+        private Reservoir SamplingTypeToReservoir(SamplingType samplingType)
+        {
+            return new SlidingWindowReservoir();
+            //switch (samplingType)
+            //{
+            //    case SamplingType.FavourRecent: return new ExponentiallyDecayingReservoir(this.clock, this.scheduler);
+            //    case SamplingType.LongTerm: return new UniformReservoir();
+            //    case SamplingType.SlidingWindow: return new SlidingWindowReservoir();
+            //}
+            //throw new System.NotImplementedException();
         }
     }
 }

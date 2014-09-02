@@ -1,104 +1,104 @@
-﻿using FluentAssertions;
-using Metrics.Core;
-using Metrics.Tests.TestUtils;
-using Metrics.Utils;
-using Nancy;
-using Nancy.Metrics;
-using Nancy.Testing;
-using Xunit;
+﻿//using FluentAssertions;
+//using Metrics.Core;
+//using Metrics.Tests.TestUtils;
+//using Metrics.Utils;
+//using Nancy;
+//using Nancy.Metrics;
+//using Nancy.Testing;
+//using Xunit;
 
-namespace Metrics.Tests.NancyAdapter
-{
-    public class NancyAdapterModuleMetricsTests
-    {
-        public class TestModule : NancyModule
-        {
-            public TestModule(TestClock clock)
-                : base("/test")
-            {
-                this.MetricForRequestTimeAndResponseSize("ActionRequest", "Get", "/");
-                this.MetricForRequestSize("RequestSize", "Put", "/");
+//namespace Metrics.Tests.NancyAdapter
+//{
+//    public class NancyAdapterModuleMetricsTests
+//    {
+//        public class TestModule : NancyModule
+//        {
+//            public TestModule(TestClock clock)
+//                : base("/test")
+//            {
+//                this.MetricForRequestTimeAndResponseSize("ActionRequest", "Get", "/");
+//                this.MetricForRequestSize("RequestSize", "Put", "/");
 
-                Get["/action"] = _ =>
-                {
-                    clock.Advance(TimeUnit.Milliseconds, 100);
-                    return Response.AsText("response");
-                };
+//                Get["/action"] = _ =>
+//                {
+//                    clock.Advance(TimeUnit.Milliseconds, 100);
+//                    return Response.AsText("response");
+//                };
 
-                Get["/contentWithLength"] = _ =>
-                {
-                    clock.Advance(TimeUnit.Milliseconds, 100);
-                    return Response.AsText("response").WithHeader("Content-Length", "100");
-                };
+//                Get["/contentWithLength"] = _ =>
+//                {
+//                    clock.Advance(TimeUnit.Milliseconds, 100);
+//                    return Response.AsText("response").WithHeader("Content-Length", "100");
+//                };
 
-                Put["/size"] = _ => HttpStatusCode.OK;
-            }
-        }
+//                Put["/size"] = _ => HttpStatusCode.OK;
+//            }
+//        }
 
-        private readonly TestClock clock;
-        private readonly TimerMetric timer;
-        private readonly HistogramMetric sizeHistogram;
-        private readonly Browser browser;
+//        private readonly TestClock clock;
+//        private readonly TimerMetric timer;
+//        private readonly HistogramMetric sizeHistogram;
+//        private readonly Browser browser;
 
-        public NancyAdapterModuleMetricsTests()
-        {
-            this.clock = new TestClock();
-            TestScheduler scheduler = new TestScheduler(clock);
+//        public NancyAdapterModuleMetricsTests()
+//        {
+//            this.clock = new TestClock();
+//            TestScheduler scheduler = new TestScheduler(clock);
 
-            this.timer = new TimerMetric(SamplingType.SlidingWindow, new MeterMetric(clock, scheduler), clock);
-            this.sizeHistogram = new HistogramMetric();
+//            this.timer = new TimerMetric(SamplingType.SlidingWindow, new MeterMetric(clock, scheduler), clock);
+//            this.sizeHistogram = new HistogramMetric();
 
-            var registry = new TestRegistry { TimerInstance = timer, HistogramInstance = sizeHistogram };
-            var context = new DefaultMetricsContext("test", registry);
+//            var registry = new TestRegistry { TimerInstance = timer, HistogramInstance = sizeHistogram };
+//            var context = new DefaultMetricsContext("test", registry);
 
-            context.Config.WithNancy(c => { }, contextName: string.Empty);
+//            context.Config.WithNancy(c => { });
 
-            this.browser = new Browser(with =>
-            {
-                with.Module(new TestModule(this.clock));
-            });
-        }
+//            this.browser = new Browser(with =>
+//            {
+//                with.Module(new TestModule(this.clock));
+//            });
+//        }
 
 
-        [Fact]
-        public void NancyMetricsShouldBeAbleToMonitorTimeForModuleRequest()
-        {
-            browser.Get("/test/action").StatusCode.Should().Be(HttpStatusCode.OK);
+//        [Fact]
+//        public void NancyMetricsShouldBeAbleToMonitorTimeForModuleRequest()
+//        {
+//            browser.Get("/test/action").StatusCode.Should().Be(HttpStatusCode.OK);
 
-            timer.Value.Rate.Count.Should().Be(1);
-            timer.Value.Histogram.Count.Should().Be(1);
-            timer.Value.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
-        }
+//            timer.Value.Rate.Count.Should().Be(1);
+//            timer.Value.Histogram.Count.Should().Be(1);
+//            timer.Value.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
+//        }
 
-        [Fact]
-        public void NancyMetricsShouldBeAbleToMonitorSizeForRouteReponse()
-        {
-            browser.Get("/test/action").StatusCode.Should().Be(HttpStatusCode.OK);
+//        [Fact]
+//        public void NancyMetricsShouldBeAbleToMonitorSizeForRouteReponse()
+//        {
+//            browser.Get("/test/action").StatusCode.Should().Be(HttpStatusCode.OK);
 
-            sizeHistogram.Value.Count.Should().Be(1);
-            sizeHistogram.Value.Min.Should().Be("response".Length);
-            sizeHistogram.Value.Max.Should().Be("response".Length);
+//            sizeHistogram.Value.Count.Should().Be(1);
+//            sizeHistogram.Value.Min.Should().Be("response".Length);
+//            sizeHistogram.Value.Max.Should().Be("response".Length);
 
-            browser.Get("/test/contentWithLength").StatusCode.Should().Be(HttpStatusCode.OK);
+//            browser.Get("/test/contentWithLength").StatusCode.Should().Be(HttpStatusCode.OK);
 
-            sizeHistogram.Value.Count.Should().Be(2);
-            sizeHistogram.Value.Min.Should().Be("response".Length);
-            sizeHistogram.Value.Max.Should().Be(100);
-        }
+//            sizeHistogram.Value.Count.Should().Be(2);
+//            sizeHistogram.Value.Min.Should().Be("response".Length);
+//            sizeHistogram.Value.Max.Should().Be(100);
+//        }
 
-        [Fact]
-        public void NancyMetricsShouldBeAbleToMonitorSizeForRequest()
-        {
-            sizeHistogram.Value.Count.Should().Be(0);
+//        [Fact]
+//        public void NancyMetricsShouldBeAbleToMonitorSizeForRequest()
+//        {
+//            sizeHistogram.Value.Count.Should().Be(0);
 
-            browser.Put("/test/size", ctx =>
-            {
-                ctx.Header("Content-Length", "content".Length.ToString());
-                ctx.Body("content");
-            }).StatusCode.Should().Be(HttpStatusCode.OK);
+//            browser.Put("/test/size", ctx =>
+//            {
+//                ctx.Header("Content-Length", "content".Length.ToString());
+//                ctx.Body("content");
+//            }).StatusCode.Should().Be(HttpStatusCode.OK);
 
-            sizeHistogram.Value.Count.Should().Be(1);
-            sizeHistogram.Value.Min.Should().Be("content".Length);
-        }
-    }
-}
+//            sizeHistogram.Value.Count.Should().Be(1);
+//            sizeHistogram.Value.Min.Should().Be("content".Length);
+//        }
+//    }
+//}

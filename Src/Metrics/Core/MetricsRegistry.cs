@@ -5,8 +5,6 @@ namespace Metrics.Core
 {
     public interface MetricsRegistry
     {
-        string Name { get; }
-
         MetricsData MetricsData { get; }
 
         Gauge Gauge(string name, Func<double> valueProvider, Unit unit);

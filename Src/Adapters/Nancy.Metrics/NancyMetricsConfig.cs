@@ -33,9 +33,9 @@ namespace Nancy.Metrics
         /// </summary>
         /// <param name="config">Action to configure which global metrics to enable</param>
         /// <returns>This instance to allow chaining of the configuration.</returns>
-        public NancyMetricsConfig WithNancyMetrics(Action<NancyGlobalMetrics> config)
+        public NancyMetricsConfig WithNancyMetrics(Action<NancyGlobalMetrics> config, string context = "NancyFx")
         {
-            this.globalMetrics = new NancyGlobalMetrics(this.metricsContext);
+            this.globalMetrics = new NancyGlobalMetrics(this.metricsContext.Context(context));
             config(this.globalMetrics);
             return this;
         }
@@ -82,7 +82,7 @@ namespace Nancy.Metrics
         /// <returns>This instance to allow chaining of the configuration.</returns>
         public NancyMetricsConfig WithMetricsModule(Action<INancyModule> moduleConfig, string metricsPath = "/metrics")
         {
-            MetricsModule.Configure(this.metricsContext.MetricsData, this.healthStatus, moduleConfig, metricsPath);
+            MetricsModule.Configure(this.metricsContext, this.healthStatus, moduleConfig, metricsPath);
             return this;
         }
 

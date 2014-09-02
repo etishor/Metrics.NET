@@ -15,7 +15,7 @@ namespace Nancy.Metrics
         public NancyGlobalMetrics(MetricsContext context)
         {
             this.context = context;
-            this.MetricsPrefix = "NancyFx";
+            this.MetricsPrefix = "";
         }
 
         public string MetricsPrefix { get; set; }

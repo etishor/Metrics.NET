@@ -22,9 +22,9 @@ namespace Metrics
             return config.WithNancy(c => { });
         }
 
-        public static MetricsConfig WithNancy(this MetricsConfig config, Action<NancyMetricsConfig> nancyConfig, string contextName = "NancyFx")
+        public static MetricsConfig WithNancy(this MetricsConfig config, Action<NancyMetricsConfig> nancyConfig)
         {
-            CurrentConfig = config.Configure((ctx, hs) => new NancyMetricsConfig(ctx.Context(contextName), hs));
+            CurrentConfig = config.Configure((ctx, hs) => new NancyMetricsConfig(ctx, hs));
             nancyConfig(CurrentConfig);
             return config;
         }
