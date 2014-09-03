@@ -48,16 +48,6 @@ namespace Metrics.Core
                 }).Metric;
             }
 
-            //public TMetric Find(string name)
-            //{
-            //    MetricMeta value;
-            //    if (this.metrics.TryGetValue(name, out value))
-            //    {
-            //        return value.Metric;
-            //    }
-            //    return default(TMetric);
-            //}
-
             public void Clear()
             {
                 var values = this.metrics.Values;
@@ -128,12 +118,6 @@ namespace Metrics.Core
         protected abstract Tuple<Meter, MeterValueSource> CreateMeter(string name, Unit unit, TimeUnit rateUnit);
         protected abstract Tuple<Histogram, HistogramValueSource> CreateHistogram(string name, Unit unit, SamplingType samplingType);
         protected abstract Tuple<Timer, TimerValueSource> CreateTimer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit);
-
-        //protected Gauge FindGauge(string name) { return this.gauges.Find(name); }
-        //protected Counter FindCounter(string name) { return this.counters.Find(name); }
-        //protected Meter FindMeter(string name) { return this.meters.Find(name); }
-        //protected Histogram FindHistogram(string name) { return this.histograms.Find(name); }
-        //protected Timer FindTimer(string name) { return this.timers.Find(name); }
 
         public void ClearAllMetrics()
         {

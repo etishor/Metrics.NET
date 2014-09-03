@@ -50,8 +50,9 @@ namespace Metrics
         }
 
         /// <summary>
-        /// Globally disable all metrics. Useful for measuring the impact of the metrics library. 
-        /// No metrics are collected and no reports are run.
+        /// All metrics operations will be NO-OP.
+        /// This is useful for measuring the impact of the metrics library on the application.
+        /// If you think the Metrics library is causing issues, this will disable all Metrics operations.
         /// </summary>
         public static void CompletelyDisableMetrics()
         {
