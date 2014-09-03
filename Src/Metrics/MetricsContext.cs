@@ -3,8 +3,6 @@ namespace Metrics
 {
     public interface MetricsContext : MetricsDataProvider, IDisposable
     {
-        MetricsConfig Config { get; }
-
         MetricsContext Context(string contextName);
         MetricsContext Context(string contextName, Func<string, MetricsContext> contextCreator);
         void ShutdownContext(string contextName);
@@ -17,5 +15,7 @@ namespace Metrics
         Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds);
 
         void CompletelyDisableMetrics();
+
+        event EventHandler ContextShuttingDown;
     }
 }

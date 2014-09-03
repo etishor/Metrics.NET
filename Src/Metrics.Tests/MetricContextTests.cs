@@ -48,5 +48,22 @@ namespace Metrics.Tests
             counterValue.Value.Should().Be(1);
         }
 
+        [Fact]
+        public void ContextRaisesShutdownEventOnMetricsDisable()
+        {
+            MetricsContext context = new DefaultMetricsContext();
+            context.MonitorEvents();
+            context.CompletelyDisableMetrics();
+            context.ShouldRaise("ContextShuttingDown");
+        }
+
+        [Fact]
+        public void ContextRaisesShutdownEventOnDispose()
+        {
+            MetricsContext context = new DefaultMetricsContext();
+            context.MonitorEvents();
+            context.Dispose();
+            context.ShouldRaise("ContextShuttingDown");
+        }
     }
 }

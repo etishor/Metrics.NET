@@ -10,8 +10,6 @@ namespace Metrics.Core
         private readonly ConcurrentDictionary<string, MetricsContext> childContexts = new ConcurrentDictionary<string, MetricsContext>();
 
         private readonly string context;
-        private readonly MetricsConfig config;
-
         private MetricsRegistry registry;
         private bool isDisabled;
 
@@ -19,8 +17,9 @@ namespace Metrics.Core
         {
             this.context = context;
             this.registry = registry;
-            this.config = new MetricsConfig(this);
         }
+
+        public event EventHandler ContextShuttingDown;
 
         public abstract MetricsContext Context(string contextName);
 
@@ -63,14 +62,6 @@ namespace Metrics.Core
                 }
 
                 return new MetricsData(this.context, this.registry.MetricsData, this.childContexts.Values.Select(c => c.CurrentMetricsData));
-            }
-        }
-
-        public MetricsConfig Config
-        {
-            get
-            {
-                return this.config;
             }
         }
 
@@ -171,20 +162,30 @@ namespace Metrics.Core
             }
 
             this.isDisabled = true;
+
             var oldRegistry = this.registry;
             this.registry = new NullMetricsRegistry();
-            this.config.DisableAllReports();
-
             oldRegistry.ClearAllMetrics();
             foreach (var context in this.childContexts.Values)
             {
                 context.CompletelyDisableMetrics();
             }
+
+            if (this.ContextShuttingDown != null)
+            {
+                this.ContextShuttingDown(this, EventArgs.Empty);
+            }
         }
 
         public void Dispose()
         {
-            using (this.config) { }
+            if (!this.isDisabled)
+            {
+                if (this.ContextShuttingDown != null)
+                {
+                    this.ContextShuttingDown(this, EventArgs.Empty);
+                }
+            }
         }
     }
 }

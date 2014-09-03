@@ -35,11 +35,13 @@ namespace Metrics.Tests.NancyAdapter
         }
 
         private readonly TestContext context = new TestContext();
+        private readonly MetricsConfig config;
         private readonly Browser browser;
 
         public NancyAdapterModuleMetricsTests()
         {
-            this.context.Config.WithNancy(c => { });
+            this.config = new MetricsConfig(this.context);
+            this.config.WithNancy(c => { });
 
             this.browser = new Browser(with =>
             {

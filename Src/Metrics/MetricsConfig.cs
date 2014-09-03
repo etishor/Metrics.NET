@@ -13,11 +13,13 @@ namespace Metrics
         private Func<HealthStatus> healthStatus;
         private MetricsHttpListener listener;
 
-        internal MetricsConfig(MetricsContext context)
+        public MetricsConfig(MetricsContext context)
         {
             this.context = context;
             this.reports = new MetricsReports(this.context, this.healthStatus);
             this.healthStatus = () => HealthChecks.GetStatus();
+
+            this.context.ContextShuttingDown += (s, e) => this.DisableAllReports();
         }
 
         public T Configure<T>(Func<MetricsContext, T> config)
@@ -88,13 +90,6 @@ namespace Metrics
             return this;
         }
 
-        internal void DisableAllReports()
-        {
-            this.reports.StopAndClearAllReports();
-            using (this.listener) { }
-            this.listener = null;
-        }
-
         public void Dispose()
         {
             this.reports.Dispose();
@@ -102,7 +97,12 @@ namespace Metrics
             this.listener = null;
         }
 
-
+        private void DisableAllReports()
+        {
+            this.reports.StopAndClearAllReports();
+            using (this.listener) { }
+            this.listener = null;
+        }
 
         /// <summary>
         /// Configured error handler

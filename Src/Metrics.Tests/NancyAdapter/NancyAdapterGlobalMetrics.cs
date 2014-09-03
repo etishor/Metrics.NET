@@ -43,6 +43,7 @@ namespace Metrics.Tests.NancyAdapter
         }
 
         private readonly TestContext context = new TestContext();
+        private readonly MetricsConfig config;
 
         private readonly Browser browser;
 
@@ -52,11 +53,12 @@ namespace Metrics.Tests.NancyAdapter
 
         public NancyAdapterGlobalMetrics()
         {
+            this.config = new MetricsConfig(this.context);
             this.browser = new Browser(with =>
             {
                 with.ApplicationStartup((c, p) =>
                 {
-                    this.context.Config.WithNancy(nancy => nancy.WithNancyMetrics(config => config.RegisterAllMetrics(p)));
+                    this.config.WithNancy(nancy => nancy.WithNancyMetrics(config => config.RegisterAllMetrics(p)));
                 });
 
                 with.Module(new TestModule(this.context.Clock));

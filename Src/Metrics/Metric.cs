@@ -9,6 +9,7 @@ namespace Metrics
     public static class Metric
     {
         private static readonly MetricsContext globalContext = new DefaultMetricsContext(Process.GetCurrentProcess().ProcessName);
+        private static readonly MetricsConfig config = new MetricsConfig(Metric.globalContext);
 
         public static MetricsContext Context(string contextName, Func<string, MetricsContext> contextCreator)
         {
@@ -46,7 +47,7 @@ namespace Metrics
         ///     );
         /// </code>
         /// </example>
-        public static MetricsConfig Config { get { return globalContext.Config; } }
+        public static MetricsConfig Config { get { return config; } }
 
         /// <summary>
         /// Register a performance counter as a Gauge metric.
