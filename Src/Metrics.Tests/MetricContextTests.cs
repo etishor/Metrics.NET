@@ -79,5 +79,21 @@ namespace Metrics.Tests
             provider.CurrentMetricsData.Counters.Single().Name.Should().Be("test");
             provider.CurrentMetricsData.Counters.Single().Value.Should().Be(1L);
         }
+
+        [Fact]
+        public void ContextDisabledChildContextDoesNotShowInData()
+        {
+            MetricsContext context = new DefaultMetricsContext();
+
+            context.Context("test").Counter("test", Unit.Bytes).Increment();
+
+            context.DataProvider.CurrentMetricsData.ChildMetrics.Single()
+                .Counters.Single().Name.Should().Be("test");
+
+            context.ShutdownContext("test");
+
+            context.DataProvider.CurrentMetricsData.ChildMetrics.Should().BeEmpty();
+        }
+
     }
 }
