@@ -1,16 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using FluentAssertions;
 using Metrics.Core;
+
 namespace Metrics.Tests.TestUtils
 {
     public class TestContext : BaseMetricsContext
     {
-        private readonly TestRegistry registry;
-
         private TestContext(string contextName, TestRegistry registry)
             : base(contextName, registry)
         {
-            this.registry = registry;
+            this.Registry = registry;
         }
 
         public TestContext(string contextName, TestClock clock, TestScheduler scheduler)
@@ -30,6 +31,7 @@ namespace Metrics.Tests.TestUtils
 
         public TestClock Clock { get; private set; }
         public TestScheduler Scheduler { get; private set; }
+        public TestRegistry Registry { get; private set; }
 
         public override MetricsContext Context(string contextName)
         {
@@ -41,29 +43,55 @@ namespace Metrics.Tests.TestUtils
             return base.Context(contextName, (name) => new TestContext(name, this.Clock, this.Scheduler));
         }
 
-        public void ForAllTimers(Action<TimerValue> test)
+        public double GaugeValue(params string[] nameWithContext)
         {
-            foreach (var timer in this.MetricsData.Timers)
-            {
-                test(timer.Value);
-            }
+            return ValueFor(GetDataFor(nameWithContext).Gauges, nameWithContext);
         }
 
-        public TimerValue TimerValue(string contextDottedName)
+        public long CounterValue(params string[] nameWithContext)
         {
-            int index = contextDottedName.IndexOf('.');
+            return ValueFor(GetDataFor(nameWithContext).Counters, nameWithContext);
+        }
 
-            if (index > 0)
+        public MeterValue MeterValue(params string[] nameWithContext)
+        {
+            return ValueFor(GetDataFor(nameWithContext).Meters, nameWithContext);
+        }
+
+        public HistogramValue HistogramValue(params string[] nameWithContext)
+        {
+            return ValueFor(GetDataFor(nameWithContext).Histograms, nameWithContext);
+        }
+
+        public TimerValue TimerValue(params string[] nameWithContext)
+        {
+            return ValueFor(GetDataFor(nameWithContext).Timers, nameWithContext);
+        }
+
+        private T ValueFor<T>(IEnumerable<MetricValueSource<T>> values, string[] nameWithContext) where T : struct
+        {
+            var value = values.Where(t => t.Name == nameWithContext.Last())
+                .Select(t => t.Value);
+
+            value.Should().HaveCount(1, "No metric found with name {0} in context {1}", nameWithContext.Last(),
+                string.Join(".", nameWithContext.Take(nameWithContext.Length - 1)));
+
+            return value.Single();
+        }
+
+        public MetricsData GetDataFor(params string[] nameWithContext)
+        {
+            return GetContextFor(nameWithContext).MetricsData;
+        }
+
+        public TestContext GetContextFor(params string[] nameWithContext)
+        {
+            if (nameWithContext.Length == 1)
             {
-                var context = contextDottedName.Substring(0, index);
-                var remaining = contextDottedName.Substring(index + 1);
-                return (this.Context(context) as TestContext).TimerValue(remaining);
+                return this;
             }
 
-            return this.MetricsData.Timers
-                .Where(t => t.Name == contextDottedName)
-                .Select(t => t.Value)
-                .Single();
+            return (this.Context(nameWithContext.First()) as TestContext).GetContextFor(nameWithContext.Skip(1).ToArray());
         }
     }
 }
