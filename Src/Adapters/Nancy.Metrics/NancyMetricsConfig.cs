@@ -31,7 +31,8 @@ namespace Nancy.Metrics
         /// }
         /// </code>
         /// </summary>
-        /// <param name="config">Action to configure which global metrics to enable</param>
+        /// <param name="config">Action to configure which global metrics to enable.</param>
+        /// <param name="context">Name of the MetricsContext where to register the NancyFx metrics.</param>
         /// <returns>This instance to allow chaining of the configuration.</returns>
         public NancyMetricsConfig WithNancyMetrics(Action<NancyGlobalMetrics> config, string context = "NancyFx")
         {
