@@ -13,6 +13,7 @@ namespace Metrics
             Enumerable.Empty<TimerValueSource>());
 
         public readonly string Context;
+
         public readonly IEnumerable<GaugeValueSource> Gauges;
         public readonly IEnumerable<CounterValueSource> Counters;
         public readonly IEnumerable<MeterValueSource> Meters;

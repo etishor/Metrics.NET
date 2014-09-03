@@ -16,7 +16,7 @@ namespace Metrics
         internal MetricsConfig(MetricsContext context)
         {
             this.context = context;
-            this.reports = new MetricsReports(this.context.MetricsData, this.healthStatus);
+            this.reports = new MetricsReports(this.context, this.healthStatus);
             this.healthStatus = () => HealthChecks.GetStatus();
         }
 

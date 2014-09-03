@@ -69,8 +69,8 @@ namespace Nancy.Metrics
             };
 
             Get["/text"] = _ => Response.AsText(GetAsHumanReadable()).WithHeaders(noCacheHeaders);
-            Get["/jsonold"] = _ => Response.AsText(RegistrySerializer.GetAsJson(Config.MetricsContext.MetricsData), "text/json").WithHeaders(noCacheHeaders);
-            Get["/json"] = _ => Response.AsText(JsonMetrics.Serialize(Config.MetricsContext.MetricsData), "text/json").WithHeaders(noCacheHeaders);
+            Get["/jsonold"] = _ => Response.AsText(RegistrySerializer.GetAsJson(Config.MetricsContext.CurrentMetricsData), "text/json").WithHeaders(noCacheHeaders);
+            Get["/json"] = _ => Response.AsText(JsonMetrics.Serialize(Config.MetricsContext.CurrentMetricsData), "text/json").WithHeaders(noCacheHeaders);
             Get["/ping"] = _ => Response.AsText("pong", "text/plain").WithHeaders(noCacheHeaders);
             Get["/health"] = _ => GetHealthStatus().WithHeaders(noCacheHeaders);
         }
@@ -95,7 +95,7 @@ namespace Nancy.Metrics
         private static string GetAsHumanReadable()
         {
             var report = new StringReporter();
-            report.RunReport(Config.MetricsContext.MetricsData, Config.HealthStatus);
+            report.RunReport(Config.MetricsContext.CurrentMetricsData, Config.HealthStatus);
             return report.Result;
         }
 

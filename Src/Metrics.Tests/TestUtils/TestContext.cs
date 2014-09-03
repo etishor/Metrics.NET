@@ -81,7 +81,7 @@ namespace Metrics.Tests.TestUtils
 
         public MetricsData GetDataFor(params string[] nameWithContext)
         {
-            return GetContextFor(nameWithContext).MetricsData;
+            return GetContextFor(nameWithContext).CurrentMetricsData;
         }
 
         public TestContext GetContextFor(params string[] nameWithContext)

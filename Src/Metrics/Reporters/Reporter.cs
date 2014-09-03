@@ -19,6 +19,7 @@ namespace Metrics.Reporters
         {
             this.token = token;
             this.Timestamp = Clock.Default.LocalDateTime;
+
             this.Context = metricsData.Context;
 
             StartReport();

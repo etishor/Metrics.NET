@@ -53,7 +53,7 @@ namespace Metrics.Core
             }
         }
 
-        public MetricsData MetricsData
+        public MetricsData CurrentMetricsData
         {
             get
             {
@@ -62,7 +62,7 @@ namespace Metrics.Core
                     return MetricsData.Empty;
                 }
 
-                return new MetricsData(this.context, this.registry.MetricsData, this.childContexts.Values.Select(c => c.MetricsData));
+                return new MetricsData(this.context, this.registry.MetricsData, this.childContexts.Values.Select(c => c.CurrentMetricsData));
             }
         }
 

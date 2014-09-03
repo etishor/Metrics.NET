@@ -1,10 +1,8 @@
 ﻿using System;
 namespace Metrics
 {
-    public interface MetricsContext : IDisposable
+    public interface MetricsContext : MetricsDataProvider, IDisposable
     {
-        MetricsData MetricsData { get; }
-
         MetricsConfig Config { get; }
 
         MetricsContext Context(string contextName);
