@@ -88,7 +88,7 @@ namespace Nancy.Metrics
         /// </summary>
         /// <param name="nancyPipelines">Pipelines to hook on.</param>
         /// <param name="metricName">Name of the metric.</param>
-        public void RegisterActiveRequestCounter(IPipelines nancyPipelines, string metricName = "ActiveRequests")
+        public void RegisterActiveRequestCounter(IPipelines nancyPipelines, string metricName = "Active Requests")
         {
             var counter = this.context.Counter(Name(metricName), Unit.Custom("ActiveRequests"));
 
@@ -109,7 +109,7 @@ namespace Nancy.Metrics
         /// </summary>
         /// <param name="nancyPipelines">Pipelines to hook on.</param>
         /// <param name="metricName">Name of the metric.</param>
-        public void RegisterPostAndPutRequestSizeHistogram(IPipelines nancyPipelines, string metricName = "PostAndPutRequestsSize")
+        public void RegisterPostAndPutRequestSizeHistogram(IPipelines nancyPipelines, string metricName = "Post & Put Request Size")
         {
             var histogram = this.context.Histogram(Name(metricName), Unit.Bytes, SamplingType.FavourRecent);
 
