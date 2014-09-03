@@ -8,31 +8,58 @@ namespace Metrics
     /// </summary>
     public static class Metric
     {
-        private static readonly MetricsContext globalContext = new DefaultMetricsContext(Process.GetCurrentProcess().ProcessName);
-        private static readonly MetricsConfig config = new MetricsConfig(Metric.globalContext);
+        private static readonly MetricsContext globalContext;
+        private static readonly MetricsConfig config;
 
-        public static MetricsContext Context(string contextName, Func<string, MetricsContext> contextCreator)
+        static Metric()
         {
-            return globalContext.Context(contextName, contextCreator);
+            globalContext = new DefaultMetricsContext(Process.GetCurrentProcess().ProcessName);
+            config = new MetricsConfig(globalContext);
         }
 
+        /// <summary>
+        /// Create a new child metrics context. Metrics added to the child context are kept separate from the metrics in the 
+        /// parent context.
+        /// </summary>
+        /// <param name="contextName">Name of the child context.</param>
+        /// <returns>Newly created child context.</returns>
         public static MetricsContext Context(string contextName)
         {
             return globalContext.Context(contextName);
         }
 
+        /// <summary>
+        /// Create a new child metrics context. Metrics added to the child context are kept separate from the metrics in the 
+        /// parent context.
+        /// </summary>
+        /// <param name="contextName">Name of the child context.</param>
+        /// <param name="contextCreator">Function used to create the instance of the child context. (Use for creating custom contexts)</param>
+        /// <returns>Newly created child context.</returns>
+        public static MetricsContext Context(string contextName, Func<string, MetricsContext> contextCreator)
+        {
+            return globalContext.Context(contextName, contextCreator);
+        }
+
+        /// <summary>
+        /// Remove a child context. The metrics for the child context are removed from the MetricsData of the parent context.
+        /// </summary>
+        /// <param name="contextName">Name of the child context to shutdown.</param>
         public static void ShutdownContext(string contextName)
         {
             globalContext.ShutdownContext(contextName);
         }
 
+        /// <summary>
+        /// Globally disable all metrics. Useful for measuring the impact of the metrics library. 
+        /// No metrics are collected and no reports are run.
+        /// </summary>
         public static void CompletelyDisableMetrics()
         {
             globalContext.CompletelyDisableMetrics();
         }
 
         /// <summary>
-        /// Entrypoint for Metrics Configuration.
+        /// Entrypoint for Global Metrics Configuration.
         /// </summary>
         /// <example>
         /// <code>
