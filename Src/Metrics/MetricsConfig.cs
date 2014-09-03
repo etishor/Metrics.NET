@@ -16,7 +16,7 @@ namespace Metrics
         public MetricsConfig(MetricsContext context)
         {
             this.context = context;
-            this.reports = new MetricsReports(this.context, this.healthStatus);
+            this.reports = new MetricsReports(this.context.DataProvider, this.healthStatus);
             this.healthStatus = () => HealthChecks.GetStatus();
 
             this.context.ContextShuttingDown += (s, e) => this.DisableAllReports();
@@ -52,7 +52,7 @@ namespace Metrics
         public MetricsConfig WithHttpEndpoint(string httpUriPrefix)
         {
             using (this.listener) { }
-            this.listener = new MetricsHttpListener(httpUriPrefix, this.context, this.healthStatus);
+            this.listener = new MetricsHttpListener(httpUriPrefix, this.context.DataProvider, this.healthStatus);
             this.listener.Start();
             return this;
         }

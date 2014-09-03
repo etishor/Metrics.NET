@@ -1,8 +1,10 @@
 ﻿using System;
 namespace Metrics
 {
-    public interface MetricsContext : MetricsDataProvider, IDisposable
+    public interface MetricsContext : IDisposable
     {
+        MetricsDataProvider DataProvider { get; }
+
         MetricsContext Context(string contextName);
         MetricsContext Context(string contextName, Func<string, MetricsContext> contextCreator);
         void ShutdownContext(string contextName);

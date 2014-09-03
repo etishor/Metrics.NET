@@ -27,7 +27,7 @@ namespace Metrics.Tests
 
             context.Context("test").Counter("counter", Unit.Requests);
 
-            var counterValue = context.CurrentMetricsData.ChildMetrics.SelectMany(c => c.Counters).Single();
+            var counterValue = context.DataProvider.CurrentMetricsData.ChildMetrics.SelectMany(c => c.Counters).Single();
 
             counterValue.Name.Should().Be("counter");
         }
@@ -41,7 +41,7 @@ namespace Metrics.Tests
 
             counter.Increment();
 
-            var counterValue = context.CurrentMetricsData.Counters.Single();
+            var counterValue = context.DataProvider.CurrentMetricsData.Counters.Single();
 
             counterValue.Name.Should().Be("test");
             counterValue.Unit.Should().Be(Unit.Requests);
@@ -64,6 +64,20 @@ namespace Metrics.Tests
             context.MonitorEvents();
             context.Dispose();
             context.ShouldRaise("ContextShuttingDown");
+        }
+
+        [Fact]
+        public void ContextDataProviderReflectsNewMetrics()
+        {
+            MetricsContext context = new DefaultMetricsContext();
+
+            var provider = context.DataProvider;
+
+            context.Counter("test", Unit.Bytes).Increment();
+
+            provider.CurrentMetricsData.Counters.Should().HaveCount(1);
+            provider.CurrentMetricsData.Counters.Single().Name.Should().Be("test");
+            provider.CurrentMetricsData.Counters.Single().Value.Should().Be(1L);
         }
     }
 }

@@ -33,14 +33,9 @@ namespace Metrics.Tests.TestUtils
         public TestScheduler Scheduler { get; private set; }
         public TestRegistry Registry { get; private set; }
 
-        public override MetricsContext Context(string contextName)
+        protected override MetricsContext CreateChildContextInstance(string contextName)
         {
-            if (string.IsNullOrEmpty(contextName))
-            {
-                return this;
-            }
-
-            return base.Context(contextName, (name) => new TestContext(name, this.Clock, this.Scheduler));
+            return new TestContext(contextName, this.Clock, this.Scheduler);
         }
 
         public double GaugeValue(params string[] nameWithContext)
@@ -81,7 +76,7 @@ namespace Metrics.Tests.TestUtils
 
         public MetricsData GetDataFor(params string[] nameWithContext)
         {
-            return GetContextFor(nameWithContext).CurrentMetricsData;
+            return GetContextFor(nameWithContext).DataProvider.CurrentMetricsData;
         }
 
         public TestContext GetContextFor(params string[] nameWithContext)

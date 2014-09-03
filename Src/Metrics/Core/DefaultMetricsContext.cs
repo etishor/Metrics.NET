@@ -16,14 +16,9 @@ namespace Metrics
         {
         }
 
-        public override MetricsContext Context(string contextName)
+        protected override MetricsContext CreateChildContextInstance(string contextName)
         {
-            if (string.IsNullOrEmpty(contextName))
-            {
-                return this;
-            }
-
-            return this.Context(contextName, c => new DefaultMetricsContext(contextName));
+            return new DefaultMetricsContext(contextName);
         }
     }
 }

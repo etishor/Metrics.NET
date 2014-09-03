@@ -11,17 +11,27 @@ namespace Metrics.Core
 
         private readonly string context;
         private MetricsRegistry registry;
+
         private bool isDisabled;
 
         public BaseMetricsContext(string context, MetricsRegistry registry)
         {
             this.context = context;
             this.registry = registry;
+
+            this.DataProvider = new DefaultDataProvider(this.context,
+                () => this.registry.MetricsData,
+                () => this.childContexts.Values.Select(c => c.DataProvider));
         }
 
         public event EventHandler ContextShuttingDown;
 
-        public abstract MetricsContext Context(string contextName);
+        protected abstract MetricsContext CreateChildContextInstance(string contextName);
+
+        public MetricsContext Context(string contextName)
+        {
+            return this.Context(contextName, c => CreateChildContextInstance(contextName));
+        }
 
         public MetricsContext Context(string contextName, Func<string, MetricsContext> contextCreator)
         {
@@ -52,18 +62,7 @@ namespace Metrics.Core
             }
         }
 
-        public MetricsData CurrentMetricsData
-        {
-            get
-            {
-                if (this.isDisabled)
-                {
-                    return MetricsData.Empty;
-                }
-
-                return new MetricsData(this.context, this.registry.MetricsData, this.childContexts.Values.Select(c => c.CurrentMetricsData));
-            }
-        }
+        public MetricsDataProvider DataProvider { get; private set; }
 
         /// <summary>
         /// Register a performance counter as a Gauge metric.
