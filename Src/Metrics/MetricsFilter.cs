@@ -12,7 +12,7 @@ namespace Metrics
         Timer
     }
 
-    public interface MetricsFilter
+    public interface MetricsFilter : Utils.IHideObjectMembers
     {
         bool IsMatch(string context);
 

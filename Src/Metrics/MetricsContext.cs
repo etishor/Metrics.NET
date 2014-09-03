@@ -1,7 +1,7 @@
 ﻿using System;
 namespace Metrics
 {
-    public interface MetricsContext : IDisposable
+    public interface MetricsContext : IDisposable, Utils.IHideObjectMembers
     {
         MetricsDataProvider DataProvider { get; }
 
