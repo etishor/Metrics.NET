@@ -73,8 +73,8 @@ namespace Metrics.Tests.TestUtils
             var value = values.Where(t => t.Name == nameWithContext.Last())
                 .Select(t => t.Value);
 
-            value.Should().HaveCount(1, "No metric found with name {0} in context {1}", nameWithContext.Last(),
-                string.Join(".", nameWithContext.Take(nameWithContext.Length - 1)));
+            value.Should().HaveCount(1, "No metric found with name {0} in context {1}. Available names: {2}", nameWithContext.Last(),
+                string.Join(".", nameWithContext.Take(nameWithContext.Length - 1)), string.Join(",", values.Select(v => v.Name)));
 
             return value.Single();
         }
