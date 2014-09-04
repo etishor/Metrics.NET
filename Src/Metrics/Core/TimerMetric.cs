@@ -76,10 +76,9 @@ namespace Metrics.Core
             }
         }
 
-        public IDisposable NewContext()
+        public TimerContext NewContext()
         {
-            var start = this.clock.Nanoseconds;
-            return new DisposableAction(() => Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds));
+            return new TimeMeasuringContext(this.clock, (t) => Record(t, TimeUnit.Nanoseconds));
         }
 
         public TimerValue Value

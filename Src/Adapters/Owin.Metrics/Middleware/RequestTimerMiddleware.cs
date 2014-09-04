@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Metrics;
-using Metrics.Core;
 
 namespace Owin.Metrics.Middleware
 {
@@ -14,9 +13,9 @@ namespace Owin.Metrics.Middleware
         private readonly Timer requestTimer;
         private AppFunc next;
 
-        public RequestTimerMiddleware(MetricsRegistry registry, string metricName)
+        public RequestTimerMiddleware(MetricsContext context, string metricName)
         {
-            this.requestTimer = registry.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+            this.requestTimer = context.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
         }
 
         public void Initialize(AppFunc next)

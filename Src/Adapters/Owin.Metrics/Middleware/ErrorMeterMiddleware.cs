@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Metrics;
-using Metrics.Core;
 
 namespace Owin.Metrics.Middleware
 {
@@ -14,9 +13,9 @@ namespace Owin.Metrics.Middleware
         private readonly Meter errorMeter;
         private AppFunc next;
 
-        public ErrorMeterMiddleware(MetricsRegistry registry, string metricName)
+        public ErrorMeterMiddleware(MetricsContext context, string metricName)
         {
-            this.errorMeter = registry.Meter(metricName, Unit.Errors, TimeUnit.Seconds);
+            this.errorMeter = context.Meter(metricName, Unit.Errors, TimeUnit.Seconds);
         }
 
         public void Initialize(AppFunc next)

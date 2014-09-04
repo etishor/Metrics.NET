@@ -32,6 +32,10 @@ namespace Metrics.Core
             : this(size, alpha, Clock.Default, new ActionScheduler())
         { }
 
+        public ExponentiallyDecayingReservoir(Clock clock, Scheduler scheduler)
+            : this(DefaultSize, DefaultAlpha, clock, scheduler)
+        { }
+
         public ExponentiallyDecayingReservoir(int size, double alpha, Clock clock, Scheduler scheduler)
         {
             this.size = size;

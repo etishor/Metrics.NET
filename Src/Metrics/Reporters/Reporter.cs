@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Metrics.Core;
 using Metrics.Utils;
 
 namespace Metrics.Reporters
@@ -11,28 +10,31 @@ namespace Metrics.Reporters
     {
         private CancellationToken token;
 
-        public void RunReport(MetricsRegistry registry, Func<HealthStatus> healthStatus)
+        public void RunReport(MetricsData metricsData, Func<HealthStatus> healthStatus)
         {
-            RunReport(registry, healthStatus, CancellationToken.None);
+            RunReport(metricsData, healthStatus, CancellationToken.None);
         }
 
-        public void RunReport(MetricsRegistry registry, Func<HealthStatus> healthStatus, CancellationToken token)
+        public void RunReport(MetricsData metricsData, Func<HealthStatus> healthStatus, CancellationToken token)
         {
             this.token = token;
-            this.Timestamp = Clock.Default.LocalDateTime;
-            this.RegistryName = registry.Name;
+            this.Timestamp = Clock.Default.UTCDateTime;
+
+            var data = metricsData.OldFormat();
+
+            this.Context = metricsData.Context;
 
             StartReport();
-            ReportSection("Gauges", registry.Gauges, g => ReportGauge(g.Name, g.Value, g.Unit));
-            ReportSection("Counters", registry.Counters, c => ReportCounter(c.Name, c.Value, c.Unit));
-            ReportSection("Meters", registry.Meters, m => ReportMeter(m.Name, m.Value, m.Unit, m.RateUnit));
-            ReportSection("Histograms", registry.Histograms, h => ReportHistogram(h.Name, h.Value, h.Unit));
-            ReportSection("Timers", registry.Timers, t => ReportTimer(t.Name, t.Value, t.Unit, t.RateUnit, t.DurationUnit));
+            ReportSection("Gauges", data.Gauges, g => ReportGauge(g.Name, g.Value, g.Unit));
+            ReportSection("Counters", data.Counters, c => ReportCounter(c.Name, c.Value, c.Unit));
+            ReportSection("Meters", data.Meters, m => ReportMeter(m.Name, m.Value, m.Unit, m.RateUnit));
+            ReportSection("Histograms", data.Histograms, h => ReportHistogram(h.Name, h.Value, h.Unit));
+            ReportSection("Timers", data.Timers, t => ReportTimer(t.Name, t.Value, t.Unit, t.RateUnit, t.DurationUnit));
             ReportHealthStatus(healthStatus);
             EndReport();
         }
 
-        protected string RegistryName { get; private set; }
+        protected string Context { get; private set; }
         protected DateTime Timestamp { get; private set; }
 
         protected virtual void StartReport() { }

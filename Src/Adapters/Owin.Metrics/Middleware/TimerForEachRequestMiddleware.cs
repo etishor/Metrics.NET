@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Metrics;
-using Metrics.Core;
 using Metrics.Utils;
 
 namespace Owin.Metrics.Middleware
@@ -13,14 +12,14 @@ namespace Owin.Metrics.Middleware
     {
         private const string RequestStartTimeKey = "__Metrics.RequestStartTime__";
 
-        private readonly MetricsRegistry registry;
+        private readonly MetricsContext context;
         private readonly string metricPrefix;
 
         private AppFunc next;
 
-        public TimerForEachRequestMiddleware(MetricsRegistry registry, string metricPrefix)
+        public TimerForEachRequestMiddleware(MetricsContext context, string metricPrefix)
         {
-            this.registry = registry;
+            this.context = context;
             this.metricPrefix = metricPrefix;
         }
 
@@ -44,7 +43,7 @@ namespace Owin.Metrics.Middleware
                 var name = string.Format("{0}.{1} [{2}]", metricPrefix, httpMethod, httpRequestPath);
                 var startTime = (long)environment[RequestStartTimeKey];
                 var elapsed = Clock.Default.Nanoseconds - startTime;
-                this.registry.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds).Record(elapsed, TimeUnit.Nanoseconds);
+                this.context.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds).Record(elapsed, TimeUnit.Nanoseconds);
             }
         }
     }

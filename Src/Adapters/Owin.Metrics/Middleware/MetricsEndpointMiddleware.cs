@@ -6,8 +6,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Metrics;
-using Metrics.Core;
+using Metrics.Json;
 using Metrics.Reporters;
+using Metrics.Utils;
 using Metrics.Visualization;
 
 namespace Owin.Metrics.Middleware
@@ -17,15 +18,15 @@ namespace Owin.Metrics.Middleware
     public class MetricsEndpointMiddleware
     {
         private readonly OwinMetricsEndpointConfig endpointConfig;
-        private readonly MetricsRegistry registry;
+        private readonly MetricsData metricsData;
         private readonly Func<HealthStatus> healthStatus;
 
         private AppFunc next;
 
-        public MetricsEndpointMiddleware(OwinMetricsEndpointConfig endpointConfig, MetricsRegistry registry, Func<HealthStatus> healthStatus)
+        public MetricsEndpointMiddleware(OwinMetricsEndpointConfig endpointConfig, MetricsData metricsData, Func<HealthStatus> healthStatus)
         {
             this.endpointConfig = endpointConfig;
-            this.registry = registry;
+            this.metricsData = metricsData;
             this.healthStatus = healthStatus;
         }
 
@@ -46,7 +47,7 @@ namespace Owin.Metrics.Middleware
 
             if (requestPath.EndsWith("/" + endpointConfig.MetricsJsonEndpointName) && endpointConfig.MetricsJsonEndpointEnabled)
             {
-                return GetJsonContent(environment, this.registry);
+                return GetJsonContent(environment, this.metricsData);
             }
 
             if (requestPath.EndsWith("/" + endpointConfig.MetricsHealthEndpointName) && endpointConfig.MetricsHealthEndpointEnabled)
@@ -56,7 +57,7 @@ namespace Owin.Metrics.Middleware
 
             if (requestPath.EndsWith("/" + endpointConfig.MetricsTextEndpointName) && endpointConfig.MetricsTextEndpointEnabled)
             {
-                return GetAsHumanReadable(environment, this.registry, this.healthStatus);
+                return GetAsHumanReadable(environment, this.metricsData, this.healthStatus);
             }
 
             if (requestPath.EndsWith("/" + endpointConfig.MetricsPingEndpointName) && endpointConfig.MetricsPingEndpointEnabled)
@@ -73,9 +74,9 @@ namespace Owin.Metrics.Middleware
             return WriteResponse(environment, content, "application/json");
         }
 
-        private static Task GetJsonContent(IDictionary<string, object> environment, MetricsRegistry registry)
+        private static Task GetJsonContent(IDictionary<string, object> environment, MetricsData metricsData)
         {
-            var content = RegistrySerializer.GetAsJson(registry);
+            var content = OldJsonBuilder.BuildJson(metricsData, Clock.Default);
             return WriteResponse(environment, content, "application/json");
         }
 
@@ -86,11 +87,10 @@ namespace Owin.Metrics.Middleware
             return WriteResponse(environment, content, "application/json");
         }
 
-        private static Task GetAsHumanReadable(IDictionary<string, object> environment, MetricsRegistry registry, Func<HealthStatus> healthStatus)
+        private static Task GetAsHumanReadable(IDictionary<string, object> environment, MetricsData metricsData, Func<HealthStatus> healthStatus)
         {
-            var report = new StringReporter();
-            report.RunReport(registry, healthStatus);
-            return WriteResponse(environment, report.Result, "text/plain");
+            string text = StringReporter.RenderMetrics(metricsData, healthStatus);
+            return WriteResponse(environment, text, "text/plain");
         }
 
         private static Task GetPingContent(IDictionary<string, object> environment)

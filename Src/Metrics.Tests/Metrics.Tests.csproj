@@ -125,6 +125,7 @@
     <Compile Include="HistogramTests.cs" />
     <Compile Include="JsonTests.cs" />
     <Compile Include="MeterTests.cs" />
+    <Compile Include="DefaultMetricContextTests.cs" />
     <Compile Include="MetricsRegistryTests.cs" />
     <Compile Include="NancyAdapter\NancyAdapterGlobalMetrics.cs" />
     <Compile Include="NancyAdapter\NancyAdapterModuleMetricsTests.cs" />
@@ -136,9 +137,10 @@
     <Compile Include="ActionSchedulerTests.cs" />
     <Compile Include="SlidingWindowReservoirTest.cs" />
     <Compile Include="SnapshotTests.cs" />
+    <Compile Include="TestUtils\TestRegistry.cs" />
+    <Compile Include="TestUtils\TestContext.cs" />
     <Compile Include="TestUtils\TestClock.cs" />
     <Compile Include="TestUtils\TestCounter.cs" />
-    <Compile Include="TestUtils\TestRegistry.cs" />
     <Compile Include="TestUtils\TestScheduler.cs" />
     <Compile Include="TimerTests.cs" />
     <Compile Include="TimeUnitTests.cs" />

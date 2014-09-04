@@ -9,18 +9,12 @@ namespace Metrics.Core
             : base(registryName) { }
 
         public LocalRegistry()
-            : base(Process.GetCurrentProcess().ProcessName) { }
+            : this(Process.GetCurrentProcess().ProcessName) { }
 
-        protected override Tuple<Gauge, GaugeValueSource> CreateGauge(string name, Func<double> valueProvider, Unit unit)
+        protected override Tuple<MetricValueProvider<double>, GaugeValueSource> CreateGauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit)
         {
-            var gauge = new FunctionGauge(valueProvider);
-            return Tuple.Create((Gauge)gauge, new GaugeValueSource(name, gauge, unit));
-        }
-
-        protected override Tuple<Gauge, GaugeValueSource> CreateGauge<T>(string name, Func<T> gauge, Unit unit)
-        {
-            var gaugeMetric = gauge();
-            return Tuple.Create((Gauge)gaugeMetric, new GaugeValueSource(name, gaugeMetric, unit));
+            var provider = valueProvider();
+            return Tuple.Create(provider, new GaugeValueSource(name, provider, unit));
         }
 
         protected override Tuple<Counter, CounterValueSource> CreateCounter(string name, Unit unit)

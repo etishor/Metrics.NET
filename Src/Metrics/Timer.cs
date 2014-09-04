@@ -9,9 +9,9 @@ namespace Metrics
     public interface Timer : Utils.IHideObjectMembers
     {
         /// <summary>
-        /// Manualy record timer value
+        /// Manually record timer value
         /// </summary>
-        /// <param name="time">The value representing the manualy measured time.</param>
+        /// <param name="time">The value representing the manually measured time.</param>
         /// <param name="unit">Unit for the value.</param>
         void Record(long time, TimeUnit unit);
 
@@ -39,7 +39,18 @@ namespace Metrics
         /// </code>
         /// </summary>
         /// <returns>A disposable instance that will record the time passed until disposed.</returns>
-        IDisposable NewContext();
+        TimerContext NewContext();
+    }
+
+    /// <summary>
+    /// Disposable instance used to measure time. 
+    /// </summary>
+    public interface TimerContext : IDisposable
+    {
+        /// <summary>
+        /// Provides the currently elapsed time from when the instance has been created
+        /// </summary>
+        TimeSpan Elapsed { get; }
     }
 
     /// <summary>

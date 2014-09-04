@@ -4,12 +4,28 @@ namespace Metrics
     /// <summary>
     /// A counter is a simple incrementing and decrementing 64-bit integer.
     /// </summary>
-    public interface Counter : Utils.IHideObjectMembers 
+    public interface Counter : Utils.IHideObjectMembers
     {
+        /// <summary>
+        /// Increment the counter value.
+        /// </summary>
         void Increment();
+
+        /// <summary>
+        /// Increment the counter value with a specified amount.
+        /// </summary>
+        /// <param name="value">The amount with which to increment the counter.</param>
         void Increment(long value);
 
+        /// <summary>
+        /// Decrement the counter value.
+        /// </summary>
         void Decrement();
+
+        /// <summary>
+        /// Decrement the counter value with a specified amount.
+        /// </summary>
+        /// <param name="value">The amount with which to increment the counter.</param>
         void Decrement(long value);
     }
 
