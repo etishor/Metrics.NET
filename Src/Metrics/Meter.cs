@@ -63,4 +63,24 @@ namespace Metrics
 
         public TimeUnit RateUnit { get; private set; }
     }
+
+    /// <summary>
+    /// Full data for a Meter metric
+    /// </summary>
+    public struct MeterData
+    {
+        public readonly string Name;
+        public readonly MeterValue Value;
+        public readonly Unit Unit;
+        public readonly TimeUnit RateUnit;
+
+        public MeterData(string name, MeterValue value, Unit unit, TimeUnit rateUnit)
+        {
+            this.Name = name;
+            this.Value = value;
+            this.Unit = unit;
+            this.RateUnit = rateUnit;
+        }
+    }
+
 }

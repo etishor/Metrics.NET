@@ -22,4 +22,21 @@ namespace Metrics
             : base(name, value, unit)
         { }
     }
+
+    /// <summary>
+    /// Full data for a Counter metric
+    /// </summary>
+    public struct CounterData
+    {
+        public readonly string Name;
+        public readonly long Value;
+        public readonly Unit Unit;
+
+        public CounterData(string name, long value, Unit unit)
+        {
+            this.Name = name;
+            this.Value = value;
+            this.Unit = unit;
+        }
+    }
 }

@@ -10,4 +10,21 @@ namespace Metrics
             : base(name, value, unit)
         { }
     }
+
+    /// <summary>
+    /// Full data for a Gauge metric
+    /// </summary>
+    public struct GaugeData
+    {
+        public readonly string Name;
+        public readonly double Value;
+        public readonly Unit Unit;
+
+        public GaugeData(string name, double value, Unit unit)
+        {
+            this.Name = name;
+            this.Value = value;
+            this.Unit = unit;
+        }
+    }
 }
