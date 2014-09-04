@@ -39,7 +39,18 @@ namespace Metrics
         /// </code>
         /// </summary>
         /// <returns>A disposable instance that will record the time passed until disposed.</returns>
-        IDisposable NewContext();
+        TimerContext NewContext();
+    }
+
+    /// <summary>
+    /// Disposable instance used to measure time. 
+    /// </summary>
+    public interface TimerContext : IDisposable
+    {
+        /// <summary>
+        /// Provides the currently elapsed time from when the instance has been created
+        /// </summary>
+        TimeSpan Elapsed { get; }
     }
 
     /// <summary>

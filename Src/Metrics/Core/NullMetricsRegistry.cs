@@ -33,7 +33,7 @@ namespace Metrics.Core
             public void Record(long time, TimeUnit unit) { }
             public void Time(Action action) { action(); }
             public T Time<T>(Func<T> action) { return action(); }
-            public IDisposable NewContext() { return null; }
+            public TimerContext NewContext() { return null; }
         }
 
         public string Name { get { return "NULL Registry"; } }
