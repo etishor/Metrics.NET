@@ -103,8 +103,7 @@
     <Compile Include="Reporters\CSVFileAppender.cs" />
     <Compile Include="Reporters\CSVReporter.cs" />
     <Compile Include="Reporters\HealthCheckSerializer.cs" />
-    <Compile Include="Json\JsonFormatter.cs" />
-    <Compile Include="Reporters\RegistrySerializer.cs" />
+    <Compile Include="Json\OldJsonBuilder.cs" />
     <Compile Include="Json\JsonObject.cs" />
     <Compile Include="Reporters\StringReporter.cs" />
     <Compile Include="Reporters\TextFileReporter.cs" />

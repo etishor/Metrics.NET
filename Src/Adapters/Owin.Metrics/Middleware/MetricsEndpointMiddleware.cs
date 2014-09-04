@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Metrics;
+using Metrics.Json;
 using Metrics.Reporters;
+using Metrics.Utils;
 using Metrics.Visualization;
 
 namespace Owin.Metrics.Middleware
@@ -74,7 +76,7 @@ namespace Owin.Metrics.Middleware
 
         private static Task GetJsonContent(IDictionary<string, object> environment, MetricsData metricsData)
         {
-            var content = RegistrySerializer.GetAsJson(metricsData);
+            var content = OldJsonBuilder.BuildJson(metricsData, Clock.Default);
             return WriteResponse(environment, content, "application/json");
         }
 
@@ -87,9 +89,8 @@ namespace Owin.Metrics.Middleware
 
         private static Task GetAsHumanReadable(IDictionary<string, object> environment, MetricsData metricsData, Func<HealthStatus> healthStatus)
         {
-            var report = new StringReporter();
-            report.RunReport(metricsData, healthStatus);
-            return WriteResponse(environment, report.Result, "text/plain");
+            string text = StringReporter.RenderMetrics(metricsData, healthStatus);
+            return WriteResponse(environment, text, "text/plain");
         }
 
         private static Task GetPingContent(IDictionary<string, object> environment)

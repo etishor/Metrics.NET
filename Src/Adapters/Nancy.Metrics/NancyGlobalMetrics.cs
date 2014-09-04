@@ -15,7 +15,6 @@ namespace Nancy.Metrics
         public NancyGlobalMetrics(MetricsContext context)
         {
             this.context = context;
-            this.MetricsPrefix = "";
         }
 
         public string MetricsPrefix { get; set; }
@@ -47,7 +46,7 @@ namespace Nancy.Metrics
         /// <param name="nancyPipelines">Pipelines to hook on.</param>
         public void RegisterRequestTimer(IPipelines nancyPipelines, string metricName = "Requests")
         {
-            var requestTimer = this.context.Timer(Name(metricName), Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+            var requestTimer = this.context.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
@@ -74,7 +73,7 @@ namespace Nancy.Metrics
         /// <param name="metricName">Name of the metric.</param>
         public void RegisterErrorsMeter(IPipelines nancyPipelines, string metricName = "Errors")
         {
-            var errorMeter = this.context.Meter(Name(metricName), Unit.Errors, TimeUnit.Seconds);
+            var errorMeter = this.context.Meter(metricName, Unit.Errors, TimeUnit.Seconds);
 
             nancyPipelines.OnError.AddItemToStartOfPipeline((ctx, ex) =>
             {
@@ -90,7 +89,7 @@ namespace Nancy.Metrics
         /// <param name="metricName">Name of the metric.</param>
         public void RegisterActiveRequestCounter(IPipelines nancyPipelines, string metricName = "Active Requests")
         {
-            var counter = this.context.Counter(Name(metricName), Unit.Custom("ActiveRequests"));
+            var counter = this.context.Counter(metricName, Unit.Custom("ActiveRequests"));
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
@@ -111,7 +110,7 @@ namespace Nancy.Metrics
         /// <param name="metricName">Name of the metric.</param>
         public void RegisterPostAndPutRequestSizeHistogram(IPipelines nancyPipelines, string metricName = "Post & Put Request Size")
         {
-            var histogram = this.context.Histogram(Name(metricName), Unit.Bytes, SamplingType.FavourRecent);
+            var histogram = this.context.Histogram(metricName, Unit.Bytes, SamplingType.FavourRecent);
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
@@ -142,22 +141,13 @@ namespace Nancy.Metrics
             {
                 if (ctx.ResolvedRoute != null && !(ctx.ResolvedRoute is Routing.NotFoundRoute))
                 {
-                    string name = string.Format("{0}.{1} [{2}]", this.MetricsPrefix, ctx.ResolvedRoute.Description.Method, ctx.ResolvedRoute.Description.Path);
+                    string name = string.Format("{0} [{1}]", ctx.ResolvedRoute.Description.Method, ctx.ResolvedRoute.Description.Path);
                     var startTime = (long)ctx.Items["RequestStartTimeKey"];
                     var elapsed = Clock.Default.Nanoseconds - startTime;
                     this.context.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds)
                         .Record(elapsed, TimeUnit.Nanoseconds);
                 }
             });
-        }
-
-        private string Name(string name)
-        {
-            if (!string.IsNullOrEmpty(this.MetricsPrefix))
-            {
-                return this.MetricsPrefix + "." + name;
-            }
-            return name;
         }
     }
 }

@@ -69,5 +69,67 @@ namespace Metrics
                 this.Timers.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Timers))
             );
         }
+
+        public MetricsData OldFormat()
+        {
+            return OldFormat(string.Empty);
+        }
+
+        private MetricsData OldFormat(string prefix)
+        {
+            var gauges = this.Gauges
+                .Select(g => new GaugeValueSource(FormatName(prefix, g.Name), Constant(g.Value), g.Unit))
+                .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Gauges));
+
+            var counters = this.Counters
+                .Select(c => new CounterValueSource(FormatName(prefix, c.Name), Constant(c.Value), c.Unit))
+                .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Counters));
+
+            var meters = this.Meters
+                .Select(m => new MeterValueSource(FormatName(prefix, m.Name), Constant(m.Value), m.Unit, m.RateUnit))
+                .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Meters));
+
+            var histograms = this.Histograms
+                .Select(h => new HistogramValueSource(FormatName(prefix, h.Name), Constant(h.Value), h.Unit))
+                .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Histograms));
+
+            var timers = this.Timers
+                .Select(t => new TimerValueSource(FormatName(prefix, t.Name), Constant(t.Value), t.Unit, t.RateUnit, t.DurationUnit))
+                .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Timers));
+
+            return new MetricsData(this.Context, gauges, counters, meters, histograms, timers);
+        }
+
+        private class Provider<T> : MetricValueProvider<T> where T : struct
+        {
+            public Provider(T value)
+            {
+                this.Value = value;
+            }
+            public T Value { get; private set; }
+        }
+
+        private static MetricValueProvider<T> Constant<T>(T value) where T : struct
+        {
+            return new Provider<T>(value);
+        }
+
+        private static string FormatPrefix(string prefix, string context)
+        {
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                return context;
+            }
+            return prefix + " - " + context;
+        }
+
+        private static string FormatName(string prefix, string name)
+        {
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                return name;
+            }
+            return string.Format("[{0}] {1}", prefix, name);
+        }
     }
 }

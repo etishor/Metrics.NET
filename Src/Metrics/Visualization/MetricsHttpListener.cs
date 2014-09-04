@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Metrics.Json;
 using Metrics.Reporters;
+using Metrics.Utils;
 namespace Metrics.Visualization
 {
     public sealed class MetricsHttpListener : IDisposable
@@ -150,7 +151,7 @@ namespace Metrics.Visualization
 
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
-                writer.Write(RegistrySerializer.GetAsHumanReadable(metricsDataProvider.CurrentMetricsData, healthStatus));
+                writer.Write(StringReporter.RenderMetrics(metricsDataProvider.CurrentMetricsData, healthStatus));
             }
             context.Response.Close();
         }
@@ -165,7 +166,7 @@ namespace Metrics.Visualization
 
             AddNoCacheHeaders(context.Response);
 
-            var json = RegistrySerializer.GetAsJson(metricsDataProvider.CurrentMetricsData);
+            var json = OldJsonBuilder.BuildJson(metricsDataProvider.CurrentMetricsData, Clock.Default);
             using (var writer = new StreamWriter(context.Response.OutputStream))
             {
                 writer.Write(json);

@@ -32,13 +32,13 @@ namespace Metrics.Utils
             Start(interval, t =>
             {
                 action(t);
-                return Completed();
+                return Task.FromResult(true);
             });
         }
 
         public void Start(TimeSpan interval, Func<Task> task)
         {
-            Start(interval, t => t.IsCancellationRequested ? task() : Completed());
+            Start(interval, t => t.IsCancellationRequested ? task() : Task.FromResult(true));
         }
 
         public void Start(TimeSpan interval, Func<CancellationToken, Task> task)
@@ -64,23 +64,22 @@ namespace Metrics.Utils
             {
                 while (!token.IsCancellationRequested)
                 {
-                    await Task.Delay(interval, token.Token);
                     try
                     {
-                        await action(token.Token);
+                        await Task.Delay(interval, token.Token);
+                        try
+                        {
+                            await action(token.Token);
+                        }
+                        catch (Exception x)
+                        {
+                            HandleException(x);
+                            token.Cancel();
+                        }
                     }
-                    catch (Exception x)
-                    {
-                        HandleException(x);
-                        token.Cancel();
-                    }
+                    catch (TaskCanceledException) { }
                 }
             }, token.Token);
-        }
-
-        private static Task Completed()
-        {
-            return Task.FromResult(true);
         }
 
         private static void HandleException(Exception x)

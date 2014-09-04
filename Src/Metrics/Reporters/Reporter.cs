@@ -20,14 +20,16 @@ namespace Metrics.Reporters
             this.token = token;
             this.Timestamp = Clock.Default.LocalDateTime;
 
+            var data = metricsData.OldFormat();
+
             this.Context = metricsData.Context;
 
             StartReport();
-            ReportSection("Gauges", metricsData.Gauges, g => ReportGauge(g.Name, g.Value, g.Unit));
-            ReportSection("Counters", metricsData.Counters, c => ReportCounter(c.Name, c.Value, c.Unit));
-            ReportSection("Meters", metricsData.Meters, m => ReportMeter(m.Name, m.Value, m.Unit, m.RateUnit));
-            ReportSection("Histograms", metricsData.Histograms, h => ReportHistogram(h.Name, h.Value, h.Unit));
-            ReportSection("Timers", metricsData.Timers, t => ReportTimer(t.Name, t.Value, t.Unit, t.RateUnit, t.DurationUnit));
+            ReportSection("Gauges", data.Gauges, g => ReportGauge(g.Name, g.Value, g.Unit));
+            ReportSection("Counters", data.Counters, c => ReportCounter(c.Name, c.Value, c.Unit));
+            ReportSection("Meters", data.Meters, m => ReportMeter(m.Name, m.Value, m.Unit, m.RateUnit));
+            ReportSection("Histograms", data.Histograms, h => ReportHistogram(h.Name, h.Value, h.Unit));
+            ReportSection("Timers", data.Timers, t => ReportTimer(t.Name, t.Value, t.Unit, t.RateUnit, t.DurationUnit));
             ReportHealthStatus(healthStatus);
             EndReport();
         }

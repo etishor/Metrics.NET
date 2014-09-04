@@ -2,6 +2,7 @@
 using Metrics;
 using Metrics.Json;
 using Metrics.Reporters;
+using Metrics.Utils;
 using Metrics.Visualization;
 
 namespace Nancy.Metrics
@@ -68,11 +69,20 @@ namespace Nancy.Metrics
                 }
             };
 
-            Get["/text"] = _ => Response.AsText(GetAsHumanReadable()).WithHeaders(noCacheHeaders);
-            Get["/jsonold"] = _ => Response.AsText(RegistrySerializer.GetAsJson(Config.MetricsContext.DataProvider.CurrentMetricsData), "text/json").WithHeaders(noCacheHeaders);
-            Get["/json"] = _ => Response.AsText(JsonMetrics.Serialize(Config.MetricsContext.DataProvider.CurrentMetricsData), "text/json").WithHeaders(noCacheHeaders);
-            Get["/ping"] = _ => Response.AsText("pong", "text/plain").WithHeaders(noCacheHeaders);
-            Get["/health"] = _ => GetHealthStatus().WithHeaders(noCacheHeaders);
+            Get["/text"] = _ => Response.AsText(StringReporter.RenderMetrics(Config.MetricsContext.DataProvider.CurrentMetricsData, Config.HealthStatus))
+                .WithHeaders(noCacheHeaders);
+
+            Get["/json"] = _ => Response.AsText(OldJsonBuilder.BuildJson(Config.MetricsContext.DataProvider.CurrentMetricsData, Clock.Default), "text/json")
+                .WithHeaders(noCacheHeaders);
+
+            Get["/jsonnew"] = _ => Response.AsText(JsonMetrics.Serialize(Config.MetricsContext.DataProvider.CurrentMetricsData), "text/json")
+                .WithHeaders(noCacheHeaders);
+
+            Get["/ping"] = _ => Response.AsText("pong", "text/plain")
+                .WithHeaders(noCacheHeaders);
+
+            Get["/health"] = _ => GetHealthStatus()
+                .WithHeaders(noCacheHeaders);
         }
 
         private Response GetHealthStatus()
@@ -91,13 +101,5 @@ namespace Nancy.Metrics
             }
             return response;
         }
-
-        private static string GetAsHumanReadable()
-        {
-            var report = new StringReporter();
-            report.RunReport(Config.MetricsContext.DataProvider.CurrentMetricsData, Config.HealthStatus);
-            return report.Result;
-        }
-
     }
 }

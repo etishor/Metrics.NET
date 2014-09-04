@@ -6,7 +6,7 @@ namespace Metrics.Reporters
     {
         public static string Serialize(HealthStatus status)
         {
-            return new JsonFormatter().AddObject(status).GetJson();
+            return new OldJsonBuilder().AddObject(status).GetJson();
         }
     }
 }
