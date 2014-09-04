@@ -80,21 +80,4 @@ namespace Metrics
             : base(name, value, unit)
         { }
     }
-
-    /// <summary>
-    /// Full data for a Histogram metric
-    /// </summary>
-    public struct HistogramData
-    {
-        public readonly string Name;
-        public readonly HistogramValue Value;
-        public readonly Unit Unit;
-
-        public HistogramData(string name, HistogramValue value, Unit unit)
-        {
-            this.Name = name;
-            this.Value = value;
-            this.Unit = unit;
-        }
-    }
 }

@@ -6,10 +6,26 @@ namespace Metrics
     /// </summary>
     public interface Counter : Utils.IHideObjectMembers
     {
+        /// <summary>
+        /// Increment the counter value.
+        /// </summary>
         void Increment();
+
+        /// <summary>
+        /// Increment the counter value with a specified amount.
+        /// </summary>
+        /// <param name="value">The amount with which to increment the counter.</param>
         void Increment(long value);
 
+        /// <summary>
+        /// Decrement the counter value.
+        /// </summary>
         void Decrement();
+
+        /// <summary>
+        /// Decrement the counter value with a specified amount.
+        /// </summary>
+        /// <param name="value">The amount with which to increment the counter.</param>
         void Decrement(long value);
     }
 
@@ -21,22 +37,5 @@ namespace Metrics
         public CounterValueSource(string name, MetricValueProvider<long> value, Unit unit)
             : base(name, value, unit)
         { }
-    }
-
-    /// <summary>
-    /// Full data for a Counter metric
-    /// </summary>
-    public struct CounterData
-    {
-        public readonly string Name;
-        public readonly long Value;
-        public readonly Unit Unit;
-
-        public CounterData(string name, long value, Unit unit)
-        {
-            this.Name = name;
-            this.Value = value;
-            this.Unit = unit;
-        }
     }
 }

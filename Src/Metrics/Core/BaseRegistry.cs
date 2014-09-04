@@ -18,12 +18,11 @@ namespace Metrics.Core
             {
                 public MetricMeta(TMetric metric, TValue valueUnit)
                 {
-                    this.Name = valueUnit.Name;
                     this.Metric = metric;
                     this.Value = valueUnit;
                 }
 
-                public string Name { get; private set; }
+                public string Name { get { return this.Value.Name; } }
                 public TMetric Metric { get; private set; }
                 public TValue Value { get; private set; }
             }
@@ -69,17 +68,11 @@ namespace Metrics.Core
         public BaseRegistry(string name)
         {
             this.Name = name;
+            this.DataProvider = new DefaultRegistryDataProvider(() => this.gauges.All, () => this.counters.All, () => this.meters.All, () => this.histograms.All, () => this.timers.All);
         }
 
         public string Name { get; private set; }
-
-        public MetricsData MetricsData
-        {
-            get
-            {
-                return new MetricsData(this.Name, this.gauges.All, this.counters.All, this.meters.All, this.histograms.All, this.timers.All);
-            }
-        }
+        public RegistryDataProvider DataProvider { get; private set; }
 
         public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit)
         {
@@ -107,7 +100,6 @@ namespace Metrics.Core
         }
 
         protected abstract Tuple<MetricValueProvider<double>, GaugeValueSource> CreateGauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit);
-
         protected abstract Tuple<Counter, CounterValueSource> CreateCounter(string name, Unit unit);
         protected abstract Tuple<Meter, MeterValueSource> CreateMeter(string name, Unit unit, TimeUnit rateUnit);
         protected abstract Tuple<Histogram, HistogramValueSource> CreateHistogram(string name, Unit unit, SamplingType samplingType);

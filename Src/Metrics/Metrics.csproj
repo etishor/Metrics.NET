@@ -71,6 +71,7 @@
     <Compile Include="Core\BaseMetricsContext.cs" />
     <Compile Include="Core\BaseRegistry.cs" />
     <Compile Include="Core\DefaultDataProvider.cs" />
+    <Compile Include="Core\DefaultRegistryDataProvider.cs" />
     <Compile Include="Core\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Core\HealthCheck.cs" />
     <Compile Include="Core\NullMetricsRegistry.cs" />
@@ -126,7 +127,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Reservoir.cs" />
     <Compile Include="Core\Snapshot.cs" />
-    <Compile Include="Utils\DisposableAction.cs" />
     <Compile Include="Utils\EWMA.cs" />
     <Compile Include="Utils\AtomicLong.cs" />
     <Compile Include="TimeUnit.cs" />

@@ -9,7 +9,7 @@ namespace Metrics
     public interface Timer : Utils.IHideObjectMembers
     {
         /// <summary>
-        /// Manualy record timer value
+        /// Manually record timer value
         /// </summary>
         /// <param name="time">The value representing the manually measured time.</param>
         /// <param name="unit">Unit for the value.</param>
@@ -87,26 +87,5 @@ namespace Metrics
 
         public TimeUnit RateUnit { get; private set; }
         public TimeUnit DurationUnit { get; private set; }
-    }
-
-    /// <summary>
-    /// Full data for a Timer metric
-    /// </summary>
-    public struct TimerData
-    {
-        public readonly string Name;
-        public readonly TimerValue Value;
-        public readonly Unit Unit;
-        public readonly TimeUnit RateUnit;
-        public readonly TimeUnit DurationUnit;
-
-        public TimerData(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
-        {
-            this.Name = name;
-            this.Value = value;
-            this.Unit = unit;
-            this.RateUnit = rateUnit;
-            this.DurationUnit = durationUnit;
-        }
     }
 }

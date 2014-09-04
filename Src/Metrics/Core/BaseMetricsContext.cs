@@ -19,9 +19,7 @@ namespace Metrics.Core
             this.context = context;
             this.registry = registry;
 
-            this.DataProvider = new DefaultDataProvider(this.context,
-                () => this.registry.MetricsData,
-                () => this.childContexts.Values.Select(c => c.DataProvider));
+            this.DataProvider = new DefaultDataProvider(this.context, this.registry.DataProvider,this.childContexts.Values.Select(c => c.DataProvider));
         }
 
         protected abstract MetricsContext CreateChildContextInstance(string contextName);
