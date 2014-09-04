@@ -23,5 +23,20 @@ namespace Metrics.Tests
             var registry = new LocalRegistry();
             ((Action)(() => AddMetrics(registry))).ShouldNotThrow();
         }
+
+        [Fact]
+        public void MetricsRegistyMetricsAddedAreVisibleInTheDataProvider()
+        {
+            var registry = new LocalRegistry();
+
+            var provider = registry.DataProvider;
+
+            provider.Counters.Should().BeEmpty();
+
+            registry.Counter("test", Unit.Bytes);
+
+            provider.Counters.Should().HaveCount(1);
+        }
+
     }
 }

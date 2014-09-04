@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Metrics.Core
@@ -7,9 +8,9 @@ namespace Metrics.Core
     {
         private readonly string context;
         private readonly RegistryDataProvider registryDataProvider;
-        private readonly IEnumerable<MetricsDataProvider> childProviders;
+        private readonly Func<IEnumerable<MetricsDataProvider>> childProviders;
 
-        public DefaultDataProvider(string context, RegistryDataProvider registryDataProvider, IEnumerable<MetricsDataProvider> childProviders)
+        public DefaultDataProvider(string context, RegistryDataProvider registryDataProvider, Func<IEnumerable<MetricsDataProvider>> childProviders)
         {
             this.context = context;
             this.registryDataProvider = registryDataProvider;
@@ -26,7 +27,7 @@ namespace Metrics.Core
                     this.registryDataProvider.Meters,
                     this.registryDataProvider.Histograms,
                     this.registryDataProvider.Timers,
-                    this.childProviders.Select(p => p.CurrentMetricsData));
+                    this.childProviders().Select(p => p.CurrentMetricsData));
             }
         }
     }
