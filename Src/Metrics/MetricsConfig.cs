@@ -16,9 +16,9 @@ namespace Metrics
         public MetricsConfig(MetricsContext context)
         {
             this.context = context;
-            this.reports = new MetricsReports(this.context.DataProvider, this.healthStatus);
             this.healthStatus = () => HealthChecks.GetStatus();
 
+            this.reports = new MetricsReports(this.context.DataProvider, this.healthStatus);
             this.context.ContextShuttingDown += (s, e) => this.DisableAllReports();
         }
 
