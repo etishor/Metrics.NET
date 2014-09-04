@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿
+using System;
 namespace Metrics.Core
 {
     public interface MetricsRegistry
     {
         MetricsData MetricsData { get; }
 
-        Gauge Gauge(string name, Func<double> valueProvider, Unit unit);
-        Gauge Gauge<T>(string name, Func<T> gauge, Unit unit) where T : GaugeMetric;
+        void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit);
+
         Counter Counter(string name, Unit unit);
         Meter Meter(string name, Unit unit, TimeUnit rateUnit);
         Histogram Histogram(string name, Unit unit, SamplingType samplingType);

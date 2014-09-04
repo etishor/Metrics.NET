@@ -63,14 +63,19 @@ namespace Metrics.Core
             }
         }
 
-        public Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
+        public void PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
         {
-            return this.registry.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance), unit);
+            this.Gauge(name, () => new PerformanceCounterGauge(counterCategory, counterName, counterInstance), unit);
         }
 
-        public Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
+        public void Gauge(string name, Func<double> valueProvider, Unit unit)
         {
-            return this.registry.Gauge(name, valueProvider, unit);
+            this.Gauge(name, () => new FunctionGauge(valueProvider), unit);
+        }
+
+        public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit)
+        {
+            this.registry.Gauge(name, valueProvider, unit);
         }
 
         public Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)

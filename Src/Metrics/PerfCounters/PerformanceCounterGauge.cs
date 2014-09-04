@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Security.Principal;
-using Metrics.Core;
 
 namespace Metrics.PerfCounters
 {
-    public class PerformanceCounterGauge : GaugeMetric
+    public class PerformanceCounterGauge : MetricValueProvider<double>
     {
         private readonly PerformanceCounter performanceCounter;
 
@@ -36,6 +35,6 @@ namespace Metrics.PerfCounters
             }
         }
 
-        public override double Value { get { return this.performanceCounter != null ? this.performanceCounter.NextValue() : -1; } }
+        public double Value { get { return this.performanceCounter != null ? this.performanceCounter.NextValue() : -1; } }
     }
 }

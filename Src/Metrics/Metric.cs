@@ -80,27 +80,38 @@ namespace Metrics
         /// <summary>
         /// Register a performance counter as a Gauge metric.
         /// </summary>
-        /// <param name="name">Name of this gauge metric. Must be unique across all gauges.</param>
+        /// <param name="name">Name of this gauge metric. Must be unique across all gauges in this context.</param>
         /// <param name="counterCategory">Category of the performance counter</param>
         /// <param name="counterName">Name of the performance counter</param>
         /// <param name="counterInstance">Instance of the performance counter</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the gauge</returns>
-        public static Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
+        public static void PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
         {
-            return globalContext.PerformanceCounter(name, counterCategory, counterName, counterInstance, unit);
+            globalContext.PerformanceCounter(name, counterCategory, counterName, counterInstance, unit);
         }
 
         /// <summary>
         /// A gauge is the simplest metric type. It just returns a value. This metric is suitable for instantaneous values.
         /// </summary>
-        /// <param name="name">Name of this gauge metric. Must be unique across all gauges.</param>
+        /// <param name="name">Name of this gauge metric. Must be unique across all gauges in this context.</param>
         /// <param name="valueProvider">Function that returns the value for the gauge.</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the gauge</returns>
-        public static Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
+        public static void Gauge(string name, Func<double> valueProvider, Unit unit)
         {
-            return globalContext.Gauge(name, valueProvider, unit);
+            globalContext.Gauge(name, valueProvider, unit);
+        }
+
+        /// <summary>
+        /// Register a custom Gauge implementation. 
+        /// </summary>
+        /// <param name="name">Name of this gauge metric. Must be unique across all gauges in this context.</param>
+        /// <param name="valueProvider">Function that returns an instance of your custom Gauge.</param>
+        /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
+        public static void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit)
+        {
+            globalContext.Gauge(name, valueProvider, unit);
         }
 
         /// <summary>
@@ -113,7 +124,7 @@ namespace Metrics
         /// divided by the number of seconds the process has been running), it doesn’t offer a sense of recency. 
         /// Luckily, meters also record three different exponentially-weighted moving average rates: the 1-, 5-, and 15-minute moving averages.
         /// </remarks>
-        /// <param name="name">Name of the metric. Must be unique across all meters.</param>
+        /// <param name="name">Name of the metric. Must be unique across all meters in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <returns>Reference to the metric</returns>
@@ -125,7 +136,7 @@ namespace Metrics
         /// <summary>
         /// A counter is a simple incrementing and decrementing 64-bit integer. Ex number of active requests.
         /// </summary>
-        /// <param name="name">Name of the metric. Must be unique across all counters.</param>
+        /// <param name="name">Name of the metric. Must be unique across all counters in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the metric</returns>
         public static Counter Counter(string name, Unit unit)
@@ -136,7 +147,7 @@ namespace Metrics
         /// <summary>
         /// A Histogram measures the distribution of values in a stream of data: e.g., the number of results returned by a search.
         /// </summary>
-        /// <param name="name">Name of the metric. Must be unique across all histograms.</param>
+        /// <param name="name">Name of the metric. Must be unique across all histograms in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <returns>Reference to the metric</returns>
@@ -149,7 +160,7 @@ namespace Metrics
         /// A timer is basically a histogram of the duration of a type of event and a meter of the rate of its occurrence.
         /// <seealso cref="Histogram"/> and <seealso cref="Meter"/>
         /// </summary>
-        /// <param name="name">Name of the metric. Must be unique across all counters.</param>
+        /// <param name="name">Name of the metric. Must be unique across all timers in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>

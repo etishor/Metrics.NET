@@ -40,8 +40,9 @@ namespace Metrics
         /// <param name="name">Name of this gauge metric. Must be unique across all gauges.</param>
         /// <param name="valueProvider">Function that returns the value for the gauge.</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
-        /// <returns>Reference to the gauge</returns>
-        Gauge Gauge(string name, Func<double> valueProvider, Unit unit);
+        void Gauge(string name, Func<double> valueProvider, Unit unit);
+
+        void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit);
 
         /// <summary>
         /// Register a performance counter as a Gauge metric.
@@ -51,8 +52,7 @@ namespace Metrics
         /// <param name="counterName">Name of the performance counter</param>
         /// <param name="counterInstance">Instance of the performance counter</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
-        /// <returns>Reference to the gauge</returns>
-        Gauge PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit);
+        void PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit);
 
         /// <summary>
         /// A counter is a simple incrementing and decrementing 64-bit integer. Ex number of active requests.

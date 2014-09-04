@@ -5,7 +5,6 @@ namespace Metrics.Core
 {
     public sealed class NullMetricsRegistry : MetricsRegistry
     {
-        private class NullGauge : Gauge { public static readonly Gauge Instance = new NullGauge();  }
         private class NullCounter : Counter
         {
             public static readonly Counter Instance = new NullCounter();
@@ -44,15 +43,8 @@ namespace Metrics.Core
         public IEnumerable<HistogramValueSource> Histograms { get { yield break; } }
         public IEnumerable<TimerValueSource> Timers { get { yield break; } }
 
-        public Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
-        {
-            return NullGauge.Instance;
-        }
-
-        public Gauge Gauge<T>(string name, Func<T> gauge, Unit unit) where T : GaugeMetric
-        {
-            return NullGauge.Instance;
-        }
+        public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit)
+        { }
 
         public Counter Counter(string name, Unit unit)
         {

@@ -2,12 +2,7 @@
 using System;
 namespace Metrics.Core
 {
-    public abstract class GaugeMetric : Gauge, MetricValueProvider<double>
-    {
-        public abstract double Value { get; }
-    }
-
-    public sealed class FunctionGauge : GaugeMetric
+    public sealed class FunctionGauge : MetricValueProvider<double>
     {
         private readonly Func<double> valueProvider;
 
@@ -16,20 +11,20 @@ namespace Metrics.Core
             this.valueProvider = valueProvider;
         }
 
-        public override double Value { get { return this.valueProvider(); } }
+        public double Value { get { return this.valueProvider(); } }
     }
 
-    public sealed class DerivedGauge : GaugeMetric
+    public sealed class DerivedGauge : MetricValueProvider<double>
     {
-        private readonly GaugeMetric gauge;
+        private readonly MetricValueProvider<double> gauge;
         private readonly Func<double, double> transformation;
 
-        public DerivedGauge(GaugeMetric gauge, Func<double, double> transformation)
+        public DerivedGauge(MetricValueProvider<double> gauge, Func<double, double> transformation)
         {
             this.gauge = gauge;
             this.transformation = transformation;
         }
 
-        public override double Value { get { return this.transformation(this.gauge.Value); } }
+        public double Value { get { return this.transformation(this.gauge.Value); } }
     }
 }

@@ -40,9 +40,9 @@ namespace Metrics.PerfCounters
             context.Register("Queue Length / sec", () => new PerformanceCounterGauge(LocksAndThreads, "Queue Length / sec", app), Unit.Custom("Threads/s"));
         }
 
-        private static void Register(this MetricsContext context, string name, Func<GaugeMetric> gauge, Unit unit)
+        private static void Register(this MetricsContext context, string name, Func<MetricValueProvider<double>> gauge, Unit unit)
         {
-            context.Gauge(name, () => gauge().Value, unit);
+            context.Gauge(name, gauge, unit);
         }
     }
 }

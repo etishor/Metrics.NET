@@ -16,22 +16,10 @@ namespace Metrics.Tests.TestUtils
             this.scheduler = scheduler;
         }
 
-        //public new FunctionGauge FindGauge(string name) { return base.FindGauge(name) as FunctionGauge; }
-        //public new CounterMetric FindCounter(string name) { return base.FindCounter(name) as CounterMetric; }
-        //public new MeterMetric FindMeter(string name) { return base.FindMeter(name) as MeterMetric; }
-        //public new HistogramMetric FindHistogram(string name) { return base.FindHistogram(name) as HistogramMetric; }
-        //public new TimerMetric FindTimer(string name) { return base.FindTimer(name) as TimerMetric; }
-
-        protected override Tuple<Gauge, GaugeValueSource> CreateGauge(string name, Func<double> valueProvider, Unit unit)
+        protected override Tuple<MetricValueProvider<double>, GaugeValueSource> CreateGauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit)
         {
-            var gauge = new FunctionGauge(valueProvider);
-            return Tuple.Create((Gauge)gauge, new GaugeValueSource(name, gauge, unit));
-        }
-
-        protected override Tuple<Gauge, GaugeValueSource> CreateGauge<T>(string name, Func<T> gauge, Unit unit)
-        {
-            var gaugeMetric = gauge();
-            return Tuple.Create((Gauge)gaugeMetric, new GaugeValueSource(name, gaugeMetric, unit));
+            var provider = valueProvider();
+            return Tuple.Create(provider, new GaugeValueSource(name, provider, unit));
         }
 
         protected override Tuple<Counter, CounterValueSource> CreateCounter(string name, Unit unit)
@@ -49,26 +37,15 @@ namespace Metrics.Tests.TestUtils
 
         protected override Tuple<Histogram, HistogramValueSource> CreateHistogram(string name, Unit unit, SamplingType samplingType)
         {
-            var histogram = new HistogramMetric(SamplingTypeToReservoir(samplingType));
+            var histogram = new HistogramMetric(new SlidingWindowReservoir()); // always use sliding window reservoir as we test with less than 1028 values
             return Tuple.Create((Histogram)histogram, new HistogramValueSource(name, histogram, unit));
         }
 
         protected override Tuple<Timer, TimerValueSource> CreateTimer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit)
         {
-            var timer = new TimerMetric(new HistogramMetric(SamplingTypeToReservoir(samplingType)), new MeterMetric(this.clock, this.scheduler), this.clock);
+            // always use sliding window reservoir as we test with less than 1028 values
+            var timer = new TimerMetric(new HistogramMetric(new SlidingWindowReservoir()), new MeterMetric(this.clock, this.scheduler), this.clock);
             return Tuple.Create((Timer)timer, new TimerValueSource(name, timer, unit, rateUnit, durationUnit));
-        }
-
-        private Reservoir SamplingTypeToReservoir(SamplingType samplingType)
-        {
-            return new SlidingWindowReservoir();
-            //switch (samplingType)
-            //{
-            //    case SamplingType.FavourRecent: return new ExponentiallyDecayingReservoir(this.clock, this.scheduler);
-            //    case SamplingType.LongTerm: return new UniformReservoir();
-            //    case SamplingType.SlidingWindow: return new SlidingWindowReservoir();
-            //}
-            //throw new System.NotImplementedException();
         }
     }
 }
