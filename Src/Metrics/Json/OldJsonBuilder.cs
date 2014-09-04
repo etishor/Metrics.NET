@@ -36,7 +36,7 @@ namespace Metrics.Json
 
         public OldJsonBuilder AddTimestamp(Clock clock)
         {
-            root.Add(new JsonProperty("Timestamp", clock.LocalDateTime.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture)));
+            root.Add(new JsonProperty("Timestamp", clock.UTCDateTime.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture)));
             return this;
         }
 

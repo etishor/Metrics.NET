@@ -9,7 +9,6 @@ namespace Metrics.Tests.TestUtils
 
         public override long Nanoseconds { get { return this.nanoseconds; } }
 
-        public override DateTime LocalDateTime { get { return new DateTime(this.nanoseconds / 100L, DateTimeKind.Local); } }
         public override DateTime UTCDateTime { get { return new DateTime(this.nanoseconds / 100L, DateTimeKind.Utc); } }
 
         public void Advance(TimeUnit unit, long value)

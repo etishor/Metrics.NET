@@ -18,7 +18,7 @@ namespace Metrics.Reporters
         public void RunReport(MetricsData metricsData, Func<HealthStatus> healthStatus, CancellationToken token)
         {
             this.token = token;
-            this.Timestamp = Clock.Default.LocalDateTime;
+            this.Timestamp = Clock.Default.UTCDateTime;
 
             var data = metricsData.OldFormat();
 
