@@ -38,12 +38,11 @@ namespace Metrics.Visualization
                 {
                     ProcessRequest(this.httpListener.GetContext());
                 }
-                catch (HttpListenerException ex)
+                    // ReSharper disable EmptyGeneralCatchClause
+                catch (Exception)
+                    // ReSharper restore EmptyGeneralCatchClause
                 {
-                    if (ex.ErrorCode != 995) // IO operation aborted
-                    {
-                        throw;
-                    }
+                    // Keep listener running, regardless of errors.
                 }
             }
         }
