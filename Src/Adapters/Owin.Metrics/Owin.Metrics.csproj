@@ -66,6 +66,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Middleware\MetricMiddleware.cs" />
     <Compile Include="Middleware\TimerForEachRequestMiddleware.cs" />
     <Compile Include="Middleware\PostAndPutRequestSizeHistogramMiddleware.cs" />
     <Compile Include="Middleware\ActiveRequestCounterMiddleware.cs" />

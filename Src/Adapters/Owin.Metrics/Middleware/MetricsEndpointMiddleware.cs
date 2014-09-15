@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Metrics;
+using Metrics.Core;
+using Metrics.Reporters;
+using Metrics.Visualization;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Metrics;
-using Metrics.Core;
-using Metrics.Reporters;
-using Metrics.Visualization;
 
 namespace Owin.Metrics.Middleware
 {
@@ -37,7 +37,6 @@ namespace Owin.Metrics.Middleware
         public Task Invoke(IDictionary<string, object> environment)
         {
             var requestPath = environment["owin.RequestPath"] as string;
-
 
             if (requestPath.EndsWith("/" + endpointConfig.MetricsEndpointName) && endpointConfig.MetricsEndpointEnabled)
             {
