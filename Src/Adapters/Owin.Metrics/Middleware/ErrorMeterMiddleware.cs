@@ -1,10 +1,9 @@
 ﻿using Metrics;
-using Metrics.Core;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Owin.Metrics.Middleware
 {
@@ -15,10 +14,10 @@ namespace Owin.Metrics.Middleware
         private readonly Meter errorMeter;
         private AppFunc next;
 
-        public ErrorMeterMiddleware(MetricsContext context, string metricName)
-			: base(ignorePatterns)
+        public ErrorMeterMiddleware(MetricsContext context, string metricName, Regex[] ignorePatterns)
+            : base(ignorePatterns)
         {
-            this.errorMeter = context.Meter(metricName, Unit.Errors, TimeUnit.Seconds);
+            this.errorMeter = context.Meter(metricName, Unit.Errors);
         }
 
         public void Initialize(AppFunc next)
