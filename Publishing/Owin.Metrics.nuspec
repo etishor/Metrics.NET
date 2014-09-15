@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
 	<metadata>
 		<id>Owin.Metrics</id>
-		<version>0.1.0-alpha</version>
+		<version>0.1.2-alpha</version>
 		<title>Owin.Metrics</title>
 		<authors>al_hardy</authors>
 		<owners>Iulian Margarintescu</owners>
