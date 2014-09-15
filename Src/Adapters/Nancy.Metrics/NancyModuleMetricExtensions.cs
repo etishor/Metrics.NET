@@ -14,8 +14,8 @@ namespace Nancy.Metrics
 
         public static void MetricForRequestTimeAndResponseSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
-            module.MetricForRequestTime(metricName + ".Time", routePredicate);
-            module.MetricForResponseSize(metricName + ".Size", routePredicate);
+            module.MetricForRequestTime(metricName, routePredicate);
+            module.MetricForResponseSize(metricName, routePredicate);
         }
 
         public static void MetricForRequestTime(this INancyModule module, string metricName, string method, string pathPrefix)
@@ -25,9 +25,9 @@ namespace Nancy.Metrics
 
         public static void MetricForRequestTime(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
-            var name = string.Format("{0}.{1}", module.GetType().Name, metricName);
             CheckNancyMetricsIsConfigured();
-            var timer = NancyMetrics.CurrentConfig.Registry.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+
+            var timer = NancyMetrics.CurrentConfig.Context.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
             var key = "Metrics.Nancy.Request.Timer." + metricName;
 
             module.Before.AddItemToStartOfPipeline(ctx =>
@@ -56,9 +56,8 @@ namespace Nancy.Metrics
 
         public static void MetricForResponseSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
-            var name = string.Format("{0}.{1}", module.GetType().Name, metricName);
             CheckNancyMetricsIsConfigured();
-            var histogram = NancyMetrics.CurrentConfig.Registry.Histogram(name, Unit.Custom("bytes"), SamplingType.FavourRecent);
+            var histogram = NancyMetrics.CurrentConfig.Context.Histogram(metricName, Unit.Custom("bytes"), SamplingType.FavourRecent);
 
             module.After.AddItemToEndOfPipeline(ctx =>
             {
@@ -95,9 +94,8 @@ namespace Nancy.Metrics
 
         public static void MetricForRequestSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
-            var name = string.Format("{0}.{1}", module.GetType().Name, metricName);
             CheckNancyMetricsIsConfigured();
-            var histogram = NancyMetrics.CurrentConfig.Registry.Histogram(name, Unit.Custom("bytes"), SamplingType.FavourRecent);
+            var histogram = NancyMetrics.CurrentConfig.Context.Histogram(metricName, Unit.Custom("bytes"), SamplingType.FavourRecent);
 
             module.Before.AddItemToStartOfPipeline(ctx =>
             {

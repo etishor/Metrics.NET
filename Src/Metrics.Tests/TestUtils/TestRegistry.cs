@@ -1,64 +1,51 @@
 ﻿using System;
-using System.Collections.Generic;
 using Metrics.Core;
+using Metrics.Utils;
 
 namespace Metrics.Tests.TestUtils
 {
-    public class TestRegistry : MetricsRegistry
+    public class TestRegistry : BaseRegistry
     {
-        public TestRegistry()
-        { }
+        private readonly Clock clock;
+        private readonly Scheduler scheduler;
 
-        public string Name { get { return "test"; } }
-
-        public Timer TimerInstance { get; set; }
-        public Meter MeterInstance { get; set; }
-        public Histogram HistogramInstance { get; set; }
-        public Counter CounterInstance { get; set; }
-        public Gauge GaugeInstance { get; set; }
-
-        public Func<string, Func<double>, Unit, Gauge> GaugeBuilder { get; set; }
-        public Func<string, Unit, Counter> CounterBuilder { get; set; }
-        public Func<string, Unit, TimeUnit, Meter> MeterBuilder { get; set; }
-        public Func<string, Unit, SamplingType, Histogram> HistogramBuilder { get; set; }
-        public Func<string, Unit, SamplingType, TimeUnit, TimeUnit, Timer> TimerBuilder { get; set; }
-
-        public Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
+        public TestRegistry(string registryName, Clock clock, Scheduler scheduler)
+            : base(registryName)
         {
-            return GaugeInstance != null ? GaugeInstance : GaugeBuilder(name, valueProvider, unit);
+            this.clock = clock;
+            this.scheduler = scheduler;
         }
 
-        public Gauge Gauge<T>(string name, Func<T> gauge, Unit unit) where T : GaugeMetric
+        protected override Tuple<MetricValueProvider<double>, GaugeValueSource> CreateGauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit)
         {
-            return gauge();
+            var provider = valueProvider();
+            return Tuple.Create(provider, new GaugeValueSource(name, provider, unit));
         }
 
-        public Counter Counter(string name, Unit unit)
+        protected override Tuple<Counter, CounterValueSource> CreateCounter(string name, Unit unit)
         {
-            return CounterInstance != null ? CounterInstance : CounterBuilder(name, unit);
+
+            var counter = new CounterMetric();
+            return Tuple.Create((Counter)counter, new CounterValueSource(name, counter, unit));
         }
 
-        public Meter Meter(string name, Unit unit, TimeUnit rateUnit)
+        protected override Tuple<Meter, MeterValueSource> CreateMeter(string name, Unit unit, TimeUnit rateUnit)
         {
-            return MeterInstance != null ? MeterInstance : MeterBuilder(name, unit, rateUnit);
+            var meter = new MeterMetric(this.clock, this.scheduler);
+            return Tuple.Create((Meter)meter, new MeterValueSource(name, meter, unit, rateUnit));
         }
 
-        public Histogram Histogram(string name, Unit unit, SamplingType samplingType)
+        protected override Tuple<Histogram, HistogramValueSource> CreateHistogram(string name, Unit unit, SamplingType samplingType)
         {
-            return HistogramInstance != null ? HistogramInstance : HistogramBuilder(name, unit, samplingType);
+            var histogram = new HistogramMetric(new SlidingWindowReservoir()); // always use sliding window reservoir as we test with less than 1028 values
+            return Tuple.Create((Histogram)histogram, new HistogramValueSource(name, histogram, unit));
         }
 
-        public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit)
+        protected override Tuple<Timer, TimerValueSource> CreateTimer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit)
         {
-            return TimerInstance != null ? TimerInstance : TimerBuilder(name, unit, samplingType, rateUnit, durationUnit);
+            // always use sliding window reservoir as we test with less than 1028 values
+            var timer = new TimerMetric(new HistogramMetric(new SlidingWindowReservoir()), new MeterMetric(this.clock, this.scheduler), this.clock);
+            return Tuple.Create((Timer)timer, new TimerValueSource(name, timer, unit, rateUnit, durationUnit));
         }
-
-        public IEnumerable<GaugeValueSource> Gauges { get { yield break; } }
-        public IEnumerable<CounterValueSource> Counters { get { yield break; } }
-        public IEnumerable<MeterValueSource> Meters { get { yield break; } }
-        public IEnumerable<HistogramValueSource> Histograms { get { yield break; } }
-        public IEnumerable<TimerValueSource> Timers { get { yield break; } }
-
-        public void ClearAllMetrics() { }
     }
 }

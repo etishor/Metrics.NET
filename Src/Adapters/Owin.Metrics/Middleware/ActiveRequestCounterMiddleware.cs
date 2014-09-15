@@ -3,7 +3,7 @@ using Metrics.Core;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
+using Metrics.Core;
 
 namespace Owin.Metrics.Middleware
 {
@@ -15,10 +15,10 @@ namespace Owin.Metrics.Middleware
         private readonly Counter activeRequests;
         private Func<IDictionary<string, object>, Task> next;
 
-        public ActiveRequestCounterMiddleware(MetricsRegistry registry, string metricName, Regex[] ignorePatterns)
-            : base(ignorePatterns)
+        public ActiveRequestCounterMiddleware(MetricsContext context, string metricName)
+		 	: base(ignorePatterns)
         {
-            this.activeRequests = registry.Counter(metricName, Unit.Custom("ActiveRequests"));
+            this.activeRequests = context.Counter(metricName, Unit.Custom("ActiveRequests"));
         }
 
         public void Initialize(Func<IDictionary<string, object>, Task> next)

@@ -5,7 +5,6 @@ namespace Metrics.Core
 {
     public sealed class NullMetricsRegistry : MetricsRegistry
     {
-        private class NullGauge : Gauge { public static readonly Gauge Instance = new NullGauge();  }
         private class NullCounter : Counter
         {
             public static readonly Counter Instance = new NullCounter();
@@ -34,47 +33,29 @@ namespace Metrics.Core
             public void Record(long time, TimeUnit unit) { }
             public void Time(Action action) { action(); }
             public T Time<T>(Func<T> action) { return action(); }
-            public IDisposable NewContext() { return null; }
+            public TimerContext NewContext() { return null; }
+        }
+
+        private class NullDataProvider : RegistryDataProvider
+        {
+            public static readonly NullDataProvider Instance = new NullDataProvider();
+            public IEnumerable<GaugeValueSource> Gauges { get { yield break; } }
+            public IEnumerable<CounterValueSource> Counters { get { yield break; } }
+            public IEnumerable<MeterValueSource> Meters { get { yield break; } }
+            public IEnumerable<HistogramValueSource> Histograms { get { yield break; } }
+            public IEnumerable<TimerValueSource> Timers { get { yield break; } }
         }
 
         public string Name { get { return "NULL Registry"; } }
-        public IEnumerable<GaugeValueSource> Gauges { get { yield break; } }
-        public IEnumerable<CounterValueSource> Counters { get { yield break; } }
-        public IEnumerable<MeterValueSource> Meters { get { yield break; } }
-        public IEnumerable<HistogramValueSource> Histograms { get { yield break; } }
-        public IEnumerable<TimerValueSource> Timers { get { yield break; } }
+        public RegistryDataProvider DataProvider { get { return NullDataProvider.Instance; } }
 
-        public Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
-        {
-            return NullGauge.Instance;
-        }
+        public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit) { }
+        public Counter Counter(string name, Unit unit) { return NullCounter.Instance; }
+        public Meter Meter(string name, Unit unit, TimeUnit rateUnit) { return NullMeter.Instance; }
+        public Histogram Histogram(string name, Unit unit, SamplingType samplingType) { return NullHistogram.Instance; }
+        public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit) { return NullTimer.Instance; }
 
-        public Gauge Gauge<T>(string name, Func<T> gauge, Unit unit) where T : GaugeMetric
-        {
-            return NullGauge.Instance;
-        }
+        public void ClearAllMetrics() { }
 
-        public Counter Counter(string name, Unit unit)
-        {
-            return NullCounter.Instance;
-        }
-
-        public Meter Meter(string name, Unit unit, TimeUnit rateUnit)
-        {
-            return NullMeter.Instance;
-        }
-
-        public Histogram Histogram(string name, Unit unit, SamplingType samplingType)
-        {
-            return NullHistogram.Instance;
-        }
-
-        public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit)
-        {
-            return NullTimer.Instance;
-        }
-
-        public void ClearAllMetrics()
-        { }
     }
 }

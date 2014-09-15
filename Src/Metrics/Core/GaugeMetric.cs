@@ -1,13 +1,9 @@
 ﻿
 using System;
+using System.Diagnostics;
 namespace Metrics.Core
 {
-    public abstract class GaugeMetric : Gauge, MetricValueProvider<double>
-    {
-        public abstract double Value { get; }
-    }
-
-    public sealed class FunctionGauge : GaugeMetric
+    public sealed class FunctionGauge : MetricValueProvider<double>
     {
         private readonly Func<double> valueProvider;
 
@@ -16,20 +12,62 @@ namespace Metrics.Core
             this.valueProvider = valueProvider;
         }
 
-        public override double Value { get { return this.valueProvider(); } }
+        public double Value
+        {
+            get
+            {
+                try
+                {
+                    return this.valueProvider();
+                }
+                catch (Exception x)
+                {
+                    if (Metric.Config.ErrorHandler != null)
+                    {
+                        Metric.Config.ErrorHandler(x);
+                    }
+                    else
+                    {
+                        Trace.Fail("Error executing Functional Gauge. You can handle this exception by setting a handler on Metric.Config.WithErrorHandler()", x.ToString());
+                    }
+                    return double.NaN;
+                }
+            }
+        }
     }
 
-    public sealed class DerivedGauge : GaugeMetric
+    public sealed class DerivedGauge : MetricValueProvider<double>
     {
-        private readonly GaugeMetric gauge;
+        private readonly MetricValueProvider<double> gauge;
         private readonly Func<double, double> transformation;
 
-        public DerivedGauge(GaugeMetric gauge, Func<double, double> transformation)
+        public DerivedGauge(MetricValueProvider<double> gauge, Func<double, double> transformation)
         {
             this.gauge = gauge;
             this.transformation = transformation;
         }
 
-        public override double Value { get { return this.transformation(this.gauge.Value); } }
+        public double Value
+        {
+            get
+            {
+                try
+                {
+                    return this.transformation(this.gauge.Value);
+                }
+                catch (Exception x)
+                {
+                    if (Metric.Config.ErrorHandler != null)
+                    {
+                        Metric.Config.ErrorHandler(x);
+                    }
+                    else
+                    {
+                        Trace.Fail("Error executing Derived Gauge. You can handle this exception by setting a handler on Metric.Config.WithErrorHandler()", x.ToString());
+                    }
+                    return double.NaN;
+                }
+            }
+        }
     }
 }

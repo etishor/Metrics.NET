@@ -15,10 +15,10 @@ namespace Owin.Metrics.Middleware
         private readonly Meter errorMeter;
         private AppFunc next;
 
-        public ErrorMeterMiddleware(MetricsRegistry registry, string metricName, Regex[] ignorePatterns)
-            : base(ignorePatterns)
+        public ErrorMeterMiddleware(MetricsContext context, string metricName)
+			: base(ignorePatterns)
         {
-            this.errorMeter = registry.Meter(metricName, Unit.Errors, TimeUnit.Seconds);
+            this.errorMeter = context.Meter(metricName, Unit.Errors, TimeUnit.Seconds);
         }
 
         public void Initialize(AppFunc next)

@@ -1,8 +1,7 @@
-﻿using Metrics;
-using Metrics.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Metrics;
 using System.Text.RegularExpressions;
 
 namespace Owin.Metrics.Middleware
@@ -16,10 +15,10 @@ namespace Owin.Metrics.Middleware
         private readonly Timer requestTimer;
         private AppFunc next;
 
-        public RequestTimerMiddleware(MetricsRegistry registry, string metricName, Regex[] ignorePatterns)
-            : base(ignorePatterns)
+        public RequestTimerMiddleware(MetricsContext context, string metricName, Regex[] ignorePatterns)
+			: base(ignorePatterns)
         {
-            this.requestTimer = registry.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+            this.requestTimer = context.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
         }
 
         public void Initialize(AppFunc next)

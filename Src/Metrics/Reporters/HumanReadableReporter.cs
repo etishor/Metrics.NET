@@ -16,14 +16,14 @@ namespace Metrics.Reporters
 
         protected override void StartReport()
         {
-            this.WriteLine("{0} - {1}", base.RegistryName, base.Timestamp.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture));
+            this.WriteLine("{0} - {1}", base.Context, base.Timestamp.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture));
         }
 
         protected override void StartMetricGroup(string metricType)
         {
             this.WriteLine();
             this.WriteLine();
-            this.WriteLine("***** {0} - {1} - {2} *****", metricType, this.RegistryName, base.Timestamp.ToString());
+            this.WriteLine("***** {0} - {1} - {2} *****", metricType, this.Context, base.Timestamp.ToString());
         }
 
         protected void WriteMetricName(string name)
