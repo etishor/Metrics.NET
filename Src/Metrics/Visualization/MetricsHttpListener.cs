@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -31,19 +32,43 @@ namespace Metrics.Visualization
             Task.Factory.StartNew(ProcessRequests, TaskCreationOptions.LongRunning);
         }
 
+        private static void HandleHttpError(Exception exception)
+        {
+            if (Metric.Config.ErrorHandler != null)
+            {
+                Metric.Config.ErrorHandler(exception);
+            }
+            else
+            {
+                Trace.Fail("Error processing HTTP request. You can handle this exception by setting a handler on Metric.Config.ErrorHandler", exception.ToString());
+            }
+        }
+
         private void ProcessRequests()
         {
             while (!this.cts.IsCancellationRequested)
             {
                 try
                 {
-                    ProcessRequest(this.httpListener.GetContext());
-                }
-                catch (HttpListenerException ex)
-                {
-                    if (ex.ErrorCode != 995) // IO operation aborted
+                    var context = this.httpListener.GetContext();
+                    try
                     {
-                        throw;
+                        ProcessRequest(context);
+                    }
+                    catch (Exception ex)
+                    {
+                        context.Response.StatusCode = 500;
+                        context.Response.StatusDescription = "Internal Server Error";
+                        context.Response.Close();
+                        HandleHttpError(ex);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    HttpListenerException httpException = ex as HttpListenerException;
+                    if (httpException == null || httpException.ErrorCode != 995)// IO operation aborted
+                    {
+                        HandleHttpError(ex);
                     }
                 }
             }

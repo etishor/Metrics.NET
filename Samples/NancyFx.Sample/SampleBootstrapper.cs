@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using Metrics;
 using Nancy;
+using Nancy.Authentication.Stateless;
 using Nancy.Bootstrapper;
+using Nancy.Security;
 using Nancy.TinyIoc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -23,12 +26,15 @@ namespace NancyFx.Sample
         {
             base.ApplicationStartup(container, pipelines);
 
+            StatelessAuthentication.Enable(pipelines, new StatelessAuthenticationConfiguration(AuthenticateUser));
+
             Metric.Config
                 .WithAllCounters()
                 .WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30)))
                 .WithNancy(config => config
                     .WithNancyMetrics(c => c.RegisterAllMetrics(pipelines))
                     .WithMetricsModule()
+                    .WithMetricsModule(m => m.RequiresAuthentication(), "/admin/metrics")
                 );
 
             pipelines.AfterRequest += ctx =>
@@ -40,7 +46,20 @@ namespace NancyFx.Sample
                         .WithHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
                 }
             };
-            // to enable authentication use .WithMetricsEndpoint( "/stats", m => m.RequiresAuthentication() ) 
+        }
+
+        class FakeUser : IUserIdentity
+        {
+            public IEnumerable<string> Claims { get { yield return "Admin"; } }
+            public string UserName
+            {
+                get { return "admin"; }
+            }
+        }
+
+        private IUserIdentity AuthenticateUser(NancyContext context)
+        {
+            return new FakeUser();
         }
 
         protected override void ConfigureApplicationContainer(TinyIoCContainer container)
