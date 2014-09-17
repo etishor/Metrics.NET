@@ -39,7 +39,6 @@ namespace Owin.Metrics.Middleware
         {
             var requestPath = environment["owin.RequestPath"] as string;
 
-
             if (requestPath.EndsWith("/" + endpointConfig.MetricsEndpointName) && endpointConfig.MetricsEndpointEnabled)
             {
                 return GetFlotWebApp(environment);

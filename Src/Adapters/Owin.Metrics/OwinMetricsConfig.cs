@@ -1,8 +1,8 @@
-﻿using System;
-using Metrics;
+﻿using Metrics;
 using Metrics.Core;
 using Owin.Metrics.Middleware;
-
+using System;
+using System.Text.RegularExpressions;
 namespace Owin.Metrics
 {
     public class OwinMetricsConfig
@@ -18,9 +18,10 @@ namespace Owin.Metrics
             this.healthStatus = healthStatus;
         }
 
-        public OwinMetricsConfig WithRequestMetricsConfig(Action<OwinRequestMetricsConfig> config)
+        public OwinMetricsConfig WithRequestMetricsConfig(Action<OwinRequestMetricsConfig> config, Regex[] ignoreRequestPathPatterns = null)
         {
-            OwinRequestMetricsConfig requestConfig = new OwinRequestMetricsConfig(this.middlewareRegistration, this.context);
+            OwinRequestMetricsConfig requestConfig = new OwinRequestMetricsConfig(this.middlewareRegistration, this.context,
+                ignoreRequestPathPatterns);
             config(requestConfig);
             return this;
         }
