@@ -41,8 +41,8 @@ namespace Metrics
             where T : Counter, MetricValueProvider<long>;
 
         /// <summary>
-        /// Register a custom Meter instance
-        /// </remarks>
+        /// Register a custom Meter instance.
+        /// </summary>
         /// <param name="name">Name of the metric. Must be unique across all meters in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="builder">Function used to build a custom instance.</param>

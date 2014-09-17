@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Metrics.Core;
@@ -9,7 +8,7 @@ namespace Metrics.Tests.TestUtils
     public class TestContext : BaseMetricsContext
     {
         public TestContext(string contextName, TestClock clock, TestScheduler scheduler)
-            : base(contextName, new DefaultMetricsRegistry(), new TestMetricsBuilder(clock,scheduler))
+            : base(contextName, new DefaultMetricsRegistry(), new TestMetricsBuilder(clock, scheduler))
         {
             this.Clock = clock;
             this.Scheduler = scheduler;
@@ -33,27 +32,27 @@ namespace Metrics.Tests.TestUtils
 
         public double GaugeValue(params string[] nameWithContext)
         {
-            return ValueFor(GetDataFor(nameWithContext).Gauges, nameWithContext);
+            return ValueFor<double>(GetDataFor(nameWithContext).Gauges, nameWithContext);
         }
 
         public long CounterValue(params string[] nameWithContext)
         {
-            return ValueFor(GetDataFor(nameWithContext).Counters, nameWithContext);
+            return ValueFor<long>(GetDataFor(nameWithContext).Counters, nameWithContext);
         }
 
         public MeterValue MeterValue(params string[] nameWithContext)
         {
-            return ValueFor(GetDataFor(nameWithContext).Meters, nameWithContext);
+            return ValueFor<MeterValue>(GetDataFor(nameWithContext).Meters, nameWithContext);
         }
 
         public HistogramValue HistogramValue(params string[] nameWithContext)
         {
-            return ValueFor(GetDataFor(nameWithContext).Histograms, nameWithContext);
+            return ValueFor<HistogramValue>(GetDataFor(nameWithContext).Histograms, nameWithContext);
         }
 
         public TimerValue TimerValue(params string[] nameWithContext)
         {
-            return ValueFor(GetDataFor(nameWithContext).Timers, nameWithContext);
+            return ValueFor<TimerValue>(GetDataFor(nameWithContext).Timers, nameWithContext);
         }
 
         private T ValueFor<T>(IEnumerable<MetricValueSource<T>> values, string[] nameWithContext) where T : struct
