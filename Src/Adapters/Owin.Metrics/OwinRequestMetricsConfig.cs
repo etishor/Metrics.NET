@@ -1,9 +1,7 @@
 ﻿using System;
-using Metrics;
-using Metrics.Core;
-using Owin.Metrics.Middleware;
-using System;
 using System.Text.RegularExpressions;
+using Metrics;
+using Owin.Metrics.Middleware;
 
 namespace Owin.Metrics
 {
@@ -11,15 +9,15 @@ namespace Owin.Metrics
     {
         private readonly MetricsContext metricsContext;
         private readonly Action<object> middlewareRegistration;
-		private Regex[] ignoreRequestPathPatterns;
+        private Regex[] ignoreRequestPathPatterns;
 
         public OwinRequestMetricsConfig(Action<object> middlewareRegistration, MetricsContext metricsContext,
-			Regex[] ignoreRequestPathPatterns)
+            Regex[] ignoreRequestPathPatterns)
         {
             this.middlewareRegistration = middlewareRegistration;
             this.metricsContext = metricsContext;
             this.MetricsPrefix = "Owin";
-			this.ignoreRequestPathPatterns = ignoreRequestPathPatterns;
+            this.ignoreRequestPathPatterns = ignoreRequestPathPatterns;
         }
 
         public MetricsContext Context { get { return metricsContext; } }
