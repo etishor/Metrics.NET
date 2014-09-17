@@ -107,6 +107,11 @@ namespace Metrics
         void CompletelyDisableMetrics();
 
         /// <summary>
+        /// Clear all collected data for all the metrics in this context
+        /// </summary>
+        void ResetMetricsValues();
+
+        /// <summary>
         /// Event fired when the context is disposed or shutdown or the CompletelyDisableMetrics is called.
         /// </summary>
         event EventHandler ContextShuttingDown;

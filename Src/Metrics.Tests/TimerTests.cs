@@ -78,5 +78,22 @@ namespace Metrics.Tests
                 context.Elapsed.TotalMilliseconds.Should().Be(100);
             }
         }
+
+        [Fact]
+        public void TimerCanReset()
+        {
+            using (var context = timer.NewContext())
+            {
+                clock.Advance(TimeUnit.Milliseconds, 100);
+            }
+
+            timer.Value.Rate.Count.Should().NotBe(0);
+            timer.Value.Histogram.Count.Should().NotBe(0);
+
+            timer.Reset();
+
+            timer.Value.Rate.Count.Should().Be(0);
+            timer.Value.Histogram.Count.Should().Be(0);
+        }
     }
 }

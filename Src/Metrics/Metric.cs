@@ -60,6 +60,14 @@ namespace Metrics
         }
 
         /// <summary>
+        /// Clear all collected data for all the metrics
+        /// </summary>
+        public static void ResetMetricsValues()
+        {
+            globalContext.ResetMetricsValues();
+        }
+
+        /// <summary>
         /// Entrypoint for Global Metrics Configuration.
         /// </summary>
         /// <example>

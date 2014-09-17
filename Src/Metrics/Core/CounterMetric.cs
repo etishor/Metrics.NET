@@ -27,5 +27,10 @@ namespace Metrics.Core
         {
             this.value.Add(-value);
         }
+
+        public void Reset()
+        {
+            this.value.SetValue(0L);
+        }
     }
 }

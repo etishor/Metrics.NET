@@ -96,5 +96,15 @@ namespace Metrics.Tests
 
             counter.Value.Should().Be(threadCount * iterations);
         }
+
+        [Fact]
+        public void CounterCanReset()
+        {
+            var counter = new CounterMetric();
+            counter.Increment();
+            counter.Value.Should().Be(1L);
+            counter.Reset();
+            counter.Value.Should().Be(0L);
+        }
     }
 }

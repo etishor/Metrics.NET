@@ -23,5 +23,6 @@ namespace Metrics.Core
         Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit);
 
         void ClearAllMetrics();
+        void ResetMetricsValues();
     }
 }

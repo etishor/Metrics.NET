@@ -71,6 +71,21 @@ namespace Metrics.Core
             this.Update(value, this.clock.Seconds);
         }
 
+        public void Reset()
+        {
+            this.@lock.EnterWriteLock();
+            try
+            {
+                this.values.Clear();
+                this.count.SetValue(0L);
+                this.startTime = new AtomicLong(this.clock.Seconds);
+            }
+            finally
+            {
+                this.@lock.ExitWriteLock();
+            }
+        }
+
         private void Update(long value, long timestamp)
         {
             this.@lock.EnterReadLock();

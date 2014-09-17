@@ -58,6 +58,15 @@ namespace Metrics.Core
             }
         }
 
+        public void Reset()
+        {
+            for (int i = 0; i < values.Length; i++)
+            {
+                values[i] = new AtomicLong();
+            }
+            count.SetValue(0L);
+        }
+
         private static long NextLong(long max)
         {
             long bits, val;

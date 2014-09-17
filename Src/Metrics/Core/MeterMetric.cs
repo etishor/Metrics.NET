@@ -68,7 +68,7 @@ namespace Metrics.Core
         {
             get
             {
-                return m15Rate.GetRate(TimeUnit.Seconds);
+                return this.m15Rate.GetRate(TimeUnit.Seconds);
             }
         }
 
@@ -76,7 +76,7 @@ namespace Metrics.Core
         {
             get
             {
-                return m5Rate.GetRate(TimeUnit.Seconds);
+                return this.m5Rate.GetRate(TimeUnit.Seconds);
             }
         }
 
@@ -84,21 +84,29 @@ namespace Metrics.Core
         {
             get
             {
-                return m1Rate.GetRate(TimeUnit.Seconds);
+                return this.m1Rate.GetRate(TimeUnit.Seconds);
             }
         }
 
         private void Tick()
         {
-            m1Rate.Tick();
-            m5Rate.Tick();
-            m15Rate.Tick();
+            this.m1Rate.Tick();
+            this.m5Rate.Tick();
+            this.m15Rate.Tick();
         }
 
         public void Dispose()
         {
             this.tickScheduler.Stop();
             using (this.tickScheduler) { }
+        }
+
+        public void Reset()
+        {
+            this.count.SetValue(0);
+            this.m1Rate.Reset();
+            this.m5Rate.Reset();
+            this.m15Rate.Reset();
         }
     }
 }

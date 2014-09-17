@@ -88,5 +88,11 @@ namespace Metrics.Core
                 return new TimerValue(this.meterValue.Value, this.histogramValue.Value);
             }
         }
+
+        public void Reset()
+        {
+            this.meter.Reset();
+            this.histogram.Reset();
+        }
     }
 }

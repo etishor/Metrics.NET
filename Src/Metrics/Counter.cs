@@ -4,7 +4,7 @@ namespace Metrics
     /// <summary>
     /// A counter is a simple incrementing and decrementing 64-bit integer.
     /// </summary>
-    public interface Counter : Utils.IHideObjectMembers
+    public interface Counter : ResetableMetric, Utils.IHideObjectMembers
     {
         /// <summary>
         /// Increment the counter value.

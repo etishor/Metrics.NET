@@ -130,5 +130,15 @@ namespace Metrics.Core
                 }
             }
         }
+
+
+        public void ResetMetricsValues()
+        {
+            this.registry.ResetMetricsValues();
+            foreach (var context in this.childContexts.Values)
+            {
+                context.ResetMetricsValues();
+            }
+        }
     }
 }

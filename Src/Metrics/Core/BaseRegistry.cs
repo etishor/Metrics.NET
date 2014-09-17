@@ -56,6 +56,18 @@ namespace Metrics.Core
                     using (value.Metric as IDisposable) { }
                 }
             }
+
+            public void Reset()
+            {
+                foreach (var metric in this.metrics.Values)
+                {
+                    var resetable = metric.Metric as ResetableMetric;
+                    if (resetable != null)
+                    {
+                        resetable.Reset();
+                    }
+                }
+            }
         }
 
         private readonly MetricMetaCatalog<MetricValueProvider<double>, GaugeValueSource, double> gauges = new MetricMetaCatalog<MetricValueProvider<double>, GaugeValueSource, double>();
@@ -112,6 +124,15 @@ namespace Metrics.Core
             this.meters.Clear();
             this.histograms.Clear();
             this.timers.Clear();
+        }
+
+        public void ResetMetricsValues()
+        {
+            this.gauges.Reset();
+            this.counters.Reset();
+            this.meters.Reset();
+            this.histograms.Reset();
+            this.timers.Reset();
         }
     }
 }

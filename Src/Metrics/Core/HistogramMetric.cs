@@ -1,4 +1,5 @@
-﻿using Metrics.Utils;
+﻿using System;
+using Metrics.Utils;
 
 namespace Metrics.Core
 {
@@ -37,6 +38,13 @@ namespace Metrics.Core
             }
         }
 
+        public void Reset()
+        {
+            this.last.SetValue(0L);
+            this.counter.SetValue(0L);
+            this.reservoir.Reset();
+        }
+
         private static Reservoir SamplingTypeToReservoir(SamplingType samplingType)
         {
             switch (samplingType)
@@ -45,7 +53,7 @@ namespace Metrics.Core
                 case SamplingType.LongTerm: return new UniformReservoir();
                 case SamplingType.SlidingWindow: return new SlidingWindowReservoir();
             }
-            throw new System.NotImplementedException();
+            throw new InvalidOperationException("Sampling type not implemented " + samplingType.ToString());
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Metrics.Core
             public void Increment(long value) { }
             public void Decrement() { }
             public void Decrement(long value) { }
+            public void Reset() { }
         }
 
         private class NullMeter : Meter
@@ -19,12 +20,14 @@ namespace Metrics.Core
             public static readonly Meter Instance = new NullMeter();
             public void Mark() { }
             public void Mark(long count) { }
+            public void Reset() { }
         }
 
         private class NullHistogram : Histogram
         {
             public static readonly Histogram Instance = new NullHistogram();
             public void Update(long value) { }
+            public void Reset() { }
         }
 
         private class NullTimer : Timer
@@ -34,6 +37,7 @@ namespace Metrics.Core
             public void Time(Action action) { action(); }
             public T Time<T>(Func<T> action) { return action(); }
             public TimerContext NewContext() { return null; }
+            public void Reset() { }
         }
 
         private class NullDataProvider : RegistryDataProvider
@@ -56,6 +60,6 @@ namespace Metrics.Core
         public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit) { return NullTimer.Instance; }
 
         public void ClearAllMetrics() { }
-
+        public void ResetMetricsValues() { }
     }
 }

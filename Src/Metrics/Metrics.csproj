@@ -75,6 +75,7 @@
     <Compile Include="Core\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Core\HealthCheck.cs" />
     <Compile Include="Core\NullMetricsRegistry.cs" />
+    <Compile Include="ResetableMetric.cs" />
     <Compile Include="HealthCheckResult.cs" />
     <Compile Include="Counter.cs" />
     <Compile Include="Gauge.cs" />
