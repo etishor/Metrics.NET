@@ -5,10 +5,7 @@ using System.Linq;
 
 namespace Metrics.Core
 {
-    /// <summary>
-    /// Encapsulates common functionality for a metrics registry
-    /// </summary>
-    public abstract class BaseRegistry : MetricsRegistry
+    public sealed class DefaultMetricsRegistry : MetricsRegistry
     {
         private class MetricMetaCatalog<TMetric, TValue, TMetricValue>
             where TValue : MetricValueSource<TMetricValue>
@@ -77,45 +74,61 @@ namespace Metrics.Core
             new MetricMetaCatalog<Histogram, HistogramValueSource, HistogramValue>();
         private readonly MetricMetaCatalog<Timer, TimerValueSource, TimerValue> timers = new MetricMetaCatalog<Timer, TimerValueSource, TimerValue>();
 
-        public BaseRegistry(string name)
+        public DefaultMetricsRegistry()
         {
-            this.Name = name;
             this.DataProvider = new DefaultRegistryDataProvider(() => this.gauges.All, () => this.counters.All, () => this.meters.All, () => this.histograms.All, () => this.timers.All);
         }
 
-        public string Name { get; private set; }
         public RegistryDataProvider DataProvider { get; private set; }
 
         public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit)
         {
-            this.gauges.GetOrAdd(name, () => CreateGauge(name, valueProvider, unit));
+            this.gauges.GetOrAdd(name, () =>
+            {
+                MetricValueProvider<double> gauge = valueProvider();
+                return Tuple.Create(gauge, new GaugeValueSource(name, gauge, unit));
+            });
         }
 
-        public Counter Counter(string name, Unit unit)
+        public Counter Counter<T>(string name, Unit unit, Func<T> builder)
+            where T : Counter, MetricValueProvider<long>
         {
-            return this.counters.GetOrAdd(name, () => CreateCounter(name, unit));
+            return this.counters.GetOrAdd(name, () =>
+            {
+                T counter = builder();
+                return Tuple.Create((Counter)counter, new CounterValueSource(name, counter, unit));
+            });
         }
 
-        public Meter Meter(string name, Unit unit, TimeUnit rateUnit)
+        public Meter Meter<T>(string name, Unit unit, TimeUnit rateUnit, Func<T> builder)
+            where T : Meter, MetricValueProvider<MeterValue>
         {
-            return this.meters.GetOrAdd(name, () => CreateMeter(name, unit, rateUnit));
+            return this.meters.GetOrAdd(name, () =>
+            {
+                T meter = builder();
+                return Tuple.Create((Meter)meter, new MeterValueSource(name, meter, unit, rateUnit));
+            });
         }
 
-        public Histogram Histogram(string name, Unit unit, SamplingType samplingType)
+        public Histogram Histogram<T>(string name, Unit unit, Func<T> builder)
+            where T : Histogram, MetricValueProvider<HistogramValue>
         {
-            return this.histograms.GetOrAdd(name, () => CreateHistogram(name, unit, samplingType));
+            return this.histograms.GetOrAdd(name, () =>
+            {
+                T histogram = builder();
+                return Tuple.Create((Histogram)histogram, new HistogramValueSource(name, histogram, unit));
+            });
         }
 
-        public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit)
+        public Timer Timer<T>(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, Func<T> builder)
+            where T : Timer, MetricValueProvider<TimerValue>
         {
-            return this.timers.GetOrAdd(name, () => CreateTimer(name, unit, samplingType, rateUnit, durationUnit));
+            return this.timers.GetOrAdd(name, () =>
+            {
+                T timer = builder();
+                return Tuple.Create((Timer)timer, new TimerValueSource(name, timer, unit, rateUnit, durationUnit));
+            });
         }
-
-        protected abstract Tuple<MetricValueProvider<double>, GaugeValueSource> CreateGauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit);
-        protected abstract Tuple<Counter, CounterValueSource> CreateCounter(string name, Unit unit);
-        protected abstract Tuple<Meter, MeterValueSource> CreateMeter(string name, Unit unit, TimeUnit rateUnit);
-        protected abstract Tuple<Histogram, HistogramValueSource> CreateHistogram(string name, Unit unit, SamplingType samplingType);
-        protected abstract Tuple<Timer, TimerValueSource> CreateTimer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit);
 
         public void ClearAllMetrics()
         {

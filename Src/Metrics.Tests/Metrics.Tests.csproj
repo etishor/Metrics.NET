@@ -137,7 +137,7 @@
     <Compile Include="ActionSchedulerTests.cs" />
     <Compile Include="SlidingWindowReservoirTest.cs" />
     <Compile Include="SnapshotTests.cs" />
-    <Compile Include="TestUtils\TestRegistry.cs" />
+    <Compile Include="TestUtils\TestMetricsBuilder.cs" />
     <Compile Include="TestUtils\TestContext.cs" />
     <Compile Include="TestUtils\TestClock.cs" />
     <Compile Include="TestUtils\TestScheduler.cs" />

@@ -68,12 +68,15 @@
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AdvancedMetricsContext.cs" />
     <Compile Include="Core\BaseMetricsContext.cs" />
-    <Compile Include="Core\BaseRegistry.cs" />
+    <Compile Include="Core\DefaultMetricsBuilder.cs" />
+    <Compile Include="Core\DefaultMetricsRegistry.cs" />
     <Compile Include="Core\DefaultDataProvider.cs" />
     <Compile Include="Core\DefaultRegistryDataProvider.cs" />
     <Compile Include="Core\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Core\HealthCheck.cs" />
+    <Compile Include="Core\MetricsBuilder.cs" />
     <Compile Include="Core\NullMetricsRegistry.cs" />
     <Compile Include="ResetableMetric.cs" />
     <Compile Include="HealthCheckResult.cs" />
@@ -87,7 +90,6 @@
     <Compile Include="Json\JsonValue.cs" />
     <Compile Include="Meter.cs" />
     <Compile Include="Core\MetricsRegistry.cs" />
-    <Compile Include="Core\LocalRegistry.cs" />
     <Compile Include="Core\DefaultMetricsContext.cs" />
     <Compile Include="MetricsDataProvider.cs" />
     <Compile Include="MetricsFilter.cs" />

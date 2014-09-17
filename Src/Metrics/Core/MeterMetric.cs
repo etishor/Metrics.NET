@@ -3,7 +3,9 @@ using System;
 using Metrics.Utils;
 namespace Metrics.Core
 {
-    public sealed class MeterMetric : Meter, MetricValueProvider<MeterValue>, IDisposable
+    public interface MeterImplementation : Meter, MetricValueProvider<MeterValue> { }
+
+    public sealed class MeterMetric : MeterImplementation, IDisposable
     {
         public static readonly TimeSpan TickInterval = TimeSpan.FromSeconds(5);
 

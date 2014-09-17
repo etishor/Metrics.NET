@@ -50,16 +50,31 @@ namespace Metrics.Core
             public IEnumerable<TimerValueSource> Timers { get { yield break; } }
         }
 
-        public string Name { get { return "NULL Registry"; } }
         public RegistryDataProvider DataProvider { get { return NullDataProvider.Instance; } }
-
-        public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit) { }
-        public Counter Counter(string name, Unit unit) { return NullCounter.Instance; }
-        public Meter Meter(string name, Unit unit, TimeUnit rateUnit) { return NullMeter.Instance; }
-        public Histogram Histogram(string name, Unit unit, SamplingType samplingType) { return NullHistogram.Instance; }
-        public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit) { return NullTimer.Instance; }
 
         public void ClearAllMetrics() { }
         public void ResetMetricsValues() { }
+
+        public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit) { }
+
+        public Counter Counter<T>(string name, Unit unit, Func<T> builder) where T : Counter, MetricValueProvider<long>
+        {
+            return NullCounter.Instance;
+        }
+
+        public Meter Meter<T>(string name, Unit unit, TimeUnit rateUnit, Func<T> builder) where T : Meter, MetricValueProvider<MeterValue>
+        {
+            return NullMeter.Instance;
+        }
+
+        public Histogram Histogram<T>(string name, Unit unit, Func<T> builder) where T : Histogram, MetricValueProvider<HistogramValue>
+        {
+            return NullHistogram.Instance;
+        }
+
+        public Timer Timer<T>(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, Func<T> builder) where T : Timer, MetricValueProvider<TimerValue>
+        {
+            return NullTimer.Instance;
+        }
     }
 }

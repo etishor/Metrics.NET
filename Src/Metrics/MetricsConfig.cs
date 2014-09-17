@@ -19,7 +19,7 @@ namespace Metrics
             this.healthStatus = () => HealthChecks.GetStatus();
 
             this.reports = new MetricsReports(this.context.DataProvider, this.healthStatus);
-            this.context.ContextShuttingDown += (s, e) => this.DisableAllReports();
+            this.context.Advanced.ContextShuttingDown += (s, e) => this.DisableAllReports();
         }
 
         public T Configure<T>(Func<MetricsContext, T> config)

@@ -42,7 +42,7 @@ namespace Metrics.PerfCounters
 
         private static void Register(this MetricsContext context, string name, Func<MetricValueProvider<double>> gauge, Unit unit)
         {
-            context.Gauge(name, gauge, unit);
+            context.Advanced.Gauge(name, gauge, unit);
         }
     }
 }

@@ -3,7 +3,9 @@ using Metrics.Utils;
 
 namespace Metrics.Core
 {
-    public sealed class HistogramMetric : Histogram, MetricValueProvider<HistogramValue>
+    public interface HistogramImplementation : Histogram, MetricValueProvider<HistogramValue> { }
+
+    public sealed class HistogramMetric : HistogramImplementation
     {
         private readonly Reservoir reservoir;
         private AtomicLong counter = new AtomicLong();

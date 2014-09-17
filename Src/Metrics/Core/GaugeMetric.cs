@@ -3,7 +3,9 @@ using System;
 using System.Diagnostics;
 namespace Metrics.Core
 {
-    public sealed class FunctionGauge : MetricValueProvider<double>
+    public interface GaugeImplementation : MetricValueProvider<double> { }
+
+    public sealed class FunctionGauge : GaugeImplementation
     {
         private readonly Func<double> valueProvider;
 
@@ -36,7 +38,7 @@ namespace Metrics.Core
         }
     }
 
-    public sealed class DerivedGauge : MetricValueProvider<double>
+    public sealed class DerivedGauge : GaugeImplementation
     {
         private readonly MetricValueProvider<double> gauge;
         private readonly Func<double, double> transformation;

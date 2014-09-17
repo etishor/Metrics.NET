@@ -8,7 +8,7 @@ namespace Metrics
     /// </summary>
     public static class Metric
     {
-        private static readonly MetricsContext globalContext;
+        private static readonly DefaultMetricsContext globalContext;
         private static readonly MetricsConfig config;
 
         static Metric()
@@ -16,6 +16,11 @@ namespace Metrics
             globalContext = new DefaultMetricsContext(Process.GetCurrentProcess().ProcessName);
             config = new MetricsConfig(globalContext);
         }
+
+        /// <summary>
+        /// Exposes advanced operations that are possible on this metrics context.
+        /// </summary>
+        public static AdvancedMetricsContext Advanced { get { return globalContext; } }
 
         /// <summary>
         /// Create a new child metrics context. Metrics added to the child context are kept separate from the metrics in the 
@@ -47,24 +52,6 @@ namespace Metrics
         public static void ShutdownContext(string contextName)
         {
             globalContext.ShutdownContext(contextName);
-        }
-
-        /// <summary>
-        /// All metrics operations will be NO-OP.
-        /// This is useful for measuring the impact of the metrics library on the application.
-        /// If you think the Metrics library is causing issues, this will disable all Metrics operations.
-        /// </summary>
-        public static void CompletelyDisableMetrics()
-        {
-            globalContext.CompletelyDisableMetrics();
-        }
-
-        /// <summary>
-        /// Clear all collected data for all the metrics
-        /// </summary>
-        public static void ResetMetricsValues()
-        {
-            globalContext.ResetMetricsValues();
         }
 
         /// <summary>
@@ -107,17 +94,6 @@ namespace Metrics
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
         /// <returns>Reference to the gauge</returns>
         public static void Gauge(string name, Func<double> valueProvider, Unit unit)
-        {
-            globalContext.Gauge(name, valueProvider, unit);
-        }
-
-        /// <summary>
-        /// Register a custom Gauge implementation. 
-        /// </summary>
-        /// <param name="name">Name of this gauge metric. Must be unique across all gauges in this context.</param>
-        /// <param name="valueProvider">Function that returns an instance of your custom Gauge.</param>
-        /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
-        public static void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit)
         {
             globalContext.Gauge(name, valueProvider, unit);
         }

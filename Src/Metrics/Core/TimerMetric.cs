@@ -3,7 +3,9 @@ using Metrics.Utils;
 
 namespace Metrics.Core
 {
-    public sealed class TimerMetric : Timer, MetricValueProvider<TimerValue>
+    public interface TimerImplementation : Timer, MetricValueProvider<TimerValue> { }
+
+    public sealed class TimerMetric : TimerImplementation, IDisposable
     {
         private readonly Clock clock;
         private readonly Meter meter;
@@ -16,6 +18,12 @@ namespace Metrics.Core
 
         public TimerMetric(SamplingType samplingType)
             : this(new HistogramMetric(samplingType), new MeterMetric(), Clock.Default) { }
+
+        public TimerMetric(Histogram histogram)
+            : this(histogram, new MeterMetric(), Clock.Default) { }
+
+        public TimerMetric(Reservoir reservoir)
+            : this(new HistogramMetric(reservoir), new MeterMetric(), Clock.Default) { }
 
         public TimerMetric(SamplingType samplingType, Meter meter, Clock clock)
             : this(new HistogramMetric(samplingType), meter, clock) { }
@@ -93,6 +101,12 @@ namespace Metrics.Core
         {
             this.meter.Reset();
             this.histogram.Reset();
+        }
+
+        public void Dispose()
+        {
+            using (this.histogram as IDisposable) { }
+            using (this.meter as IDisposable) { }
         }
     }
 }

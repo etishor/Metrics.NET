@@ -8,14 +8,8 @@ namespace Metrics.Tests.TestUtils
 {
     public class TestContext : BaseMetricsContext
     {
-        private TestContext(string contextName, TestRegistry registry)
-            : base(contextName, registry)
-        {
-            this.Registry = registry;
-        }
-
         public TestContext(string contextName, TestClock clock, TestScheduler scheduler)
-            : this(contextName, new TestRegistry(contextName, clock, scheduler))
+            : base(contextName, new DefaultMetricsRegistry(), new TestMetricsBuilder(clock,scheduler))
         {
             this.Clock = clock;
             this.Scheduler = scheduler;
@@ -31,7 +25,6 @@ namespace Metrics.Tests.TestUtils
 
         public TestClock Clock { get; private set; }
         public TestScheduler Scheduler { get; private set; }
-        public TestRegistry Registry { get; private set; }
 
         protected override MetricsContext CreateChildContextInstance(string contextName)
         {

@@ -56,7 +56,7 @@ namespace Metrics.Tests
         public void ContextRaisesShutdownEventOnMetricsDisable()
         {
             context.MonitorEvents();
-            context.CompletelyDisableMetrics();
+            context.Advanced.CompletelyDisableMetrics();
             context.ShouldRaise("ContextShuttingDown");
         }
 
