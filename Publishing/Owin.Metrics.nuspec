@@ -14,7 +14,7 @@
 		<licenseUrl>https://github.com/etishor/Metrics.NET/blob/master/LICENSE</licenseUrl>
 		<tags>webapi, owin, metrics, measurements, charts, timer, histogram, duration, graphite, health checks</tags>
 		<dependencies>
-			<dependency id="Metrics.NET" version="0.1.11" />
+			<dependency id="Metrics.NET" version="0.2.0-pre" />
 			<dependency id="Microsoft.Owin" version="2.1.0" />
 			<dependency id="Owin" version="1.0" />
 		</dependencies>
