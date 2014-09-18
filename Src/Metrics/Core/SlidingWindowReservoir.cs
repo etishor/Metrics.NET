@@ -25,6 +25,12 @@ namespace Metrics.Core
             this.values[(int)((count - 1) % values.Length)] = value;
         }
 
+        public void Reset()
+        {
+            Array.Clear(this.values, 0, values.Length);
+            count.SetValue(0L);
+        }
+
         public int Size { get { return Math.Min((int)this.count.Value, values.Length); } }
 
         public Snapshot Snapshot

@@ -22,13 +22,13 @@ namespace Metrics
     public abstract class MetricValueSource<T> : Utils.IHideObjectMembers
         where T : struct
     {
-        private readonly MetricValueProvider<T> value;
+        private readonly MetricValueProvider<T> valueProvider;
 
-        protected MetricValueSource(string name, MetricValueProvider<T> value, Unit unit)
+        protected MetricValueSource(string name, MetricValueProvider<T> valueProvider, Unit unit)
         {
             this.Name = name;
             this.Unit = unit;
-            this.value = value;
+            this.valueProvider = valueProvider;
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Metrics
         /// <summary>
         /// The current value of the metric.
         /// </summary>
-        public T Value { get { return this.value.Value; } }
+        public T Value { get { return this.valueProvider.Value; } }
 
         /// <summary>
         /// Unit representing what the metric is measuring.

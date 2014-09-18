@@ -3,12 +3,26 @@ using System.Globalization;
 using System.Linq;
 using Metrics.Utils;
 
-namespace Metrics.Reporters
+namespace Metrics.Json
 {
-    public class JsonFormatter
+    public class OldJsonBuilder
     {
         private readonly List<JsonProperty> root = new List<JsonProperty>();
         private readonly List<JsonProperty> units = new List<JsonProperty>();
+
+        public static string BuildJson(MetricsData data, Clock clock, bool indented = true)
+        {
+            var flatData = data.OldFormat();
+
+            return new OldJsonBuilder()
+                .AddTimestamp(Clock.Default)
+                .AddObject(flatData.Gauges)
+                .AddObject(flatData.Counters)
+                .AddObject(flatData.Meters)
+                .AddObject(flatData.Histograms)
+                .AddObject(flatData.Timers)
+                .GetJson();
+        }
 
         public string GetJson(bool indented = true)
         {
@@ -20,41 +34,41 @@ namespace Metrics.Reporters
             return new JsonObject(root).AsJson(indented);
         }
 
-        public JsonFormatter AddTimestamp(Clock clock)
+        public OldJsonBuilder AddTimestamp(Clock clock)
         {
-            root.Add(new JsonProperty("Timestamp", clock.LocalDateTime.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture)));
+            root.Add(new JsonProperty("Timestamp", clock.UTCDateTime.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture)));
             return this;
         }
 
-        public JsonFormatter AddObject(IEnumerable<GaugeValueSource> gauges)
+        public OldJsonBuilder AddObject(IEnumerable<GaugeValueSource> gauges)
         {
             root.Add(new JsonProperty("Gauges", gauges.Select(g => new JsonProperty(g.Name, g.Value))));
             units.Add(new JsonProperty("Gauges", gauges.Select(g => new JsonProperty(g.Name, g.Unit.Name))));
             return this;
         }
 
-        public JsonFormatter AddObject(IEnumerable<CounterValueSource> counters)
+        public OldJsonBuilder AddObject(IEnumerable<CounterValueSource> counters)
         {
             root.Add(new JsonProperty("Counters", counters.Select(c => new JsonProperty(c.Name, c.Value))));
             units.Add(new JsonProperty("Counters", counters.Select(c => new JsonProperty(c.Name, c.Unit.Name))));
             return this;
         }
 
-        public JsonFormatter AddObject(IEnumerable<MeterValueSource> meters)
+        public OldJsonBuilder AddObject(IEnumerable<MeterValueSource> meters)
         {
             root.Add(new JsonProperty("Meters", meters.Select(m => new JsonProperty(m.Name, Meter(m.Value.Scale(m.RateUnit))))));
             units.Add(new JsonProperty("Meters", meters.Select(m => new JsonProperty(m.Name, string.Format("{0}/{1}", m.Unit.Name, m.RateUnit.Unit())))));
             return this;
         }
 
-        public JsonFormatter AddObject(IEnumerable<HistogramValueSource> histograms)
+        public OldJsonBuilder AddObject(IEnumerable<HistogramValueSource> histograms)
         {
             root.Add(new JsonProperty("Histograms", histograms.Select(m => new JsonProperty(m.Name, Histogram(m.Value)))));
             units.Add(new JsonProperty("Histograms", histograms.Select(m => new JsonProperty(m.Name, m.Unit.Name))));
             return this;
         }
 
-        public JsonFormatter AddObject(IEnumerable<TimerValueSource> timers)
+        public OldJsonBuilder AddObject(IEnumerable<TimerValueSource> timers)
         {
             var properties = timers.Select(t => new { Name = t.Name, Value = t.Value, RateUnit = t.RateUnit, DurationUnit = t.DurationUnit })
                 .Select(t => new JsonProperty(t.Name, new[] 
@@ -76,7 +90,7 @@ namespace Metrics.Reporters
             return this;
         }
 
-        public JsonFormatter AddObject(HealthStatus status)
+        public OldJsonBuilder AddObject(HealthStatus status)
         {
             var properties = new List<JsonProperty>() { new JsonProperty("IsHealthy", status.IsHealty) };
             var unhealty = status.Results.Where(r => !r.Check.IsHealthy)

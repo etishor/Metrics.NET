@@ -1,8 +1,11 @@
-﻿using Metrics.Utils;
+﻿using System;
+using Metrics.Utils;
 
 namespace Metrics.Core
 {
-    public sealed class HistogramMetric : Histogram, MetricValueProvider<HistogramValue>
+    public interface HistogramImplementation : Histogram, MetricValueProvider<HistogramValue> { }
+
+    public sealed class HistogramMetric : HistogramImplementation
     {
         private readonly Reservoir reservoir;
         private AtomicLong counter = new AtomicLong();
@@ -37,6 +40,13 @@ namespace Metrics.Core
             }
         }
 
+        public void Reset()
+        {
+            this.last.SetValue(0L);
+            this.counter.SetValue(0L);
+            this.reservoir.Reset();
+        }
+
         private static Reservoir SamplingTypeToReservoir(SamplingType samplingType)
         {
             switch (samplingType)
@@ -45,7 +55,7 @@ namespace Metrics.Core
                 case SamplingType.LongTerm: return new UniformReservoir();
                 case SamplingType.SlidingWindow: return new SlidingWindowReservoir();
             }
-            throw new System.NotImplementedException();
+            throw new InvalidOperationException("Sampling type not implemented " + samplingType.ToString());
         }
     }
 }

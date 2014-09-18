@@ -9,6 +9,16 @@ namespace Metrics.Tests
 {
     public class TimerTests
     {
+        private readonly TestClock clock = new TestClock();
+        private readonly TestScheduler scheduler;
+        private readonly TimerMetric timer;
+
+        public TimerTests()
+        {
+            this.scheduler = new TestScheduler(clock);
+            this.timer = new TimerMetric(SamplingType.LongTerm, new MeterMetric(clock, scheduler), clock);
+        }
+
         [Fact]
         public void TimerCanCount()
         {
@@ -27,26 +37,21 @@ namespace Metrics.Tests
         [Fact]
         public void TimerCountsEvenIfActionThrows()
         {
-            TimerMetric timer = new TimerMetric();
-
-            Action action = () => timer.Time(() => { throw new InvalidOperationException(); });
+            Action action = () => this.timer.Time(() => { throw new InvalidOperationException(); });
 
             action.ShouldThrow<InvalidOperationException>();
 
-            timer.Value.Rate.Count.Should().Be(1);
+            this.timer.Value.Rate.Count.Should().Be(1);
         }
 
         [Fact]
         public void TimerCanTrackTime()
         {
-            TestClock clock = new TestClock();
-            TestScheduler scheduler = new TestScheduler(clock);
-
-            TimerMetric timer = new TimerMetric(SamplingType.LongTerm, new MeterMetric(clock, scheduler), clock);
             using (timer.NewContext())
             {
                 clock.Advance(TimeUnit.Milliseconds, 100);
             }
+
             timer.Value.Histogram.Count.Should().Be(1);
             timer.Value.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
         }
@@ -54,11 +59,6 @@ namespace Metrics.Tests
         [Fact]
         public void TimerContextRecordsTimeOnlyOnFirstDispose()
         {
-            TestClock clock = new TestClock();
-            TestScheduler scheduler = new TestScheduler(clock);
-
-            TimerMetric timer = new TimerMetric(SamplingType.LongTerm, new MeterMetric(clock, scheduler), clock);
-
             var context = timer.NewContext();
             clock.Advance(TimeUnit.Milliseconds, 100);
             using (context) { }
@@ -67,6 +67,33 @@ namespace Metrics.Tests
 
             timer.Value.Histogram.Count.Should().Be(1);
             timer.Value.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
+        }
+
+        [Fact]
+        public void TimerContextReportsElapsedTime()
+        {
+            using (var context = timer.NewContext())
+            {
+                clock.Advance(TimeUnit.Milliseconds, 100);
+                context.Elapsed.TotalMilliseconds.Should().Be(100);
+            }
+        }
+
+        [Fact]
+        public void TimerCanReset()
+        {
+            using (var context = timer.NewContext())
+            {
+                clock.Advance(TimeUnit.Milliseconds, 100);
+            }
+
+            timer.Value.Rate.Count.Should().NotBe(0);
+            timer.Value.Histogram.Count.Should().NotBe(0);
+
+            timer.Reset();
+
+            timer.Value.Rate.Count.Should().Be(0);
+            timer.Value.Histogram.Count.Should().Be(0);
         }
     }
 }

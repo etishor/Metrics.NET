@@ -26,6 +26,7 @@
     <DocumentationFile>..\..\..\bin\Debug\Owin.Metrics.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -78,6 +79,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Middleware\MetricMiddleware.cs" />
     <Compile Include="Middleware\TimerForEachRequestMiddleware.cs" />
     <Compile Include="Middleware\PostAndPutRequestSizeHistogramMiddleware.cs" />
     <Compile Include="Middleware\ActiveRequestCounterMiddleware.cs" />

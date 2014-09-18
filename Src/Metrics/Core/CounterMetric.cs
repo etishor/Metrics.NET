@@ -2,7 +2,9 @@
 
 namespace Metrics.Core
 {
-    public sealed class CounterMetric : Counter, MetricValueProvider<long>
+    public interface CounterImplementation : Counter, MetricValueProvider<long> { }
+
+    public sealed class CounterMetric : CounterImplementation
     {
         private AtomicLong value = new AtomicLong();
 
@@ -26,6 +28,11 @@ namespace Metrics.Core
         public void Decrement(long value)
         {
             this.value.Add(-value);
+        }
+
+        public void Reset()
+        {
+            this.value.SetValue(0L);
         }
     }
 }

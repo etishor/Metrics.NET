@@ -1,22 +1,23 @@
-﻿using System;
+﻿using Metrics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Metrics;
-using Metrics.Core;
 
 namespace Owin.Metrics.Middleware
 {
     using AppFunc = Func<IDictionary<string, object>, Task>;
 
-    public class PostAndPutRequestSizeHistogramMiddleware
+    public class PostAndPutRequestSizeHistogramMiddleware : MetricMiddleware
     {
         private readonly Histogram histogram;
         private AppFunc next;
 
-        public PostAndPutRequestSizeHistogramMiddleware(MetricsRegistry registry, string metricName)
+        public PostAndPutRequestSizeHistogramMiddleware(MetricsContext context, string metricName, Regex[] ignorePatterns)
+            : base(ignorePatterns)
         {
-            this.histogram = registry.Histogram(metricName, Unit.Bytes, SamplingType.FavourRecent);
+            this.histogram = context.Histogram(metricName, Unit.Bytes, SamplingType.FavourRecent);
         }
 
         public void Initialize(AppFunc next)
@@ -26,14 +27,17 @@ namespace Owin.Metrics.Middleware
 
         public async Task Invoke(IDictionary<string, object> environment)
         {
-            var httpMethod = environment["owin.RequestMethod"].ToString().ToUpper();
-
-            if (httpMethod == "POST" || httpMethod == "PUT")
+            if (PerformMetric(environment))
             {
-                var headers = (IDictionary<string, string[]>)environment["owin.RequestHeaders"];
-                if (headers != null && headers.ContainsKey("Content-Length"))
+                var httpMethod = environment["owin.RequestMethod"].ToString().ToUpper();
+
+                if (httpMethod == "POST" || httpMethod == "PUT")
                 {
-                    histogram.Update(long.Parse(headers["Content-Length"].First()));
+                    var headers = (IDictionary<string, string[]>)environment["owin.RequestHeaders"];
+                    if (headers != null && headers.ContainsKey("Content-Length"))
+                    {
+                        histogram.Update(long.Parse(headers["Content-Length"].First()));
+                    }
                 }
             }
 

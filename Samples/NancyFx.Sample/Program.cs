@@ -19,6 +19,7 @@ namespace NancyFx.Sample
                 host.Start();
                 Console.WriteLine("Nancy Running at http://localhost:12345");
                 Console.WriteLine("Press any key to exit");
+
                 Process.Start("http://localhost:12345/metrics/");
 
                 SampleMetrics.RunSomeRequests();

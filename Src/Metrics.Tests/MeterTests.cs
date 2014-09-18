@@ -2,7 +2,6 @@
 using FluentAssertions;
 using Metrics.Core;
 using Metrics.Tests.TestUtils;
-using Metrics.Utils;
 using Xunit;
 
 namespace Metrics.Tests
@@ -70,6 +69,26 @@ namespace Metrics.Tests
             value.OneMinuteRate.Should().BeApproximately(0.1840, 0.001);
             value.FiveMinuteRate.Should().BeApproximately(0.1966, 0.001);
             value.FifteenMinuteRate.Should().BeApproximately(0.1988, 0.001);
+        }
+
+        [Fact]
+        public void MeterCanReset()
+        {
+            TestClock clock = new TestClock();
+            TestScheduler scheduler = new TestScheduler(clock);
+
+            var meter = new MeterMetric(clock, scheduler);
+
+            meter.Mark();
+            meter.Mark();
+            clock.Advance(TimeUnit.Seconds, 10);
+            meter.Mark(2);
+
+            meter.Reset();
+            meter.Value.Count.Should().Be(0L);
+            meter.Value.OneMinuteRate.Should().Be(0);
+            meter.Value.FiveMinuteRate.Should().Be(0);
+            meter.Value.FifteenMinuteRate.Should().Be(0);
         }
     }
 }

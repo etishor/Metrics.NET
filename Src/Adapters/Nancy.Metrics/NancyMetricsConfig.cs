@@ -1,22 +1,21 @@
 ﻿using System;
 using Metrics;
-using Metrics.Core;
 
 namespace Nancy.Metrics
 {
     public class NancyMetricsConfig
     {
-        private readonly MetricsRegistry metricsRegistry;
+        private readonly MetricsContext metricsContext;
         private readonly Func<HealthStatus> healthStatus;
         private NancyGlobalMetrics globalMetrics;
 
-        public NancyMetricsConfig(MetricsRegistry metricsRegistry, Func<HealthStatus> healthStatus)
+        public NancyMetricsConfig(MetricsContext metricsContext, Func<HealthStatus> healthStatus)
         {
-            this.metricsRegistry = metricsRegistry;
+            this.metricsContext = metricsContext;
             this.healthStatus = healthStatus;
         }
 
-        public MetricsRegistry Registry { get { return this.metricsRegistry; } }
+        public MetricsContext Context { get { return this.metricsContext; } }
 
         /// <summary>
         /// Configure global NancyFx Metrics.
@@ -32,11 +31,12 @@ namespace Nancy.Metrics
         /// }
         /// </code>
         /// </summary>
-        /// <param name="config">Action to configure which global metrics to enable</param>
+        /// <param name="config">Action to configure which global metrics to enable.</param>
+        /// <param name="context">Name of the MetricsContext where to register the NancyFx metrics.</param>
         /// <returns>This instance to allow chaining of the configuration.</returns>
-        public NancyMetricsConfig WithGlobalMetrics(Action<NancyGlobalMetrics> config)
+        public NancyMetricsConfig WithNancyMetrics(Action<NancyGlobalMetrics> config, string context = "NancyFx")
         {
-            this.globalMetrics = new NancyGlobalMetrics(this.metricsRegistry);
+            this.globalMetrics = new NancyGlobalMetrics(this.metricsContext.Context(context));
             config(this.globalMetrics);
             return this;
         }
@@ -83,7 +83,7 @@ namespace Nancy.Metrics
         /// <returns>This instance to allow chaining of the configuration.</returns>
         public NancyMetricsConfig WithMetricsModule(Action<INancyModule> moduleConfig, string metricsPath = "/metrics")
         {
-            MetricsModule.Configure(this.metricsRegistry, this.healthStatus, moduleConfig, metricsPath);
+            MetricsModule.Configure(this.metricsContext, this.healthStatus, moduleConfig, metricsPath);
             return this;
         }
 
