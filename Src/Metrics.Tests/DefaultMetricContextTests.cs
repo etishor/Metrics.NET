@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
+using Metrics.Core;
 using Xunit;
 
 namespace Metrics.Tests
@@ -133,6 +135,67 @@ namespace Metrics.Tests
             context.DataProvider.CurrentMetricsData.Counters.Single().Value.Should().Be(10L);
         }
 
+        public class CustomReservoir : Reservoir
+        {
+            private readonly List<long> values = new List<long>();
+
+            public int Size { get { return this.values.Count; } }
+            public void Update(long value) { this.values.Add(value); }
+            public Snapshot Snapshot
+            {
+                get { return new Snapshot(this.values); }
+            }
+
+            public void Reset()
+            {
+                this.values.Clear();
+            }
+
+            public IEnumerable<long> Values { get { return this.values; } }
+        }
+
+        [Fact]
+        public void ContextCanRegisterTimerWithCustomReservoir()
+        {
+            var reservoir = new CustomReservoir();
+            var timer = context.Advanced.Timer("custom", Unit.Calls, () => (Reservoir)reservoir);
+
+            timer.Record(10L, TimeUnit.Nanoseconds);
+
+            reservoir.Size.Should().Be(1);
+            reservoir.Values.Single().Should().Be(10L);
+        }
+
+        public class CustomHistogram : Histogram, MetricValueProvider<HistogramValue>
+        {
+            private readonly CustomReservoir reservoir = new CustomReservoir();
+            public void Update(long value) { this.reservoir.Update(value); }
+            public void Reset() { this.reservoir.Reset(); }
+
+            public CustomReservoir Reservoir { get { return this.reservoir; } }
+
+            public HistogramValue Value
+            {
+                get
+                {
+                    return new HistogramValue(this.reservoir.Size,
+                        this.reservoir.Values.Last(), this.reservoir.Snapshot);
+                }
+            }
+        }
+
+        [Fact]
+        public void ContextCanRegisterTimerWithCustomHistogram()
+        {
+            var histogram = new CustomHistogram();
+
+            var timer = context.Advanced.Timer("custom", Unit.Calls, () => (Histogram)histogram);
+
+            timer.Record(10L, TimeUnit.Nanoseconds);
+
+            histogram.Reservoir.Size.Should().Be(1);
+            histogram.Reservoir.Values.Single().Should().Be(10L);
+        }
 
     }
 }
