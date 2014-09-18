@@ -113,5 +113,26 @@ namespace Metrics.Tests
             CurrentData.ChildMetrics.Should().BeEmpty();
         }
 
+        public class CustomCounter : Counter, MetricValueProvider<long>
+        {
+
+            public void Increment() { }
+            public void Increment(long value) { }
+            public void Decrement() { }
+            public void Decrement(long value) { }
+            public void Reset() { }
+            public long Value { get { return 10L; } }
+        }
+
+        [Fact]
+        public void ContextCanRegisterCustomCounter()
+        {
+            var counter = context.Advanced.Counter("custom", Unit.Calls, () => new CustomCounter());
+            counter.Should().BeOfType<CustomCounter>();
+            counter.Increment();
+            context.DataProvider.CurrentMetricsData.Counters.Single().Value.Should().Be(10L);
+        }
+
+
     }
 }
