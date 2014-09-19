@@ -15,6 +15,7 @@ namespace Metrics
         {
             globalContext = new DefaultMetricsContext(Process.GetCurrentProcess().ProcessName);
             config = new MetricsConfig(globalContext);
+            config.ApplySettingsFromConfigFile();
         }
 
         /// <summary>

@@ -23,6 +23,11 @@ namespace Metrics
         event EventHandler ContextShuttingDown;
 
         /// <summary>
+        /// Event fired when the context CompletelyDisableMetrics is called.
+        /// </summary>
+        event EventHandler ContextDisabled;
+
+        /// <summary>
         /// Register a custom Gauge instance.
         /// </summary>
         /// <param name="name">Name of the metric. Must be unique across all counters in this context.</param>

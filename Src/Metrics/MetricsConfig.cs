@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Configuration;
 using Metrics.Reports;
 using Metrics.Visualization;
 
@@ -13,13 +14,29 @@ namespace Metrics
         private Func<HealthStatus> healthStatus;
         private MetricsHttpListener listener;
 
+        private static readonly bool globalyDisabled = false;
+
+        private bool isDisabled = MetricsConfig.globalyDisabled;
+
+        static MetricsConfig()
+        {
+            globalyDisabled = ConfigureMetricsEnabledDisabled();
+        }
+
         public MetricsConfig(MetricsContext context)
         {
             this.context = context;
-            this.healthStatus = () => HealthChecks.GetStatus();
 
-            this.reports = new MetricsReports(this.context.DataProvider, this.healthStatus);
-            this.context.Advanced.ContextShuttingDown += (s, e) => this.DisableAllReports();
+            if (!globalyDisabled)
+            {
+                this.healthStatus = () => HealthChecks.GetStatus();
+                this.reports = new MetricsReports(this.context.DataProvider, this.healthStatus);
+                this.context.Advanced.ContextDisabled += (s, e) =>
+                {
+                    this.isDisabled |= true;
+                    this.DisableAllReports();
+                };
+            }
         }
 
         public T Configure<T>(Func<MetricsContext, T> config)
@@ -51,9 +68,12 @@ namespace Metrics
         /// <param name="httpUriPrefix">prefix where to start HTTP endpoint</param>
         public MetricsConfig WithHttpEndpoint(string httpUriPrefix)
         {
-            using (this.listener) { }
-            this.listener = new MetricsHttpListener(httpUriPrefix, this.context.DataProvider, this.healthStatus);
-            this.listener.Start();
+            if (!isDisabled)
+            {
+                using (this.listener) { }
+                this.listener = new MetricsHttpListener(httpUriPrefix, this.context.DataProvider, this.healthStatus);
+                this.listener.Start();
+            }
             return this;
         }
 
@@ -64,7 +84,10 @@ namespace Metrics
         /// <returns>Chain-able configuration object.</returns>
         public MetricsConfig WithHealthStatus(Func<HealthStatus> healthStatus)
         {
-            this.healthStatus = healthStatus;
+            if (!isDisabled)
+            {
+                this.healthStatus = healthStatus;
+            }
             return this;
         }
 
@@ -75,7 +98,10 @@ namespace Metrics
         /// <returns>Chain able configuration object.</returns>
         public MetricsConfig WithErrorHandler(Action<Exception> errorHandler)
         {
-            this.ErrorHandler = errorHandler;
+            if (!isDisabled)
+            {
+                this.ErrorHandler = errorHandler;
+            }
             return this;
         }
 
@@ -86,7 +112,11 @@ namespace Metrics
         /// <returns>Chain-able configuration object.</returns>
         public MetricsConfig WithReporting(Action<MetricsReports> reportsConfig)
         {
-            reportsConfig(this.reports);
+            if (!isDisabled)
+            {
+                reportsConfig(this.reports);
+            }
+
             return this;
         }
 
@@ -108,5 +138,70 @@ namespace Metrics
         /// Configured error handler
         /// </summary>
         internal Action<Exception> ErrorHandler { get; private set; }
+
+        internal void ApplySettingsFromConfigFile()
+        {
+            if (!globalyDisabled)
+            {
+                ConfigureCsvReports();
+                ConfigureHttpListener();
+            }
+        }
+
+        private void ConfigureHttpListener()
+        {
+            try
+            {
+                var httpEndpoint = ConfigurationManager.AppSettings["Metrics.HttpListener.HttpUriPrefix"];
+                if (!string.IsNullOrEmpty(httpEndpoint))
+                {
+                    this.WithHttpEndpoint(httpEndpoint);
+                }
+            }
+            catch (Exception x)
+            {
+                throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.HttpListener.HttpUriPrefix muse be a valid HttpListener endpoint prefix", x);
+            }
+        }
+
+        private void ConfigureCsvReports()
+        {
+            try
+            {
+                var csvMetricsPath = ConfigurationManager.AppSettings["Metrics.CSV.Path"];
+                var csvMetricsInterval = ConfigurationManager.AppSettings["Metrics.CSV.Interval.Seconds"];
+
+                if (!string.IsNullOrEmpty(csvMetricsPath) && !string.IsNullOrEmpty(csvMetricsInterval))
+                {
+                    int seconds;
+                    if (int.TryParse(csvMetricsInterval, out seconds) && seconds > 0)
+                    {
+                        this.WithReporting(r => r.WithCSVReports(csvMetricsPath, TimeSpan.FromSeconds(seconds)));
+                    }
+                }
+            }
+            catch (Exception x)
+            {
+                throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.CSV.Path muse be a valid path and Metrics.CSV.Interval.Seconds must be an integer > 0 ", x);
+            }
+        }
+
+        private static bool ConfigureMetricsEnabledDisabled()
+        {
+            try
+            {
+                var isDisabled = ConfigurationManager.AppSettings["Metrics.CompetelyDisableMetrics"];
+                if (!string.IsNullOrEmpty(isDisabled) && isDisabled.ToUpperInvariant() == "TRUE")
+                {
+                    Metric.Advanced.CompletelyDisableMetrics();
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception x)
+            {
+                throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.CompetelyDisableMetrics must be set to true or false", x);
+            }
+        }
     }
 }
