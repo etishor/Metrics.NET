@@ -39,26 +39,6 @@ namespace Metrics
             }
         }
 
-        public T Configure<T>(Func<MetricsContext, T> config)
-        {
-            return config(this.context);
-        }
-
-        public void Configure(Action<MetricsContext> config)
-        {
-            config(this.context);
-        }
-
-        public void Configure(Action<MetricsContext, Func<HealthStatus>> config)
-        {
-            config(this.context, this.healthStatus);
-        }
-
-        public T Configure<T>(Func<MetricsContext, Func<HealthStatus>, T> config)
-        {
-            return config(this.context, this.healthStatus);
-        }
-
         /// <summary>
         /// Create HTTP endpoint where metrics will be available in various formats:
         /// GET / => visualization application
@@ -66,6 +46,7 @@ namespace Metrics
         /// GET /text => metrics in human readable text format
         /// </summary>
         /// <param name="httpUriPrefix">prefix where to start HTTP endpoint</param>
+        /// <returns>Chain-able configuration object.</returns>
         public MetricsConfig WithHttpEndpoint(string httpUriPrefix)
         {
             if (!isDisabled)
@@ -118,6 +99,34 @@ namespace Metrics
             }
 
             return this;
+        }
+
+        /// <summary>
+        /// This method is used for customizing the metrics configuration.
+        /// The <paramref name="extension"/> will be called with the current MetricsContext and HealthStatus provider.
+        /// </summary>
+        /// <remarks>
+        /// In general you don't need to call this method directly.
+        /// </remarks>
+        /// <param name="extension">Action to apply extra configuration.</param>
+        /// <returns>Chain-able configuration object.</returns>
+        public MetricsConfig WithConfigExtension(Action<MetricsContext, Func<HealthStatus>> extension)
+        {
+            return WithConfigExtension((m, h) => { extension(m, h); return this; });
+        }
+
+        /// <summary>
+        /// This method is used for customizing the metrics configuration.
+        /// The <paramref name="extension"/> will be called with the current MetricsContext and HealthStatus provider.
+        /// </summary>
+        /// <remarks>
+        /// In general you don't need to call this method directly.
+        /// </remarks>
+        /// <param name="extension">Action to apply extra configuration.</param>
+        /// <returns>The result of calling the extension.</returns>
+        public T WithConfigExtension<T>(Func<MetricsContext, Func<HealthStatus>, T> extension)
+        {
+            return extension(this.context, this.healthStatus);
         }
 
         public void Dispose()
