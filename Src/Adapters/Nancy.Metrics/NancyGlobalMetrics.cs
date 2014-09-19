@@ -80,7 +80,6 @@ namespace Nancy.Metrics
         /// Registers a Meter metric named "NancyFx.Errors" that records the rate at witch unhanded errors occurred while 
         /// processing Nancy requests.
         /// </summary>
-        /// <param name="nancyPipelines">Pipelines to hook on.</param>
         /// <param name="metricName">Name of the metric.</param>
         public NancyGlobalMetrics WithErrorsMeter(string metricName = "Errors")
         {
@@ -98,7 +97,6 @@ namespace Nancy.Metrics
         /// <summary>
         /// Registers a Counter metric named "NancyFx.ActiveRequests" that shows the current number of active requests
         /// </summary>
-        /// <param name="nancyPipelines">Pipelines to hook on.</param>
         /// <param name="metricName">Name of the metric.</param>
         public NancyGlobalMetrics WithActiveRequestCounter(string metricName = "Active Requests")
         {
@@ -121,7 +119,6 @@ namespace Nancy.Metrics
         /// <summary>
         /// Register a Histogram metric named "Nancy.PostAndPutRequestsSize" on the size of the POST and PUT requests
         /// </summary>
-        /// <param name="nancyPipelines">Pipelines to hook on.</param>
         /// <param name="metricName">Name of the metric.</param>
         public NancyGlobalMetrics WithPostAndPutRequestSizeHistogram(string metricName = "Post & Put Request Size")
         {
@@ -145,7 +142,6 @@ namespace Nancy.Metrics
         /// Timer is created based on route and will be named:
         /// NanyFx.{HTTP_METHOD_NAME} [{ROUTE_PATH}]
         /// </summary>
-        /// <param name="nancyPipelines">Pipelines to hook on.</param>
         public NancyGlobalMetrics WithTimerForEachRequest()
         {
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
