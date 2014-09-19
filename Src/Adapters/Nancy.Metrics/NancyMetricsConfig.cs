@@ -1,5 +1,6 @@
 ﻿using System;
 using Metrics;
+using Nancy.Bootstrapper;
 
 namespace Nancy.Metrics
 {
@@ -7,15 +8,14 @@ namespace Nancy.Metrics
     {
         private readonly MetricsContext metricsContext;
         private readonly Func<HealthStatus> healthStatus;
-        private NancyGlobalMetrics globalMetrics;
+        private readonly IPipelines nancyPipelines;
 
-        public NancyMetricsConfig(MetricsContext metricsContext, Func<HealthStatus> healthStatus)
+        public NancyMetricsConfig(MetricsContext metricsContext, Func<HealthStatus> healthStatus, IPipelines nancyPipelines)
         {
             this.metricsContext = metricsContext;
             this.healthStatus = healthStatus;
+            this.nancyPipelines = nancyPipelines;
         }
-
-        public MetricsContext Context { get { return this.metricsContext; } }
 
         /// <summary>
         /// Configure global NancyFx Metrics.
@@ -36,8 +36,8 @@ namespace Nancy.Metrics
         /// <returns>This instance to allow chaining of the configuration.</returns>
         public NancyMetricsConfig WithNancyMetrics(Action<NancyGlobalMetrics> config, string context = "NancyFx")
         {
-            this.globalMetrics = new NancyGlobalMetrics(this.metricsContext.Context(context));
-            config(this.globalMetrics);
+            var globalMetrics = new NancyGlobalMetrics(this.metricsContext.Context(context), this.nancyPipelines);
+            config(globalMetrics);
             return this;
         }
 

@@ -31,9 +31,8 @@ namespace NancyFx.Sample
             Metric.Config
                 .WithAllCounters()
                 .WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30)))
-                .WithNancy(config => config
-                    .WithNancyMetrics(c => c.RegisterAllMetrics(pipelines))
-                    .WithMetricsModule()
+                .WithNancy(pipelines, config => config
+                    .WithNancyMetrics(c => c.WithAllMetrics())
                     .WithMetricsModule(m => m.RequiresAuthentication(), "/admin/metrics")
                 );
 

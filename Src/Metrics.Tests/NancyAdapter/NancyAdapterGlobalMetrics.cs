@@ -58,7 +58,7 @@ namespace Metrics.Tests.NancyAdapter
             {
                 with.ApplicationStartup((c, p) =>
                 {
-                    this.config.WithNancy(nancy => nancy.WithNancyMetrics(config => config.RegisterAllMetrics(p)));
+                    this.config.WithNancy(p);
                 });
 
                 with.Module(new TestModule(this.context.Clock));

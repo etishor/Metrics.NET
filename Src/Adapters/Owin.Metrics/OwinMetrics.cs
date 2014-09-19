@@ -7,7 +7,7 @@ namespace Owin.Metrics
     {
         public static MetricsConfig WithOwin(this MetricsConfig config, Action<object> middlewareRegistration, Action<OwinMetricsConfig> owinConfig)
         {
-            var owin = config.Configure((ctx, hs) => new OwinMetricsConfig(middlewareRegistration, ctx, hs));
+            var owin = config.WithConfigExtension((ctx, hs) => new OwinMetricsConfig(middlewareRegistration, ctx, hs));
             owinConfig(owin);
             return config;
         }
