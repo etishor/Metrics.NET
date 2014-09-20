@@ -140,7 +140,7 @@ namespace Nancy.Metrics
         /// <summary>
         /// Registers a timer for each request.
         /// Timer is created based on route and will be named:
-        /// NanyFx.{HTTP_METHOD_NAME} [{ROUTE_PATH}]
+        /// [NancyFx] {HTTP_METHOD_NAME} {ROUTE_PATH}
         /// </summary>
         public NancyGlobalMetrics WithTimerForEachRequest()
         {
@@ -154,7 +154,7 @@ namespace Nancy.Metrics
             {
                 if (ctx.ResolvedRoute != null && !(ctx.ResolvedRoute is Routing.NotFoundRoute))
                 {
-                    string name = string.Format("{0} [{1}]", ctx.ResolvedRoute.Description.Method, ctx.ResolvedRoute.Description.Path);
+                    string name = string.Format("{0} {1}", ctx.ResolvedRoute.Description.Method, ctx.ResolvedRoute.Description.Path);
                     var startTime = (long)ctx.Items["RequestStartTimeKey"];
                     var elapsed = Clock.Default.Nanoseconds - startTime;
                     this.context.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds)
