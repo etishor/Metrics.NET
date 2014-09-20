@@ -1,3 +1,11 @@
+###0.2.0 / 2014-09-20
+* implement metrics contexts (and child contexts)
+* make config more friendly
+* most used condig options are now set by default
+* add logging based on liblog (no fixed dependency - automaticaly wire into existing logging framework)
+* update nancy & owin adapters to use contexts
+* add some app.config settings to ease configuration
+
 ###0.1.11 / 2014-08-18
 * update to latest visualization app (fixes checkboxes being outside dropdown)
 * fix json caching in IE
