@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Configuration;
+using System.Diagnostics;
 using Metrics.Reports;
 using Metrics.Visualization;
 
@@ -212,5 +213,19 @@ namespace Metrics
                 throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.CompetelyDisableMetrics must be set to true or false", x);
             }
         }
+
+        internal static string GetGlobalContextName()
+        {
+            try
+            {
+                var configName = ConfigurationManager.AppSettings["Metrics.GlobalContextName"];
+                return string.IsNullOrEmpty(configName) ? Process.GetCurrentProcess().ProcessName : configName;
+            }
+            catch (Exception x)
+            {
+                throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.GlobalContextName must be non empty string", x);
+            }
+        }
+
     }
 }
