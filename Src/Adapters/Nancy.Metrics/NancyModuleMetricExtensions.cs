@@ -25,9 +25,7 @@ namespace Nancy.Metrics
 
         public static void MetricForRequestTime(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
-            CheckNancyMetricsIsConfigured();
-
-            var timer = NancyMetrics.CurrentConfig.Context.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+            var timer = NancyGlobalMetrics.NancyGlobalMetricsContext.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
             var key = "Metrics.Nancy.Request.Timer." + metricName;
 
             module.Before.AddItemToStartOfPipeline(ctx =>
@@ -56,8 +54,7 @@ namespace Nancy.Metrics
 
         public static void MetricForResponseSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
-            CheckNancyMetricsIsConfigured();
-            var histogram = NancyMetrics.CurrentConfig.Context.Histogram(metricName, Unit.Custom("bytes"), SamplingType.FavourRecent);
+            var histogram = NancyGlobalMetrics.NancyGlobalMetricsContext.Histogram(metricName, Unit.Custom("bytes"), SamplingType.FavourRecent);
 
             module.After.AddItemToEndOfPipeline(ctx =>
             {
@@ -94,8 +91,7 @@ namespace Nancy.Metrics
 
         public static void MetricForRequestSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
-            CheckNancyMetricsIsConfigured();
-            var histogram = NancyMetrics.CurrentConfig.Context.Histogram(metricName, Unit.Custom("bytes"), SamplingType.FavourRecent);
+            var histogram = NancyGlobalMetrics.NancyGlobalMetricsContext.Histogram(metricName, Unit.Custom("bytes"), SamplingType.FavourRecent);
 
             module.Before.AddItemToStartOfPipeline(ctx =>
             {
@@ -105,14 +101,6 @@ namespace Nancy.Metrics
                 }
                 return null;
             });
-        }
-
-        private static void CheckNancyMetricsIsConfigured()
-        {
-            if (NancyMetrics.CurrentConfig == null)
-            {
-                Metric.Config.WithNancy();
-            }
         }
 
         private static Predicate<RouteDescription> MakePredicate(this INancyModule module, string methodName, string pathPrefix)

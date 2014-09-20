@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -34,14 +33,7 @@ namespace Metrics.Visualization
 
         private static void HandleHttpError(Exception exception)
         {
-            if (Metric.Config.ErrorHandler != null)
-            {
-                Metric.Config.ErrorHandler(exception);
-            }
-            else
-            {
-                Trace.Fail("Error processing HTTP request. You can handle this exception by setting a handler on Metric.Config.ErrorHandler", exception.ToString());
-            }
+            MetricsErrorHandler.Handle(exception, "Error processing HTTP request");
         }
 
         private void ProcessRequests()

@@ -58,7 +58,7 @@ namespace Metrics.Tests.NancyAdapter
             {
                 with.ApplicationStartup((c, p) =>
                 {
-                    this.config.WithNancy(nancy => nancy.WithNancyMetrics(config => config.RegisterAllMetrics(p)));
+                    this.config.WithNancy(p);
                 });
 
                 with.Module(new TestModule(this.context.Clock));
@@ -137,6 +137,26 @@ namespace Metrics.Tests.NancyAdapter
 
             this.context.HistogramValue("NancyFx", "Post & Put Request Size").Count.Should().Be(1);
             this.context.HistogramValue("NancyFx", "Post & Put Request Size").Min.Should().Be("content".Length);
+        }
+
+        [Fact]
+        public void NancyMetricsShouldBeAbleToRecordTimeForEachRequests()
+        {
+            this.context.TimerValue("NancyFx", "Requests").Rate.Count.Should().Be(0);
+
+            browser.Get("/test/action").StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var timer = this.context.TimerValue("NancyFx", "GET /test/action");
+
+            timer.Rate.Count.Should().Be(1);
+            timer.Histogram.Count.Should().Be(1);
+
+            browser.Post("/test/post").StatusCode.Should().Be(HttpStatusCode.OK);
+
+            timer = this.context.TimerValue("NancyFx", "POST /test/post");
+
+            timer.Rate.Count.Should().Be(1);
+            timer.Histogram.Count.Should().Be(1);
         }
     }
 }

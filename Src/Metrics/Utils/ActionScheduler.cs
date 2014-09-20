@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -58,7 +57,7 @@ namespace Metrics.Utils
                 }
                 catch (Exception x)
                 {
-                    HandleException(x);
+                    MetricsErrorHandler.Handle(x, "Error while executing action scheduler.");
                     timer.Stop();
                 }
             };
@@ -72,18 +71,6 @@ namespace Metrics.Utils
             var taskSource = new TaskCompletionSource<bool>();
             taskSource.SetResult(true);
             return taskSource.Task;
-        }
-
-        private static void HandleException(Exception x)
-        {
-            if (Metric.Config.ErrorHandler != null)
-            {
-                Metric.Config.ErrorHandler(x);
-            }
-            else
-            {
-                Trace.Fail("Got exception while executing scheduler. You can handle this exception by setting a handler on Metric.ErrorHandler", x.ToString());
-            }
         }
 
         public void Stop()

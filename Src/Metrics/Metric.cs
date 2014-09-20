@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace Metrics
 {
@@ -13,8 +12,9 @@ namespace Metrics
 
         static Metric()
         {
-            globalContext = new DefaultMetricsContext(Process.GetCurrentProcess().ProcessName);
+            globalContext = new DefaultMetricsContext(MetricsConfig.GetGlobalContextName());
             config = new MetricsConfig(globalContext);
+            config.ApplySettingsFromConfigFile();
         }
 
         /// <summary>

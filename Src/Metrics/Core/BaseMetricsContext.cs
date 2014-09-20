@@ -27,6 +27,8 @@ namespace Metrics.Core
         public AdvancedMetricsContext Advanced { get { return this; } }
 
         public event EventHandler ContextShuttingDown;
+        public event EventHandler ContextDisabled;
+
         public MetricsDataProvider DataProvider { get; private set; }
 
         public MetricsContext Context(string contextName)
@@ -150,11 +152,18 @@ namespace Metrics.Core
             var oldRegistry = this.registry;
             this.registry = new NullMetricsRegistry();
             oldRegistry.ClearAllMetrics();
+            using (oldRegistry as IDisposable) { }
+
             ForAllChildContexts(c => c.Advanced.CompletelyDisableMetrics());
 
             if (this.ContextShuttingDown != null)
             {
                 this.ContextShuttingDown(this, EventArgs.Empty);
+            }
+
+            if (this.ContextDisabled != null)
+            {
+                this.ContextDisabled(this, EventArgs.Empty);
             }
         }
 

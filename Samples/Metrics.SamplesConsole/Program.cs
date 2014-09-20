@@ -9,7 +9,6 @@ namespace Metrics.SamplesConsole
         {
             //Metric.CompletelyDisableMetrics();
 
-
             Metric.Config
                 .WithHttpEndpoint("http://localhost:1234/")
                 .WithErrorHandler(x => Console.WriteLine(x.ToString()))
