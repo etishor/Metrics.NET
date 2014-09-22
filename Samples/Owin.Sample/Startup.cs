@@ -25,7 +25,7 @@ namespace Owin.Sample
                 .WithAllCounters()
                 .WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30)))
                 .WithOwin(middleware => app.Use(middleware), config => config
-                    .WithRequestMetricsConfig(c => c.RegisterAllMetrics(), new[]
+                    .WithRequestMetricsConfig(c => c.WithAllOwinMetrics(), new[]
                     {
                         new Regex("(?i)^sampleignore"),
                         new Regex("(?i)^metrics"),

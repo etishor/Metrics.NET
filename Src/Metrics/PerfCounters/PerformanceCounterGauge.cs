@@ -22,16 +22,9 @@ namespace Metrics.PerfCounters
             }
             catch (Exception x)
             {
-                if (Metric.Config.ErrorHandler != null)
-                {
-                    Metric.Config.ErrorHandler(x);
-                }
-                else
-                {
-                    Trace.Fail("Error reading performance counter data. The application is currently running as user " + WindowsIdentity.GetCurrent().Name +
-                    ". Make sure the user has access to the performance counters. The user needs to be either Admin or belong to Performance Monitor user group." +
-                    " You can handle this exception by setting a handler on Metric.ErrorHandler", x.ToString());
-                }
+                var message = "Error reading performance counter data. The application is currently running as user " + WindowsIdentity.GetCurrent().Name +
+                    ". Make sure the user has access to the performance counters. The user needs to be either Admin or belong to Performance Monitor user group.";
+                MetricsErrorHandler.Handle(x, message);
             }
         }
 
@@ -45,16 +38,9 @@ namespace Metrics.PerfCounters
                 }
                 catch (Exception x)
                 {
-                    if (Metric.Config.ErrorHandler != null)
-                    {
-                        Metric.Config.ErrorHandler(x);
-                    }
-                    else
-                    {
-                        Trace.Fail("Error reading performance counter data. The application is currently running as user " + WindowsIdentity.GetCurrent().Name +
-                        ". Make sure the user has access to the performance counters. The user needs to be either Admin or belong to Performance Monitor user group." +
-                        " You can handle this exception by setting a handler on Metric.ErrorHandler", x.ToString());
-                    }
+                    var message = "Error reading performance counter data. The application is currently running as user " + WindowsIdentity.GetCurrent().Name +
+                        ". Make sure the user has access to the performance counters. The user needs to be either Admin or belong to Performance Monitor user group.";
+                    MetricsErrorHandler.Handle(x, message);
                     return double.NaN;
                 }
             }

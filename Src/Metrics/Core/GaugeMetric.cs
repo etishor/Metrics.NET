@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Diagnostics;
 namespace Metrics.Core
 {
     public interface GaugeImplementation : MetricValueProvider<double> { }
@@ -24,14 +23,7 @@ namespace Metrics.Core
                 }
                 catch (Exception x)
                 {
-                    if (Metric.Config.ErrorHandler != null)
-                    {
-                        Metric.Config.ErrorHandler(x);
-                    }
-                    else
-                    {
-                        Trace.Fail("Error executing Functional Gauge. You can handle this exception by setting a handler on Metric.Config.WithErrorHandler()", x.ToString());
-                    }
+                    MetricsErrorHandler.Handle(x, "Error executing Functional Gauge");
                     return double.NaN;
                 }
             }
@@ -59,14 +51,7 @@ namespace Metrics.Core
                 }
                 catch (Exception x)
                 {
-                    if (Metric.Config.ErrorHandler != null)
-                    {
-                        Metric.Config.ErrorHandler(x);
-                    }
-                    else
-                    {
-                        Trace.Fail("Error executing Derived Gauge. You can handle this exception by setting a handler on Metric.Config.WithErrorHandler()", x.ToString());
-                    }
+                    MetricsErrorHandler.Handle(x, "Error executing Derived Gauge");
                     return double.NaN;
                 }
             }

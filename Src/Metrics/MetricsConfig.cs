@@ -1,6 +1,8 @@
 ﻿
 using System;
 using System.Configuration;
+using System.Diagnostics;
+using Metrics.Logging;
 using Metrics.Reports;
 using Metrics.Visualization;
 
@@ -8,6 +10,8 @@ namespace Metrics
 {
     public sealed class MetricsConfig : IDisposable, Utils.IHideObjectMembers
     {
+        private static readonly ILog log = LogProvider.GetCurrentClassLogger();
+
         private readonly MetricsContext context;
         private readonly MetricsReports reports;
 
@@ -74,15 +78,45 @@ namespace Metrics
 
         /// <summary>
         /// Error handler for the metrics library. If a handler is registered any error will be passed to the handler.
+        /// By default unhandled errors are logged, printed to console if Environment.UserInteractive is true, and logged with Trace.TracError.
         /// </summary>
         /// <param name="errorHandler">Action with will be executed with the exception.</param>
+        /// <param name="clearExistingHandlers">Is set to true, remove any existing handler.</param>
         /// <returns>Chain able configuration object.</returns>
-        public MetricsConfig WithErrorHandler(Action<Exception> errorHandler)
+        public MetricsConfig WithErrorHandler(Action<Exception> errorHandler, bool clearExistingHandlers = false)
         {
+            if (clearExistingHandlers)
+            {
+                MetricsErrorHandler.Handler.ClearHandlers();
+            }
+
             if (!isDisabled)
             {
-                this.ErrorHandler = errorHandler;
+                MetricsErrorHandler.Handler.AddHandler(errorHandler);
             }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Error handler for the metrics library. If a handler is registered any error will be passed to the handler.
+        /// By default unhandled errors are logged, printed to console if Environment.UserInteractive is true, and logged with Trace.TracError.
+        /// </summary>
+        /// <param name="errorHandler">Action with will be executed with the exception and a specific message.</param>
+        /// <param name="clearExistingHandlers">Is set to true, remove any existing handler.</param>
+        /// <returns>Chain able configuration object.</returns>
+        public MetricsConfig WithErrorHandler(Action<Exception, string> errorHandler, bool clearExistingHandlers = false)
+        {
+            if (clearExistingHandlers)
+            {
+                MetricsErrorHandler.Handler.ClearHandlers();
+            }
+
+            if (!isDisabled)
+            {
+                MetricsErrorHandler.Handler.AddHandler(errorHandler);
+            }
+
             return this;
         }
 
@@ -143,11 +177,6 @@ namespace Metrics
             this.listener = null;
         }
 
-        /// <summary>
-        /// Configured error handler
-        /// </summary>
-        internal Action<Exception> ErrorHandler { get; private set; }
-
         internal void ApplySettingsFromConfigFile()
         {
             if (!globalyDisabled)
@@ -165,10 +194,12 @@ namespace Metrics
                 if (!string.IsNullOrEmpty(httpEndpoint))
                 {
                     this.WithHttpEndpoint(httpEndpoint);
+                    log.Debug(() => "Metrics: HttpListener configured at " + httpEndpoint);
                 }
             }
             catch (Exception x)
             {
+                log.ErrorException("Metrics: error configuring HttpListener", x);
                 throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.HttpListener.HttpUriPrefix muse be a valid HttpListener endpoint prefix", x);
             }
         }
@@ -186,11 +217,13 @@ namespace Metrics
                     if (int.TryParse(csvMetricsInterval, out seconds) && seconds > 0)
                     {
                         this.WithReporting(r => r.WithCSVReports(csvMetricsPath, TimeSpan.FromSeconds(seconds)));
+                        log.Debug(() => string.Format("Metrics: Storing CSV reports in {0} every {1} seconds.", csvMetricsPath, csvMetricsInterval));
                     }
                 }
             }
             catch (Exception x)
             {
+                log.ErrorException("Metrics: Error configuring CSV reports", x);
                 throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.CSV.Path muse be a valid path and Metrics.CSV.Interval.Seconds must be an integer > 0 ", x);
             }
         }
@@ -203,14 +236,33 @@ namespace Metrics
                 if (!string.IsNullOrEmpty(isDisabled) && isDisabled.ToUpperInvariant() == "TRUE")
                 {
                     Metric.Advanced.CompletelyDisableMetrics();
+                    log.Info(() => "Metrics: Metrics.NET Library is completely disabled. Set Metrics.CompetelyDisableMetrics to false to re-enable.");
                     return true;
                 }
                 return false;
             }
             catch (Exception x)
             {
+                log.ErrorException("Metrics: Error disabling metrics library", x);
                 throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.CompetelyDisableMetrics must be set to true or false", x);
             }
         }
+
+        internal static string GetGlobalContextName()
+        {
+            try
+            {
+                var configName = ConfigurationManager.AppSettings["Metrics.GlobalContextName"];
+                var name = string.IsNullOrEmpty(configName) ? Process.GetCurrentProcess().ProcessName : configName;
+                log.Debug(() => "Metrics: GlobalContext Name set to " + name);
+                return name;
+            }
+            catch (Exception x)
+            {
+                log.ErrorException("Metrics: Error reading config value for Metrics.GlobalContetName", x);
+                throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.GlobalContextName must be non empty string", x);
+            }
+        }
+
     }
 }

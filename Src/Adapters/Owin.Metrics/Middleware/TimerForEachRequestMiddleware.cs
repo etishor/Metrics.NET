@@ -1,10 +1,10 @@
-﻿using Metrics;
-using Metrics.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Metrics;
+using Metrics.Utils;
 
 namespace Owin.Metrics.Middleware
 {
@@ -15,15 +15,13 @@ namespace Owin.Metrics.Middleware
         private const string RequestStartTimeKey = "__Metrics.RequestStartTime__";
 
         private readonly MetricsContext context;
-        private readonly string metricPrefix;
 
         private AppFunc next;
 
-        public TimerForEachRequestMiddleware(MetricsContext context, string metricPrefix, Regex[] ignorePatterns)
+        public TimerForEachRequestMiddleware(MetricsContext context, Regex[] ignorePatterns)
             : base(ignorePatterns)
         {
             this.context = context;
-            this.metricPrefix = metricPrefix;
         }
 
         public void Initialize(AppFunc next)
@@ -45,7 +43,7 @@ namespace Owin.Metrics.Middleware
                 if (httpResponseStatusCode != (int)HttpStatusCode.NotFound)
                 {
                     var httpRequestPath = environment["owin.RequestPath"].ToString().ToUpper();
-                    var name = string.Format("{0}.{1} [{2}]", metricPrefix, httpMethod, httpRequestPath);
+                    var name = string.Format("{0} {1}", httpMethod, httpRequestPath);
                     var startTime = (long)environment[RequestStartTimeKey];
                     var elapsed = Clock.Default.Nanoseconds - startTime;
                     this.context.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds).Record(elapsed, TimeUnit.Nanoseconds);
