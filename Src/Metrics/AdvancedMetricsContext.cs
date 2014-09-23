@@ -3,7 +3,7 @@ using Metrics.Core;
 
 namespace Metrics
 {
-    public interface AdvancedMetricsContext
+    public interface AdvancedMetricsContext : Utils.IHideObjectMembers
     {
         /// <summary>
         /// All metrics operations will be NO-OP.
