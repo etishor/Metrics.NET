@@ -1,10 +1,10 @@
-﻿using Metrics;
-using Metrics.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Metrics;
+using Metrics.Utils;
 
 namespace Owin.Metrics.Middleware
 {
@@ -47,13 +47,13 @@ namespace Owin.Metrics.Middleware
                 await next(environment);
 
                 var httpResponseStatusCode = int.Parse(environment["owin.ResponseStatusCode"].ToString());
-                var metricName = this.metricNameResolver != null ? this.metricNameResolver(environment) : environment["owin.RequestPath"].ToString();
+                var metricName = this.metricNameResolver != null ? this.metricNameResolver(environment) : environment["owin.RequestPath"].ToString().ToUpperInvariant();
 
                 if (httpResponseStatusCode != (int)HttpStatusCode.NotFound && !string.IsNullOrWhiteSpace(metricName))
                 {
                     var startTime = (long)environment[RequestStartTimeKey];
                     var elapsed = Clock.Default.Nanoseconds - startTime;
-                    this.context.Timer(metricName.ToUpper(), Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds).Record(elapsed, TimeUnit.Nanoseconds);
+                    this.context.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds).Record(elapsed, TimeUnit.Nanoseconds);
                 }
             }
             else
