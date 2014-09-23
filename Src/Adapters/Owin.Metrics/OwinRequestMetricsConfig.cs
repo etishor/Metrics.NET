@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Metrics;
 using Owin.Metrics.Middleware;
@@ -10,12 +11,22 @@ namespace Owin.Metrics
         private readonly MetricsContext metricsContext;
         private readonly Action<object> middlewareRegistration;
         private Regex[] ignoreRequestPathPatterns;
+        private readonly Func<IDictionary<string, object>, string> metricNameResolver;
 
         public OwinRequestMetricsConfig(Action<object> middlewareRegistration, MetricsContext metricsContext, Regex[] ignoreRequestPathPatterns)
         {
             this.middlewareRegistration = middlewareRegistration;
             this.metricsContext = metricsContext;
             this.ignoreRequestPathPatterns = ignoreRequestPathPatterns;
+        }
+
+        public OwinRequestMetricsConfig(Action<object> middlewareRegistration, MetricsContext metricsContext,
+            Regex[] ignoreRequestPathPatterns, Func<IDictionary<string, object>, string> metricNameResolver)
+        {
+            this.middlewareRegistration = middlewareRegistration;
+            this.metricsContext = metricsContext;
+            this.ignoreRequestPathPatterns = ignoreRequestPathPatterns;
+            this.metricNameResolver = metricNameResolver;
         }
 
         /// <summary>
@@ -76,7 +87,7 @@ namespace Owin.Metrics
         /// </summary>
         public OwinRequestMetricsConfig WithTimerForEachRequest()
         {
-            var metricsMiddleware = new TimerForEachRequestMiddleware(this.metricsContext, this.ignoreRequestPathPatterns);
+            var metricsMiddleware = new TimerForEachRequestMiddleware(this.metricsContext, this.ignoreRequestPathPatterns, this.metricNameResolver);
             middlewareRegistration(metricsMiddleware);
             return this;
         }

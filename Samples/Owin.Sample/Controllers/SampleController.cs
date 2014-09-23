@@ -11,5 +11,11 @@ namespace Owin.Sample.Controllers
         {
             return new[] { "value1", "value2" };
         }
+
+        [Route("withparams/{x}/{y}")]
+        public IEnumerable<string> Get(int x, string y)
+        {
+            return new[] { "value1", "value2" };
+        }
     }
 }
