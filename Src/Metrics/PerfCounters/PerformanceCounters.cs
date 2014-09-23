@@ -38,6 +38,8 @@ namespace Metrics.PerfCounters
             context.Register("Physical Threads", () => new PerformanceCounterGauge(LocksAndThreads, "# of current physical Threads", app), Unit.Custom("Threads"));
             context.Register("Contention Rate / Sec", () => new PerformanceCounterGauge(LocksAndThreads, "Contention Rate / Sec", app), Unit.Custom("Attempts/s"));
             context.Register("Queue Length / sec", () => new PerformanceCounterGauge(LocksAndThreads, "Queue Length / sec", app), Unit.Custom("Threads/s"));
+
+            ThreadPoolMetrics.RegisterThreadPoolGauges(context);
         }
 
         private static void Register(this MetricsContext context, string name, Func<MetricValueProvider<double>> gauge, Unit unit)

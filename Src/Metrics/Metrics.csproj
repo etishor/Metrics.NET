@@ -84,6 +84,7 @@
     <Compile Include="Core\MetricsBuilder.cs" />
     <Compile Include="Core\NullMetricsRegistry.cs" />
     <Compile Include="MetricsErrorHandler.cs" />
+    <Compile Include="PerfCounters\ThreadPoolMetrics.cs" />
     <Compile Include="ResetableMetric.cs" />
     <Compile Include="HealthCheckResult.cs" />
     <Compile Include="Counter.cs" />
