@@ -1,16 +1,16 @@
-﻿using Metrics;
-using Microsoft.Owin;
-using Microsoft.Owin.Cors;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Owin.Metrics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web.Http;
 using System.Web.Http.Description;
+using Metrics;
+using Microsoft.Owin;
+using Microsoft.Owin.Cors;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using Owin.Metrics;
 
 namespace Owin.Sample
 {
@@ -59,7 +59,7 @@ namespace Owin.Sample
                 {
                     var path = request.Uri.AbsolutePath.ToString(CultureInfo.InvariantCulture).TrimStart(new[] { '/' });
                     var routeTemplateSectionCount = x.Route.RouteTemplate.Split(new[] { '/' }).Count();
-                    var pathSections = path.Split(new[] { '/' });
+                    var pathSections = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
                     var pathSectionCount = pathSections.Count();
                     var actualPathWithoutRouteParams = pathSections
                         .Take(pathSectionCount - x.ParameterDescriptions.Count)
@@ -67,9 +67,20 @@ namespace Owin.Sample
 
                     // Return the web api description with matching HttpMethod, the actual route without param matches that of the request,
                     // and the number of sections in the request's URL are the same the route template's.
-                    return x.HttpMethod.Method == request.Method
-                        && x.Route.RouteTemplate.StartsWith(actualPathWithoutRouteParams)
-                        && routeTemplateSectionCount == pathSectionCount;
+
+                    if (x.HttpMethod.Method != request.Method || routeTemplateSectionCount != pathSectionCount)
+                    {
+                        return false;
+                    }
+                    
+                    if(routeTemplateSectionCount == 1)
+                    {
+                        return x.Route.RouteTemplate.Equals(actualPathWithoutRouteParams, StringComparison.InvariantCultureIgnoreCase);
+                    }
+                    else
+                    {
+                        return x.Route.RouteTemplate.StartsWith(actualPathWithoutRouteParams, StringComparison.InvariantCultureIgnoreCase);
+                    }
                 });
 
             if (description == null) return string.Empty;
