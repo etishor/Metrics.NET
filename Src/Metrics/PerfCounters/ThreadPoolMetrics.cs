@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.Diagnostics;
+using System.Threading;
 
 namespace Metrics.PerfCounters
 {
@@ -14,6 +16,10 @@ namespace Metrics.PerfCounters
 
             context.Gauge("Thread Pool Max Threads", () => { int threads, ports; ThreadPool.GetMaxThreads(out threads, out ports); return threads; }, Unit.Threads);
             context.Gauge("Thread Pool Max Completion Ports", () => { int threads, ports; ThreadPool.GetMaxThreads(out threads, out ports); return ports; }, Unit.Custom("Ports"));
+
+            var currentProcess = Process.GetCurrentProcess();
+            context.Gauge(currentProcess.ProcessName + " Uptime", () => (DateTime.UtcNow - Process.GetCurrentProcess().StartTime.ToUniversalTime()).TotalSeconds, Unit.Custom("Seconds"));
+            context.Gauge(currentProcess.ProcessName + " Threads", () => Process.GetCurrentProcess().Threads.Count, Unit.Threads);
         }
     }
 }
