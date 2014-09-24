@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 namespace Metrics.Core
 {
-    public struct WeightedSample
+    public class WeightedSample
     {
         public readonly long Value;
         public readonly double Weight;
@@ -24,7 +24,7 @@ namespace Metrics.Core
 
         private class WeightedSampleComparer : IComparer<WeightedSample>
         {
-            public static IComparer<WeightedSample> Instance = new WeightedSampleComparer();
+            public static readonly IComparer<WeightedSample> Instance = new WeightedSampleComparer();
 
             public int Compare(WeightedSample x, WeightedSample y)
             {
