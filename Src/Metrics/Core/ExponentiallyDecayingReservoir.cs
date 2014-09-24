@@ -114,7 +114,15 @@ namespace Metrics.Core
                 this.@lock.Enter(ref lockTaken);
                 double itemWeight = Math.Exp(alpha * (timestamp - startTime.Value));
                 var sample = new WeightedSample(value, itemWeight);
-                double priority = itemWeight / ThreadLocalRandom.NextDouble();
+
+                double random = .0;
+                // Prevent division by 0
+                while (random.Equals(.0))
+                {
+                    random = ThreadLocalRandom.NextDouble();
+                }
+
+                double priority = itemWeight / random;
 
                 long newCount = count.Increment();
                 if (newCount <= size)
