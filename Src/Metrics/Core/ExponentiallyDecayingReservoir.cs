@@ -123,7 +123,7 @@ namespace Metrics.Core
                 }
                 else
                 {
-                    var first = this.values.Keys[values.Count - 1];
+                    var first = this.values.Keys[this.values.Count - 1];
                     if (first < priority)
                     {
                         this.values.Remove(first);
