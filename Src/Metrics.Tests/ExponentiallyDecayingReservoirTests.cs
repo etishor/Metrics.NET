@@ -95,5 +95,87 @@ namespace Metrics.Tests
             // TODO: double check the Skip first value - sometimes first value is 2000 - which might or not be correct
             finalSnapshot.Values.Skip(1).Should().OnlyContain(v => 3000 <= v && v < 4000);
         }
+
+        [Fact]
+        public void EDRSpotLift()
+        {
+            TestClock clock = new TestClock();
+            TestScheduler scheduler = new TestScheduler(clock);
+            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(1000, 0.015, clock, scheduler);
+
+            int valuesRatePerMinute = 10;
+            int valuesIntervalMillis = (int)(TimeUnit.Minutes.ToMilliseconds(1) / valuesRatePerMinute);
+            // mode 1: steady regime for 120 minutes
+            for (int i = 0; i < 120 * valuesRatePerMinute; i++)
+            {
+                reservoir.Update(177);
+                clock.Advance(TimeUnit.Milliseconds, valuesIntervalMillis);
+            }
+
+            // switching to mode 2: 10 minutes more with the same rate, but larger value
+            for (int i = 0; i < 10 * valuesRatePerMinute; i++)
+            {
+                reservoir.Update(9999);
+                clock.Advance(TimeUnit.Milliseconds, valuesIntervalMillis);
+            }
+
+            // expect that quantiles should be more about mode 2 after 10 minutes
+            reservoir.Snapshot.Median.Should().Be(9999);
+        }
+
+        [Fact]
+        public void EDRSpotFall()
+        {
+            TestClock clock = new TestClock();
+            TestScheduler scheduler = new TestScheduler(clock);
+            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(1000, 0.015, clock, scheduler);
+
+            int valuesRatePerMinute = 10;
+            int valuesIntervalMillis = (int)(TimeUnit.Minutes.ToMilliseconds(1) / valuesRatePerMinute);
+            // mode 1: steady regime for 120 minutes
+            for (int i = 0; i < 120 * valuesRatePerMinute; i++)
+            {
+                reservoir.Update(9998);
+                clock.Advance(TimeUnit.Milliseconds, valuesIntervalMillis);
+            }
+
+            // switching to mode 2: 10 minutes more with the same rate, but smaller value
+            for (int i = 0; i < 10 * valuesRatePerMinute; i++)
+            {
+                reservoir.Update(178);
+                clock.Advance(TimeUnit.Milliseconds, valuesIntervalMillis);
+            }
+
+            // expect that quantiles should be more about mode 2 after 10 minutes
+            reservoir.Snapshot.Percentile95.Should().Be(178);
+        }
+
+        [Fact]
+        public void EDRQuantiliesShouldBeBasedOnWeights()
+        {
+            TestClock clock = new TestClock();
+            TestScheduler scheduler = new TestScheduler(clock);
+            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(1000, 0.015, clock, scheduler);
+
+            for (int i = 0; i < 40; i++)
+            {
+                reservoir.Update(177);
+            }
+
+            clock.Advance(TimeUnit.Seconds, 120);
+
+            for (int i = 0; i < 10; i++)
+            {
+                reservoir.Update(9999);
+            }
+
+            reservoir.Snapshot.Size.Should().Be(50);
+
+            // the first added 40 items (177) have weights 1 
+            // the next added 10 items (9999) have weights ~6 
+            // so, it's 40 vs 60 distribution, not 40 vs 10
+            reservoir.Snapshot.Median.Should().Be(9999);
+            reservoir.Snapshot.Percentile75.Should().Be(9999);
+        }
     }
 }

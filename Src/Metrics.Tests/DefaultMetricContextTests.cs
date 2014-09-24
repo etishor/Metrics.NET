@@ -143,7 +143,7 @@ namespace Metrics.Tests
             public void Update(long value) { this.values.Add(value); }
             public Snapshot Snapshot
             {
-                get { return new Snapshot(this.values); }
+                get { return new UniformSnapshot(this.values); }
             }
 
             public void Reset()

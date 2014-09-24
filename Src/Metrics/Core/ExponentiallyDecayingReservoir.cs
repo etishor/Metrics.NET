@@ -13,7 +13,7 @@ namespace Metrics.Core
         private const double DefaultAlpha = 0.015;
         private static readonly TimeSpan RescaleInterval = TimeSpan.FromHours(1);
 
-        private readonly ConcurrentDictionary<double, long> values = new ConcurrentDictionary<double, long>();
+        private readonly ConcurrentDictionary<double, WeightedSample> values = new ConcurrentDictionary<double, WeightedSample>();
         private readonly ReaderWriterLockSlim @lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
         private readonly double alpha;
         private readonly int size;
@@ -57,7 +57,7 @@ namespace Metrics.Core
                 this.@lock.EnterReadLock();
                 try
                 {
-                    return new Snapshot(this.values.Values);
+                    return new WeightedSnapshot(this.values.Values);
                 }
                 finally
                 {
@@ -91,23 +91,23 @@ namespace Metrics.Core
             this.@lock.EnterReadLock();
             try
             {
-                long age = timestamp - startTime.Value;
-                double weighted = Math.Exp(alpha * age);
-                double priority = weighted / ThreadLocalRandom.NextDouble();
+                double itemWeight = Math.Exp(alpha * (timestamp - startTime.Value));
+                var sample = new WeightedSample(value, itemWeight);
+                double priority = itemWeight / ThreadLocalRandom.NextDouble();
 
                 long newCount = count.Increment();
                 if (newCount <= size)
                 {
-                    values.AddOrUpdate(priority, value, (k, v) => value);
+                    this.values.AddOrUpdate(priority, sample, (k, v) => sample);
                 }
                 else
                 {
                     var first = values.First().Key;
                     if (first < priority)
                     {
-                        this.values.AddOrUpdate(priority, value, (k, v) => v);
+                        this.values.AddOrUpdate(priority, sample, (k, v) => v);
 
-                        long removed;
+                        WeightedSample removed;
                         // ensure we always remove an item
                         while (!values.TryRemove(first, out removed))
                         {
@@ -153,13 +153,18 @@ namespace Metrics.Core
                 long oldStartTime = startTime.Value;
                 this.startTime.SetValue(this.clock.Seconds);
 
+                double scalingFactor = Math.Exp(-alpha * (startTime.Value - oldStartTime));
+
                 var keys = new List<double>(this.values.Keys);
                 foreach (var key in keys)
                 {
-                    long value;
-                    this.values.TryRemove(key, out value);
-                    double newKey = key * Math.Exp(-alpha * (startTime.Value - oldStartTime));
-                    values.AddOrUpdate(newKey, value, (k, v) => value);
+                    WeightedSample sample;
+                    if (this.values.TryRemove(key, out sample))
+                    {
+                        double newKey = key * Math.Exp(-alpha * (startTime.Value - oldStartTime));
+                        var newSample = new WeightedSample(sample.Value, sample.Weight * scalingFactor);
+                        values.AddOrUpdate(newKey, newSample, (k, v) => newSample);
+                    }
                 }
                 // make sure the counter is in sync with the number of stored samples.
                 this.count.SetValue(values.Count);

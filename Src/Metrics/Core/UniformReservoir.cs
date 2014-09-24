@@ -37,7 +37,7 @@ namespace Metrics.Core
         {
             get
             {
-                return new Snapshot(this.values.Take(Size).Select(v => v.Value));
+                return new UniformSnapshot(this.values.Take(Size).Select(v => v.Value));
             }
         }
 
