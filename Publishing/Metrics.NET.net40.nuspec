@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
         <id>Metrics.NET-net40</id>
-        <version>0.2.0</version>
+        <version>0.2.1</version>
         <title>Metrics.NET-net40</title>
         <authors>iulian.margarintescu</authors>
         <owners>Iulian Margarintescu</owners>
