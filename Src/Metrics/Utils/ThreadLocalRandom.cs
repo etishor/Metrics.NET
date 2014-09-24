@@ -14,9 +14,10 @@ namespace Metrics.Utils
 
         public static long NextLong()
         {
-            byte[] buf = new byte[sizeof(long)];
-            random.Value.NextBytes(buf);
-            return BitConverter.ToInt64(buf, 0);
+            long heavy = random.Value.Next();
+            long light = random.Value.Next();
+
+            return heavy << 32 | light;
         }
     }
 }
