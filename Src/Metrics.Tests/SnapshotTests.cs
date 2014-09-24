@@ -4,9 +4,9 @@ using Xunit;
 
 namespace Metrics.Tests
 {
-    public class SnapshotTest
+    public class UniformSnapshotTest
     {
-        private readonly Snapshot snapshot = new Snapshot(new long[] { 5, 1, 2, 3, 4 });
+        private readonly UniformSnapshot snapshot = new UniformSnapshot(new long[] { 5, 1, 2, 3, 4 });
 
         [Fact]
         public void SnapshotSmallQuantilesAreTheFirstValue()
@@ -95,35 +95,35 @@ namespace Metrics.Tests
         [Fact]
         public void SnapshotCalculatesAMinOfZeroForAnEmptySnapshot()
         {
-            Snapshot snapshot = new Snapshot(new long[] { });
+            Snapshot snapshot = new UniformSnapshot(new long[] { });
             snapshot.Min.Should().Be(0);
         }
 
         [Fact]
         public void SnapshotCalculatesAMaxOfZeroForAnEmptySnapshot()
         {
-            Snapshot snapshot = new Snapshot(new long[] { });
+            Snapshot snapshot = new UniformSnapshot(new long[] { });
             snapshot.Max.Should().Be(0);
         }
 
         [Fact]
         public void SnapshotCalculatesAMeanOfZeroForAnEmptySnapshot()
         {
-            Snapshot snapshot = new Snapshot(new long[] { });
+            Snapshot snapshot = new UniformSnapshot(new long[] { });
             snapshot.Mean.Should().Be(0);
         }
 
         [Fact]
         public void SnapshotCalculatesAStdDevOfZeroForAnEmptySnapshot()
         {
-            Snapshot snapshot = new Snapshot(new long[] { });
+            Snapshot snapshot = new UniformSnapshot(new long[] { });
             snapshot.StdDev.Should().Be(0);
         }
 
         [Fact]
         public void SnapshotCalculatesAStdDevOfZeroForASingletonSnapshot()
         {
-            Snapshot snapshot = new Snapshot(new long[] { 1 });
+            Snapshot snapshot = new UniformSnapshot(new long[] { 1 });
             snapshot.StdDev.Should().Be(0);
         }
     }

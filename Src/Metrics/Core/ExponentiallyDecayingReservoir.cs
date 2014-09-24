@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Metrics.Utils;
 
@@ -13,8 +11,20 @@ namespace Metrics.Core
         private const double DefaultAlpha = 0.015;
         private static readonly TimeSpan RescaleInterval = TimeSpan.FromHours(1);
 
-        private readonly ConcurrentDictionary<double, long> values = new ConcurrentDictionary<double, long>();
-        private readonly ReaderWriterLockSlim @lock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        private class ReverseOrderDoubleComparer : IComparer<double>
+        {
+            public static readonly IComparer<double> Instance = new ReverseOrderDoubleComparer();
+
+            public int Compare(double x, double y)
+            {
+                return y.CompareTo(x);
+            }
+        }
+
+        private readonly SortedList<double, WeightedSample> values;
+
+        private SpinLock @lock = new SpinLock();
+
         private readonly double alpha;
         private readonly int size;
         private AtomicLong count = new AtomicLong();
@@ -42,6 +52,8 @@ namespace Metrics.Core
             this.alpha = alpha;
             this.clock = clock;
 
+            this.values = new SortedList<double, WeightedSample>(size, ReverseOrderDoubleComparer.Instance);
+
             this.rescaleScheduler = scheduler;
             this.rescaleScheduler.Start(RescaleInterval, () => Rescale());
 
@@ -54,14 +66,18 @@ namespace Metrics.Core
         {
             get
             {
-                this.@lock.EnterReadLock();
+                bool lockTaken = false;
                 try
                 {
-                    return new Snapshot(this.values.Values);
+                    this.@lock.Enter(ref lockTaken);
+                    return new WeightedSnapshot(this.values.Values);
                 }
                 finally
                 {
-                    this.@lock.ExitReadLock();
+                    if (lockTaken)
+                    {
+                        this.@lock.Exit();
+                    }
                 }
             }
         }
@@ -73,58 +89,68 @@ namespace Metrics.Core
 
         public void Reset()
         {
-            this.@lock.EnterWriteLock();
+            bool lockTaken = false;
             try
             {
+                this.@lock.Enter(ref lockTaken);
                 this.values.Clear();
                 this.count.SetValue(0L);
                 this.startTime = new AtomicLong(this.clock.Seconds);
             }
             finally
             {
-                this.@lock.ExitWriteLock();
+                if (lockTaken)
+                {
+                    this.@lock.Exit();
+                }
             }
         }
 
         private void Update(long value, long timestamp)
         {
-            this.@lock.EnterReadLock();
+            bool lockTaken = false;
             try
             {
-                long age = timestamp - startTime.Value;
-                double weighted = Math.Exp(alpha * age);
-                double priority = weighted / ThreadLocalRandom.NextDouble();
+                this.@lock.Enter(ref lockTaken);
+                double itemWeight = Math.Exp(alpha * (timestamp - startTime.Value));
+                var sample = new WeightedSample(value, itemWeight);
+
+                double random = .0;
+                // Prevent division by 0
+                while (random.Equals(.0))
+                {
+                    random = ThreadLocalRandom.NextDouble();
+                }
+
+                double priority = itemWeight / random;
 
                 long newCount = count.Increment();
                 if (newCount <= size)
                 {
-                    values.AddOrUpdate(priority, value, (k, v) => value);
+                    this.values[priority] = sample;
                 }
                 else
                 {
-                    var first = values.First().Key;
+                    var first = this.values.Keys[this.values.Count - 1];
                     if (first < priority)
                     {
-                        this.values.AddOrUpdate(priority, value, (k, v) => v);
-
-                        long removed;
-                        // ensure we always remove an item
-                        while (!values.TryRemove(first, out removed))
-                        {
-                            first = values.First().Key;
-                        }
+                        this.values.Remove(first);
+                        this.values[priority] = sample;
                     }
                 }
             }
             finally
             {
-                this.@lock.ExitReadLock();
+                if (lockTaken)
+                {
+                    this.@lock.Exit();
+                }
             }
         }
 
         public void Dispose()
         {
-            using (this.@lock) { }
+            using (this.rescaleScheduler) { }
         }
 
         ///* "A common feature of the above techniques—indeed, the key technique that
@@ -147,26 +173,33 @@ namespace Metrics.Core
         // */
         private void Rescale()
         {
-            this.@lock.EnterWriteLock();
+            bool lockTaken = false;
             try
             {
+                this.@lock.Enter(ref lockTaken);
                 long oldStartTime = startTime.Value;
                 this.startTime.SetValue(this.clock.Seconds);
+
+                double scalingFactor = Math.Exp(-alpha * (startTime.Value - oldStartTime));
 
                 var keys = new List<double>(this.values.Keys);
                 foreach (var key in keys)
                 {
-                    long value;
-                    this.values.TryRemove(key, out value);
+                    WeightedSample sample = this.values[key];
+                    this.values.Remove(key);
                     double newKey = key * Math.Exp(-alpha * (startTime.Value - oldStartTime));
-                    values.AddOrUpdate(newKey, value, (k, v) => value);
+                    var newSample = new WeightedSample(sample.Value, sample.Weight * scalingFactor);
+                    this.values[newKey] = newSample;
                 }
                 // make sure the counter is in sync with the number of stored samples.
                 this.count.SetValue(values.Count);
             }
             finally
             {
-                this.@lock.ExitWriteLock();
+                if (lockTaken)
+                {
+                    this.@lock.Exit();
+                }
             }
         }
     }

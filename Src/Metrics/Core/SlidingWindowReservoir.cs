@@ -44,7 +44,7 @@ namespace Metrics.Core
                 {
                     values[i] = Interlocked.Read(ref this.values[i]);
                 }
-                return new Snapshot(values);
+                return new UniformSnapshot(values);
             }
         }
     }

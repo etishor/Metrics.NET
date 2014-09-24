@@ -1,3 +1,17 @@
+###0.2.1 / 2014-09-25
+* port latest changes from original metrics lib
+* port optimization from ExponentiallyDecayingReservoir (https://github.com/etishor/Metrics.NET/commit/1caa9d01c16ff63504612d64771d52e9d7d9de5e)
+* other minor optimizations
+* add gauges for thread pool stats
+
+###0.2.0 / 2014-09-20
+* implement metrics contexts (and child contexts)
+* make config more friendly
+* most used condig options are now set by default
+* add logging based on liblog (no fixed dependency - automaticaly wire into existing logging framework)
+* update nancy & owin adapters to use contexts
+* add some app.config settings to ease configuration
+
 ###0.1.11 / 2014-08-18
 * update to latest visualization app (fixes checkboxes being outside dropdown)
 * fix json caching in IE

@@ -43,7 +43,9 @@ namespace Metrics.Samples
 
         public void Request(int i)
         {
-            new MultiRegistryMetrics().Run();
+            new MultiContextMetrics().Run();
+            MultiContextInstanceMetrics.RunSample();
+
             using (this.timer.NewContext()) // measure until disposed
             {
                 someValue *= (i + 1); // will be reflected in the gauge 

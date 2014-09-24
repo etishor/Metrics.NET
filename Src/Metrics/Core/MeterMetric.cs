@@ -14,7 +14,7 @@ namespace Metrics.Core
         private readonly EWMA m15Rate = EWMA.FifteenMinuteEWMA();
 
         private readonly Clock clock;
-        private readonly long startTime;
+        private long startTime;
 
         private AtomicLong count = new AtomicLong();
         private readonly Scheduler tickScheduler;
@@ -109,6 +109,7 @@ namespace Metrics.Core
             this.m1Rate.Reset();
             this.m5Rate.Reset();
             this.m15Rate.Reset();
+            this.startTime = this.clock.Nanoseconds;
         }
     }
 }
