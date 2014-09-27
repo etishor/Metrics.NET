@@ -11,8 +11,12 @@ namespace Metrics.Core
         private readonly Func<IEnumerable<HistogramValueSource>> histograms;
         private readonly Func<IEnumerable<TimerValueSource>> timers;
 
-        public DefaultRegistryDataProvider(Func<IEnumerable<GaugeValueSource>> gauges, Func<IEnumerable<CounterValueSource>> counters,
-            Func<IEnumerable<MeterValueSource>> meters, Func<IEnumerable<HistogramValueSource>> histograms, Func<IEnumerable<TimerValueSource>> timers)
+        public DefaultRegistryDataProvider(
+            Func<IEnumerable<GaugeValueSource>> gauges,
+            Func<IEnumerable<CounterValueSource>> counters,
+            Func<IEnumerable<MeterValueSource>> meters,
+            Func<IEnumerable<HistogramValueSource>> histograms,
+            Func<IEnumerable<TimerValueSource>> timers)
         {
             this.gauges = gauges;
             this.counters = counters;

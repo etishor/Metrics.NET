@@ -34,8 +34,8 @@ namespace Metrics
     /// </summary>
     public sealed class CounterValueSource : MetricValueSource<long>
     {
-        public CounterValueSource(string name, MetricValueProvider<long> value, Unit unit)
-            : base(name, value, unit)
+        public CounterValueSource(string name, MetricValueProvider<long> value, Unit unit, MetricTags tags)
+            : base(name, value, unit, tags)
         { }
     }
 }

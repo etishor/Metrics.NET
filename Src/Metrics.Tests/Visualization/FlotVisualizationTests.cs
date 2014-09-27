@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using CsQuery;
+using FluentAssertions;
 using Metrics.Visualization;
 using Xunit;
 
@@ -7,9 +8,11 @@ namespace Metrics.Tests.Visualization
     public class FlotVisualizationTests
     {
         [Fact]
-        public void CanReadAppFromResource()
+        public void FlotVisualization_CanReadAppFromResource()
         {
-            FlotWebApp.GetFlotApp().Should().NotBeEmpty();
+            var html = FlotWebApp.GetFlotApp();
+            html.Should().NotBeEmpty();
+            Assert.DoesNotThrow(() => CQ.CreateDocument(html));
         }
     }
 }

@@ -4,8 +4,6 @@ Metrics.NET
 [![Build status](https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2)](https://ci.appveyor.com/project/etishor/metrics-net)
 [![Mono Build Status](https://api.travis-ci.org/etishor/Metrics.NET.svg)](https://travis-ci.org/etishor/Metrics.NET)
 
-_This port is still work in progress and should not be considered ready for production. I'm actively using this library in my work projects, but would like to keep the alpha status a little more so I can change my mind about parts of the API._
-
 ###Intro
 
 The Metrics.NET library provides a way of instrumenting applications with custom metrics (timers, histograms, counters etc) that can be reported in various ways and can provide insights on what is happening inside a running application. 

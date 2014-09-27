@@ -24,6 +24,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		create-nuget.bat = create-nuget.bat
 		Publishing\Metrics.NET.net40.nuspec = Publishing\Metrics.NET.net40.nuspec
 		Publishing\NancyFx.Metrics.net40.nuspec = Publishing\NancyFx.Metrics.net40.nuspec
+		Publishing\Metrics.NET.nuspec = Publishing\Metrics.NET.nuspec
+		Publishing\Nancy.Metrics.nuspec = Publishing\Nancy.Metrics.nuspec
+		Publishing\Owin.Metrics.nuspec = Publishing\Owin.Metrics.nuspec
 		Publishing\push-nuget.bat = Publishing\push-nuget.bat
 		README.md = README.md
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
@@ -73,8 +76,5 @@ Global
 		{FBFF51D8-52F4-4EEF-8498-122A14B37D6C} = {443860DA-6378-47D0-A4AE-4E79975C5E1C}
 		{68F25A01-AF00-4D57-9D1A-81213E4EF56F} = {443860DA-6378-47D0-A4AE-4E79975C5E1C}
 		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210} = {443860DA-6378-47D0-A4AE-4E79975C5E1C}
-	EndGlobalSection
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

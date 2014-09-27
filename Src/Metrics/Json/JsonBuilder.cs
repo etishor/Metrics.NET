@@ -151,9 +151,11 @@ namespace Metrics.Json
         {
             yield return new JsonProperty("Count", value.Count);
             yield return new JsonProperty("LastValue", value.LastValue);
+            yield return new JsonProperty("LastUserValue", value.LastUserValue);
             yield return new JsonProperty("Min", value.Min);
+            yield return new JsonProperty("MinUserValue", value.MinUserValue);
             yield return new JsonProperty("Mean", value.Mean);
-            yield return new JsonProperty("Max", value.Max);
+            yield return new JsonProperty("MaxUserValue", value.MaxUserValue);
             yield return new JsonProperty("StdDev", value.StdDev);
             yield return new JsonProperty("Median", value.Median);
             yield return new JsonProperty("Percentile75", value.Percentile75);

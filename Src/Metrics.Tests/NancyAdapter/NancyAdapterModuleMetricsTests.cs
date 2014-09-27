@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Metrics.Tests.TestUtils;
 using Metrics.Utils;
 using Nancy;
 using Nancy.Metrics;
@@ -54,7 +53,7 @@ namespace Metrics.Tests.NancyAdapter
 
 
         [Fact]
-        public void NancyMetricsShouldBeAbleToMonitorTimeForModuleRequest()
+        public void NancyMetrics_ShouldBeAbleToMonitorTimeForModuleRequest()
         {
             this.context.TimerValue("NancyFx", "Action Request").Rate.Count.Should().Be(0);
             browser.Get("/test/action").StatusCode.Should().Be(HttpStatusCode.OK);
@@ -67,7 +66,7 @@ namespace Metrics.Tests.NancyAdapter
         }
 
         [Fact]
-        public void NancyMetricsShouldBeAbleToMonitorSizeForRouteReponse()
+        public void NancyMetrics_ShouldBeAbleToMonitorSizeForRouteReponse()
         {
             browser.Get("/test/action").StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -87,7 +86,7 @@ namespace Metrics.Tests.NancyAdapter
         }
 
         [Fact]
-        public void NancyMetricsShouldBeAbleToMonitorSizeForRequest()
+        public void NancyMetrics_ShouldBeAbleToMonitorSizeForRequest()
         {
             this.context.HistogramValue("NancyFx", "Request Size").Count.Should().Be(0);
 

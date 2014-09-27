@@ -1,4 +1,5 @@
 ﻿using System;
+using Metrics.Sampling;
 using Metrics.Utils;
 
 namespace Metrics.Core
@@ -48,17 +49,17 @@ namespace Metrics.Core
             }
         }
 
-        public void Record(long duration, TimeUnit unit)
+        public void Record(long duration, TimeUnit unit, string userValue = null)
         {
             var nanos = unit.ToNanoseconds(duration);
             if (nanos >= 0)
             {
-                this.histogram.Update(nanos);
+                this.histogram.Update(nanos, userValue);
                 this.meter.Mark();
             }
         }
 
-        public void Time(Action action)
+        public void Time(Action action, string userValue = null)
         {
             var start = this.clock.Nanoseconds;
             try
@@ -67,11 +68,11 @@ namespace Metrics.Core
             }
             finally
             {
-                Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds);
+                Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds, userValue);
             }
         }
 
-        public T Time<T>(Func<T> action)
+        public T Time<T>(Func<T> action, string userValue = null)
         {
             var start = this.clock.Nanoseconds;
             try
@@ -80,13 +81,22 @@ namespace Metrics.Core
             }
             finally
             {
-                Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds);
+                Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds, userValue);
             }
         }
 
-        public TimerContext NewContext()
+        public TimerContext NewContext(string userValue = null)
         {
-            return new TimeMeasuringContext(this.clock, (t) => Record(t, TimeUnit.Nanoseconds));
+            return new TimeMeasuringContext(this.clock, (t) => Record(t, TimeUnit.Nanoseconds, userValue));
+        }
+
+        public TimerContext NewContext(Action<TimeSpan> finalAction, string userValue = null)
+        {
+            return new TimeMeasuringContext(this.clock, (t) =>
+            {
+                Record(t, TimeUnit.Nanoseconds, userValue);
+                finalAction(TimeSpan.FromMilliseconds(TimeUnit.Nanoseconds.ToMilliseconds(t)));
+            });
         }
 
         public TimerValue Value

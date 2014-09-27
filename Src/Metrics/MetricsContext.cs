@@ -45,7 +45,8 @@ namespace Metrics
         /// <param name="name">Name of this gauge metric. Must be unique across all gauges in this context.</param>
         /// <param name="valueProvider">Function that returns the value for the gauge.</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
-        void Gauge(string name, Func<double> valueProvider, Unit unit);
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
+        void Gauge(string name, Func<double> valueProvider, Unit unit, MetricTags tags = default(MetricTags));
 
         /// <summary>
         /// Register a performance counter as a Gauge metric.
@@ -55,15 +56,17 @@ namespace Metrics
         /// <param name="counterName">Name of the performance counter</param>
         /// <param name="counterInstance">Instance of the performance counter</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
-        void PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit);
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
+        void PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit, MetricTags tags = default(MetricTags));
 
         /// <summary>
         /// A counter is a simple incrementing and decrementing 64-bit integer. Ex number of active requests.
         /// </summary>
         /// <param name="name">Name of the metric. Must be unique across all counters in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Counter Counter(string name, Unit unit);
+        Counter Counter(string name, Unit unit, MetricTags tags = default(MetricTags));
 
         /// <summary>
         /// A meter measures the rate at which a set of events occur, in a few different ways. 
@@ -78,8 +81,9 @@ namespace Metrics
         /// <param name="name">Name of the metric. Must be unique across all meters in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds);
+        Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds, MetricTags tags = default(MetricTags));
 
         /// <summary>
         /// A Histogram measures the distribution of values in a stream of data: e.g., the number of results returned by a search.
@@ -87,8 +91,9 @@ namespace Metrics
         /// <param name="name">Name of the metric. Must be unique across all histograms in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent);
+        Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent, MetricTags tags = default(MetricTags));
 
         /// <summary>
         /// A timer is basically a histogram of the duration of a type of event and a meter of the rate of its occurrence.
@@ -99,7 +104,12 @@ namespace Metrics
         /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <param name="durationUnit">Time unit for reporting durations. Defaults to Milliseconds. </param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds);
+        Timer Timer(string name, Unit unit,
+            SamplingType samplingType = SamplingType.FavourRecent,
+            TimeUnit rateUnit = TimeUnit.Seconds,
+            TimeUnit durationUnit = TimeUnit.Milliseconds,
+            MetricTags tags = default(MetricTags));
     }
 }

@@ -73,18 +73,20 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AdvancedMetricsContext.cs" />
-    <Compile Include="App_Packages\LibLog.1.2\Logging.cs" />
+    <Compile Include="App_Packages\LibLog.1.3\Logging.cs" />
     <Compile Include="Core\BaseMetricsContext.cs" />
     <Compile Include="Core\DefaultMetricsBuilder.cs" />
     <Compile Include="Core\DefaultMetricsRegistry.cs" />
     <Compile Include="Core\DefaultDataProvider.cs" />
     <Compile Include="Core\DefaultRegistryDataProvider.cs" />
-    <Compile Include="Core\ExponentiallyDecayingReservoir.cs" />
+    <Compile Include="MetricTags.cs" />
+    <Compile Include="Sampling\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Core\HealthCheck.cs" />
     <Compile Include="Core\MetricsBuilder.cs" />
     <Compile Include="Core\NullMetricsRegistry.cs" />
-    <Compile Include="Core\Snapshot.cs" />
-    <Compile Include="Core\WeightedSnapshot.cs" />
+    <Compile Include="Sampling\UserValueWrapper.cs" />
+    <Compile Include="Sampling\Snapshot.cs" />
+    <Compile Include="Sampling\WeightedSnapshot.cs" />
     <Compile Include="MetricsErrorHandler.cs" />
     <Compile Include="PerfCounters\ThreadPoolMetrics.cs" />
     <Compile Include="ResetableMetric.cs" />
@@ -123,9 +125,9 @@
     <Compile Include="Reporters\HumanReadableReporter.cs" />
     <Compile Include="Reporters\ScheduledReporter.cs" />
     <Compile Include="SamplingType.cs" />
-    <Compile Include="Core\SlidingWindowReservoir.cs" />
+    <Compile Include="Sampling\SlidingWindowReservoir.cs" />
     <Compile Include="Core\TimerMetric.cs" />
-    <Compile Include="Core\UniformReservoir.cs" />
+    <Compile Include="Sampling\UniformReservoir.cs" />
     <Compile Include="Metric.cs" />
     <Compile Include="Timer.cs" />
     <Compile Include="Unit.cs" />
@@ -136,8 +138,8 @@
     <Compile Include="Core\HistogramMetric.cs" />
     <Compile Include="Core\MeterMetric.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\Reservoir.cs" />
-    <Compile Include="Core\UniformSnapshot.cs" />
+    <Compile Include="Sampling\Reservoir.cs" />
+    <Compile Include="Sampling\UniformSnapshot.cs" />
     <Compile Include="Utils\EWMA.cs" />
     <Compile Include="Utils\AtomicLong.cs" />
     <Compile Include="TimeUnit.cs" />
