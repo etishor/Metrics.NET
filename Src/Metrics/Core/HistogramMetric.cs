@@ -10,7 +10,7 @@ namespace Metrics.Core
     {
         private readonly Reservoir reservoir;
         private AtomicLong counter = new AtomicLong();
-        private AtomicLong last = new AtomicLong();
+        private UserValueWrapper last = new UserValueWrapper();
 
         public HistogramMetric()
             : this(new ExponentiallyDecayingReservoir()) { }
@@ -26,24 +26,25 @@ namespace Metrics.Core
         public long Count { get { return this.counter.Value; } }
         public Snapshot Snapshot { get { return this.reservoir.Snapshot; } }
 
-        public void Update(long value)
+        public void Update(long value, string userValue = null)
         {
-            this.last.SetValue(value);
+            this.last = new UserValueWrapper(value, userValue);
+
             this.counter.Increment();
-            this.reservoir.Update(value);
+            this.reservoir.Update(value, userValue);
         }
 
         public HistogramValue Value
         {
             get
             {
-                return new HistogramValue(this.counter.Value, this.last.Value, this.Snapshot);
+                return new HistogramValue(this.counter.Value, this.last.Value, this.last.UserValue, this.Snapshot);
             }
         }
 
         public void Reset()
         {
-            this.last.SetValue(0L);
+            this.last = new UserValueWrapper();
             this.counter.SetValue(0L);
             this.reservoir.Reset();
         }

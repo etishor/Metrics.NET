@@ -7,11 +7,13 @@ namespace Metrics.Sampling
     public class WeightedSample
     {
         public readonly long Value;
+        public readonly string UserValue;
         public readonly double Weight;
 
-        public WeightedSample(long value, double weight)
+        public WeightedSample(long value, string userValue, double weight)
         {
             this.Value = value;
+            this.UserValue = userValue;
             this.Weight = weight;
         }
     }
@@ -22,6 +24,9 @@ namespace Metrics.Sampling
         private readonly double[] normWeights;
         private readonly double[] quantiles;
 
+        private readonly string minUserValue;
+        private readonly string maxUserValue;
+
         private class WeightedSampleComparer : IComparer<WeightedSample>
         {
             public static readonly IComparer<WeightedSample> Instance = new WeightedSampleComparer();
@@ -31,7 +36,6 @@ namespace Metrics.Sampling
                 return Comparer<long>.Default.Compare(x.Value, y.Value);
             }
         }
-
 
         public WeightedSnapshot(IEnumerable<WeightedSample> values)
         {
@@ -53,12 +57,18 @@ namespace Metrics.Sampling
                     this.quantiles[i] = this.quantiles[i - 1] + this.normWeights[i - 1];
                 }
             }
+
+            this.minUserValue = sample.Select(s => s.UserValue).FirstOrDefault();
+            this.maxUserValue = sample.Select(s => s.UserValue).LastOrDefault();
         }
 
         public int Size { get { return this.values.Length; } }
 
         public long Max { get { return this.values.LastOrDefault(); } }
         public long Min { get { return this.values.FirstOrDefault(); } }
+
+        public string MaxUserValue { get { return this.maxUserValue; } }
+        public string MinUserValue { get { return this.minUserValue; } }
 
         public double Mean
         {

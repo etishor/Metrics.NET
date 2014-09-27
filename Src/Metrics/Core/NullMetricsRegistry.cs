@@ -26,7 +26,7 @@ namespace Metrics.Core
         private class NullHistogram : Histogram
         {
             public static readonly Histogram Instance = new NullHistogram();
-            public void Update(long value) { }
+            public void Update(long value, string userValue) { }
             public void Reset() { }
         }
 

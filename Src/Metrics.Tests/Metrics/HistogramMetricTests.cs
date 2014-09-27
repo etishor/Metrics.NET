@@ -33,5 +33,15 @@ namespace Metrics.Tests.Metrics
             histogram.Value.LastValue.Should().Be(0);
             histogram.Value.Median.Should().Be(0);
         }
+
+        [Fact]
+        public void HistogramMetric_RecordsUserValue()
+        {
+            histogram.Update(1L, "A");
+            histogram.Update(10L, "B");
+
+            histogram.Value.MinUserValue.Should().Be("A");
+            histogram.Value.MaxUserValue.Should().Be("B");
+        }
     }
 }

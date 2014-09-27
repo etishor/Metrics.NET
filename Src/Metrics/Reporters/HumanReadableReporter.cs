@@ -105,8 +105,26 @@ namespace Metrics.Reporters
         {
             WriteValue("Count", unit.FormatCount(value.Count));
             WriteValue("Last", unit.FormatDuration(value.LastValue, durationUnit));
+
+            if (!string.IsNullOrWhiteSpace(value.LastUserValue))
+            {
+                WriteValue("Last User Value", value.LastUserValue);
+            }
+
             WriteValue("Min", unit.FormatDuration(value.Min, durationUnit));
+
+            if (!string.IsNullOrWhiteSpace(value.MinUserValue))
+            {
+                WriteValue("Min User Value", value.MinUserValue);
+            }
+
             WriteValue("Max", unit.FormatDuration(value.Max, durationUnit));
+
+            if (!string.IsNullOrWhiteSpace(value.MaxUserValue))
+            {
+                WriteValue("Max User Value", value.MaxUserValue);
+            }
+
             WriteValue("Mean", unit.FormatDuration(value.Mean, durationUnit));
             WriteValue("StdDev", unit.FormatDuration(value.StdDev, durationUnit));
             WriteValue("Median", unit.FormatDuration(value.Median, durationUnit));

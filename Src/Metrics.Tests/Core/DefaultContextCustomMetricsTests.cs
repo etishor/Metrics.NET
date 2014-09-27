@@ -34,7 +34,9 @@ namespace Metrics.Tests.Core
             private readonly List<long> values = new List<long>();
 
             public int Size { get { return this.values.Count; } }
-            public void Update(long value) { this.values.Add(value); }
+
+            public void Update(long value, string userValue) { this.values.Add(value); }
+
             public Snapshot Snapshot
             {
                 get { return new UniformSnapshot(this.values); }
@@ -63,7 +65,7 @@ namespace Metrics.Tests.Core
         public class CustomHistogram : Histogram, MetricValueProvider<HistogramValue>
         {
             private readonly CustomReservoir reservoir = new CustomReservoir();
-            public void Update(long value) { this.reservoir.Update(value); }
+            public void Update(long value, string userValue) { this.reservoir.Update(value, userValue); }
             public void Reset() { this.reservoir.Reset(); }
 
             public CustomReservoir Reservoir { get { return this.reservoir; } }
@@ -73,7 +75,7 @@ namespace Metrics.Tests.Core
                 get
                 {
                     return new HistogramValue(this.reservoir.Size,
-                        this.reservoir.Values.Last(), this.reservoir.Snapshot);
+                        this.reservoir.Values.Last(), null, this.reservoir.Snapshot);
                 }
             }
         }

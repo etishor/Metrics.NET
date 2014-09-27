@@ -5,9 +5,11 @@ namespace Metrics.Sampling
     {
         double GetValue(double quantile);
         long Max { get; }
+        string MaxUserValue { get; }
         double Mean { get; }
         double Median { get; }
         long Min { get; }
+        string MinUserValue { get; }
         double Percentile75 { get; }
         double Percentile95 { get; }
         double Percentile98 { get; }

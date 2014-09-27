@@ -82,9 +82,9 @@ namespace Metrics.Sampling
             }
         }
 
-        public void Update(long value)
+        public void Update(long value, string userValue = null)
         {
-            this.Update(value, this.clock.Seconds);
+            Update(value, userValue, this.clock.Seconds);
         }
 
         public void Reset()
@@ -106,14 +106,15 @@ namespace Metrics.Sampling
             }
         }
 
-        private void Update(long value, long timestamp)
+        private void Update(long value, string userValue, long timestamp)
         {
             bool lockTaken = false;
             try
             {
                 this.@lock.Enter(ref lockTaken);
+
                 double itemWeight = Math.Exp(alpha * (timestamp - startTime.Value));
-                var sample = new WeightedSample(value, itemWeight);
+                var sample = new WeightedSample(value, userValue, itemWeight);
 
                 double random = .0;
                 // Prevent division by 0
@@ -188,7 +189,7 @@ namespace Metrics.Sampling
                     WeightedSample sample = this.values[key];
                     this.values.Remove(key);
                     double newKey = key * Math.Exp(-alpha * (startTime.Value - oldStartTime));
-                    var newSample = new WeightedSample(sample.Value, sample.Weight * scalingFactor);
+                    var newSample = new WeightedSample(sample.Value, sample.UserValue, sample.Weight * scalingFactor);
                     this.values[newKey] = newSample;
                 }
                 // make sure the counter is in sync with the number of stored samples.

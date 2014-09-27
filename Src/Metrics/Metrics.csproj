@@ -84,6 +84,7 @@
     <Compile Include="Core\HealthCheck.cs" />
     <Compile Include="Core\MetricsBuilder.cs" />
     <Compile Include="Core\NullMetricsRegistry.cs" />
+    <Compile Include="Sampling\UserValueWrapper.cs" />
     <Compile Include="Sampling\Snapshot.cs" />
     <Compile Include="Sampling\WeightedSnapshot.cs" />
     <Compile Include="MetricsErrorHandler.cs" />

@@ -18,6 +18,10 @@ namespace Metrics.Sampling
 
         public long Max { get { return this.values.LastOrDefault(); } }
         public long Min { get { return this.values.FirstOrDefault(); } }
+
+        public string MaxUserValue { get { return null; } }
+        public string MinUserValue { get { return null; } }
+
         public double Mean { get { return Size == 0 ? 0.0 : this.values.Average(); } }
 
         public double StdDev
@@ -70,6 +74,7 @@ namespace Metrics.Sampling
 
             double lower = values[(int)pos - 1];
             double upper = values[(int)pos];
+
             return lower + (pos - Math.Floor(pos)) * (upper - lower);
         }
     }

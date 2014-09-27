@@ -19,7 +19,7 @@ namespace Metrics.Sampling
             this.values = new long[size];
         }
 
-        public void Update(long value)
+        public void Update(long value, string userValue = null)
         {
             var count = this.count.Increment();
             this.values[(int)((count - 1) % values.Length)] = value;

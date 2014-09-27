@@ -41,7 +41,7 @@ namespace Metrics.Sampling
             }
         }
 
-        public void Update(long value)
+        public void Update(long value, string userValue = null)
         {
             long c = this.count.Increment();
             if (c <= this.values.Length)
