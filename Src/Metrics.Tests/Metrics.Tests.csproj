@@ -121,8 +121,8 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Metrics\CounterMetricTests.cs" />
-    <Compile Include="EWMATests.cs" />
-    <Compile Include="ExponentiallyDecayingReservoirTests.cs" />
+    <Compile Include="Utils\EWMATests.cs" />
+    <Compile Include="Sampling\ExponentiallyDecayingReservoirTests.cs" />
     <Compile Include="HealthCheckRegistryTests.cs" />
     <Compile Include="HealthCheckTests.cs" />
     <Compile Include="Metrics\HistogramMetricTests.cs" />
@@ -138,15 +138,15 @@
     <Compile Include="OwinAdapter\OwinMiddlewareTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\ActionSchedulerTests.cs" />
-    <Compile Include="SlidingWindowReservoirTest.cs" />
-    <Compile Include="SnapshotTests.cs" />
+    <Compile Include="Sampling\SlidingWindowReservoirTest.cs" />
+    <Compile Include="Sampling\UniformSnapshotTests.cs" />
     <Compile Include="TestUtils\TestMetricsBuilder.cs" />
     <Compile Include="TestUtils\TestContext.cs" />
     <Compile Include="TestUtils\TestClock.cs" />
     <Compile Include="TestUtils\TestScheduler.cs" />
     <Compile Include="Metrics\TimerMetricTests.cs" />
     <Compile Include="Utils\TimeUnitTests.cs" />
-    <Compile Include="UniformReservoirTests.cs" />
+    <Compile Include="Sampling\UniformReservoirTests.cs" />
     <Compile Include="Visualization\FlotVisualizationTests.cs" />
   </ItemGroup>
   <ItemGroup>

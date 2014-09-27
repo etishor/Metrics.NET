@@ -2,12 +2,12 @@
 using Metrics.Sampling;
 using Xunit;
 
-namespace Metrics.Tests
+namespace Metrics.Tests.Sampling
 {
     public class UniformReservoirTests
     {
         [Fact]
-        public void UniformReservoirOf100OutOf1000Elements()
+        public void UniformReservoir_Of100OutOf1000Elements()
         {
             UniformReservoir reservoir = new UniformReservoir(100);
 

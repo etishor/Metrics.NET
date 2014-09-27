@@ -1,17 +1,16 @@
 ﻿using System.Linq;
 using FluentAssertions;
-using Metrics.Core;
 using Metrics.Sampling;
 using Metrics.Tests.TestUtils;
 using Metrics.Utils;
 using Xunit;
 
-namespace Metrics.Tests
+namespace Metrics.Tests.Sampling
 {
     public class ExponentiallyDecayingReservoirTests
     {
         [Fact]
-        public void EDRaReservoirOf100OutOf1000Elements()
+        public void EDR_ReservoirOf100OutOf1000Elements()
         {
             ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(100, 0.99);
             for (int i = 0; i < 1000; i++)
@@ -26,7 +25,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void EDRaReservoirOf100OutOf10Elements()
+        public void EDR_ReservoirOf100OutOf10Elements()
         {
             ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(100, 0.99);
             for (int i = 0; i < 10; i++)
@@ -41,7 +40,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void EDRaHeavilyBiasedReservoirOf100OutOf1000Elements()
+        public void EDR_HeavilyBiasedReservoirOf100OutOf1000Elements()
         {
             ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(1000, 0.01);
             for (int i = 0; i < 100; i++)
@@ -56,7 +55,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void EDRlongPeriodsOfInactivityShouldNotCorruptSamplingState()
+        public void EDR_longPeriodsOfInactivityShouldNotCorruptSamplingState()
         {
             TestClock clock = new TestClock();
             TestScheduler scheduler = new TestScheduler(clock);
@@ -98,7 +97,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void EDRSpotLift()
+        public void EDR_SpotLift()
         {
             TestClock clock = new TestClock();
             TestScheduler scheduler = new TestScheduler(clock);
@@ -125,7 +124,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void EDRSpotFall()
+        public void EDR_SpotFall()
         {
             TestClock clock = new TestClock();
             TestScheduler scheduler = new TestScheduler(clock);
@@ -152,7 +151,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void EDRQuantiliesShouldBeBasedOnWeights()
+        public void EDR_QuantiliesShouldBeBasedOnWeights()
         {
             TestClock clock = new TestClock();
             TestScheduler scheduler = new TestScheduler(clock);

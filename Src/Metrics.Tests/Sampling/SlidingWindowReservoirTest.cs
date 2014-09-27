@@ -2,14 +2,14 @@
 using Metrics.Sampling;
 using Xunit;
 
-namespace Metrics.Tests
+namespace Metrics.Tests.Sampling
 {
     public class SlidingWindowReservoirTest
     {
         private readonly SlidingWindowReservoir reservoir = new SlidingWindowReservoir(3);
 
         [Fact]
-        public void SlidingWindowReservoirCanStoreSmallSample()
+        public void SlidingWindowReservoir_CanStoreSmallSample()
         {
             reservoir.Update(1L);
             reservoir.Update(2L);
@@ -18,7 +18,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void SlidingWindowReservoirOnlyStoresLastsValues()
+        public void SlidingWindowReservoir_OnlyStoresLastsValues()
         {
             reservoir.Update(1L);
             reservoir.Update(2L);

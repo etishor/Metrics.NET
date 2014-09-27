@@ -2,7 +2,7 @@
 using Metrics.Utils;
 using Xunit;
 
-namespace Metrics.Tests
+namespace Metrics.Tests.Utils
 {
     public class EWMATests
     {
@@ -15,7 +15,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void EWMAaOneMinuteEWMAWithAValueOfThree()
+        public void EWMA_aOneMinuteEWMAWithAValueOfThree()
         {
             var ewma = EWMA.OneMinuteEWMA();
             ewma.Update(3L);
@@ -84,7 +84,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void EWMAaFiveMinuteEWMAWithAValueOfThree()
+        public void EWMA_aFiveMinuteEWMAWithAValueOfThree()
         {
             var ewma = EWMA.FiveMinuteEWMA();
             ewma.Update(3L);
@@ -154,7 +154,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void EWMAaFifteenMinuteEWMAWithAValueOfThree()
+        public void EWMA_aFifteenMinuteEWMAWithAValueOfThree()
         {
             var ewma = EWMA.FifteenMinuteEWMA();
             ewma.Update(3L);
