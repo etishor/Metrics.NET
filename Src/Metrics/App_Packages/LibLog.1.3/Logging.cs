@@ -30,7 +30,7 @@ namespace Metrics.Logging
     using System.Diagnostics;
     using System.Globalization;
     using Metrics.Logging.LogProviders;
-    
+
     /// <summary>
     /// Simple interface that represent a logger.
     /// </summary>
@@ -411,7 +411,9 @@ namespace Metrics.Logging.LogProviders
 
         public class NLogLogger : ILog
         {
+#pragma warning disable 414
             private readonly dynamic _logger;
+#pragma warning restore 414
 
             internal NLogLogger(dynamic logger)
             {
@@ -583,7 +585,9 @@ namespace Metrics.Logging.LogProviders
 
         public class Log4NetLogger : ILog
         {
+#pragma warning disable 414
             private readonly dynamic _logger;
+#pragma warning restore 414
 
             internal Log4NetLogger(dynamic logger)
             {
@@ -887,7 +891,7 @@ namespace Metrics.Logging.LogProviders
         private static Func<string, object> GetForContextMethodCall()
         {
             Type logManagerType = GetLogManagerType();
-            MethodInfo method = logManagerType.GetMethod("ForContext", new[] { typeof(string) , typeof(object), typeof(bool)});
+            MethodInfo method = logManagerType.GetMethod("ForContext", new[] { typeof(string), typeof(object), typeof(bool) });
             ParameterExpression propertyNameParam = Expression.Parameter(typeof(string), "propertyName");
             ParameterExpression valueParam = Expression.Parameter(typeof(object), "value");
             ParameterExpression destructureObjectsParam = Expression.Parameter(typeof(bool), "destructureObjects");
