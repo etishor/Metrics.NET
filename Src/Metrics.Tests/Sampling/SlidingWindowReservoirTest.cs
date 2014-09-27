@@ -28,5 +28,15 @@ namespace Metrics.Tests.Sampling
 
             reservoir.Snapshot.Values.Should().ContainInOrder(3L, 4L, 5L);
         }
+
+        [Fact]
+        public void SlidingWindowReservoir_RecordsUserValue()
+        {
+            reservoir.Update(2L, "B");
+            reservoir.Update(1L, "A");
+
+            reservoir.Snapshot.MinUserValue.Should().Be("A");
+            reservoir.Snapshot.MaxUserValue.Should().Be("B");
+        }
     }
 }

@@ -7,11 +7,18 @@ namespace Metrics.Sampling
     public struct UniformSnapshot : Snapshot
     {
         private readonly long[] values;
+        private readonly string minUserValue;
+        private readonly string maxUserValue;
 
-        public UniformSnapshot(IEnumerable<long> values)
+        public UniformSnapshot(IEnumerable<long> values, bool valuesAreSorted = false, string minUserValue = null, string maxUserValue = null)
         {
             this.values = values.ToArray();
-            Array.Sort(this.values);
+            if (!valuesAreSorted)
+            {
+                Array.Sort(this.values);
+            }
+            this.minUserValue = minUserValue;
+            this.maxUserValue = maxUserValue;
         }
 
         public int Size { get { return this.values.Length; } }
@@ -19,8 +26,8 @@ namespace Metrics.Sampling
         public long Max { get { return this.values.LastOrDefault(); } }
         public long Min { get { return this.values.FirstOrDefault(); } }
 
-        public string MaxUserValue { get { return null; } }
-        public string MinUserValue { get { return null; } }
+        public string MaxUserValue { get { return this.maxUserValue; } }
+        public string MinUserValue { get { return this.minUserValue; } }
 
         public double Mean { get { return Size == 0 ? 0.0 : this.values.Average(); } }
 
