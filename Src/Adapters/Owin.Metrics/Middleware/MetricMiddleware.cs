@@ -16,6 +16,11 @@ namespace Owin.Metrics.Middleware
 
         protected bool PerformMetric(IDictionary<string, object> environment)
         {
+            if (ignorePatterns == null)
+            {
+                return true;
+            }
+
             var requestPath = environment["owin.RequestPath"] as string;
 
             if (string.IsNullOrWhiteSpace(requestPath)) return false;
