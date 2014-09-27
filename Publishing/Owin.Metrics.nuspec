@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
 	<metadata>
 		<id>Owin.Metrics</id>
-		<version>0.1.5-alpha</version>
+		<version>0.1.6-alpha</version>
 		<title>Owin.Metrics</title>
 		<authors>al_hardy</authors>
 		<owners>Iulian Margarintescu</owners>
@@ -14,7 +14,7 @@
 		<licenseUrl>https://github.com/etishor/Metrics.NET/blob/master/LICENSE</licenseUrl>
 		<tags>webapi, owin, metrics, measurements, charts, timer, histogram, duration, graphite, health checks</tags>
 		<dependencies>
-			<dependency id="Metrics.NET" version="0.2.1" />
+			<dependency id="Metrics.NET" version="0.2.2" />
 		</dependencies>
 	</metadata>
 	<files>
