@@ -109,9 +109,7 @@
     <Compile Include="Core\DefaultContextTests.cs" />
     <Compile Include="NancyAdapter\NancyAdapterGlobalMetrics.cs" />
     <Compile Include="NancyAdapter\NancyAdapterModuleMetricsTests.cs" />
-    <Compile Include="AtomicLongTests.cs" />
     <Compile Include="Utils\AtomicLongTests.cs" />
-    <Compile Include="OwinAdapter\OwinMiddlewareTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\ActionSchedulerTests.cs" />
     <Compile Include="Sampling\SlidingWindowReservoirTest.cs" />
