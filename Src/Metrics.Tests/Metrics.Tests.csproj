@@ -126,7 +126,7 @@
     <Compile Include="HealthCheckRegistryTests.cs" />
     <Compile Include="HealthCheckTests.cs" />
     <Compile Include="Metrics\HistogramMetricTests.cs" />
-    <Compile Include="JsonTests.cs" />
+    <Compile Include="Json\JsonTests.cs" />
     <Compile Include="Metrics\MeterMetricTests.cs" />
     <Compile Include="DefaultMetricContextTests.cs" />
     <Compile Include="MetricsRegistryTests.cs" />

@@ -1,6 +1,6 @@
 ﻿
 
-namespace Metrics.Core
+namespace Metrics.Sampling
 {
     public interface Reservoir
     {

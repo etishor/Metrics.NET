@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Metrics.Core;
+using Metrics.Sampling;
 using Xunit;
 
 namespace Metrics.Tests

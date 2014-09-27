@@ -4,12 +4,12 @@ using FluentAssertions;
 using Metrics.Json;
 using Xunit;
 
-namespace Metrics.Tests
+namespace Metrics.Tests.Json
 {
     public class JsonTests
     {
         [Fact]
-        public void DoubleJsonValueSerializesCultureInvariant()
+        public void Json_DoubleJsonValueSerializesCultureInvariant()
         {
             double value = 0.5d;
 
@@ -30,7 +30,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void LongJsonValueSerializesCultureInvariant()
+        public void Json_LongJsonValueSerializesCultureInvariant()
         {
             long value = 1000 * 1000 * 1000;
 

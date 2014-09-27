@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-namespace Metrics.Core
+namespace Metrics.Sampling
 {
     public class WeightedSample
     {

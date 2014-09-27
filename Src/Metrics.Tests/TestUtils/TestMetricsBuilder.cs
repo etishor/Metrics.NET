@@ -1,6 +1,7 @@
 ﻿using System;
 using Metrics.Core;
 using Metrics.PerfCounters;
+using Metrics.Sampling;
 using Metrics.Utils;
 
 namespace Metrics.Tests.TestUtils

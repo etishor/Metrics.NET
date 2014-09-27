@@ -1,4 +1,4 @@
-﻿using Metrics.Core;
+﻿using Metrics.Sampling;
 using Metrics.Utils;
 
 namespace Metrics

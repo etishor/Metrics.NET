@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Metrics.Utils;
 
-namespace Metrics.Core
+namespace Metrics.Sampling
 {
     public sealed class ExponentiallyDecayingReservoir : Reservoir, IDisposable
     {
