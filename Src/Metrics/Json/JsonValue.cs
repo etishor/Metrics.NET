@@ -10,6 +10,10 @@ namespace Metrics.Json
 
         public static string Escape(string value)
         {
+            if (string.IsNullOrEmpty(value))
+            {
+                return string.Empty;
+            }
             return value.Replace(@"\", @"\\").Replace("\"", "\\\"").Replace("\r", @"\r").Replace("\n", @"\n");
         }
     }
