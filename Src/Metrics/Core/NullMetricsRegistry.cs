@@ -37,6 +37,7 @@ namespace Metrics.Core
             public void Time(Action action) { action(); }
             public T Time<T>(Func<T> action) { return action(); }
             public TimerContext NewContext() { return null; }
+            public TimerContext NewContext(Action<TimeSpan> finalAction) { return null; }
             public void Reset() { }
         }
 

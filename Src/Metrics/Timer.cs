@@ -40,6 +40,20 @@ namespace Metrics
         /// </summary>
         /// <returns>A disposable instance that will record the time passed until disposed.</returns>
         TimerContext NewContext();
+
+        /// <summary>
+        /// Creates a new disposable instance and records the time it takes until the instance is disposed.
+        /// The <paramref name="finalAction"/> action is called after the context has been disposed
+        /// <code>
+        /// using(timer.NewContext())
+        /// {
+        ///     ExecuteMethodThatNeedsMonitoring();
+        /// }
+        /// </code>
+        /// </summary>
+        /// <param name="finalAction">Action to call after the context is disposed. The action is called with the measured time.</param>
+        /// <returns>A disposable instance that will record the time passed until disposed.</returns>
+        TimerContext NewContext(Action<TimeSpan> finalAction);
     }
 
     /// <summary>

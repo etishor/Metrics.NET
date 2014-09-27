@@ -90,6 +90,15 @@ namespace Metrics.Core
             return new TimeMeasuringContext(this.clock, (t) => Record(t, TimeUnit.Nanoseconds));
         }
 
+        public TimerContext NewContext(Action<TimeSpan> finalAction)
+        {
+            return new TimeMeasuringContext(this.clock, (t) =>
+            {
+                Record(t, TimeUnit.Nanoseconds);
+                finalAction(TimeSpan.FromMilliseconds(TimeUnit.Nanoseconds.ToMilliseconds(t)));
+            });
+        }
+
         public TimerValue Value
         {
             get

@@ -93,5 +93,16 @@ namespace Metrics.Tests.Metrics
             timer.Value.Rate.Count.Should().Be(0);
             timer.Value.Histogram.Count.Should().Be(0);
         }
+
+        [Fact]
+        public void TimerMetric_ContextCallsFinalAction()
+        {
+            TimeSpan result = TimeSpan.Zero;
+            var context = timer.NewContext(t => result = t);
+            clock.Advance(TimeUnit.Milliseconds, 100);
+            using (context) { }
+
+            result.Should().Be(TimeSpan.FromMilliseconds(100));
+        }
     }
 }
