@@ -73,7 +73,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AdvancedMetricsContext.cs" />
-    <Compile Include="App_Packages\LibLog.1.2\Logging.cs" />
+    <Compile Include="App_Packages\LibLog.1.3\Logging.cs" />
     <Compile Include="Core\BaseMetricsContext.cs" />
     <Compile Include="Core\DefaultMetricsBuilder.cs" />
     <Compile Include="Core\DefaultMetricsRegistry.cs" />
