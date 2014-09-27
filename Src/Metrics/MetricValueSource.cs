@@ -24,11 +24,12 @@ namespace Metrics
     {
         private readonly MetricValueProvider<T> valueProvider;
 
-        protected MetricValueSource(string name, MetricValueProvider<T> valueProvider, Unit unit)
+        protected MetricValueSource(string name, MetricValueProvider<T> valueProvider, Unit unit, MetricTags tags)
         {
             this.Name = name;
             this.Unit = unit;
             this.valueProvider = valueProvider;
+            this.Tags = tags;
         }
 
         /// <summary>
@@ -45,5 +46,10 @@ namespace Metrics
         /// Unit representing what the metric is measuring.
         /// </summary>
         public Unit Unit { get; private set; }
+
+        /// <summary>
+        /// Tags associated with the metric.
+        /// </summary>
+        public MetricTags Tags { get; private set; }
     }
 }

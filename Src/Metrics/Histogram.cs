@@ -76,8 +76,8 @@ namespace Metrics
     /// </summary>
     public sealed class HistogramValueSource : MetricValueSource<HistogramValue>
     {
-        public HistogramValueSource(string name, MetricValueProvider<HistogramValue> value, Unit unit)
-            : base(name, value, unit)
+        public HistogramValueSource(string name, MetricValueProvider<HistogramValue> value, Unit unit, MetricTags tags)
+            : base(name, value, unit, tags)
         { }
     }
 }

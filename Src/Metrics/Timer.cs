@@ -78,8 +78,8 @@ namespace Metrics
     /// </summary>
     public class TimerValueSource : MetricValueSource<TimerValue>
     {
-        public TimerValueSource(string name, MetricValueProvider<TimerValue> value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
-            : base(name, value, unit)
+        public TimerValueSource(string name, MetricValueProvider<TimerValue> value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
+            : base(name, value, unit, tags)
         {
             this.RateUnit = rateUnit;
             this.DurationUnit = durationUnit;

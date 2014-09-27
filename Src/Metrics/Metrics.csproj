@@ -79,6 +79,7 @@
     <Compile Include="Core\DefaultMetricsRegistry.cs" />
     <Compile Include="Core\DefaultDataProvider.cs" />
     <Compile Include="Core\DefaultRegistryDataProvider.cs" />
+    <Compile Include="MetricTags.cs" />
     <Compile Include="Sampling\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Core\HealthCheck.cs" />
     <Compile Include="Core\MetricsBuilder.cs" />

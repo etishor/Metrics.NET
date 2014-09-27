@@ -55,24 +55,24 @@ namespace Metrics.Core
         public void ClearAllMetrics() { }
         public void ResetMetricsValues() { }
 
-        public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit) { }
+        public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit, MetricTags tags) { }
 
-        public Counter Counter<T>(string name, Unit unit, Func<T> builder) where T : Counter, MetricValueProvider<long>
+        public Counter Counter<T>(string name, Func<T> builder, Unit unit, MetricTags tags) where T : Counter, MetricValueProvider<long>
         {
             return NullCounter.Instance;
         }
 
-        public Meter Meter<T>(string name, Unit unit, TimeUnit rateUnit, Func<T> builder) where T : Meter, MetricValueProvider<MeterValue>
+        public Meter Meter<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, MetricTags tags) where T : Meter, MetricValueProvider<MeterValue>
         {
             return NullMeter.Instance;
         }
 
-        public Histogram Histogram<T>(string name, Unit unit, Func<T> builder) where T : Histogram, MetricValueProvider<HistogramValue>
+        public Histogram Histogram<T>(string name, Func<T> builder, Unit unit, MetricTags tags) where T : Histogram, MetricValueProvider<HistogramValue>
         {
             return NullHistogram.Instance;
         }
 
-        public Timer Timer<T>(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, Func<T> builder) where T : Timer, MetricValueProvider<TimerValue>
+        public Timer Timer<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags) where T : Timer, MetricValueProvider<TimerValue>
         {
             return NullTimer.Instance;
         }
