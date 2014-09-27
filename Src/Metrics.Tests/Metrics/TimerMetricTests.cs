@@ -5,24 +5,23 @@ using Metrics.Tests.TestUtils;
 using Metrics.Utils;
 using Xunit;
 
-namespace Metrics.Tests
+namespace Metrics.Tests.Metrics
 {
-    public class TimerTests
+    public class TimerMetricTests
     {
         private readonly TestClock clock = new TestClock();
         private readonly TestScheduler scheduler;
         private readonly TimerMetric timer;
 
-        public TimerTests()
+        public TimerMetricTests()
         {
             this.scheduler = new TestScheduler(clock);
             this.timer = new TimerMetric(SamplingType.LongTerm, new MeterMetric(clock, scheduler), clock);
         }
 
         [Fact]
-        public void TimerCanCount()
+        public void TimerMetric_CanCount()
         {
-            TimerMetric timer = new TimerMetric();
             timer.Value.Rate.Count.Should().Be(0);
             using (timer.NewContext()) { }
             timer.Value.Rate.Count.Should().Be(1);
@@ -35,7 +34,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void TimerCountsEvenIfActionThrows()
+        public void TimerMetric_CountsEvenIfActionThrows()
         {
             Action action = () => this.timer.Time(() => { throw new InvalidOperationException(); });
 
@@ -45,7 +44,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void TimerCanTrackTime()
+        public void TimerMetric_CanTrackTime()
         {
             using (timer.NewContext())
             {
@@ -57,7 +56,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void TimerContextRecordsTimeOnlyOnFirstDispose()
+        public void TimerMetric_ContextRecordsTimeOnlyOnFirstDispose()
         {
             var context = timer.NewContext();
             clock.Advance(TimeUnit.Milliseconds, 100);
@@ -70,7 +69,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void TimerContextReportsElapsedTime()
+        public void TimerMetric_ContextReportsElapsedTime()
         {
             using (var context = timer.NewContext())
             {
@@ -80,7 +79,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void TimerCanReset()
+        public void TimerMetric_CanReset()
         {
             using (var context = timer.NewContext())
             {

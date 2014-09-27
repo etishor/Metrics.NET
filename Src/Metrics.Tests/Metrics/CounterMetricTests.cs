@@ -6,36 +6,35 @@ using FluentAssertions;
 using Metrics.Core;
 using Xunit;
 
-namespace Metrics.Tests
+namespace Metrics.Tests.Metrics
 {
-    public class CounterTests
+    public class CounterMetricTests
     {
+        private readonly CounterMetric counter = new CounterMetric();
+
         [Fact]
-        public void CounterStartsFromZero()
+        public void CounterMetric_StartsFromZero()
         {
-            new CounterMetric().Value.Should().Be(0L);
+            counter.Value.Should().Be(0L);
         }
 
         [Fact]
-        public void CounterCanIncrement()
+        public void CounterMetric_CanIncrement()
         {
-            var counter = new CounterMetric();
             counter.Increment();
             counter.Value.Should().Be(1L);
         }
 
         [Fact]
-        public void CounterCanIncrementWithValue()
+        public void CounterMetric_CanIncrementWithValue()
         {
-            var counter = new CounterMetric();
             counter.Increment(32L);
             counter.Value.Should().Be(32L);
         }
 
         [Fact]
-        public void CounterCanIncrementMultipleTimes()
+        public void CounterMetric_CanIncrementMultipleTimes()
         {
-            var counter = new CounterMetric();
             counter.Increment();
             counter.Increment();
             counter.Increment();
@@ -43,25 +42,22 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void CounterCanDecrement()
+        public void CounterMetric_CanDecrement()
         {
-            var counter = new CounterMetric();
             counter.Decrement();
             counter.Value.Should().Be(-1L);
         }
 
         [Fact]
-        public void CounterCanDecrementWithValue()
+        public void CounterMetric_CanDecrementWithValue()
         {
-            var counter = new CounterMetric();
             counter.Decrement(32L);
             counter.Value.Should().Be(-32L);
         }
 
         [Fact]
-        public void CounterCanDecrementMultipleTimes()
+        public void CounterMetric_CanDecrementMultipleTimes()
         {
-            var counter = new CounterMetric();
             counter.Decrement();
             counter.Decrement();
             counter.Decrement();
@@ -69,12 +65,10 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void CounterCanBeIncrementedOnMultipleThreads()
+        public void CounterMetric_CanBeIncrementedOnMultipleThreads()
         {
             const int threadCount = 16;
             const long iterations = 1000 * 100;
-
-            var counter = new CounterMetric();
 
             List<Thread> threads = new List<Thread>();
             TaskCompletionSource<int> tcs = new TaskCompletionSource<int>();
@@ -90,6 +84,7 @@ namespace Metrics.Tests
                     }
                 }));
             }
+
             threads.ForEach(t => t.Start());
             tcs.SetResult(0);
             threads.ForEach(t => t.Join());
@@ -98,9 +93,8 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void CounterCanReset()
+        public void CounterMetric_CanReset()
         {
-            var counter = new CounterMetric();
             counter.Increment();
             counter.Value.Should().Be(1L);
             counter.Reset();

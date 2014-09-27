@@ -4,14 +4,23 @@ using Metrics.Core;
 using Metrics.Tests.TestUtils;
 using Xunit;
 
-namespace Metrics.Tests
+namespace Metrics.Tests.Metrics
 {
-    public class MeterTests
+    public class MeterMetricTests
     {
-        [Fact]
-        public void MeterCanCount()
+        private readonly TestClock clock = new TestClock();
+        private readonly TestScheduler scheduler;
+        private readonly MeterMetric meter;
+
+        public MeterMetricTests()
         {
-            var meter = new MeterMetric();
+            this.scheduler = new TestScheduler(this.clock);
+            this.meter = new MeterMetric(this.clock, this.scheduler);
+        }
+
+        [Fact]
+        public void MeterMetric_CanCount()
+        {
             meter.Mark();
 
             meter.Value.Count.Should().Be(1L);
@@ -24,13 +33,8 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void MeterCanCalculateMeanRate()
+        public void MeterMetric_CanCalculateMeanRate()
         {
-            TestClock clock = new TestClock();
-            TestScheduler scheduler = new TestScheduler(clock);
-
-            var meter = new MeterMetric(clock, scheduler);
-
             meter.Mark();
             clock.Advance(TimeUnit.Seconds, 1);
 
@@ -42,9 +46,8 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void MeterStartsAtZero()
+        public void MeterMetric_StartsAtZero()
         {
-            var meter = new MeterMetric();
             meter.Value.MeanRate.Should().Be(0L);
             meter.Value.OneMinuteRate.Should().Be(0L);
             meter.Value.FiveMinuteRate.Should().Be(0L);
@@ -52,13 +55,8 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void MeterCanComputeRates()
+        public void MeterMetric_CanComputeRates()
         {
-            TestClock clock = new TestClock();
-            TestScheduler scheduler = new TestScheduler(clock);
-
-            var meter = new MeterMetric(clock, scheduler);
-
             meter.Mark();
             clock.Advance(TimeUnit.Seconds, 10);
             meter.Mark(2);
@@ -72,13 +70,8 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void MeterCanReset()
+        public void MeterMetric_CanReset()
         {
-            TestClock clock = new TestClock();
-            TestScheduler scheduler = new TestScheduler(clock);
-
-            var meter = new MeterMetric(clock, scheduler);
-
             meter.Mark();
             meter.Mark();
             clock.Advance(TimeUnit.Seconds, 10);

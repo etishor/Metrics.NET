@@ -5,12 +5,12 @@ using FluentAssertions;
 using Metrics.Utils;
 using Xunit;
 
-namespace Metrics.Tests
+namespace Metrics.Tests.Utils
 {
     public class ActionSchedulerTests
     {
         [Fact]
-        public void ActionSchedulerExecutesScheduledFunction()
+        public void ActionScheduler_ExecutesScheduledFunction()
         {
             using (ActionScheduler scheduler = new ActionScheduler())
             {
@@ -32,7 +32,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void ActionSchedulerExecutesScheduledAction()
+        public void ActionScheduler_ExecutesScheduledAction()
         {
             using (ActionScheduler scheduler = new ActionScheduler())
             {
@@ -53,7 +53,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void ActionSchedulerExecutesScheduledActionWithToken()
+        public void ActionScheduler_ExecutesScheduledActionWithToken()
         {
             using (ActionScheduler scheduler = new ActionScheduler())
             {
@@ -73,7 +73,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void ActionSchedulerExecutesScheduledActionMultipleTimes()
+        public void ActionScheduler_ExecutesScheduledActionMultipleTimes()
         {
             using (ActionScheduler scheduler = new ActionScheduler())
             {
@@ -98,7 +98,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void ActionSchedulerReportsExceptionWithGlobalMetricHandler()
+        public void ActionScheduler_ReportsExceptionWithGlobalMetricHandler()
         {
             Exception x = null;
             var tcs = new TaskCompletionSource<bool>();

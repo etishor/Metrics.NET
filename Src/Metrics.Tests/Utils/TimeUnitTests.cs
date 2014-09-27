@@ -2,18 +2,18 @@
 using Metrics.Utils;
 using Xunit;
 
-namespace Metrics.Tests
+namespace Metrics.Tests.Utils
 {
     public class TimeUnitTests
     {
         [Fact]
-        public void TimeUnitConvertsToZeroOnFractionalUnit()
+        public void TimeUnit_ConvertsToZeroOnFractionalUnit()
         {
             TimeUnit.Seconds.ToMinutes(30L).Should().Be(0);
         }
 
         [Fact]
-        public void TimeUnitCanConvertBetweenUnits()
+        public void TimeUnit_CanConvertBetweenUnits()
         {
             TimeUnit.Nanoseconds.ToNanoseconds(10L).Should().Be(10L);
             TimeUnit.Nanoseconds.ToMicroseconds(10L * 1000L).Should().Be(10L);

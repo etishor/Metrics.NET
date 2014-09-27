@@ -2,14 +2,15 @@
 using Metrics.Core;
 using Xunit;
 
-namespace Metrics.Tests
+namespace Metrics.Tests.Metrics
 {
-    public class HistogramTests
+    public class HistogramMetricTests
     {
+        private readonly HistogramMetric histogram = new HistogramMetric();
+
         [Fact]
-        public void HistogramCanCount()
+        public void HistogramMetric_CanCount()
         {
-            var histogram = new HistogramMetric(new UniformReservoir());
             histogram.Update(1L);
             histogram.Value.Count.Should().Be(1);
             histogram.Update(1L);
@@ -17,9 +18,8 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void HistogramCanReset()
+        public void HistogramMetric_CanReset()
         {
-            var histogram = new HistogramMetric();
             histogram.Update(1L);
             histogram.Update(10L);
 
