@@ -4,12 +4,12 @@ using FluentAssertions;
 using Metrics.Core;
 using Xunit;
 
-namespace Metrics.Tests
+namespace Metrics.Tests.HealthChecksTests
 {
     public class HealthCheckTests
     {
         [Fact]
-        public void HealthCheckReturnsResultWithCorrectName()
+        public void HealthCheck_ReturnsResultWithCorrectName()
         {
             string name = "test";
             new HealthCheck(name, () => { }).Execute().Name.Should().Be(name);
@@ -18,7 +18,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void HealthCheckSuccessIfActionDoesNotThrow()
+        public void HealthCheck_SuccessIfActionDoesNotThrow()
         {
             string name = "test";
             new HealthCheck(name, () => { }).Execute().Check.IsHealthy.Should().BeTrue();
@@ -32,7 +32,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void HealthCheckFailedIfActionThrows()
+        public void HealthCheck_FailedIfActionThrows()
         {
             string name = "test";
             new HealthCheck(name, () => ThrowException()).Execute().Check.IsHealthy.Should().BeFalse();
@@ -41,13 +41,13 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void HealthCheckFailedIfResultUnhealthy()
+        public void HealthCheck_FailedIfResultUnhealthy()
         {
             new HealthCheck("test", () => HealthCheckResult.Unhealthy()).Execute().Check.IsHealthy.Should().BeFalse();
         }
 
         [Fact]
-        public void HealthCheckReturnsCorrectMessage()
+        public void HealthCheck_ReturnsCorrectMessage()
         {
             string message = "message";
             new HealthCheck("test", () => HealthCheckResult.Unhealthy(message)).Execute().Check.Message.Should().Be(message);

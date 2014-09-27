@@ -3,12 +3,12 @@ using FluentAssertions;
 using Metrics.Core;
 using Xunit;
 
-namespace Metrics.Tests
+namespace Metrics.Tests.HealthChecksTests
 {
     public class HealthCheckRegistryTests
     {
         [Fact]
-        public void HealthCheckRegistryExecutesCheckOnEachGetStatus()
+        public void HealthCheck_RegistryExecutesCheckOnEachGetStatus()
         {
             HealthChecks.UnregisterAllHealthChecks();
             int count = 0;
@@ -27,7 +27,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void HealthCheckRegistryStatusIsFailedIfOneCheckFails()
+        public void HealthCheck_RegistryStatusIsFailedIfOneCheckFails()
         {
             HealthChecks.UnregisterAllHealthChecks();
 
@@ -41,7 +41,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void HealthCheckRegistryStatusIsHealthyIfAllChecksAreHealthy()
+        public void HealthCheck_RegistryStatusIsHealthyIfAllChecksAreHealthy()
         {
             HealthChecks.UnregisterAllHealthChecks();
 
@@ -55,7 +55,7 @@ namespace Metrics.Tests
         }
 
         [Fact]
-        public void HealthCheckRegistryDoesNotThrowOnDuplicateRegistration()
+        public void HealthCheck_RegistryDoesNotThrowOnDuplicateRegistration()
         {
             HealthChecks.UnregisterAllHealthChecks();
 

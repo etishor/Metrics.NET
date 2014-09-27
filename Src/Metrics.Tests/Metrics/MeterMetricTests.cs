@@ -1,7 +1,6 @@
 ﻿
 using FluentAssertions;
 using Metrics.Core;
-using Metrics.Tests.TestUtils;
 using Xunit;
 
 namespace Metrics.Tests.Metrics

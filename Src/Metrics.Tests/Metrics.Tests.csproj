@@ -120,16 +120,16 @@
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Core\DefaultContextCustomMetricsTests.cs" />
     <Compile Include="Metrics\CounterMetricTests.cs" />
     <Compile Include="Utils\EWMATests.cs" />
     <Compile Include="Sampling\ExponentiallyDecayingReservoirTests.cs" />
-    <Compile Include="HealthCheckRegistryTests.cs" />
-    <Compile Include="HealthCheckTests.cs" />
+    <Compile Include="HealthChecksTests\HealthCheckRegistryTests.cs" />
+    <Compile Include="HealthChecksTests\HealthCheckTests.cs" />
     <Compile Include="Metrics\HistogramMetricTests.cs" />
     <Compile Include="Json\JsonTests.cs" />
     <Compile Include="Metrics\MeterMetricTests.cs" />
-    <Compile Include="DefaultMetricContextTests.cs" />
-    <Compile Include="MetricsRegistryTests.cs" />
+    <Compile Include="Core\DefaultContextTests.cs" />
     <Compile Include="NancyAdapter\NancyAdapterGlobalMetrics.cs" />
     <Compile Include="NancyAdapter\NancyAdapterModuleMetricsTests.cs" />
     <Compile Include="Utils\AtomicLongTests.cs" />
@@ -140,10 +140,10 @@
     <Compile Include="Utils\ActionSchedulerTests.cs" />
     <Compile Include="Sampling\SlidingWindowReservoirTest.cs" />
     <Compile Include="Sampling\UniformSnapshotTests.cs" />
-    <Compile Include="TestUtils\TestMetricsBuilder.cs" />
-    <Compile Include="TestUtils\TestContext.cs" />
-    <Compile Include="TestUtils\TestClock.cs" />
-    <Compile Include="TestUtils\TestScheduler.cs" />
+    <Compile Include="TestMetricsBuilder.cs" />
+    <Compile Include="TestContext.cs" />
+    <Compile Include="TestClock.cs" />
+    <Compile Include="TestScheduler.cs" />
     <Compile Include="Metrics\TimerMetricTests.cs" />
     <Compile Include="Utils\TimeUnitTests.cs" />
     <Compile Include="Sampling\UniformReservoirTests.cs" />
@@ -169,9 +169,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Core\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

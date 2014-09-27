@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Metrics.Utils;
 
-namespace Metrics.Tests.TestUtils
+namespace Metrics.Tests
 {
     /// <summary>
     /// Utility class for manually executing the scheduled task.

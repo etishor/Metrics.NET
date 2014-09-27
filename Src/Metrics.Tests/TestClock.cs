@@ -1,7 +1,7 @@
 ﻿using System;
 using Metrics.Utils;
 
-namespace Metrics.Tests.TestUtils
+namespace Metrics.Tests
 {
     public sealed class TestClock : Clock
     {

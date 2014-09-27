@@ -1,7 +1,6 @@
 ﻿using System;
 using FluentAssertions;
 using Metrics.Core;
-using Metrics.Tests.TestUtils;
 using Metrics.Utils;
 using Xunit;
 

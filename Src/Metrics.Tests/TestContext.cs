@@ -3,7 +3,7 @@ using System.Linq;
 using FluentAssertions;
 using Metrics.Core;
 
-namespace Metrics.Tests.TestUtils
+namespace Metrics.Tests
 {
     public class TestContext : BaseMetricsContext
     {

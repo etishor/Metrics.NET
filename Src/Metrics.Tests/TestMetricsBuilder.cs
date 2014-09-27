@@ -4,7 +4,7 @@ using Metrics.PerfCounters;
 using Metrics.Sampling;
 using Metrics.Utils;
 
-namespace Metrics.Tests.TestUtils
+namespace Metrics.Tests
 {
     public class TestMetricsBuilder : MetricsBuilder
     {
