@@ -133,8 +133,6 @@
     <Compile Include="NancyAdapter\NancyAdapterGlobalMetrics.cs" />
     <Compile Include="NancyAdapter\NancyAdapterModuleMetricsTests.cs" />
     <Compile Include="Utils\AtomicLongTests.cs" />
-    <Compile Include="OwinAdapter\OwinExpectedMetrics.cs" />
-    <Compile Include="OwinAdapter\OwinMetricsTestData.cs" />
     <Compile Include="OwinAdapter\OwinMiddlewareTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\ActionSchedulerTests.cs" />
