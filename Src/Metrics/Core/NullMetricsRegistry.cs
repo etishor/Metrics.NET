@@ -33,11 +33,11 @@ namespace Metrics.Core
         private class NullTimer : Timer
         {
             public static readonly Timer Instance = new NullTimer();
-            public void Record(long time, TimeUnit unit) { }
-            public void Time(Action action) { action(); }
-            public T Time<T>(Func<T> action) { return action(); }
-            public TimerContext NewContext() { return null; }
-            public TimerContext NewContext(Action<TimeSpan> finalAction) { return null; }
+            public void Record(long time, TimeUnit unit, string userValue = null) { }
+            public void Time(Action action, string userValue = null) { action(); }
+            public T Time<T>(Func<T> action, string userValue = null) { return action(); }
+            public TimerContext NewContext(string userValue = null) { return null; }
+            public TimerContext NewContext(Action<TimeSpan> finalAction, string userValue = null) { return null; }
             public void Reset() { }
         }
 

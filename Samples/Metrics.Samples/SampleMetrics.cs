@@ -46,7 +46,7 @@ namespace Metrics.Samples
             new MultiContextMetrics().Run();
             MultiContextInstanceMetrics.RunSample();
 
-            using (this.timer.NewContext()) // measure until disposed
+            using (this.timer.NewContext(i.ToString())) // measure until disposed
             {
                 someValue *= (i + 1); // will be reflected in the gauge 
 

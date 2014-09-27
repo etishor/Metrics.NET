@@ -15,7 +15,7 @@ namespace Metrics.Tests.Metrics
         public TimerMetricTests()
         {
             this.scheduler = new TestScheduler(clock);
-            this.timer = new TimerMetric(SamplingType.LongTerm, new MeterMetric(clock, scheduler), clock);
+            this.timer = new TimerMetric(SamplingType.FavourRecent, new MeterMetric(clock, scheduler), clock);
         }
 
         [Fact]
@@ -103,6 +103,16 @@ namespace Metrics.Tests.Metrics
             using (context) { }
 
             result.Should().Be(TimeSpan.FromMilliseconds(100));
+        }
+
+        [Fact]
+        public void TimerMetric_RecordsUserValue()
+        {
+            timer.Record(1L, TimeUnit.Milliseconds, "A");
+            timer.Record(10L, TimeUnit.Milliseconds, "B");
+
+            timer.Value.Histogram.MinUserValue.Should().Be("A");
+            timer.Value.Histogram.MaxUserValue.Should().Be("B");
         }
     }
 }
