@@ -29,7 +29,7 @@ namespace Metrics
             this.Name = name;
             this.Unit = unit;
             this.valueProvider = valueProvider;
-            this.Tags = tags;
+            this.Tags = tags.Tags;
         }
 
         /// <summary>
@@ -50,6 +50,6 @@ namespace Metrics
         /// <summary>
         /// Tags associated with the metric.
         /// </summary>
-        public MetricTags Tags { get; private set; }
+        public string[] Tags { get; private set; }
     }
 }

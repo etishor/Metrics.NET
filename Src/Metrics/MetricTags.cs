@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Metrics
 {
-    public struct MetricTags
+    public struct MetricTags : Utils.IHideObjectMembers
     {
         private static readonly string[] empty = new string[0];
 

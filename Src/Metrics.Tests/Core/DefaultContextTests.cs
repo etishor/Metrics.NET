@@ -134,5 +134,22 @@ namespace Metrics.Tests.Core
             context.Counter("test", Unit.Bytes);
             context.DataProvider.CurrentMetricsData.Counters.Should().HaveCount(1);
         }
+
+        [Fact]
+        public void MetricsContext_CanPropagateValueTags()
+        {
+            var counter = context.Counter("test", Unit.None, "tag");
+            context.DataProvider.CurrentMetricsData.Counters.Single().Tags.Should().Equal(new[] { "tag" });
+
+            var meter = context.Meter("test", Unit.None, tags: "tag");
+            context.DataProvider.CurrentMetricsData.Meters.Single().Tags.Should().Equal(new[] { "tag" });
+
+            var histogram = context.Histogram("test", Unit.None, tags: "tag");
+            context.DataProvider.CurrentMetricsData.Histograms.Single().Tags.Should().Equal(new[] { "tag" });
+
+            var timer = context.Timer("test", Unit.None, tags: "tag");
+            context.DataProvider.CurrentMetricsData.Timers.Single().Tags.Should().Equal(new[] { "tag" });
+        }
+
     }
 }
