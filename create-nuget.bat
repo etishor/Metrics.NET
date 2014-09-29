@@ -42,9 +42,5 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 .\.nuget\NuGet.exe pack .\Publishing\Nancy.Metrics.nuspec -OutputDirectory .\Publishing
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-
-.\.nuget\NuGet.exe pack .\Publishing\NancyFx.Metrics.nuspec -OutputDirectory .\Publishing
-if %errorlevel% neq 0 exit /b %errorlevel%
-
 .\.nuget\NuGet.exe pack .\Publishing\Owin.Metrics.nuspec -OutputDirectory .\Publishing
 if %errorlevel% neq 0 exit /b %errorlevel%
