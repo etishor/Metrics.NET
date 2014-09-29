@@ -42,6 +42,17 @@ namespace Metrics.Reporters
         {
             this.WriteMetricName(name);
             WriteValue("Count", unit.FormatCount(value.Count));
+            if (value.Items.Length > 0)
+            {
+                WriteValue("Total Items", value.Items.Length.ToString());
+            }
+            for (int i = 0; i < value.Items.Length; i++)
+            {
+                var key = "Item " + i.ToString();
+                var item = value.Items[i];
+                var val = string.Format("{0:00.00}% {1,5} {2} [{3}]", item.Percent, item.Count, unit.Name, item.Item);
+                WriteValue(key, val);
+            }
         }
 
         protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit)
