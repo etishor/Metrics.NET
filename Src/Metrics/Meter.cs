@@ -40,8 +40,6 @@ namespace Metrics
     /// </summary>
     public struct MeterValue
     {
-        internal static readonly MeterValue Empty = new MeterValue(0, 0, 0, 0, 0);
-
         public struct SetItem
         {
             public readonly string Item;

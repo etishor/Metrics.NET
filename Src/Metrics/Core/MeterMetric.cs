@@ -111,14 +111,9 @@ namespace Metrics.Core
                 double elapsed = (clock.Nanoseconds - startTime);
                 var value = this.wrapper.GetValue(elapsed);
 
-                if (value.Count == 0)
-                {
-                    return MeterValue.Empty;
-                }
-
                 var items = this.setMeters
                     .Select(m => new { Item = m.Key, Value = m.Value.GetValue(elapsed) })
-                    .Select(m => new MeterValue.SetItem(m.Item, m.Value.Count / (double)value.Count * 100, m.Value))
+                    .Select(m => new MeterValue.SetItem(m.Item, value.Count > 0 ? m.Value.Count / (double)value.Count * 100 : 0.0, m.Value))
                     .OrderBy(m => m.Item)
                     .ToArray();
 
