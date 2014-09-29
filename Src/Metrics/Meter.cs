@@ -40,6 +40,8 @@ namespace Metrics
     /// </summary>
     public struct MeterValue
     {
+        internal static readonly MeterValue Empty = new MeterValue(0, 0, 0, 0, 0);
+
         public struct SetItem
         {
             public readonly string Item;
@@ -60,6 +62,9 @@ namespace Metrics
         public readonly double FiveMinuteRate;
         public readonly double FifteenMinuteRate;
         public readonly SetItem[] Items;
+
+        internal MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate)
+            : this(count, meanRate, oneMinuteRate, fiveMinuteRate, fifteenMinuteRate, new SetItem[0]) { }
 
         public MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate, SetItem[] items)
         {

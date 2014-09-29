@@ -59,6 +59,19 @@ namespace Metrics.Reporters
         {
             this.WriteMetricName(name);
             this.WriteMeter(value.Scale(rateUnit), unit, rateUnit);
+
+            if (value.Items.Length > 0)
+            {
+                WriteValue("Total Items", value.Items.Length.ToString());
+            }
+            for (int i = 0; i < value.Items.Length; i++)
+            {
+                var key = "Item " + i.ToString();
+                var item = value.Items[i];
+                var val = string.Format("{0:00.00}% {1,5} {2} [{3}]", item.Percent, item.Value.Count, unit.Name, item.Item);
+                WriteValue(key, val);
+                WriteMeter(item.Value, unit, rateUnit);
+            }
         }
 
         protected override void ReportHistogram(string name, HistogramValue value, Unit unit)
