@@ -8,6 +8,7 @@
         <owners>Iulian Margarintescu</owners>
         <licenseUrl>https://github.com/etishor/Metrics.NET/blob/master/LICENSE</licenseUrl>
         <projectUrl>https://github.com/etishor/Metrics.NET</projectUrl>
+        <iconUrl>http://www.erata.net/Metrics.NET/metrics_32.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>(Legacy .NET 4.0 Version) The library provides support for capturing: Gauges, Counters, Meters, Histograms and Timers</description>
         <summary>(Legacy .NET 4.0 Version) .NET Port of the Java Metrics Library, a library for collecting metrics. Library also provides Health Checks.</summary>
