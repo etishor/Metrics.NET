@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 namespace Metrics.Sampling
 {
-    public class UserValueWrapper
+    public sealed class UserValueWrapper
     {
         public static readonly IComparer<UserValueWrapper> Comparer = new UserValueComparer();
 
@@ -18,7 +18,6 @@ namespace Metrics.Sampling
             this.Value = value;
             this.UserValue = userValue;
         }
-
 
         private class UserValueComparer : IComparer<UserValueWrapper>
         {
