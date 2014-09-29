@@ -24,6 +24,8 @@ namespace Metrics.Core
             public static readonly Meter Instance = new NullMeter();
             public void Mark() { }
             public void Mark(long count) { }
+            public void Mark(string item) { }
+            public void Mark(string item, long count) { }
             public void Reset() { }
         }
 

@@ -1,5 +1,7 @@
 ﻿
 using System;
+using System.Collections.Concurrent;
+using System.Linq;
 using Metrics.Utils;
 namespace Metrics.Core
 {
@@ -8,6 +10,8 @@ namespace Metrics.Core
     public sealed class MeterMetric : MeterImplementation, IDisposable
     {
         public static readonly TimeSpan TickInterval = TimeSpan.FromSeconds(5);
+
+        private readonly ConcurrentDictionary<string, MeterMetric> setMeters = new ConcurrentDictionary<string, MeterMetric>();
 
         private readonly EWMA m1Rate = EWMA.OneMinuteEWMA();
         private readonly EWMA m5Rate = EWMA.FiveMinuteEWMA();
@@ -44,11 +48,29 @@ namespace Metrics.Core
             this.m15Rate.Update(count);
         }
 
+        public void Mark(string item)
+        {
+            this.Mark(item, 1L);
+        }
+
+        public void Mark(string item, long count)
+        {
+            this.Mark(count);
+            this.setMeters.GetOrAdd(item, v => new MeterMetric(this.clock, this.tickScheduler)).Mark(count);
+        }
+
         public MeterValue Value
         {
             get
             {
-                return new MeterValue(this.count.Value, this.MeanRate, this.OneMinuteRate, this.FiveMinuteRate, this.FifteenMinuteRate);
+                var count = this.count.Value;
+                var items = this.setMeters
+                    .Select(m => new { Item = m.Key, Value = m.Value.Value })
+                    .Select(m => new MeterValue.SetItem(m.Item, m.Value.Count / (double)count * 100, m.Value))
+                    .OrderBy(m => m.Item)
+                    .ToArray();
+
+                return new MeterValue(this.count.Value, this.MeanRate, this.OneMinuteRate, this.FiveMinuteRate, this.FifteenMinuteRate, items);
             }
         }
 
@@ -101,6 +123,15 @@ namespace Metrics.Core
         {
             this.tickScheduler.Stop();
             using (this.tickScheduler) { }
+
+            foreach (var key in this.setMeters.Keys)
+            {
+                MeterMetric metric;
+                if (this.setMeters.TryRemove(key, out metric))
+                {
+                    using (metric) { }
+                }
+            }
         }
 
         public void Reset()
@@ -110,6 +141,10 @@ namespace Metrics.Core
             this.m5Rate.Reset();
             this.m15Rate.Reset();
             this.startTime = this.clock.Nanoseconds;
+            foreach (var meter in this.setMeters.Values)
+            {
+                meter.Reset();
+            }
         }
     }
 }

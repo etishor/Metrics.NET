@@ -1,4 +1,5 @@
-﻿using Metrics.Utils;
+﻿using System.Linq;
+using Metrics.Utils;
 
 namespace Metrics
 {
@@ -17,10 +18,21 @@ namespace Metrics
         void Mark();
 
         /// <summary>
+        /// Mark the occurrence of an event for an item in a set.
+        /// </summary>
+        void Mark(string item);
+
+        /// <summary>
         /// Mark the occurrence of <paramref name="count"/> events.
         /// </summary>
         /// <param name="count"></param>
         void Mark(long count);
+
+        /// <summary>
+        /// Mark the occurrence of <paramref name="count"/> events for an item in a set.
+        /// </summary>
+        /// <param name="count"></param>
+        void Mark(string item, long count);
     }
 
     /// <summary>
@@ -28,25 +40,46 @@ namespace Metrics
     /// </summary>
     public struct MeterValue
     {
+        public struct SetItem
+        {
+            public readonly string Item;
+            public readonly double Percent;
+            public readonly MeterValue Value;
+
+            public SetItem(string item, double percent, MeterValue value)
+            {
+                this.Item = item;
+                this.Percent = percent;
+                this.Value = value;
+            }
+        }
+
         public readonly long Count;
         public readonly double MeanRate;
         public readonly double OneMinuteRate;
         public readonly double FiveMinuteRate;
         public readonly double FifteenMinuteRate;
+        public readonly SetItem[] Items;
 
-        public MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate)
+        public MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate, SetItem[] items)
         {
             this.Count = count;
             this.MeanRate = meanRate;
             this.OneMinuteRate = oneMinuteRate;
             this.FiveMinuteRate = fiveMinuteRate;
             this.FifteenMinuteRate = fifteenMinuteRate;
+            this.Items = items;
         }
 
         public MeterValue Scale(TimeUnit unit)
         {
             var factor = unit.ToSeconds(1);
-            return new MeterValue(this.Count, this.MeanRate * factor, this.OneMinuteRate * factor, this.FiveMinuteRate * factor, this.FifteenMinuteRate * factor);
+            return new MeterValue(this.Count,
+                this.MeanRate * factor,
+                this.OneMinuteRate * factor,
+                this.FiveMinuteRate * factor,
+                this.FifteenMinuteRate * factor,
+                this.Items.Select(i => new SetItem(i.Item, i.Percent, i.Value.Scale(unit))).ToArray());
         }
     }
 
