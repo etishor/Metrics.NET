@@ -12,6 +12,10 @@ namespace Metrics.Core
             public void Increment(long value) { }
             public void Decrement() { }
             public void Decrement(long value) { }
+            public void Increment(string item) { }
+            public void Increment(string item, long value) { }
+            public void Decrement(string item) { }
+            public void Decrement(string item, long value) { }
             public void Reset() { }
         }
 
@@ -58,22 +62,22 @@ namespace Metrics.Core
 
         public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit, MetricTags tags) { }
 
-        public Counter Counter<T>(string name, Func<T> builder, Unit unit, MetricTags tags) where T : Counter, MetricValueProvider<long>
+        public Counter Counter<T>(string name, Func<T> builder, Unit unit, MetricTags tags) where T : CounterImplementation
         {
             return NullCounter.Instance;
         }
 
-        public Meter Meter<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, MetricTags tags) where T : Meter, MetricValueProvider<MeterValue>
+        public Meter Meter<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, MetricTags tags) where T : MeterImplementation
         {
             return NullMeter.Instance;
         }
 
-        public Histogram Histogram<T>(string name, Func<T> builder, Unit unit, MetricTags tags) where T : Histogram, MetricValueProvider<HistogramValue>
+        public Histogram Histogram<T>(string name, Func<T> builder, Unit unit, MetricTags tags) where T : HistogramImplementation
         {
             return NullHistogram.Instance;
         }
 
-        public Timer Timer<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags) where T : Timer, MetricValueProvider<TimerValue>
+        public Timer Timer<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags) where T : TimerImplementation
         {
             return NullTimer.Instance;
         }

@@ -68,7 +68,7 @@ namespace Metrics.Core
         }
 
         private readonly MetricMetaCatalog<MetricValueProvider<double>, GaugeValueSource, double> gauges = new MetricMetaCatalog<MetricValueProvider<double>, GaugeValueSource, double>();
-        private readonly MetricMetaCatalog<Counter, CounterValueSource, long> counters = new MetricMetaCatalog<Counter, CounterValueSource, long>();
+        private readonly MetricMetaCatalog<Counter, CounterValueSource, CounterValue> counters = new MetricMetaCatalog<Counter, CounterValueSource, CounterValue>();
         private readonly MetricMetaCatalog<Meter, MeterValueSource, MeterValue> meters = new MetricMetaCatalog<Meter, MeterValueSource, MeterValue>();
         private readonly MetricMetaCatalog<Histogram, HistogramValueSource, HistogramValue> histograms =
             new MetricMetaCatalog<Histogram, HistogramValueSource, HistogramValue>();
@@ -91,7 +91,7 @@ namespace Metrics.Core
         }
 
         public Counter Counter<T>(string name, Func<T> builder, Unit unit, MetricTags tags)
-            where T : Counter, MetricValueProvider<long>
+            where T : CounterImplementation
         {
             return this.counters.GetOrAdd(name, () =>
             {
@@ -101,7 +101,7 @@ namespace Metrics.Core
         }
 
         public Meter Meter<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, MetricTags tags)
-            where T : Meter, MetricValueProvider<MeterValue>
+            where T : MeterImplementation
         {
             return this.meters.GetOrAdd(name, () =>
             {
@@ -111,7 +111,7 @@ namespace Metrics.Core
         }
 
         public Histogram Histogram<T>(string name, Func<T> builder, Unit unit, MetricTags tags)
-            where T : Histogram, MetricValueProvider<HistogramValue>
+            where T : HistogramImplementation
         {
             return this.histograms.GetOrAdd(name, () =>
             {
@@ -121,7 +121,7 @@ namespace Metrics.Core
         }
 
         public Timer Timer<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
-            where T : Timer, MetricValueProvider<TimerValue>
+            where T : TimerImplementation
         {
             return this.timers.GetOrAdd(name, () =>
             {

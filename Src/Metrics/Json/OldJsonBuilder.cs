@@ -49,7 +49,7 @@ namespace Metrics.Json
 
         public OldJsonBuilder AddObject(IEnumerable<CounterValueSource> counters)
         {
-            root.Add(new JsonProperty("Counters", counters.Select(c => new JsonProperty(c.Name, c.Value))));
+            root.Add(new JsonProperty("Counters", counters.Select(c => new JsonProperty(c.Name, c.Value.Count))));
             units.Add(new JsonProperty("Counters", counters.Select(c => new JsonProperty(c.Name, c.Unit.Name))));
             return this;
         }

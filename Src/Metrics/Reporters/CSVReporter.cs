@@ -39,9 +39,9 @@ namespace Metrics.Reporters
             Write("Gauge", name, GaugeValues(value, unit));
         }
 
-        protected override void ReportCounter(string name, long value, Unit unit)
+        protected override void ReportCounter(string name, CounterValue value, Unit unit)
         {
-            Write("Counter", name, CounterValues(value, unit));
+            Write("Counter", name, CounterValues(value.Count, unit));
         }
 
         protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit)

@@ -38,10 +38,10 @@ namespace Metrics.Reporters
             this.WriteValue("value", unit.FormatValue(value));
         }
 
-        protected override void ReportCounter(string name, long value, Unit unit)
+        protected override void ReportCounter(string name, CounterValue value, Unit unit)
         {
             this.WriteMetricName(name);
-            WriteValue("Count", unit.FormatCount(value));
+            WriteValue("Count", unit.FormatCount(value.Count));
         }
 
         protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit)
