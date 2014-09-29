@@ -48,7 +48,7 @@ namespace Metrics.Sampling
                 Array.Sort(values, UserValueWrapper.Comparer);
                 var minValue = values[0].UserValue;
                 var maxValue = values[size - 1].UserValue;
-                return new UniformSnapshot(values.Select(v => v.Value), true, minValue, maxValue);
+                return new UniformSnapshot(values.Select(v => v.Value), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
             }
         }
     }
