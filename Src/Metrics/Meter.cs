@@ -19,7 +19,10 @@ namespace Metrics
 
         /// <summary>
         /// Mark the occurrence of an event for an item in a set.
+        /// The total rate of the event is updated, but the meter will also keep track and update a specific rate for each <paramref name="item"/> registered.
+        /// The meter value will contain the total rate and for each registered item the specific rate and percentage of total count.
         /// </summary>
+        /// <param name="item">Item from the set for which to record the event.</param>
         void Mark(string item);
 
         /// <summary>
@@ -30,8 +33,11 @@ namespace Metrics
 
         /// <summary>
         /// Mark the occurrence of <paramref name="count"/> events for an item in a set.
+        /// The total rate of the event is updated, but the meter will also keep track and update a specific rate for each <paramref name="item"/> registered.
+        /// The meter value will contain the total rate and for each registered item the specific rate and percentage of total count.
         /// </summary>
         /// <param name="count"></param>
+        /// <param name="item">Item from the set for which to record the events.</param>
         void Mark(string item, long count);
     }
 

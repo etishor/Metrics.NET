@@ -23,7 +23,7 @@ namespace Metrics.Samples
         private readonly Meter setMeter = Metric.Meter("Set Meter", Unit.Items);
 
         /// <summary>
-        /// keep a histogram of the input data of our requet method 
+        /// keep a histogram of the input data of our request method 
         /// </summary>
         private readonly Histogram histogramOfData = Metric.Histogram("ResultsExample", Unit.Items);
 

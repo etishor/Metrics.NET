@@ -14,7 +14,8 @@ namespace Metrics
 
         /// <summary>
         /// Increment the counter value for an item from a set.
-        /// The counter will record the count for each item and percentage from total count.
+        /// The counter value is incremented but the counter will also keep track and increment another counter associated with the <paramref name="item"/>.
+        /// The counter value will contain the total count and for each item the specific count and percentage of total count.
         /// </summary>
         /// <param name="item">Item from the set for which to increment the counter value.</param>
         void Increment(string item);
@@ -27,7 +28,8 @@ namespace Metrics
 
         /// <summary>
         /// Increment the counter value with a specified amount for an item from a set.
-        /// The counter will record the count for each item and percentage from total count.
+        /// The counter value is incremented but the counter will also keep track and increment another counter associated with the <paramref name="item"/>.
+        /// The counter value will contain the total count and for each item the specific count and percentage of total count.
         /// </summary>
         /// <param name="item">Item from the set for which to increment the counter value.</param>
         /// <param name="amount">The amount with which to increment the counter.</param>
@@ -40,6 +42,8 @@ namespace Metrics
 
         /// <summary>
         /// Decrement the counter value for an item from a set.
+        /// The counter value is decremented but the counter will also keep track and decrement another counter associated with the <paramref name="item"/>.
+        /// The counter value will contain the total count and for each item the specific count and percentage of total count.
         /// </summary>
         /// <param name="item">Item from the set for which to increment the counter value.</param>
         void Decrement(string item);
@@ -52,6 +56,8 @@ namespace Metrics
 
         /// <summary>
         /// Decrement the counter value with a specified amount for an item from a set.
+        /// The counter value is decremented but the counter will also keep track and decrement another counter associated with the <paramref name="item"/>.
+        /// The counter value will contain the total count and for each item the specific count and percentage of total count.
         /// </summary>
         /// <param name="item">Item from the set for which to increment the counter value.</param>
         /// <param name="amount">The amount with which to increment the counter.</param>
@@ -62,8 +68,19 @@ namespace Metrics
     {
         public struct SetItem
         {
+            /// <summary>
+            /// Registered item name.
+            /// </summary>
             public readonly string Item;
+
+            /// <summary>
+            /// Specific count for this item.
+            /// </summary>
             public readonly long Count;
+
+            /// <summary>
+            /// Percent of this item from the total count.
+            /// </summary>
             public readonly double Percent;
 
             public SetItem(string item, long count, double percent)
@@ -74,7 +91,14 @@ namespace Metrics
             }
         }
 
+        /// <summary>
+        /// Total count of the counter instance.
+        /// </summary>
         public readonly long Count;
+
+        /// <summary>
+        /// Separate counters for each registered set item.
+        /// </summary>
         public readonly SetItem[] Items;
 
         public CounterValue(long count, SetItem[] items)
