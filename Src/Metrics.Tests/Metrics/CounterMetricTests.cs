@@ -139,5 +139,19 @@ namespace Metrics.Tests.Metrics
             counter.Reset();
             counter.Value.Items[0].Count.Should().Be(0L);
         }
+
+        [Fact]
+        public void CounterMetric_CanComputePercentWithZeroTotal()
+        {
+            counter.Increment("A");
+            counter.Decrement("A");
+
+            counter.Value.Count.Should().Be(0);
+
+            counter.Value.Items[0].Item.Should().Be("A");
+            counter.Value.Items[0].Count.Should().Be(0);
+            counter.Value.Items[0].Percent.Should().Be(0);
+        }
+
     }
 }

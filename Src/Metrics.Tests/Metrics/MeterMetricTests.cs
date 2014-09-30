@@ -121,5 +121,18 @@ namespace Metrics.Tests.Metrics
             meter.Reset();
             meter.Value.Items[0].Value.Count.Should().Be(0L);
         }
+
+        [Fact]
+        public void MeterMetric_CanComputePercentWithZeroTotal()
+        {
+            meter.Mark("A");
+            meter.Mark("A", -1);
+
+            meter.Value.Count.Should().Be(0);
+
+            meter.Value.Items[0].Item.Should().Be("A");
+            meter.Value.Items[0].Value.Count.Should().Be(0);
+            meter.Value.Items[0].Percent.Should().Be(0);
+        }
     }
 }

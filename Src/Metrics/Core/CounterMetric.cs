@@ -17,7 +17,7 @@ namespace Metrics.Core
             get
             {
                 var total = this.counter.Value;
-                var items = setCounters.Select(i => new CounterValue.SetItem(i.Key, i.Value.Value, i.Value.Value / (double)total * 100))
+                var items = setCounters.Select(i => new CounterValue.SetItem(i.Key, i.Value.Value, total > 0 ? i.Value.Value / (double)total * 100 : 0.0))
                     .OrderBy(i => i.Item)
                     .ToArray();
                 return new CounterValue(total, items);
