@@ -1,17 +1,11 @@
 ﻿using Metrics;
+using System;
+using System.Text.RegularExpressions;
+using System.Web.Http;
 using Microsoft.Owin.Cors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Owin.Metrics;
-using Superscribe.Models;
-using Superscribe.Owin.Engine;
-using Superscribe.Owin.Extensions;
-using Superscribe.WebApi;
-using Superscribe.WebApi.Owin.Extensions;
-using System;
-using System.Text.RegularExpressions;
-using System.Web.Http;
-using String = Superscribe.Models.String;
 
 namespace Owin.Sample
 {
@@ -28,14 +22,11 @@ namespace Owin.Sample
 
             app.UseCors(CorsOptions.AllowAll);
 
-
-            var engine = OwinRouteEngineFactory.Create();
-
             var httpconfig = new HttpConfiguration();
-            SuperscribeConfig.Register(httpconfig, engine);
+            httpconfig.MapHttpAttributeRoutes();
 
-            engine.Route("sample".Controller());
-            engine.Route(r => r / "sample".Controller() / (Int)"x" / (String)"y");
+            // Sets the route template for the current request in the OWIN context
+            httpconfig.MessageHandlers.Add(new SetOwinRouteTemplateMessageHandler());
 
             Metric.Config
                 .WithAllCounters()
@@ -51,9 +42,7 @@ namespace Owin.Sample
                     .WithMetricsEndpoint()
                 );
 
-            app.UseSuperscribeRouter(engine)
-                .UseWebApi(httpconfig)
-                .WithSuperscribe(httpconfig, engine);
+            app.UseWebApi(httpconfig);
         }
 
     }

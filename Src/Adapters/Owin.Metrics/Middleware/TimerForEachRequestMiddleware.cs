@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Metrics;
+using Metrics.Utils;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Metrics;
-using Metrics.Utils;
 
 namespace Owin.Metrics.Middleware
 {
@@ -41,17 +40,9 @@ namespace Owin.Metrics.Middleware
                 var httpResponseStatusCode = int.Parse(environment["owin.ResponseStatusCode"].ToString());
                 var metricName = environment["owin.RequestPath"].ToString();
 
-                var parameters = environment["route.Parameters"] as IDictionary<string, object>;
-                var controllerName = environment["superscribe.webapi.controllername"] as string;
-
-                if (!string.IsNullOrWhiteSpace(controllerName))
+                if (environment.ContainsKey("metrics-net.routetemplate"))
                 {
-                    metricName = environment["owin.RequestMethod"] + " " + controllerName;
-
-                    if (parameters != null && parameters.Any())
-                    {
-                        metricName += "/" + string.Join("/", parameters.Keys.Select(k => "{" + k + "}"));
-                    }
+                    metricName = environment["metrics-net.routetemplate"] as string;
                 }
 
                 if (httpResponseStatusCode != (int)HttpStatusCode.NotFound)
