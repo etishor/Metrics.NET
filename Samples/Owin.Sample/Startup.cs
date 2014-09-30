@@ -1,22 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Web.Http;
-using System.Web.Http.Description;
-using Metrics;
-using Microsoft.Owin;
+﻿using Metrics;
 using Microsoft.Owin.Cors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Owin.Metrics;
+using Superscribe.Models;
+using Superscribe.Owin.Engine;
+using Superscribe.Owin.Extensions;
+using Superscribe.WebApi;
+using Superscribe.WebApi.Owin.Extensions;
+using System;
+using System.Text.RegularExpressions;
+using System.Web.Http;
+using String = Superscribe.Models.String;
 
 namespace Owin.Sample
 {
     public class Startup
     {
-        private static IApiExplorer apiExplorer;
 
         public void Configuration(IAppBuilder app)
         {
@@ -28,10 +28,14 @@ namespace Owin.Sample
 
             app.UseCors(CorsOptions.AllowAll);
 
-            var httpConfig = new HttpConfiguration();
-            httpConfig.MapHttpAttributeRoutes();
-            apiExplorer = httpConfig.Services.GetApiExplorer();
-            httpConfig.EnsureInitialized();
+
+            var engine = OwinRouteEngineFactory.Create();
+
+            var httpconfig = new HttpConfiguration();
+            SuperscribeConfig.Register(httpconfig, engine);
+
+            engine.Route("sample".Controller());
+            engine.Route(r => r / "sample".Controller() / (Int)"x" / (String)"y");
 
             Metric.Config
                 .WithAllCounters()
@@ -43,49 +47,14 @@ namespace Owin.Sample
                         new Regex("(?i)^metrics"),
                         new Regex("(?i)^health"), 
                         new Regex("(?i)^json")
-                    }, metricNameResolver: WebApiMetricNameResolver)
+                     })
                     .WithMetricsEndpoint()
                 );
 
-            app.UseWebApi(httpConfig);
+            app.UseSuperscribeRouter(engine)
+                .UseWebApi(httpconfig)
+                .WithSuperscribe(httpconfig, engine);
         }
 
-        public string WebApiMetricNameResolver(IDictionary<string, object> environment)
-        {
-            var request = new OwinRequest(environment);
-
-            var description = apiExplorer.ApiDescriptions
-                .FirstOrDefault(x =>
-                {
-                    var path = request.Uri.AbsolutePath.ToString(CultureInfo.InvariantCulture).TrimStart(new[] { '/' });
-                    var routeTemplateSectionCount = x.Route.RouteTemplate.Split(new[] { '/' }).Count();
-                    var pathSections = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-                    var pathSectionCount = pathSections.Count();
-                    var actualPathWithoutRouteParams = pathSections
-                        .Take(pathSectionCount - x.ParameterDescriptions.Count)
-                        .Aggregate(string.Empty, (current, section) => current + ("/" + section)).TrimStart(new[] { '/' });
-
-                    // Return the web api description with matching HttpMethod, the actual route without param matches that of the request,
-                    // and the number of sections in the request's URL are the same the route template's.
-
-                    if (x.HttpMethod.Method != request.Method || routeTemplateSectionCount != pathSectionCount)
-                    {
-                        return false;
-                    }
-                    
-                    if(routeTemplateSectionCount == 1)
-                    {
-                        return x.Route.RouteTemplate.Equals(actualPathWithoutRouteParams, StringComparison.InvariantCultureIgnoreCase);
-                    }
-                    else
-                    {
-                        return x.Route.RouteTemplate.StartsWith(actualPathWithoutRouteParams, StringComparison.InvariantCultureIgnoreCase);
-                    }
-                });
-
-            if (description == null) return string.Empty;
-
-            return request.Method + " " + description.Route.RouteTemplate;
-        }
     }
 }
