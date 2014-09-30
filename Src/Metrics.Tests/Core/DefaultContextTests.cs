@@ -49,7 +49,7 @@ namespace Metrics.Tests.Core
 
             counterValue.Name.Should().Be("test");
             counterValue.Unit.Should().Be(Unit.Requests);
-            counterValue.Value.Should().Be(1);
+            counterValue.Value.Count.Should().Be(1);
         }
 
         [Fact]
@@ -77,7 +77,7 @@ namespace Metrics.Tests.Core
 
             provider.CurrentMetricsData.Counters.Should().HaveCount(1);
             provider.CurrentMetricsData.Counters.Single().Name.Should().Be("test");
-            provider.CurrentMetricsData.Counters.Single().Value.Should().Be(1L);
+            provider.CurrentMetricsData.Counters.Single().Value.Count.Should().Be(1L);
         }
 
         [Fact]
@@ -93,11 +93,11 @@ namespace Metrics.Tests.Core
 
             provider.CurrentMetricsData.ChildMetrics.Should().HaveCount(1);
             provider.CurrentMetricsData.ChildMetrics.Single().Counters.Should().HaveCount(1);
-            provider.CurrentMetricsData.ChildMetrics.Single().Counters.Single().Value.Should().Be(1);
+            provider.CurrentMetricsData.ChildMetrics.Single().Counters.Single().Value.Count.Should().Be(1);
 
             counter.Increment();
 
-            provider.CurrentMetricsData.ChildMetrics.Single().Counters.Single().Value.Should().Be(2);
+            provider.CurrentMetricsData.ChildMetrics.Single().Counters.Single().Value.Count.Should().Be(2);
         }
 
         [Fact]

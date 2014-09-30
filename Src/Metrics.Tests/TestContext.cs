@@ -35,9 +35,9 @@ namespace Metrics.Tests
             return ValueFor<double>(GetDataFor(nameWithContext).Gauges, nameWithContext);
         }
 
-        public long CounterValue(params string[] nameWithContext)
+        public CounterValue CounterValue(params string[] nameWithContext)
         {
-            return ValueFor<long>(GetDataFor(nameWithContext).Counters, nameWithContext);
+            return ValueFor<CounterValue>(GetDataFor(nameWithContext).Counters, nameWithContext);
         }
 
         public MeterValue MeterValue(params string[] nameWithContext)
