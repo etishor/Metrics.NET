@@ -1,5 +1,7 @@
 ﻿
 using System;
+using Metrics.Sampling;
+
 namespace Metrics.Core
 {
     public interface MetricsBuilder

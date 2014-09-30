@@ -80,10 +80,11 @@ namespace Metrics
         /// <param name="counterName">Name of the performance counter</param>
         /// <param name="counterInstance">Instance of the performance counter</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the gauge</returns>
-        public static void PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
+        public static void PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit, MetricTags tags = default(MetricTags))
         {
-            globalContext.PerformanceCounter(name, counterCategory, counterName, counterInstance, unit);
+            globalContext.PerformanceCounter(name, counterCategory, counterName, counterInstance, unit, tags);
         }
 
         /// <summary>
@@ -92,10 +93,11 @@ namespace Metrics
         /// <param name="name">Name of this gauge metric. Must be unique across all gauges in this context.</param>
         /// <param name="valueProvider">Function that returns the value for the gauge.</param>
         /// <param name="unit">Description of want the value represents ( Unit.Requests , Unit.Items etc ) .</param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the gauge</returns>
-        public static void Gauge(string name, Func<double> valueProvider, Unit unit)
+        public static void Gauge(string name, Func<double> valueProvider, Unit unit, MetricTags tags = default(MetricTags))
         {
-            globalContext.Gauge(name, valueProvider, unit);
+            globalContext.Gauge(name, valueProvider, unit, tags);
         }
 
         /// <summary>
@@ -111,10 +113,11 @@ namespace Metrics
         /// <param name="name">Name of the metric. Must be unique across all meters in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        public static Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)
+        public static Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds, MetricTags tags = default(MetricTags))
         {
-            return globalContext.Meter(name, unit, rateUnit);
+            return globalContext.Meter(name, unit, rateUnit, tags);
         }
 
         /// <summary>
@@ -122,10 +125,13 @@ namespace Metrics
         /// </summary>
         /// <param name="name">Name of the metric. Must be unique across all counters in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric. Tags can be string array or comma separated values in a string.
+        /// ex: tags: "tag1,tag2" or tags: new[] {"tag1", "tag2"}
+        /// </param>
         /// <returns>Reference to the metric</returns>
-        public static Counter Counter(string name, Unit unit)
+        public static Counter Counter(string name, Unit unit, MetricTags tags = default(MetricTags))
         {
-            return globalContext.Counter(name, unit);
+            return globalContext.Counter(name, unit, tags);
         }
 
         /// <summary>
@@ -134,10 +140,11 @@ namespace Metrics
         /// <param name="name">Name of the metric. Must be unique across all histograms in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        public static Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
+        public static Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent, MetricTags tags = default(MetricTags))
         {
-            return globalContext.Histogram(name, unit, samplingType);
+            return globalContext.Histogram(name, unit, samplingType, tags);
         }
 
         /// <summary>
@@ -149,11 +156,12 @@ namespace Metrics
         /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <param name="durationUnit">Time unit for reporting durations. Defaults to Milliseconds. </param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
         public static Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
-            TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
+            TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds, MetricTags tags = default(MetricTags))
         {
-            return globalContext.Timer(name, unit, samplingType, rateUnit, durationUnit);
+            return globalContext.Timer(name, unit, samplingType, rateUnit, durationUnit, tags);
         }
     }
 }

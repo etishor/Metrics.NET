@@ -51,7 +51,7 @@ namespace Owin.Metrics
         /// Registers a Counter metric named "Owin.ActiveRequests" that shows the current number of active requests
         /// </summary>
         /// <param name="metricName">Name of the metric.</param>
-        public OwinRequestMetricsConfig WithActiveRequestCounter(string metricName = "ActiveRequests")
+        public OwinRequestMetricsConfig WithActiveRequestCounter(string metricName = "Active Requests")
         {
             var metricsMiddleware = new ActiveRequestCounterMiddleware(this.metricsContext, metricName, this.ignoreRequestPathPatterns);
             middlewareRegistration(metricsMiddleware);
@@ -62,7 +62,7 @@ namespace Owin.Metrics
         /// Register a Histogram metric named "Owin.PostAndPutRequestsSize" on the size of the POST and PUT requests
         /// </summary>
         /// <param name="metricName">Name of the metric.</param>
-        public OwinRequestMetricsConfig WithPostAndPutRequestSizeHistogram(string metricName = "PostAndPutRequestsSize")
+        public OwinRequestMetricsConfig WithPostAndPutRequestSizeHistogram(string metricName = "Post & Put Request Size")
         {
             var metricsMiddleware = new PostAndPutRequestSizeHistogramMiddleware(this.metricsContext, metricName, this.ignoreRequestPathPatterns);
             middlewareRegistration(metricsMiddleware);

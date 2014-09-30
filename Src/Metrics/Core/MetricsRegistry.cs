@@ -16,19 +16,19 @@ namespace Metrics.Core
     {
         RegistryDataProvider DataProvider { get; }
 
-        void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit);
-     
-        Counter Counter<T>(string name, Unit unit, Func<T> builder)
-            where T : Counter, MetricValueProvider<long>;
+        void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit, MetricTags tags);
 
-        Meter Meter<T>(string name, Unit unit, TimeUnit rateUnit, Func<T> builder)
-            where T : Meter, MetricValueProvider<MeterValue>;
+        Counter Counter<T>(string name, Func<T> builder, Unit unit, MetricTags tags)
+            where T : CounterImplementation;
 
-        Histogram Histogram<T>(string name, Unit unit, Func<T> builder)
-            where T : Histogram, MetricValueProvider<HistogramValue>;
+        Meter Meter<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, MetricTags tags)
+            where T : MeterImplementation;
 
-        Timer Timer<T>(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, Func<T> builder)
-            where T : Timer, MetricValueProvider<TimerValue>;
+        Histogram Histogram<T>(string name, Func<T> builder, Unit unit, MetricTags tags)
+            where T : HistogramImplementation;
+
+        Timer Timer<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
+            where T : TimerImplementation;
 
         void ClearAllMetrics();
         void ResetMetricsValues();

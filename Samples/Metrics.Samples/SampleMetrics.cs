@@ -18,10 +18,14 @@ namespace Metrics.Samples
         /// </summary>
         private readonly Counter concurrentRequestsCounter = Metric.Counter("SampleMetrics.ConcurrentRequests", Unit.Requests);
 
+        private readonly Counter setCounter = Metric.Counter("Set Counter", Unit.Items);
+
+        private readonly Meter setMeter = Metric.Meter("Set Meter", Unit.Items);
+
         /// <summary>
-        /// keep a histogram of the input data of our requet method 
+        /// keep a histogram of the input data of our request method 
         /// </summary>
-        private readonly Histogram histogramOfData = Metric.Histogram("ResultsExample", Unit.Items, SamplingType.LongTerm);
+        private readonly Histogram histogramOfData = Metric.Histogram("ResultsExample", Unit.Items);
 
         /// <summary>
         /// measure the rate at which requests come in
@@ -31,7 +35,7 @@ namespace Metrics.Samples
         /// <summary>
         /// measure the time rate and duration of requests
         /// </summary>
-        private readonly Timer timer = Metric.Timer("Requests", Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+        private readonly Timer timer = Metric.Timer("Requests", Unit.Requests);
 
         private double someValue = 1;
 
@@ -46,7 +50,7 @@ namespace Metrics.Samples
             new MultiContextMetrics().Run();
             MultiContextInstanceMetrics.RunSample();
 
-            using (this.timer.NewContext()) // measure until disposed
+            using (this.timer.NewContext(i.ToString())) // measure until disposed
             {
                 someValue *= (i + 1); // will be reflected in the gauge 
 
@@ -56,8 +60,12 @@ namespace Metrics.Samples
 
                 this.meter.Mark(); // signal a new request to the meter
 
-                this.histogramOfData.Update(ThreadLocalRandom.NextLong() % 5000); // update the histogram with the input data
+                this.histogramOfData.Update(ThreadLocalRandom.NextLong() % 5000, i.ToString()); // update the histogram with the input data
 
+                var item = "Item " + ThreadLocalRandom.NextLong() % 5;
+                this.setCounter.Increment(item);
+
+                this.setMeter.Mark(item);
 
                 // simulate doing some work
                 int ms = Math.Abs((int)(ThreadLocalRandom.NextLong() % 3000L));

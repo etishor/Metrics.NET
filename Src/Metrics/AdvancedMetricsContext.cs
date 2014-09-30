@@ -1,5 +1,6 @@
 ﻿using System;
 using Metrics.Core;
+using Metrics.Sampling;
 
 namespace Metrics
 {
@@ -33,7 +34,8 @@ namespace Metrics
         /// <param name="name">Name of the metric. Must be unique across all counters in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="valueProvider">Function used to build a custom instance.</param>
-        void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit);
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
+        void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit, MetricTags tags = default(MetricTags));
 
         /// <summary>
         /// Register a custom Counter instance
@@ -41,9 +43,10 @@ namespace Metrics
         /// <param name="name">Name of the metric. Must be unique across all counters in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="builder">Function used to build a custom instance.</param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Counter Counter<T>(string name, Unit unit, Func<T> builder)
-            where T : Counter, MetricValueProvider<long>;
+        Counter Counter<T>(string name, Unit unit, Func<T> builder, MetricTags tags = default(MetricTags))
+            where T : CounterImplementation;
 
         /// <summary>
         /// Register a custom Meter instance.
@@ -52,9 +55,10 @@ namespace Metrics
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="builder">Function used to build a custom instance.</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Meter Meter<T>(string name, Unit unit, Func<T> builder, TimeUnit rateUnit = TimeUnit.Seconds)
-            where T : Meter, MetricValueProvider<MeterValue>;
+        Meter Meter<T>(string name, Unit unit, Func<T> builder, TimeUnit rateUnit = TimeUnit.Seconds, MetricTags tags = default(MetricTags))
+            where T : MeterImplementation;
 
         /// <summary>
         /// Register a custom Histogram instance
@@ -62,9 +66,10 @@ namespace Metrics
         /// <param name="name">Name of the metric. Must be unique across all histograms in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="builder">Function used to build a custom instance.</param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Histogram Histogram<T>(string name, Unit unit, Func<T> builder)
-            where T : Histogram, MetricValueProvider<HistogramValue>;
+        Histogram Histogram<T>(string name, Unit unit, Func<T> builder, MetricTags tags = default(MetricTags))
+            where T : HistogramImplementation;
 
         /// <summary>
         /// Register a Histogram metric with a custom Reservoir instance
@@ -72,8 +77,9 @@ namespace Metrics
         /// <param name="name">Name of the metric. Must be unique across all histograms in this context.</param>
         /// <param name="unit">Description of what the is being measured ( Unit.Requests , Unit.Items etc ) .</param>
         /// <param name="builder">Function used to build a custom reservoir instance.</param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Histogram Histogram(string name, Unit unit, Func<Reservoir> builder);
+        Histogram Histogram(string name, Unit unit, Func<Reservoir> builder, MetricTags tags = default(MetricTags));
 
         /// <summary>
         /// Register a custom Timer implementation.
@@ -83,9 +89,10 @@ namespace Metrics
         /// <param name="builder">Function used to build a custom instance.</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <param name="durationUnit">Time unit for reporting durations. Defaults to Milliseconds. </param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Timer Timer<T>(string name, Unit unit, Func<T> builder, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
-            where T : Timer, MetricValueProvider<TimerValue>;
+        Timer Timer<T>(string name, Unit unit, Func<T> builder, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds, MetricTags tags = default(MetricTags))
+            where T : TimerImplementation;
 
         /// <summary>
         /// Register a Timer metric with a custom Histogram implementation.
@@ -95,8 +102,9 @@ namespace Metrics
         /// <param name="builder">Function used to build a custom histogram instance.</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <param name="durationUnit">Time unit for reporting durations. Defaults to Milliseconds. </param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Timer Timer(string name, Unit unit, Func<Histogram> builder, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds);
+        Timer Timer(string name, Unit unit, Func<Histogram> builder, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds, MetricTags tags = default(MetricTags));
 
         /// <summary>
         /// Register a Timer metric with a custom Reservoir implementation for the histogram.
@@ -106,8 +114,9 @@ namespace Metrics
         /// <param name="builder">Function used to build a custom reservoir instance.</param>
         /// <param name="rateUnit">Time unit for rates reporting. Defaults to Second ( occurrences / second ).</param>
         /// <param name="durationUnit">Time unit for reporting durations. Defaults to Milliseconds. </param>
+        /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Timer Timer(string name, Unit unit, Func<Reservoir> builder, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds);
+        Timer Timer(string name, Unit unit, Func<Reservoir> builder, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds, MetricTags tags = default(MetricTags));
 
         /// <summary>
         /// Replace the DefaultMetricsBuilder used in this context.

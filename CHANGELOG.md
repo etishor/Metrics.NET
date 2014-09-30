@@ -1,3 +1,9 @@
+###0.2.1 / 2014-09-25
+* port latest changes from original metrics lib
+* port optimization from ExponentiallyDecayingReservoir (https://github.com/etishor/Metrics.NET/commit/1caa9d01c16ff63504612d64771d52e9d7d9de5e)
+* other minor optimizations
+* add gauges for thread pool stats
+
 ###0.2.0 / 2014-09-20
 * implement metrics contexts (and child contexts)
 * make config more friendly

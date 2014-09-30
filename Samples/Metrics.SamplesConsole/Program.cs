@@ -1,5 +1,6 @@
 ﻿using System;
 using Metrics.Samples;
+using Metrics.Utils;
 
 namespace Metrics.SamplesConsole
 {
@@ -21,14 +22,19 @@ namespace Metrics.SamplesConsole
                 //.WithTextFileReport(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(10))
                 );
 
-            SampleMetrics.RunSomeRequests();
-            //Metrics.Samples.FSharp.SampleMetrics.RunSomeRequests();
+            using (var scheduler = new ActionScheduler())
+            {
+                SampleMetrics.RunSomeRequests();
+                scheduler.Start(TimeSpan.FromMilliseconds(500), () => SampleMetrics.RunSomeRequests());
 
-            HealthChecksSample.RegisterHealthChecks();
-            //Metrics.Samples.FSharp.HealthChecksSample.RegisterHealthChecks();
+                //Metrics.Samples.FSharp.SampleMetrics.RunSomeRequests();
 
-            Console.WriteLine("done setting things up");
-            Console.ReadKey();
+                HealthChecksSample.RegisterHealthChecks();
+                //Metrics.Samples.FSharp.HealthChecksSample.RegisterHealthChecks();
+
+                Console.WriteLine("done setting things up");
+                Console.ReadKey();
+            }
         }
     }
 

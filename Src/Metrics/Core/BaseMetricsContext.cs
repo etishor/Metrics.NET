@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using Metrics.Sampling;
 
 namespace Metrics.Core
 {
@@ -65,79 +66,78 @@ namespace Metrics.Core
             }
         }
 
-        public void PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit)
+        public void PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit, MetricTags tags)
         {
-            this.Gauge(name, () => this.metricsBuilder.BuildePerformanceCounter(name, unit, counterCategory, counterName, counterInstance), unit);
+            this.Gauge(name, () => this.metricsBuilder.BuildePerformanceCounter(name, unit, counterCategory, counterName, counterInstance), unit, tags);
         }
 
-        public void Gauge(string name, Func<double> valueProvider, Unit unit)
+        public void Gauge(string name, Func<double> valueProvider, Unit unit, MetricTags tags)
         {
-            this.Gauge(name, () => this.metricsBuilder.BuildGauge(name, unit, valueProvider), unit);
+            this.Gauge(name, () => this.metricsBuilder.BuildGauge(name, unit, valueProvider), unit, tags);
         }
 
-        public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit)
+        public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit, MetricTags tags)
         {
-            this.registry.Gauge(name, valueProvider, unit);
+            this.registry.Gauge(name, valueProvider, unit, tags);
         }
 
-        public Counter Counter(string name, Unit unit)
+        public Counter Counter(string name, Unit unit, MetricTags tags)
         {
-            return this.Counter(name, unit, () => this.metricsBuilder.BuildCounter(name, unit));
+            return this.Counter(name, unit, () => this.metricsBuilder.BuildCounter(name, unit), tags);
         }
 
-        public Counter Counter<T>(string name, Unit unit, Func<T> builder)
-            where T : Counter, MetricValueProvider<long>
+        public Counter Counter<T>(string name, Unit unit, Func<T> builder, MetricTags tags)
+            where T : CounterImplementation
         {
-            return this.registry.Counter(name, unit, builder);
+            return this.registry.Counter(name, builder, unit, tags);
         }
 
-        public Meter Meter(string name, Unit unit, TimeUnit rateUnit = TimeUnit.Seconds)
+        public Meter Meter(string name, Unit unit, TimeUnit rateUnit, MetricTags tags)
         {
-            return this.Meter(name, unit, () => this.metricsBuilder.BuildMeter(name, unit, rateUnit), rateUnit);
+            return this.Meter(name, unit, () => this.metricsBuilder.BuildMeter(name, unit, rateUnit), rateUnit, tags);
         }
 
-        public Meter Meter<T>(string name, Unit unit, Func<T> builder, TimeUnit rateUnit = TimeUnit.Seconds)
-           where T : Meter, MetricValueProvider<MeterValue>
+        public Meter Meter<T>(string name, Unit unit, Func<T> builder, TimeUnit rateUnit, MetricTags tags)
+           where T : MeterImplementation
         {
-            return this.registry.Meter(name, unit, rateUnit, builder);
+            return this.registry.Meter(name, builder, unit, rateUnit, tags);
         }
 
-        public Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent)
+        public Histogram Histogram(string name, Unit unit, SamplingType samplingType, MetricTags tags)
         {
-            return this.Histogram(name, unit, () => this.metricsBuilder.BuildHistogram(name, unit, samplingType));
+            return this.Histogram(name, unit, () => this.metricsBuilder.BuildHistogram(name, unit, samplingType), tags);
         }
 
-        public Histogram Histogram<T>(string name, Unit unit, Func<T> builder)
-            where T : Histogram, MetricValueProvider<HistogramValue>
+        public Histogram Histogram<T>(string name, Unit unit, Func<T> builder, MetricTags tags)
+            where T : HistogramImplementation
         {
-            return this.registry.Histogram(name, unit, builder);
+            return this.registry.Histogram(name, builder, unit, tags);
         }
 
-        public Histogram Histogram(string name, Unit unit, Func<Reservoir> builder)
+        public Histogram Histogram(string name, Unit unit, Func<Reservoir> builder, MetricTags tags)
         {
-            return Histogram(name, unit, () => this.metricsBuilder.BuildHistogram(name, unit, builder()));
+            return Histogram(name, unit, () => this.metricsBuilder.BuildHistogram(name, unit, builder()), tags);
         }
 
-        public Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent,
-            TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
+        public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
         {
-            return this.registry.Timer(name, unit, rateUnit, durationUnit, () => this.metricsBuilder.BuildTimer(name, unit, rateUnit, durationUnit, samplingType));
+            return this.registry.Timer(name, () => this.metricsBuilder.BuildTimer(name, unit, rateUnit, durationUnit, samplingType), unit, rateUnit, durationUnit, tags);
         }
 
-        public Timer Timer<T>(string name, Unit unit, Func<T> builder, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
-            where T : Timer, MetricValueProvider<TimerValue>
+        public Timer Timer<T>(string name, Unit unit, Func<T> builder, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
+            where T : TimerImplementation
         {
-            return this.registry.Timer(name, unit, rateUnit, durationUnit, builder);
+            return this.registry.Timer(name, builder, unit, rateUnit, durationUnit, tags);
         }
 
-        public Timer Timer(string name, Unit unit, Func<Histogram> builder, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
+        public Timer Timer(string name, Unit unit, Func<Histogram> builder, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
         {
-            return this.Timer(name, unit, () => this.metricsBuilder.BuildTimer(name, unit, rateUnit, durationUnit, builder()), rateUnit, durationUnit);
+            return this.Timer(name, unit, () => this.metricsBuilder.BuildTimer(name, unit, rateUnit, durationUnit, builder()), rateUnit, durationUnit, tags);
         }
 
-        public Timer Timer(string name, Unit unit, Func<Reservoir> builder, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds)
+        public Timer Timer(string name, Unit unit, Func<Reservoir> builder, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
         {
-            return this.Timer(name, unit, () => this.metricsBuilder.BuildTimer(name, unit, rateUnit, durationUnit, builder()), rateUnit, durationUnit);
+            return this.Timer(name, unit, () => this.metricsBuilder.BuildTimer(name, unit, rateUnit, durationUnit, builder()), rateUnit, durationUnit, tags);
         }
 
         public void CompletelyDisableMetrics()

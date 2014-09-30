@@ -39,7 +39,7 @@ copy .\bin\MonoRelease\owin.metrics.pdb .\Publishing\lib\net45\
 .\.nuget\NuGet.exe pack .\Publishing\Metrics.Net.nuspec -OutputDirectory .\Publishing
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-.\.nuget\NuGet.exe pack .\Publishing\NancyFx.Metrics.nuspec -OutputDirectory .\Publishing
+.\.nuget\NuGet.exe pack .\Publishing\Nancy.Metrics.nuspec -OutputDirectory .\Publishing
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 .\.nuget\NuGet.exe pack .\Publishing\Owin.Metrics.nuspec -OutputDirectory .\Publishing

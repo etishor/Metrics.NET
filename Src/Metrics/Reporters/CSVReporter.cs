@@ -39,9 +39,9 @@ namespace Metrics.Reporters
             Write("Gauge", name, GaugeValues(value, unit));
         }
 
-        protected override void ReportCounter(string name, long value, Unit unit)
+        protected override void ReportCounter(string name, CounterValue value, Unit unit)
         {
-            Write("Counter", name, CounterValues(value, unit));
+            Write("Counter", name, CounterValues(value.Count, unit));
         }
 
         protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit)
@@ -110,8 +110,11 @@ namespace Metrics.Reporters
         private static IEnumerable<Value> HistogramValues(HistogramValue value, Unit unit, TimeUnit? timeUnit = null)
         {
             yield return new Value("Last", value.LastValue);
+            yield return new Value("Last User Value", value.LastUserValue);
             yield return new Value("Min", value.Min);
+            yield return new Value("Min User Value", value.MinUserValue);
             yield return new Value("Max", value.Max);
+            yield return new Value("Max User Value", value.MaxUserValue);
             yield return new Value("Mean", value.Mean);
             yield return new Value("StdDev", value.StdDev);
             yield return new Value("Median", value.Median);

@@ -55,7 +55,7 @@ namespace Nancy.Metrics
         /// <param name="metricName">Name of the metric.</param>
         public NancyGlobalMetrics WithRequestTimer(string metricName = "Requests")
         {
-            var requestTimer = this.context.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+            var requestTimer = this.context.Timer(metricName, Unit.Requests);
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {

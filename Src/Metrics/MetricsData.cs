@@ -78,23 +78,23 @@ namespace Metrics
         private MetricsData OldFormat(string prefix)
         {
             var gauges = this.Gauges
-                .Select(g => new GaugeValueSource(FormatName(prefix, g.Name), Constant(g.Value), g.Unit))
+                .Select(g => new GaugeValueSource(FormatName(prefix, g.Name), Constant(g.Value), g.Unit, g.Tags))
                 .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Gauges));
 
             var counters = this.Counters
-                .Select(c => new CounterValueSource(FormatName(prefix, c.Name), Constant(c.Value), c.Unit))
+                .Select(c => new CounterValueSource(FormatName(prefix, c.Name), Constant(c.Value), c.Unit, c.Tags))
                 .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Counters));
 
             var meters = this.Meters
-                .Select(m => new MeterValueSource(FormatName(prefix, m.Name), Constant(m.Value), m.Unit, m.RateUnit))
+                .Select(m => new MeterValueSource(FormatName(prefix, m.Name), Constant(m.Value), m.Unit, m.RateUnit, m.Tags))
                 .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Meters));
 
             var histograms = this.Histograms
-                .Select(h => new HistogramValueSource(FormatName(prefix, h.Name), Constant(h.Value), h.Unit))
+                .Select(h => new HistogramValueSource(FormatName(prefix, h.Name), Constant(h.Value), h.Unit, h.Tags))
                 .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Histograms));
 
             var timers = this.Timers
-                .Select(t => new TimerValueSource(FormatName(prefix, t.Name), Constant(t.Value), t.Unit, t.RateUnit, t.DurationUnit))
+                .Select(t => new TimerValueSource(FormatName(prefix, t.Name), Constant(t.Value), t.Unit, t.RateUnit, t.DurationUnit, t.Tags))
                 .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Timers));
 
             return new MetricsData(this.Context, gauges, counters, meters, histograms, timers);
