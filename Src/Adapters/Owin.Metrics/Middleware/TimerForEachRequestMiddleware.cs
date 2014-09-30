@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -15,7 +16,6 @@ namespace Owin.Metrics.Middleware
         private const string RequestStartTimeKey = "__Metrics.RequestStartTime__";
 
         private readonly MetricsContext context;
-        private readonly Func<IDictionary<string, object>, string> metricNameResolver;
 
         private AppFunc next;
 
@@ -23,14 +23,6 @@ namespace Owin.Metrics.Middleware
             : base(ignorePatterns)
         {
             this.context = context;
-        }
-
-        public TimerForEachRequestMiddleware(MetricsContext context, Regex[] ignorePatterns,
-            Func<IDictionary<string, object>, string> metricNameResolver)
-            : base(ignorePatterns)
-        {
-            this.context = context;
-            this.metricNameResolver = metricNameResolver;
         }
 
         public void Initialize(AppFunc next)
@@ -47,9 +39,22 @@ namespace Owin.Metrics.Middleware
                 await next(environment);
 
                 var httpResponseStatusCode = int.Parse(environment["owin.ResponseStatusCode"].ToString());
-                var metricName = this.metricNameResolver != null ? this.metricNameResolver(environment) : environment["owin.RequestPath"].ToString().ToUpperInvariant();
+                var metricName = environment["owin.RequestPath"].ToString();
 
-                if (httpResponseStatusCode != (int)HttpStatusCode.NotFound && !string.IsNullOrWhiteSpace(metricName))
+                var parameters = environment["route.Parameters"] as IDictionary<string, object>;
+                var controllerName = environment["superscribe.webapi.controllername"] as string;
+
+                if (!string.IsNullOrWhiteSpace(controllerName))
+                {
+                    metricName = environment["owin.RequestMethod"] + " " + controllerName;
+
+                    if (parameters != null && parameters.Any())
+                    {
+                        metricName += "/" + string.Join("/", parameters.Keys.Select(k => "{" + k + "}"));
+                    }
+                }
+
+                if (httpResponseStatusCode != (int)HttpStatusCode.NotFound)
                 {
                     var startTime = (long)environment[RequestStartTimeKey];
                     var elapsed = Clock.Default.Nanoseconds - startTime;
