@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 namespace Metrics.Sampling
 {
-    public class WeightedSample
+    public sealed class WeightedSample
     {
         public readonly long Value;
         public readonly string UserValue;

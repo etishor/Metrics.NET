@@ -43,7 +43,7 @@ namespace Metrics.Reporters
         protected virtual void EndReport() { }
 
         protected abstract void ReportGauge(string name, double value, Unit unit);
-        protected abstract void ReportCounter(string name, long value, Unit unit);
+        protected abstract void ReportCounter(string name, CounterValue value, Unit unit);
         protected abstract void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit);
         protected abstract void ReportHistogram(string name, HistogramValue value, Unit unit);
         protected abstract void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit);

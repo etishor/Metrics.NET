@@ -18,8 +18,12 @@ namespace Metrics.Samples
         /// </summary>
         private readonly Counter concurrentRequestsCounter = Metric.Counter("SampleMetrics.ConcurrentRequests", Unit.Requests);
 
+        private readonly Counter setCounter = Metric.Counter("Set Counter", Unit.Items);
+
+        private readonly Meter setMeter = Metric.Meter("Set Meter", Unit.Items);
+
         /// <summary>
-        /// keep a histogram of the input data of our requet method 
+        /// keep a histogram of the input data of our request method 
         /// </summary>
         private readonly Histogram histogramOfData = Metric.Histogram("ResultsExample", Unit.Items);
 
@@ -58,6 +62,10 @@ namespace Metrics.Samples
 
                 this.histogramOfData.Update(ThreadLocalRandom.NextLong() % 5000, i.ToString()); // update the histogram with the input data
 
+                var item = "Item " + ThreadLocalRandom.NextLong() % 5;
+                this.setCounter.Increment(item);
+
+                this.setMeter.Mark(item);
 
                 // simulate doing some work
                 int ms = Math.Abs((int)(ThreadLocalRandom.NextLong() % 3000L));

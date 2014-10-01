@@ -87,7 +87,7 @@ namespace Metrics.Core
         }
 
         public Counter Counter<T>(string name, Unit unit, Func<T> builder, MetricTags tags)
-            where T : Counter, MetricValueProvider<long>
+            where T : CounterImplementation
         {
             return this.registry.Counter(name, builder, unit, tags);
         }
@@ -98,7 +98,7 @@ namespace Metrics.Core
         }
 
         public Meter Meter<T>(string name, Unit unit, Func<T> builder, TimeUnit rateUnit, MetricTags tags)
-           where T : Meter, MetricValueProvider<MeterValue>
+           where T : MeterImplementation
         {
             return this.registry.Meter(name, builder, unit, rateUnit, tags);
         }
@@ -109,7 +109,7 @@ namespace Metrics.Core
         }
 
         public Histogram Histogram<T>(string name, Unit unit, Func<T> builder, MetricTags tags)
-            where T : Histogram, MetricValueProvider<HistogramValue>
+            where T : HistogramImplementation
         {
             return this.registry.Histogram(name, builder, unit, tags);
         }
@@ -125,7 +125,7 @@ namespace Metrics.Core
         }
 
         public Timer Timer<T>(string name, Unit unit, Func<T> builder, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
-            where T : Timer, MetricValueProvider<TimerValue>
+            where T : TimerImplementation
         {
             return this.registry.Timer(name, builder, unit, rateUnit, durationUnit, tags);
         }

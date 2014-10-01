@@ -38,16 +38,40 @@ namespace Metrics.Reporters
             this.WriteValue("value", unit.FormatValue(value));
         }
 
-        protected override void ReportCounter(string name, long value, Unit unit)
+        protected override void ReportCounter(string name, CounterValue value, Unit unit)
         {
             this.WriteMetricName(name);
-            WriteValue("Count", unit.FormatCount(value));
+            WriteValue("Count", unit.FormatCount(value.Count));
+            if (value.Items.Length > 0)
+            {
+                WriteValue("Total Items", value.Items.Length.ToString());
+            }
+            for (int i = 0; i < value.Items.Length; i++)
+            {
+                var key = "Item " + i.ToString();
+                var item = value.Items[i];
+                var val = string.Format("{0:00.00}% {1,5} {2} [{3}]", item.Percent, item.Count, unit.Name, item.Item);
+                WriteValue(key, val);
+            }
         }
 
         protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit)
         {
             this.WriteMetricName(name);
             this.WriteMeter(value.Scale(rateUnit), unit, rateUnit);
+
+            if (value.Items.Length > 0)
+            {
+                WriteValue("Total Items", value.Items.Length.ToString());
+            }
+            for (int i = 0; i < value.Items.Length; i++)
+            {
+                var key = "Item " + i.ToString();
+                var item = value.Items[i];
+                var val = string.Format("{0:00.00}% {1,5} {2} [{3}]", item.Percent, item.Value.Count, unit.Name, item.Item);
+                WriteValue(key, val);
+                WriteMeter(item.Value, unit, rateUnit);
+            }
         }
 
         protected override void ReportHistogram(string name, HistogramValue value, Unit unit)

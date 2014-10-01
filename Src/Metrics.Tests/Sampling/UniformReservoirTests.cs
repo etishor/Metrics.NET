@@ -20,5 +20,17 @@ namespace Metrics.Tests.Sampling
             reservoir.Snapshot.Size.Should().Be(100);
             reservoir.Snapshot.Values.Should().OnlyContain(v => 0 <= v && v < 1000);
         }
+
+        [Fact]
+        public void UniformReservoir_RecordsUserValue()
+        {
+            UniformReservoir reservoir = new UniformReservoir(100);
+
+            reservoir.Update(2L, "B");
+            reservoir.Update(1L, "A");
+
+            reservoir.Snapshot.MinUserValue.Should().Be("A");
+            reservoir.Snapshot.MaxUserValue.Should().Be("B");
+        }
     }
 }

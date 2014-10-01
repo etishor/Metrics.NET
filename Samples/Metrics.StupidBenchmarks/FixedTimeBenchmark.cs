@@ -7,15 +7,20 @@ namespace Metrics.StupidBenchmarks
 {
     public static class FixedTimeBenchmark
     {
-        public static void Run<T>(Action<T> action, int maxThreads = 16, int seconds = 2, int decrement = 1)
-           where T : new()
+        public static void Run<T>(Func<T> create, Action<T> action, int maxThreads = 16, int seconds = 5, int decrement = 1)
         {
-            T instance = new T();
+            T instance = create();
             for (int i = maxThreads; i > 0; i -= decrement)
             {
                 var result = FixedTimeBenchmark.MeasureCallsPerSecond(() => action(instance), i, TimeSpan.FromSeconds(seconds));
                 Console.WriteLine("{0}\t{1}\t{2,10:N0}", typeof(T).Name, i, result);
             }
+        }
+
+        public static void Run<T>(Action<T> action, int maxThreads = 16, int seconds = 5, int decrement = 1)
+           where T : new()
+        {
+            Run<T>(() => new T(), action, maxThreads, seconds, decrement);
         }
 
         public static long MeasureCallsPerSecond(Action action, int threadCount, TimeSpan duration)

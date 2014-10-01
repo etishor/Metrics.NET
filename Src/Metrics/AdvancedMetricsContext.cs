@@ -46,7 +46,7 @@ namespace Metrics
         /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
         Counter Counter<T>(string name, Unit unit, Func<T> builder, MetricTags tags = default(MetricTags))
-            where T : Counter, MetricValueProvider<long>;
+            where T : CounterImplementation;
 
         /// <summary>
         /// Register a custom Meter instance.
@@ -58,7 +58,7 @@ namespace Metrics
         /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
         Meter Meter<T>(string name, Unit unit, Func<T> builder, TimeUnit rateUnit = TimeUnit.Seconds, MetricTags tags = default(MetricTags))
-            where T : Meter, MetricValueProvider<MeterValue>;
+            where T : MeterImplementation;
 
         /// <summary>
         /// Register a custom Histogram instance
@@ -69,7 +69,7 @@ namespace Metrics
         /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
         Histogram Histogram<T>(string name, Unit unit, Func<T> builder, MetricTags tags = default(MetricTags))
-            where T : Histogram, MetricValueProvider<HistogramValue>;
+            where T : HistogramImplementation;
 
         /// <summary>
         /// Register a Histogram metric with a custom Reservoir instance
@@ -92,7 +92,7 @@ namespace Metrics
         /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
         Timer Timer<T>(string name, Unit unit, Func<T> builder, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds, MetricTags tags = default(MetricTags))
-            where T : Timer, MetricValueProvider<TimerValue>;
+            where T : TimerImplementation;
 
         /// <summary>
         /// Register a Timer metric with a custom Histogram implementation.

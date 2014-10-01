@@ -12,6 +12,7 @@
 		<copyright>Iulian Margarintescu</copyright>
 		<projectUrl>https://github.com/etishor/Metrics.NET</projectUrl>
 		<licenseUrl>https://github.com/etishor/Metrics.NET/blob/master/LICENSE</licenseUrl>
+		<iconUrl>http://www.erata.net/Metrics.NET/metrics_32.png</iconUrl>
 		<tags>nancy, nancyfx, metrics, measurements, charts, timer, histogram, duration, graphite, health checks</tags>
 		<dependencies>
 			<dependency id="Metrics.NET" version="0.2.2" />

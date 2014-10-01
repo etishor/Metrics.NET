@@ -81,6 +81,9 @@ namespace Metrics.Visualization
                         context.Response.Close();
                     }
                     break;
+                case "/favicon.ico":
+                    WriteFavIcon(context);
+                    break;
                 case "/json":
                     WriteJsonMetrics(context, this.metricsDataProvider);
                     break;
@@ -100,6 +103,13 @@ namespace Metrics.Visualization
                     WriteNotFound(context);
                     break;
             }
+        }
+
+        private void WriteFavIcon(HttpListenerContext context)
+        {
+            context.Response.ContentType = "image/png";
+            FlotWebApp.WriteFavIcon(context.Response.OutputStream);
+            context.Response.Close();
         }
 
         private static void AddNoCacheHeaders(HttpListenerResponse response)
