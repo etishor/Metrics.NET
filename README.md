@@ -57,31 +57,18 @@ public class SampleMetrics
 
 Adapters integrate Metrics.NET with other libraries & frameworks.
 
-* [NancyFx.Metrics](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter)
+* [Nancy.Metrics](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter)
 * [Owin.Metrics](https://github.com/etishor/Metrics.NET/wiki/OWIN-Metrics-Adapter) - thanks to [@alhardy - Allan Hardy](https://github.com/alhardy)
 
 ###TODO
 A live list of my future plan
 
-* [done] Provide a few presets to map performance counters to Gauges ( machine info, process info, CLR stats etc )
-* [done] Provide a way for error reporting (at least for reports that do IO) - maybe a delegate on the Metric class
-* [done] Add metrics for NancyFx request/response size
-* [done] Re-factor scheduled report to prevent overlapping
-* [done]Provide http endpoint for reporting metrics (based on owin or nancy) together with javascript visualization solution - the idea is to have out-of-the-box metrics visualization in web apps
-* [done] Mono compatibility
-* [done] health checks
-* [done] Improve the javascript visualization app
-* [done] OWIN should take care of this: Provide an adapter for hooking into web api for collecting & exposing metrics (this might be delayed as I tend to use NancyFx - but PRs are welcomed)
+* Enhance the visualization app to support contexts, tags, user values and set metrics
 * Push metrics out of process, to dedicated metrics service
 * Investigate the possibility of using zeromq to delegate metrics to another process - for across cluster metrics
-* Provide an adapter for hooking into asp.net mvc
 * Adapter for graphite and other existing solutions for aggregating metrics
 * Investigate the possibility of using Redis as an off-process metrics container (the collections behind the metrics seem to map to redis data types)
 * Investigate the possibility for backend to receive metrics from client js app (not sure it makes sense to capture metrics from js apps - maybe from SPAs)
-* Write more tests
-* Find/Implement ConcurrentSkipMap like collection form java - low prio as the performance is good for now
-* Write more "stupid" benchmarks to be able to keep an eye on how performance changes in time
-* Profile & optimize. Also profile existing apps to see the impact of adding metrics
 
 ###License
 .NET Port of the awesome [Java metrics library by Coda Hale](https://github.com/dropwizard/metrics)
