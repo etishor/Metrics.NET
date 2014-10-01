@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
 	<metadata>
 		<id>NancyFx.Metrics-net40</id>
-		<version>0.2.2</version>
+		<version>0.2.3</version>
 		<title>Nancy.Metrics-net40</title>
 		<authors>iulian.margarintescu</authors>
 		<owners>Iulian Margarintescu</owners>
@@ -15,7 +15,7 @@
 		<iconUrl>http://www.erata.net/Metrics.NET/metrics_32.png</iconUrl>
 		<tags>nancy, nancyfx, metrics, measurements, charts, timer, histogram, duration, graphite, health checks</tags>
 		<dependencies>
-			<dependency id="Metrics.NET-net40" version="0.2.2" />
+			<dependency id="Metrics.NET-net40" version="0.2.3" />
 			<dependency id="Nancy" version="0.23.2" />
 		</dependencies>
 	</metadata>
