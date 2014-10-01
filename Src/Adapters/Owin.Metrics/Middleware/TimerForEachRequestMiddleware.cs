@@ -49,7 +49,8 @@ namespace Owin.Metrics.Middleware
                 {
                     var startTime = (long)environment[RequestStartTimeKey];
                     var elapsed = Clock.Default.Nanoseconds - startTime;
-                    this.context.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds).Record(elapsed, TimeUnit.Nanoseconds);
+                    this.context.Timer(metricName, Unit.Requests)
+                        .Record(elapsed, TimeUnit.Nanoseconds);
                 }
             }
             else
