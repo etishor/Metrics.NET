@@ -22,9 +22,21 @@ namespace Metrics.PerfCounters
             }
             catch (Exception x)
             {
-                var message = "Error reading performance counter data. The application is currently running as user " + WindowsIdentity.GetCurrent().Name +
+                var message = "Error reading performance counter data. The application is currently running as user " + GetIdentity() +
                     ". Make sure the user has access to the performance counters. The user needs to be either Admin or belong to Performance Monitor user group.";
                 MetricsErrorHandler.Handle(x, message);
+            }
+        }
+
+        private static string GetIdentity()
+        {
+            try
+            {
+                return WindowsIdentity.GetCurrent().Name;
+            }
+            catch (Exception x)
+            {
+                return "[Unknown user | " + x.Message + " ]";
             }
         }
 
@@ -38,7 +50,7 @@ namespace Metrics.PerfCounters
                 }
                 catch (Exception x)
                 {
-                    var message = "Error reading performance counter data. The application is currently running as user " + WindowsIdentity.GetCurrent().Name +
+                    var message = "Error reading performance counter data. The application is currently running as user " + GetIdentity() +
                         ". Make sure the user has access to the performance counters. The user needs to be either Admin or belong to Performance Monitor user group.";
                     MetricsErrorHandler.Handle(x, message);
                     return double.NaN;

@@ -104,19 +104,19 @@ namespace Metrics.Tests.NancyAdapter
         [Fact]
         public void NancyMetrics_ShouldBeAbleToCountActiveRequests()
         {
-            this.context.CounterValue("NancyFx", "Active Requests").Should().Be(0);
+            this.context.CounterValue("NancyFx", "Active Requests").Count.Should().Be(0);
             var request1 = Task.Factory.StartNew(() => browser.Get("/concurrent/request1"));
 
             result1.Task.Wait();
-            this.context.CounterValue("NancyFx", "Active Requests").Should().Be(1);
+            this.context.CounterValue("NancyFx", "Active Requests").Count.Should().Be(1);
 
             var request2 = Task.Factory.StartNew(() => browser.Get("/concurrent/request2"));
             result2.Task.Wait();
-            this.context.CounterValue("NancyFx", "Active Requests").Should().Be(2);
+            this.context.CounterValue("NancyFx", "Active Requests").Count.Should().Be(2);
 
             requestTrigger.SetResult(0);
             Task.WaitAll(request1, request2);
-            this.context.CounterValue("NancyFx", "Active Requests").Should().Be(0);
+            this.context.CounterValue("NancyFx", "Active Requests").Count.Should().Be(0);
         }
 
         [Fact]

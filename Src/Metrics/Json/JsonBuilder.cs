@@ -93,7 +93,7 @@ namespace Metrics.Json
         private static IEnumerable<JsonProperty> ToJsonProperties(CounterValueSource counter)
         {
             yield return new JsonProperty("Name", counter.Name);
-            yield return new JsonProperty("Value", counter.Value);
+            yield return new JsonProperty("Value", counter.Value.Count);
             yield return new JsonProperty("Unit", counter.Unit.Name);
         }
 

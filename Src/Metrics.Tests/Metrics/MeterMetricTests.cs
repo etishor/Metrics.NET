@@ -82,5 +82,57 @@ namespace Metrics.Tests.Metrics
             meter.Value.FiveMinuteRate.Should().Be(0);
             meter.Value.FifteenMinuteRate.Should().Be(0);
         }
+
+        [Fact]
+        public void MeterMetric_CanCountForSetItem()
+        {
+            meter.Mark("A");
+            meter.Value.Count.Should().Be(1L);
+            meter.Value.Items.Should().HaveCount(1);
+
+            meter.Value.Items[0].Item.Should().Be("A");
+            meter.Value.Items[0].Value.Count.Should().Be(1);
+            meter.Value.Items[0].Percent.Should().Be(100);
+        }
+
+        [Fact]
+        public void MeterMetric_CanCountForMultipleSetItem()
+        {
+            meter.Mark("A");
+            meter.Mark("B");
+
+            meter.Value.Count.Should().Be(2L);
+            meter.Value.Items.Should().HaveCount(2);
+
+            meter.Value.Items[0].Item.Should().Be("A");
+            meter.Value.Items[0].Value.Count.Should().Be(1);
+            meter.Value.Items[0].Percent.Should().Be(50);
+
+            meter.Value.Items[1].Item.Should().Be("B");
+            meter.Value.Items[1].Value.Count.Should().Be(1);
+            meter.Value.Items[1].Percent.Should().Be(50);
+        }
+
+        [Fact]
+        public void MeterMetric_CanResetSetItem()
+        {
+            meter.Mark("A");
+            meter.Value.Items[0].Value.Count.Should().Be(1);
+            meter.Reset();
+            meter.Value.Items[0].Value.Count.Should().Be(0L);
+        }
+
+        [Fact]
+        public void MeterMetric_CanComputePercentWithZeroTotal()
+        {
+            meter.Mark("A");
+            meter.Mark("A", -1);
+
+            meter.Value.Count.Should().Be(0);
+
+            meter.Value.Items[0].Item.Should().Be("A");
+            meter.Value.Items[0].Value.Count.Should().Be(0);
+            meter.Value.Items[0].Percent.Should().Be(0);
+        }
     }
 }

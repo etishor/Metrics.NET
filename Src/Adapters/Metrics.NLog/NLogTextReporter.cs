@@ -24,7 +24,7 @@ namespace Metrics.NLog
             base.ReportGauge(name, value, unit);
         }
 
-        protected override void ReportCounter(string name, long value, Unit unit)
+        protected override void ReportCounter(string name, CounterValue value, Unit unit)
         {
             this.metricName = name;
             base.ReportCounter(name, value, unit);

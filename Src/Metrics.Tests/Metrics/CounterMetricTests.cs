@@ -15,21 +15,21 @@ namespace Metrics.Tests.Metrics
         [Fact]
         public void CounterMetric_StartsFromZero()
         {
-            counter.Value.Should().Be(0L);
+            counter.Value.Count.Should().Be(0L);
         }
 
         [Fact]
         public void CounterMetric_CanIncrement()
         {
             counter.Increment();
-            counter.Value.Should().Be(1L);
+            counter.Value.Count.Should().Be(1L);
         }
 
         [Fact]
         public void CounterMetric_CanIncrementWithValue()
         {
             counter.Increment(32L);
-            counter.Value.Should().Be(32L);
+            counter.Value.Count.Should().Be(32L);
         }
 
         [Fact]
@@ -38,21 +38,21 @@ namespace Metrics.Tests.Metrics
             counter.Increment();
             counter.Increment();
             counter.Increment();
-            counter.Value.Should().Be(3L);
+            counter.Value.Count.Should().Be(3L);
         }
 
         [Fact]
         public void CounterMetric_CanDecrement()
         {
             counter.Decrement();
-            counter.Value.Should().Be(-1L);
+            counter.Value.Count.Should().Be(-1L);
         }
 
         [Fact]
         public void CounterMetric_CanDecrementWithValue()
         {
             counter.Decrement(32L);
-            counter.Value.Should().Be(-32L);
+            counter.Value.Count.Should().Be(-32L);
         }
 
         [Fact]
@@ -61,7 +61,7 @@ namespace Metrics.Tests.Metrics
             counter.Decrement();
             counter.Decrement();
             counter.Decrement();
-            counter.Value.Should().Be(-3L);
+            counter.Value.Count.Should().Be(-3L);
         }
 
         [Fact]
@@ -89,16 +89,69 @@ namespace Metrics.Tests.Metrics
             tcs.SetResult(0);
             threads.ForEach(t => t.Join());
 
-            counter.Value.Should().Be(threadCount * iterations);
+            counter.Value.Count.Should().Be(threadCount * iterations);
         }
 
         [Fact]
         public void CounterMetric_CanReset()
         {
             counter.Increment();
-            counter.Value.Should().Be(1L);
+            counter.Value.Count.Should().Be(1L);
             counter.Reset();
-            counter.Value.Should().Be(0L);
+            counter.Value.Count.Should().Be(0L);
         }
+
+        [Fact]
+        public void CounterMetric_CanCountForSetItem()
+        {
+            counter.Increment("A");
+            counter.Value.Count.Should().Be(1L);
+            counter.Value.Items.Should().HaveCount(1);
+
+            counter.Value.Items[0].Item.Should().Be("A");
+            counter.Value.Items[0].Count.Should().Be(1);
+            counter.Value.Items[0].Percent.Should().Be(100);
+        }
+
+        [Fact]
+        public void CounterMetric_CanCountForMultipleSetItem()
+        {
+            counter.Increment("A");
+            counter.Increment("B");
+
+            counter.Value.Count.Should().Be(2L);
+            counter.Value.Items.Should().HaveCount(2);
+
+            counter.Value.Items[0].Item.Should().Be("A");
+            counter.Value.Items[0].Count.Should().Be(1);
+            counter.Value.Items[0].Percent.Should().Be(50);
+
+            counter.Value.Items[1].Item.Should().Be("B");
+            counter.Value.Items[1].Count.Should().Be(1);
+            counter.Value.Items[1].Percent.Should().Be(50);
+        }
+
+        [Fact]
+        public void CounterMetric_CanResetSetItem()
+        {
+            counter.Increment("A");
+            counter.Value.Items[0].Count.Should().Be(1);
+            counter.Reset();
+            counter.Value.Items[0].Count.Should().Be(0L);
+        }
+
+        [Fact]
+        public void CounterMetric_CanComputePercentWithZeroTotal()
+        {
+            counter.Increment("A");
+            counter.Decrement("A");
+
+            counter.Value.Count.Should().Be(0);
+
+            counter.Value.Items[0].Item.Should().Be("A");
+            counter.Value.Items[0].Count.Should().Be(0);
+            counter.Value.Items[0].Percent.Should().Be(0);
+        }
+
     }
 }

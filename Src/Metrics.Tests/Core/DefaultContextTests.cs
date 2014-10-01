@@ -49,7 +49,7 @@ namespace Metrics.Tests.Core
 
             counterValue.Name.Should().Be("test");
             counterValue.Unit.Should().Be(Unit.Requests);
-            counterValue.Value.Should().Be(1);
+            counterValue.Value.Count.Should().Be(1);
         }
 
         [Fact]
@@ -77,7 +77,7 @@ namespace Metrics.Tests.Core
 
             provider.CurrentMetricsData.Counters.Should().HaveCount(1);
             provider.CurrentMetricsData.Counters.Single().Name.Should().Be("test");
-            provider.CurrentMetricsData.Counters.Single().Value.Should().Be(1L);
+            provider.CurrentMetricsData.Counters.Single().Value.Count.Should().Be(1L);
         }
 
         [Fact]
@@ -93,11 +93,11 @@ namespace Metrics.Tests.Core
 
             provider.CurrentMetricsData.ChildMetrics.Should().HaveCount(1);
             provider.CurrentMetricsData.ChildMetrics.Single().Counters.Should().HaveCount(1);
-            provider.CurrentMetricsData.ChildMetrics.Single().Counters.Single().Value.Should().Be(1);
+            provider.CurrentMetricsData.ChildMetrics.Single().Counters.Single().Value.Count.Should().Be(1);
 
             counter.Increment();
 
-            provider.CurrentMetricsData.ChildMetrics.Single().Counters.Single().Value.Should().Be(2);
+            provider.CurrentMetricsData.ChildMetrics.Single().Counters.Single().Value.Count.Should().Be(2);
         }
 
         [Fact]
@@ -138,16 +138,16 @@ namespace Metrics.Tests.Core
         [Fact]
         public void MetricsContext_CanPropagateValueTags()
         {
-            var counter = context.Counter("test", Unit.None, "tag");
+            context.Counter("test", Unit.None, "tag");
             context.DataProvider.CurrentMetricsData.Counters.Single().Tags.Should().Equal(new[] { "tag" });
 
-            var meter = context.Meter("test", Unit.None, tags: "tag");
+            context.Meter("test", Unit.None, tags: "tag");
             context.DataProvider.CurrentMetricsData.Meters.Single().Tags.Should().Equal(new[] { "tag" });
 
-            var histogram = context.Histogram("test", Unit.None, tags: "tag");
+            context.Histogram("test", Unit.None, tags: "tag");
             context.DataProvider.CurrentMetricsData.Histograms.Single().Tags.Should().Equal(new[] { "tag" });
 
-            var timer = context.Timer("test", Unit.None, tags: "tag");
+            context.Timer("test", Unit.None, tags: "tag");
             context.DataProvider.CurrentMetricsData.Timers.Single().Tags.Should().Equal(new[] { "tag" });
         }
 

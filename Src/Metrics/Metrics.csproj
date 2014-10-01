@@ -132,6 +132,7 @@
     <Compile Include="Timer.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="Utils\ActionScheduler.cs" />
+    <Compile Include="Utils\AtomicLongHolder.cs" />
     <Compile Include="Utils\Clock.cs" />
     <Compile Include="Core\CounterMetric.cs" />
     <Compile Include="Core\GaugeMetric.cs" />
@@ -157,6 +158,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\Publishing\metrics_32.png">
+      <Link>Visualization\metrics_32.png</Link>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

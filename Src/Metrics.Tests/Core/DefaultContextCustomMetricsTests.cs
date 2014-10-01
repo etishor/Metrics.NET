@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
+using Metrics.Core;
 using Metrics.Sampling;
 using Xunit;
 
@@ -10,14 +11,24 @@ namespace Metrics.Tests.Core
     {
         private readonly MetricsContext context = new DefaultMetricsContext();
 
-        public class CustomCounter : Counter, MetricValueProvider<long>
+        public class CustomCounter : CounterImplementation
         {
             public void Increment() { }
             public void Increment(long value) { }
             public void Decrement() { }
             public void Decrement(long value) { }
+
+            public void Increment(string item) { }
+            public void Increment(string item, long value) { }
+            public void Decrement(string item) { }
+            public void Decrement(string item, long value) { }
+
             public void Reset() { }
-            public long Value { get { return 10L; } }
+
+            public CounterValue Value
+            {
+                get { return new CounterValue(10L, new CounterValue.SetItem[0]); }
+            }
         }
 
         [Fact]
@@ -26,7 +37,7 @@ namespace Metrics.Tests.Core
             var counter = context.Advanced.Counter("custom", Unit.Calls, () => new CustomCounter());
             counter.Should().BeOfType<CustomCounter>();
             counter.Increment();
-            context.DataProvider.CurrentMetricsData.Counters.Single().Value.Should().Be(10L);
+            context.DataProvider.CurrentMetricsData.Counters.Single().Value.Count.Should().Be(10L);
         }
 
         public class CustomReservoir : Reservoir

@@ -2,9 +2,9 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
 	<metadata>
 		<id>Owin.Metrics</id>
-		<version>0.1.6-alpha</version>
+		<version>0.1.7-alpha</version>
 		<title>Owin.Metrics</title>
-		<authors>al_hardy</authors>
+		<authors>Allan Hardy</authors>
 		<owners>Iulian Margarintescu</owners>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>The library provides support for integrating Owin with the Metrics.NET Library</description>
@@ -15,7 +15,7 @@
 		<iconUrl>http://www.erata.net/Metrics.NET/metrics_32.png</iconUrl>
 		<tags>webapi, owin, metrics, measurements, charts, timer, histogram, duration, graphite, health checks</tags>
 		<dependencies>
-			<dependency id="Metrics.NET" version="0.2.2" />
+			<dependency id="Metrics.NET" version="0.2.3" />
 		</dependencies>
 	</metadata>
 	<files>

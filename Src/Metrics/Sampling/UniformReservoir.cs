@@ -10,7 +10,8 @@ namespace Metrics.Sampling
         private const int BitsPerLong = 63;
 
         private AtomicLong count = new AtomicLong();
-        private readonly AtomicLong[] values;
+
+        private readonly UserValueWrapper[] values;
 
         public UniformReservoir()
             : this(DefaultSize)
@@ -18,11 +19,7 @@ namespace Metrics.Sampling
 
         public UniformReservoir(int size)
         {
-            this.values = new AtomicLong[size];
-            for (int i = 0; i < values.Length; i++)
-            {
-                values[i] = new AtomicLong();
-            }
+            this.values = new UserValueWrapper[size];
         }
 
         public int Size
@@ -37,7 +34,18 @@ namespace Metrics.Sampling
         {
             get
             {
-                return new UniformSnapshot(this.values.Take(Size).Select(v => v.Value));
+                var size = this.Size;
+                if (size == 0)
+                {
+                    return new UniformSnapshot(Enumerable.Empty<long>());
+                }
+
+                UserValueWrapper[] values = new UserValueWrapper[size];
+                Array.Copy(this.values, values, size);
+                Array.Sort(values, UserValueWrapper.Comparer);
+                var minValue = values[0].UserValue;
+                var maxValue = values[size - 1].UserValue;
+                return new UniformSnapshot(values.Select(v => v.Value), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
             }
         }
 
@@ -46,24 +54,20 @@ namespace Metrics.Sampling
             long c = this.count.Increment();
             if (c <= this.values.Length)
             {
-                values[(int)c - 1].SetValue(value);
+                values[(int)c - 1] = new UserValueWrapper(value, userValue);
             }
             else
             {
                 long r = NextLong(c);
                 if (r < values.Length)
                 {
-                    values[(int)r].SetValue(value);
+                    values[(int)r] = new UserValueWrapper(value, userValue);
                 }
             }
         }
 
         public void Reset()
         {
-            for (int i = 0; i < values.Length; i++)
-            {
-                values[i] = new AtomicLong();
-            }
             count.SetValue(0L);
         }
 

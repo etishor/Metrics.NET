@@ -176,5 +176,19 @@ namespace Metrics.Tests.Sampling
             reservoir.Snapshot.Median.Should().Be(9999);
             reservoir.Snapshot.Percentile75.Should().Be(9999);
         }
+
+        [Fact]
+        public void EDR_RecordsUserValue()
+        {
+            TestClock clock = new TestClock();
+            TestScheduler scheduler = new TestScheduler(clock);
+            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(1000, 0.015, clock, scheduler);
+
+            reservoir.Update(2L, "B");
+            reservoir.Update(1L, "A");
+
+            reservoir.Snapshot.MinUserValue.Should().Be("A");
+            reservoir.Snapshot.MaxUserValue.Should().Be("B");
+        }
     }
 }
