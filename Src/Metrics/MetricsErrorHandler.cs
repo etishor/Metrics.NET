@@ -12,11 +12,14 @@ namespace Metrics
 
         private ConcurrentBag<Action<Exception, string>> handlers = new ConcurrentBag<Action<Exception, string>>();
 
+        private static readonly bool IsMono = Type.GetType("Mono.Runtime") == null;
+
         private MetricsErrorHandler()
         {
             this.AddHandler((x, msg) => log.ErrorException("Metrics: Unhandled exception in Metrics.NET Library", x));
             this.AddHandler((x, msg) => Trace.TraceError("Metrics: Unhandled exception in Metrics.NET Library " + x.ToString()));
-            if (Environment.UserInteractive)
+
+            if (Environment.UserInteractive || IsMono)
             {
                 this.AddHandler((x, msg) => Console.WriteLine("Metrics: Unhandled exception in Metrics.NET Library " + x.ToString()));
             }
@@ -47,7 +50,14 @@ namespace Metrics
         {
             foreach (var handler in this.handlers)
             {
-                handler(exception, message);
+                try
+                {
+                    handler(exception, message);
+                }
+                catch
+                {
+                    // error handler throw-ed on us, hope you have a debugger attached.
+                }
             }
         }
 

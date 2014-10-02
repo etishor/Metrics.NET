@@ -1,3 +1,13 @@
+###0.2.3 / 2014-10-01
+* add support for set counter & set meters [details](https://github.com/etishor/Metrics.NET/issues/21)
+* cleanup owin adapter
+* better & more resilient error handling
+
+###0.2.2 / 2014-09-27
+* add support for tagging metrics (not yet used in reports or visualization)
+* add support for suppling a string user value to histograms & timers for tracking min / max / last values
+* tests cleanup, some refactoring
+
 ###0.2.1 / 2014-09-25
 * port latest changes from original metrics lib
 * port optimization from ExponentiallyDecayingReservoir (https://github.com/etishor/Metrics.NET/commit/1caa9d01c16ff63504612d64771d52e9d7d9de5e)

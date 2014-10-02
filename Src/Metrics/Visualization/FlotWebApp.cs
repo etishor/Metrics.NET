@@ -23,5 +23,13 @@ namespace Metrics.Visualization
         {
             return htmlContent.Value;
         }
+
+        public static void WriteFavIcon(Stream output)
+        {
+            using (var stream = Assembly.GetAssembly(typeof(FlotWebApp)).GetManifestResourceStream("Metrics.Visualization.metrics_32.png"))
+            {
+                stream.CopyTo(output);
+            }
+        }
     }
 }
