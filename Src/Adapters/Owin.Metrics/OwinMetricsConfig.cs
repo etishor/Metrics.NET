@@ -65,7 +65,7 @@ namespace Owin.Metrics
         {
             OwinMetricsEndpointConfig endpointConfig = new OwinMetricsEndpointConfig();
             config(endpointConfig);
-            var metricsEndpointMiddleware = new MetricsEndpointMiddleware(endpointConfig, this.context.DataProvider.CurrentMetricsData, this.healthStatus);
+            var metricsEndpointMiddleware = new MetricsEndpointMiddleware(endpointConfig, this.context, this.healthStatus);
             this.middlewareRegistration(metricsEndpointMiddleware);
             return this;
         }
