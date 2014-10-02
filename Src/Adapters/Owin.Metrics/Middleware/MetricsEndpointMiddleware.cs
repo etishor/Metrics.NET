@@ -1,15 +1,15 @@
-﻿using System;
+﻿using Metrics;
+using Metrics.Json;
+using Metrics.Reporters;
+using Metrics.Utils;
+using Metrics.Visualization;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Metrics;
-using Metrics.Json;
-using Metrics.Reporters;
-using Metrics.Utils;
-using Metrics.Visualization;
 
 namespace Owin.Metrics.Middleware
 {
@@ -18,15 +18,15 @@ namespace Owin.Metrics.Middleware
     public class MetricsEndpointMiddleware
     {
         private readonly OwinMetricsEndpointConfig endpointConfig;
-        private readonly MetricsData metricsData;
+        private readonly MetricsContext context;
         private readonly Func<HealthStatus> healthStatus;
 
         private AppFunc next;
 
-        public MetricsEndpointMiddleware(OwinMetricsEndpointConfig endpointConfig, MetricsData metricsData, Func<HealthStatus> healthStatus)
+        public MetricsEndpointMiddleware(OwinMetricsEndpointConfig endpointConfig, MetricsContext context, Func<HealthStatus> healthStatus)
         {
             this.endpointConfig = endpointConfig;
-            this.metricsData = metricsData;
+            this.context = context;
             this.healthStatus = healthStatus;
         }
 
@@ -46,7 +46,7 @@ namespace Owin.Metrics.Middleware
 
             if (requestPath.EndsWith("/" + endpointConfig.MetricsJsonEndpointName) && endpointConfig.MetricsJsonEndpointEnabled)
             {
-                return GetJsonContent(environment, this.metricsData);
+                return GetJsonContent(environment, this.context);
             }
 
             if (requestPath.EndsWith("/" + endpointConfig.MetricsHealthEndpointName) && endpointConfig.MetricsHealthEndpointEnabled)
@@ -56,7 +56,7 @@ namespace Owin.Metrics.Middleware
 
             if (requestPath.EndsWith("/" + endpointConfig.MetricsTextEndpointName) && endpointConfig.MetricsTextEndpointEnabled)
             {
-                return GetAsHumanReadable(environment, this.metricsData, this.healthStatus);
+                return GetAsHumanReadable(environment, this.context, this.healthStatus);
             }
 
             if (requestPath.EndsWith("/" + endpointConfig.MetricsPingEndpointName) && endpointConfig.MetricsPingEndpointEnabled)
@@ -73,9 +73,9 @@ namespace Owin.Metrics.Middleware
             return WriteResponse(environment, content, "application/json");
         }
 
-        private static Task GetJsonContent(IDictionary<string, object> environment, MetricsData metricsData)
+        private static Task GetJsonContent(IDictionary<string, object> environment, MetricsContext context)
         {
-            var content = OldJsonBuilder.BuildJson(metricsData, Clock.Default);
+            var content = OldJsonBuilder.BuildJson(context.DataProvider.CurrentMetricsData, Clock.Default);
             return WriteResponse(environment, content, "application/json");
         }
 
@@ -86,9 +86,9 @@ namespace Owin.Metrics.Middleware
             return WriteResponse(environment, content, "application/json");
         }
 
-        private static Task GetAsHumanReadable(IDictionary<string, object> environment, MetricsData metricsData, Func<HealthStatus> healthStatus)
+        private static Task GetAsHumanReadable(IDictionary<string, object> environment, MetricsContext context, Func<HealthStatus> healthStatus)
         {
-            string text = StringReporter.RenderMetrics(metricsData, healthStatus);
+            string text = StringReporter.RenderMetrics(context.DataProvider.CurrentMetricsData, healthStatus);
             return WriteResponse(environment, text, "text/plain");
         }
 
