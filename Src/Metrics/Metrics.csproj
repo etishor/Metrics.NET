@@ -96,7 +96,6 @@
     <Compile Include="HealthChecks.cs" />
     <Compile Include="Histogram.cs" />
     <Compile Include="MetricsContext.cs" />
-    <Compile Include="Json\JsonMetrics.cs" />
     <Compile Include="Json\JsonProperty.cs" />
     <Compile Include="Json\JsonValue.cs" />
     <Compile Include="Meter.cs" />
@@ -105,7 +104,7 @@
     <Compile Include="MetricsDataProvider.cs" />
     <Compile Include="MetricsFilter.cs" />
     <Compile Include="MetricsConfig.cs" />
-    <Compile Include="Json\JsonBuilder.cs" />
+    <Compile Include="Json\JsonBuilderV2.cs" />
     <Compile Include="MetricsData.cs" />
     <Compile Include="Reporters\CSVAppender.cs" />
     <Compile Include="Reporters\MetricsReports.cs" />
@@ -117,7 +116,7 @@
     <Compile Include="Reporters\CSVFileAppender.cs" />
     <Compile Include="Reporters\CSVReporter.cs" />
     <Compile Include="Reporters\HealthCheckSerializer.cs" />
-    <Compile Include="Json\OldJsonBuilder.cs" />
+    <Compile Include="Json\JsonBuilderV1.cs" />
     <Compile Include="Json\JsonObject.cs" />
     <Compile Include="Reporters\StringReporter.cs" />
     <Compile Include="Reporters\TextFileReporter.cs" />
