@@ -8,6 +8,7 @@ namespace Metrics.Json
     public class JsonBuilderV1
     {
         public const int Version = 1;
+
         public const string MetricsMimeType = "application/vnd.metrics.net.v1.metrics+json";
 
         private readonly List<JsonProperty> root = new List<JsonProperty>();
@@ -99,19 +100,6 @@ namespace Metrics.Json
 
             this.units.Add(new JsonProperty("Timers", units));
 
-            return this;
-        }
-
-        public JsonBuilderV1 AddObject(HealthStatus status)
-        {
-            var properties = new List<JsonProperty>() { new JsonProperty("IsHealthy", status.IsHealty) };
-            var unhealty = status.Results.Where(r => !r.Check.IsHealthy)
-                .Select(r => new JsonProperty(r.Name, r.Check.Message));
-            properties.Add(new JsonProperty("Unhealthy", unhealty));
-            var healty = status.Results.Where(r => r.Check.IsHealthy)
-                    .Select(r => new JsonProperty(r.Name, r.Check.Message));
-            properties.Add(new JsonProperty("Healthy", healty));
-            this.root.AddRange(properties);
             return this;
         }
 

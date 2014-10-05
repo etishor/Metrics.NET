@@ -2,7 +2,6 @@
 using Metrics;
 using Metrics.Json;
 using Metrics.Reporters;
-using Metrics.Utils;
 using Metrics.Visualization;
 
 namespace Nancy.Metrics
@@ -72,10 +71,10 @@ namespace Nancy.Metrics
             Get["/text"] = _ => Response.AsText(StringReporter.RenderMetrics(Config.MetricsContext.DataProvider.CurrentMetricsData, Config.HealthStatus))
                 .WithHeaders(noCacheHeaders);
 
-            Get["/json"] = _ => Response.AsText(OldJsonBuilder.BuildJson(Config.MetricsContext.DataProvider.CurrentMetricsData, Clock.Default), "text/json")
+            Get["/json"] = _ => Response.AsText(JsonBuilderV1.BuildJson(Config.MetricsContext.DataProvider.CurrentMetricsData), "text/json")
                 .WithHeaders(noCacheHeaders);
 
-            Get["/jsonnew"] = _ => Response.AsText(JsonMetrics.Serialize(Config.MetricsContext.DataProvider.CurrentMetricsData), "text/json")
+            Get["/jsonnew"] = _ => Response.AsText(JsonBuilderV2.BuildJson(Config.MetricsContext.DataProvider.CurrentMetricsData), "text/json")
                 .WithHeaders(noCacheHeaders);
 
             Get["/ping"] = _ => Response.AsText("pong", "text/plain")
@@ -88,7 +87,7 @@ namespace Nancy.Metrics
         private Response GetHealthStatus()
         {
             var status = Config.HealthStatus();
-            var content = HealthCheckSerializer.Serialize(status);
+            var content = JsonHealthChecks.BuildJson(status);
 
             var response = Response.AsText(content, "application/json");
             if (!healthChecksAlwaysReturnHttpStatusOk)

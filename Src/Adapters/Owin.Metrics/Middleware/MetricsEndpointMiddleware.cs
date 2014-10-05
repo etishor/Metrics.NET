@@ -1,15 +1,15 @@
-﻿using Metrics;
-using Metrics.Json;
-using Metrics.Reporters;
-using Metrics.Utils;
-using Metrics.Visualization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Metrics;
+using Metrics.Json;
+using Metrics.Reporters;
+using Metrics.Utils;
+using Metrics.Visualization;
 
 namespace Owin.Metrics.Middleware
 {
@@ -75,14 +75,14 @@ namespace Owin.Metrics.Middleware
 
         private static Task GetJsonContent(IDictionary<string, object> environment, MetricsContext context)
         {
-            var content = OldJsonBuilder.BuildJson(context.DataProvider.CurrentMetricsData, Clock.Default);
+            var content = JsonBuilderV1.BuildJson(context.DataProvider.CurrentMetricsData, Clock.Default);
             return WriteResponse(environment, content, "application/json");
         }
 
         private static Task GetHealthStatus(IDictionary<string, object> environment, Func<HealthStatus> healthStatus)
         {
             var status = healthStatus();
-            var content = HealthCheckSerializer.Serialize(status);
+            var content = JsonHealthChecks.BuildJson(status);
             return WriteResponse(environment, content, "application/json");
         }
 

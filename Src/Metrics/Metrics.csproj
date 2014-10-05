@@ -79,6 +79,7 @@
     <Compile Include="Core\DefaultMetricsRegistry.cs" />
     <Compile Include="Core\DefaultDataProvider.cs" />
     <Compile Include="Core\DefaultRegistryDataProvider.cs" />
+    <Compile Include="Json\JsonHealthChecks.cs" />
     <Compile Include="MetricTags.cs" />
     <Compile Include="Sampling\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Core\HealthCheck.cs" />
@@ -115,7 +116,6 @@
     <Compile Include="Reporters\ConsoleReporter.cs" />
     <Compile Include="Reporters\CSVFileAppender.cs" />
     <Compile Include="Reporters\CSVReporter.cs" />
-    <Compile Include="Reporters\HealthCheckSerializer.cs" />
     <Compile Include="Json\JsonBuilderV1.cs" />
     <Compile Include="Json\JsonObject.cs" />
     <Compile Include="Reporters\StringReporter.cs" />
