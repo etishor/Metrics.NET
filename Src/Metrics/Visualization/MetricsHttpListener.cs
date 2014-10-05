@@ -94,8 +94,12 @@ namespace Metrics.Visualization
                     return WriteJsonMetricsV1(context, this.metricsDataProvider);
                 case "/v2/json":
                     return WriteJsonMetricsV2(context, this.metricsDataProvider);
+
                 case "/health":
                     return WriteHealthStatus(context, this.healthStatus);
+                case "/v1/health":
+                    return WriteHealthStatus(context, this.healthStatus);
+
                 case "/text":
                     return WriteTextMetrics(context, this.metricsDataProvider, this.healthStatus);
                 case "/ping":
