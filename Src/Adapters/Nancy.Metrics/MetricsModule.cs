@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Metrics;
 using Metrics.Json;
 using Metrics.Reporters;
@@ -58,14 +59,17 @@ namespace Nancy.Metrics
 
             Get["/"] = _ =>
             {
-                if (this.Request.Url.Path.EndsWith("/"))
-                {
-                    return Response.AsText(FlotWebApp.GetFlotApp(), "text/html");
-                }
-                else
+                if (!this.Request.Url.Path.EndsWith("/"))
                 {
                     return Response.AsRedirect(this.Request.Url.ToString() + "/");
                 }
+                bool gzip = AcceptsGzip();
+                var response = Response.FromStream(FlotWebApp.GetAppStream(!gzip), "text/html");
+                if (gzip)
+                {
+                    response.WithHeader("Content-Encoding", "gzip");
+                }
+                return response;
             };
 
             Get["/text"] = _ => Response.AsText(StringReporter.RenderMetrics(Config.DataProvider.CurrentMetricsData, Config.HealthStatus))
@@ -82,6 +86,11 @@ namespace Nancy.Metrics
 
             Get["/health"] = _ => GetHealthStatus()
                 .WithHeaders(noCacheHeaders);
+        }
+
+        private bool AcceptsGzip()
+        {
+            return this.Request.Headers.AcceptEncoding.Any(e => e.Equals("gzip", StringComparison.InvariantCultureIgnoreCase));
         }
 
         private Response GetHealthStatus()

@@ -35,7 +35,19 @@ namespace Metrics.Visualization
             }
         }
 
-        public static async Task WriteFlotApp(Stream output, bool decompress = false)
+        public static Stream GetAppStream(bool decompress = false)
+        {
+            if (!decompress)
+            {
+                return Assembly.GetAssembly(typeof(FlotWebApp)).GetManifestResourceStream("Metrics.Visualization.index.full.html.gz");
+            }
+            else
+            {
+                return new GZipStream(Assembly.GetAssembly(typeof(FlotWebApp)).GetManifestResourceStream("Metrics.Visualization.index.full.html.gz"), CompressionMode.Decompress);
+            }
+        }
+
+        public static async Task WriteFlotAppAsync(Stream output, bool decompress = false)
         {
             if (!decompress)
             {

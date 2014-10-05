@@ -210,7 +210,7 @@ namespace Metrics.Visualization
                 context.Response.AddHeader("Content-Encoding", "gzip");
             }
 
-            return FlotWebApp.WriteFlotApp(context.Response.OutputStream, !acceptsGzip);
+            return FlotWebApp.WriteFlotAppAsync(context.Response.OutputStream, !acceptsGzip);
         }
 
         private static bool AcceptsGzip(HttpListenerRequest request)
