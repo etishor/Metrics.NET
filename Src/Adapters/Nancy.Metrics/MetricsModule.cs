@@ -12,12 +12,12 @@ namespace Nancy.Metrics
         {
             public readonly string ModulePath;
             public readonly Action<INancyModule> ModuleConfigAction;
-            public readonly MetricsContext MetricsContext;
+            public readonly MetricsDataProvider DataProvider;
             public readonly Func<HealthStatus> HealthStatus;
 
-            public ModuleConfig(MetricsContext metricsContext, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
+            public ModuleConfig(MetricsDataProvider dataProvider, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
             {
-                this.MetricsContext = metricsContext;
+                this.DataProvider = dataProvider;
                 this.HealthStatus = healthStatus;
                 this.ModuleConfigAction = moduleConfig;
                 this.ModulePath = metricsPath;
@@ -27,12 +27,12 @@ namespace Nancy.Metrics
         private static ModuleConfig Config;
         private static bool healthChecksAlwaysReturnHttpStatusOk = false;
 
-        public static void Configure(MetricsContext metricsContext, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
+        internal static void Configure(MetricsDataProvider dataProvider, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
         {
-            MetricsModule.Config = new ModuleConfig(metricsContext, healthStatus, moduleConfig, metricsPath);
+            MetricsModule.Config = new ModuleConfig(dataProvider, healthStatus, moduleConfig, metricsPath);
         }
 
-        public static void ConfigureHealthChecks(bool alwaysReturnOk)
+        internal static void ConfigureHealthChecks(bool alwaysReturnOk)
         {
             healthChecksAlwaysReturnHttpStatusOk = alwaysReturnOk;
         }
@@ -68,13 +68,13 @@ namespace Nancy.Metrics
                 }
             };
 
-            Get["/text"] = _ => Response.AsText(StringReporter.RenderMetrics(Config.MetricsContext.DataProvider.CurrentMetricsData, Config.HealthStatus))
+            Get["/text"] = _ => Response.AsText(StringReporter.RenderMetrics(Config.DataProvider.CurrentMetricsData, Config.HealthStatus))
                 .WithHeaders(noCacheHeaders);
 
-            Get["/json"] = _ => Response.AsText(JsonBuilderV1.BuildJson(Config.MetricsContext.DataProvider.CurrentMetricsData), "text/json")
+            Get["/json"] = _ => Response.AsText(JsonBuilderV1.BuildJson(Config.DataProvider.CurrentMetricsData), "text/json")
                 .WithHeaders(noCacheHeaders);
 
-            Get["/jsonnew"] = _ => Response.AsText(JsonBuilderV2.BuildJson(Config.MetricsContext.DataProvider.CurrentMetricsData), "text/json")
+            Get["/jsonnew"] = _ => Response.AsText(JsonBuilderV2.BuildJson(Config.DataProvider.CurrentMetricsData), "text/json")
                 .WithHeaders(noCacheHeaders);
 
             Get["/ping"] = _ => Response.AsText("pong", "text/plain")
