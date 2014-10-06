@@ -10,6 +10,9 @@ namespace Metrics
         private static readonly DefaultMetricsContext globalContext;
         private static readonly MetricsConfig config;
 
+        private static MetricsContext internalContext = new DefaultMetricsContext("Metrics.NET");
+        internal static MetricsContext Internal { get { return internalContext; } }
+
         static Metric()
         {
             globalContext = new DefaultMetricsContext(MetricsConfig.GetGlobalContextName());
@@ -162,6 +165,11 @@ namespace Metrics
             TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds, MetricTags tags = default(MetricTags))
         {
             return globalContext.Timer(name, unit, samplingType, rateUnit, durationUnit, tags);
+        }
+
+        internal static void EnableInternalMetrics()
+        {
+            globalContext.AttachContext("Metrics.NET", internalContext);
         }
     }
 }

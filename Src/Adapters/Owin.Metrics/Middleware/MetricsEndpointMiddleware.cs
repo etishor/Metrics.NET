@@ -1,15 +1,15 @@
-﻿using Metrics;
-using Metrics.Json;
-using Metrics.Reporters;
-using Metrics.Utils;
-using Metrics.Visualization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Metrics;
+using Metrics.Json;
+using Metrics.Reporters;
+using Metrics.Utils;
+using Metrics.Visualization;
 
 namespace Owin.Metrics.Middleware
 {
@@ -18,15 +18,15 @@ namespace Owin.Metrics.Middleware
     public class MetricsEndpointMiddleware
     {
         private readonly OwinMetricsEndpointConfig endpointConfig;
-        private readonly MetricsContext context;
+        private readonly MetricsDataProvider dataProvider;
         private readonly Func<HealthStatus> healthStatus;
 
         private AppFunc next;
 
-        public MetricsEndpointMiddleware(OwinMetricsEndpointConfig endpointConfig, MetricsContext context, Func<HealthStatus> healthStatus)
+        public MetricsEndpointMiddleware(OwinMetricsEndpointConfig endpointConfig, MetricsDataProvider dataProvider, Func<HealthStatus> healthStatus)
         {
             this.endpointConfig = endpointConfig;
-            this.context = context;
+            this.dataProvider = dataProvider;
             this.healthStatus = healthStatus;
         }
 
@@ -46,7 +46,7 @@ namespace Owin.Metrics.Middleware
 
             if (requestPath.EndsWith("/" + endpointConfig.MetricsJsonEndpointName) && endpointConfig.MetricsJsonEndpointEnabled)
             {
-                return GetJsonContent(environment, this.context);
+                return GetJsonContent(environment, this.dataProvider);
             }
 
             if (requestPath.EndsWith("/" + endpointConfig.MetricsHealthEndpointName) && endpointConfig.MetricsHealthEndpointEnabled)
@@ -56,7 +56,7 @@ namespace Owin.Metrics.Middleware
 
             if (requestPath.EndsWith("/" + endpointConfig.MetricsTextEndpointName) && endpointConfig.MetricsTextEndpointEnabled)
             {
-                return GetAsHumanReadable(environment, this.context, this.healthStatus);
+                return GetAsHumanReadable(environment, this.dataProvider, this.healthStatus);
             }
 
             if (requestPath.EndsWith("/" + endpointConfig.MetricsPingEndpointName) && endpointConfig.MetricsPingEndpointEnabled)
@@ -73,24 +73,25 @@ namespace Owin.Metrics.Middleware
             return WriteResponse(environment, content, "application/json");
         }
 
-        private static Task GetJsonContent(IDictionary<string, object> environment, MetricsContext context)
+        private static Task GetJsonContent(IDictionary<string, object> environment, MetricsDataProvider dataProvider)
         {
-            var content = OldJsonBuilder.BuildJson(context.DataProvider.CurrentMetricsData, Clock.Default);
+            var content = JsonBuilderV1.BuildJson(dataProvider.CurrentMetricsData, Clock.Default);
             return WriteResponse(environment, content, "application/json");
         }
 
         private static Task GetHealthStatus(IDictionary<string, object> environment, Func<HealthStatus> healthStatus)
         {
-            var responseStatusCode = HttpStatusCode.OK;
+			var responseStatusCode = HttpStatusCode.OK;
             var status = healthStatus();
-            var content = HealthCheckSerializer.Serialize(status);
-            if (!status.IsHealty) responseStatusCode = HttpStatusCode.InternalServerError;
+            var content = JsonHealthChecks.BuildJson(status);
+			if (!status.IsHealty) responseStatusCode = HttpStatusCode.InternalServerError;
             return WriteResponse(environment, content, "application/json", responseStatusCode);
+
         }
 
-        private static Task GetAsHumanReadable(IDictionary<string, object> environment, MetricsContext context, Func<HealthStatus> healthStatus)
+        private static Task GetAsHumanReadable(IDictionary<string, object> environment, MetricsDataProvider dataProvider, Func<HealthStatus> healthStatus)
         {
-            string text = StringReporter.RenderMetrics(context.DataProvider.CurrentMetricsData, healthStatus);
+            string text = StringReporter.RenderMetrics(dataProvider.CurrentMetricsData, healthStatus);
             return WriteResponse(environment, text, "text/plain");
         }
 

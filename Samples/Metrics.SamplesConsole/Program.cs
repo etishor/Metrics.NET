@@ -13,6 +13,7 @@ namespace Metrics.SamplesConsole
             Metric.Config
                 .WithHttpEndpoint("http://localhost:1234/")
                 .WithAllCounters()
+                .WithInternalMetrics()
                 .WithReporting(config => config
                     //.WithNLogCSVReports(TimeSpan.FromSeconds(5))
                     //.WithNLogTextReports(TimeSpan.FromSeconds(5))

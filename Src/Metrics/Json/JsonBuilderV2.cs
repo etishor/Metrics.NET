@@ -5,25 +5,36 @@ using Metrics.Utils;
 
 namespace Metrics.Json
 {
-    public sealed class JsonBuilder
+    public sealed class JsonBuilderV2
     {
+        public const int Version = 2;
+        public const string MetricsMimeType = "application/vnd.metrics.net.v2.metrics+json";
+
         private readonly List<JsonProperty> root = new List<JsonProperty>();
 
-        public string BuildJson(MetricsData data, Clock clock, bool indented = true)
+        public static string BuildJson(MetricsData data) { return BuildJson(data, Clock.Default, indented: false); }
+        public static string BuildJson(MetricsData data, Clock clock, bool indented = true)
         {
-            return this
+            return new JsonBuilderV2()
+                .AddVersion(Version)
                 .AddTimestamp(clock)
                 .AddData(data)
-                .GetJson();
+                .GetJson(indented);
         }
 
-        private JsonBuilder AddTimestamp(Clock clock)
+        public JsonBuilderV2 AddVersion(int version)
+        {
+            root.Add(new JsonProperty("Version", version.ToString(CultureInfo.InvariantCulture)));
+            return this;
+        }
+
+        private JsonBuilderV2 AddTimestamp(Clock clock)
         {
             root.Add(new JsonProperty("Timestamp", clock.UTCDateTime.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture)));
             return this;
         }
 
-        private JsonBuilder AddData(MetricsData data)
+        private JsonBuilderV2 AddData(MetricsData data)
         {
             this.AddContext(data.Context)
                 .Add(data.Gauges)
@@ -36,7 +47,7 @@ namespace Metrics.Json
             return this;
         }
 
-        private JsonBuilder AddContext(string context)
+        private JsonBuilderV2 AddContext(string context)
         {
             if (!string.IsNullOrEmpty(context))
             {
@@ -50,11 +61,11 @@ namespace Metrics.Json
             return new JsonObject(this.root);
         }
 
-        private JsonBuilder Add(IEnumerable<MetricsData> childData)
+        private JsonBuilderV2 Add(IEnumerable<MetricsData> childData)
         {
             if (childData.Any())
             {
-                var childObjects = childData.Select(d => new JsonBuilder().AddData(d).GetObject());
+                var childObjects = childData.Select(d => new JsonBuilderV2().AddData(d).GetObject());
                 root.Add(new JsonProperty("ChildContexts", childObjects));
             }
             return this;
@@ -65,7 +76,7 @@ namespace Metrics.Json
             return new JsonObject(root).AsJson(indented);
         }
 
-        private JsonBuilder Add(IEnumerable<GaugeValueSource> gauges)
+        private JsonBuilderV2 Add(IEnumerable<GaugeValueSource> gauges)
         {
             if (gauges.Any())
             {
@@ -81,7 +92,7 @@ namespace Metrics.Json
             yield return new JsonProperty("Unit", gauge.Unit.Name);
         }
 
-        private JsonBuilder Add(IEnumerable<CounterValueSource> counters)
+        private JsonBuilderV2 Add(IEnumerable<CounterValueSource> counters)
         {
             if (counters.Any())
             {
@@ -97,7 +108,7 @@ namespace Metrics.Json
             yield return new JsonProperty("Unit", counter.Unit.Name);
         }
 
-        private JsonBuilder Add(IEnumerable<MeterValueSource> meters)
+        private JsonBuilderV2 Add(IEnumerable<MeterValueSource> meters)
         {
             if (meters.Any())
             {
@@ -126,7 +137,7 @@ namespace Metrics.Json
             yield return new JsonProperty("FifteenMinuteRate", value.FifteenMinuteRate);
         }
 
-        private JsonBuilder Add(IEnumerable<HistogramValueSource> histograms)
+        private JsonBuilderV2 Add(IEnumerable<HistogramValueSource> histograms)
         {
             if (histograms.Any())
             {
@@ -166,7 +177,7 @@ namespace Metrics.Json
             yield return new JsonProperty("SampleSize", value.SampleSize);
         }
 
-        private JsonBuilder Add(IEnumerable<TimerValueSource> timers)
+        private JsonBuilderV2 Add(IEnumerable<TimerValueSource> timers)
         {
             if (timers.Any())
             {

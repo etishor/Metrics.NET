@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Linq;
 using Metrics;
 using Metrics.Json;
 using Metrics.Reporters;
-using Metrics.Utils;
 using Metrics.Visualization;
 
 namespace Nancy.Metrics
@@ -13,12 +13,12 @@ namespace Nancy.Metrics
         {
             public readonly string ModulePath;
             public readonly Action<INancyModule> ModuleConfigAction;
-            public readonly MetricsContext MetricsContext;
+            public readonly MetricsDataProvider DataProvider;
             public readonly Func<HealthStatus> HealthStatus;
 
-            public ModuleConfig(MetricsContext metricsContext, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
+            public ModuleConfig(MetricsDataProvider dataProvider, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
             {
-                this.MetricsContext = metricsContext;
+                this.DataProvider = dataProvider;
                 this.HealthStatus = healthStatus;
                 this.ModuleConfigAction = moduleConfig;
                 this.ModulePath = metricsPath;
@@ -28,12 +28,12 @@ namespace Nancy.Metrics
         private static ModuleConfig Config;
         private static bool healthChecksAlwaysReturnHttpStatusOk = false;
 
-        public static void Configure(MetricsContext metricsContext, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
+        internal static void Configure(MetricsDataProvider dataProvider, Func<HealthStatus> healthStatus, Action<INancyModule> moduleConfig, string metricsPath)
         {
-            MetricsModule.Config = new ModuleConfig(metricsContext, healthStatus, moduleConfig, metricsPath);
+            MetricsModule.Config = new ModuleConfig(dataProvider, healthStatus, moduleConfig, metricsPath);
         }
 
-        public static void ConfigureHealthChecks(bool alwaysReturnOk)
+        internal static void ConfigureHealthChecks(bool alwaysReturnOk)
         {
             healthChecksAlwaysReturnHttpStatusOk = alwaysReturnOk;
         }
@@ -59,23 +59,26 @@ namespace Nancy.Metrics
 
             Get["/"] = _ =>
             {
-                if (this.Request.Url.Path.EndsWith("/"))
-                {
-                    return Response.AsText(FlotWebApp.GetFlotApp(), "text/html");
-                }
-                else
+                if (!this.Request.Url.Path.EndsWith("/"))
                 {
                     return Response.AsRedirect(this.Request.Url.ToString() + "/");
                 }
+                bool gzip = AcceptsGzip();
+                var response = Response.FromStream(FlotWebApp.GetAppStream(!gzip), "text/html");
+                if (gzip)
+                {
+                    response.WithHeader("Content-Encoding", "gzip");
+                }
+                return response;
             };
 
-            Get["/text"] = _ => Response.AsText(StringReporter.RenderMetrics(Config.MetricsContext.DataProvider.CurrentMetricsData, Config.HealthStatus))
+            Get["/text"] = _ => Response.AsText(StringReporter.RenderMetrics(Config.DataProvider.CurrentMetricsData, Config.HealthStatus))
                 .WithHeaders(noCacheHeaders);
 
-            Get["/json"] = _ => Response.AsText(OldJsonBuilder.BuildJson(Config.MetricsContext.DataProvider.CurrentMetricsData, Clock.Default), "text/json")
+            Get["/json"] = _ => Response.AsText(JsonBuilderV1.BuildJson(Config.DataProvider.CurrentMetricsData), "text/json")
                 .WithHeaders(noCacheHeaders);
 
-            Get["/jsonnew"] = _ => Response.AsText(JsonMetrics.Serialize(Config.MetricsContext.DataProvider.CurrentMetricsData), "text/json")
+            Get["/jsonnew"] = _ => Response.AsText(JsonBuilderV2.BuildJson(Config.DataProvider.CurrentMetricsData), "text/json")
                 .WithHeaders(noCacheHeaders);
 
             Get["/ping"] = _ => Response.AsText("pong", "text/plain")
@@ -85,10 +88,15 @@ namespace Nancy.Metrics
                 .WithHeaders(noCacheHeaders);
         }
 
+        private bool AcceptsGzip()
+        {
+            return this.Request.Headers.AcceptEncoding.Any(e => e.Equals("gzip", StringComparison.InvariantCultureIgnoreCase));
+        }
+
         private Response GetHealthStatus()
         {
             var status = Config.HealthStatus();
-            var content = HealthCheckSerializer.Serialize(status);
+            var content = JsonHealthChecks.BuildJson(status);
 
             var response = Response.AsText(content, "application/json");
             if (!healthChecksAlwaysReturnHttpStatusOk)
