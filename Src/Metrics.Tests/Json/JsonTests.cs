@@ -49,5 +49,11 @@ namespace Metrics.Tests.Json
             value.ToString("D").Should().Be("1000000000");
             new LongJsonValue(value).AsJson().Should().Be("1000000000");
         }
+
+        [Fact]
+        public void Json_DoubleNanIsSerialziedCorrectly()
+        {
+            new DoubleJsonValue(double.NaN).AsJson().Should().Be("null");
+        }
     }
 }
