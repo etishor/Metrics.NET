@@ -52,6 +52,21 @@ namespace Metrics.Core
             return this.childContexts.GetOrAdd(contextName, contextCreator);
         }
 
+        public bool AttachContext(string contextName, MetricsContext context)
+        {
+            if (this.isDisabled)
+            {
+                return true;
+            }
+
+            if (string.IsNullOrEmpty(contextName))
+            {
+                throw new ArgumentException("Context name can't be null or empty for attached contexts");
+            }
+            var attached = this.childContexts.GetOrAdd(contextName, context);
+            return object.ReferenceEquals(attached, context);
+        }
+
         public void ShutdownContext(string contextName)
         {
             if (string.IsNullOrEmpty(contextName))

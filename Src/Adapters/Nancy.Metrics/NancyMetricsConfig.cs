@@ -83,7 +83,7 @@ namespace Nancy.Metrics
         /// <returns>This instance to allow chaining of the configuration.</returns>
         public NancyMetricsConfig WithMetricsModule(Action<INancyModule> moduleConfig, string metricsPath = "/metrics")
         {
-            MetricsModule.Configure(this.metricsContext, this.healthStatus, moduleConfig, metricsPath);
+            MetricsModule.Configure(this.metricsContext.DataProvider, this.healthStatus, moduleConfig, metricsPath);
             return this;
         }
 
