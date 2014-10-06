@@ -10,7 +10,7 @@ namespace Owin.Sample
     {
         static void Main(string[] args)
         {
-            const string url = "http://localhost:1234/";
+            const string url = "http://localhost:1235/";
 
             using (var scheduler = new ActionScheduler())
             {
@@ -23,6 +23,8 @@ namespace Owin.Sample
                     SampleMetrics.RunSomeRequests();
 
                     scheduler.Start(TimeSpan.FromMilliseconds(500), () => SampleMetrics.RunSomeRequests());
+
+                    HealthChecksSample.RegisterHealthChecks();
 
                     Console.ReadKey();
                 }
