@@ -7,6 +7,14 @@ namespace Metrics
     public interface AdvancedMetricsContext : Utils.IHideObjectMembers
     {
         /// <summary>
+        /// Attach a context that has already been created (ex: by a library exposing internal metrics)
+        /// </summary>
+        /// <param name="contextName">name of the context to attach</param>
+        /// <param name="context">Existing context instance.</param>
+        /// <returns>true if the context was attached, false otherwise.</returns>
+        bool AttachContext(string contextName, MetricsContext context);
+
+        /// <summary>
         /// All metrics operations will be NO-OP.
         /// This is useful for measuring the impact of the metrics library on the application.
         /// If you think the Metrics library is causing issues, this will disable all Metrics operations.

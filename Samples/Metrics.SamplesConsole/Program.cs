@@ -13,6 +13,7 @@ namespace Metrics.SamplesConsole
             Metric.Config
                 .WithHttpEndpoint("http://localhost:1234/")
                 .WithAllCounters()
+                .WithInternalMetrics()
                 .WithReporting(config => config
                     //.WithNLogCSVReports(TimeSpan.FromSeconds(5))
                     //.WithNLogTextReports(TimeSpan.FromSeconds(5))
@@ -26,6 +27,9 @@ namespace Metrics.SamplesConsole
             {
                 SampleMetrics.RunSomeRequests();
                 scheduler.Start(TimeSpan.FromMilliseconds(500), () => SampleMetrics.RunSomeRequests());
+
+                Metric.Gauge("Gauge With No Value", () => double.NaN, Unit.None);
+                Metric.Gauge("Gauge Resulting in division by zero", () => 5 / 0.0, Unit.None);
 
                 //Metrics.Samples.FSharp.SampleMetrics.RunSomeRequests();
 

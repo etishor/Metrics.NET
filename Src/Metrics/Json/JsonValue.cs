@@ -59,6 +59,11 @@ namespace Metrics.Json
 
         public override string AsJson(bool indented = true, int indent = 0)
         {
+            if (double.IsNaN(this.value) || double.IsInfinity(this.value))
+            {
+                return "null";
+            }
+
             return this.value.ToString("F", CultureInfo.InvariantCulture);
         }
     }
