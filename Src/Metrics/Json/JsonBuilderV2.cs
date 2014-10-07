@@ -1,8 +1,7 @@
-﻿using Metrics.Utils;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Metrics.Utils;
 
 namespace Metrics.Json
 {
@@ -17,16 +16,20 @@ namespace Metrics.Json
         public static string BuildJson(MetricsData data, Clock clock, bool indented = true)
         {
             return new JsonBuilderV2()
-                .AddMachineName()
                 .AddVersion(Version)
                 .AddTimestamp(clock)
+                .AddEnvironment()
                 .AddData(data)
                 .GetJson(indented);
         }
 
-        public JsonBuilderV2 AddMachineName()
+        public JsonBuilderV2 AddEnvironment()
         {
-            root.Add(new JsonProperty("MachineName", Environment.MachineName));
+            var environment = AppEnvironment.Current
+                .Select(e => new JsonProperty(e.Name, e.Value));
+
+            root.Add(new JsonProperty("Environment", new ObjectJsonValue(new JsonObject(environment))));
+
             return this;
         }
 

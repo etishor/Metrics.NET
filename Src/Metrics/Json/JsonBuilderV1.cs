@@ -23,12 +23,23 @@ namespace Metrics.Json
             return new JsonBuilderV1()
                 .AddVersion(Version)
                 .AddTimestamp(Clock.Default)
+                .AddEnvironment()
                 .AddObject(flatData.Gauges)
                 .AddObject(flatData.Counters)
                 .AddObject(flatData.Meters)
                 .AddObject(flatData.Histograms)
                 .AddObject(flatData.Timers)
                 .GetJson(indented);
+        }
+
+        public JsonBuilderV1 AddEnvironment()
+        {
+            var environment = AppEnvironment.Current
+                .Select(e => new JsonProperty(e.Name, e.Value));
+
+            root.Add(new JsonProperty("Environment", new ObjectJsonValue(new JsonObject(environment))));
+
+            return this;
         }
 
         public string GetJson(bool indented = true)
