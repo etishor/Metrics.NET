@@ -81,9 +81,12 @@ namespace Owin.Metrics.Middleware
 
         private static Task GetHealthStatus(IDictionary<string, object> environment, Func<HealthStatus> healthStatus)
         {
+			var responseStatusCode = HttpStatusCode.OK;
             var status = healthStatus();
             var content = JsonHealthChecks.BuildJson(status);
-            return WriteResponse(environment, content, "application/json");
+			if (!status.IsHealty) responseStatusCode = HttpStatusCode.InternalServerError;
+            return WriteResponse(environment, content, "application/json", responseStatusCode);
+
         }
 
         private static Task GetAsHumanReadable(IDictionary<string, object> environment, MetricsDataProvider dataProvider, Func<HealthStatus> healthStatus)
