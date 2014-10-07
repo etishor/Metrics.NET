@@ -15,7 +15,7 @@
 		<iconUrl>http://www.erata.net/Metrics.NET/metrics_32.png</iconUrl>
 		<tags>webapi, owin, metrics, measurements, charts, timer, histogram, duration, graphite, health checks</tags>
 		<dependencies>
-			<dependency id="Metrics.NET" version="0.2.3" />
+			<dependency id="Metrics.NET" version="0.2.4" />
 		</dependencies>
 	</metadata>
 	<files>
