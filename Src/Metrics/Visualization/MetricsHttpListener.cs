@@ -32,10 +32,10 @@ namespace Metrics.Visualization
         public void Start()
         {
             this.httpListener.Start();
-            Task.Factory.StartNew(async () => await ProcessRequests(), TaskCreationOptions.LongRunning);
+            Task.Factory.StartNew(ProcessRequests, TaskCreationOptions.LongRunning);
         }
 
-        private async Task ProcessRequests()
+        private void ProcessRequests()
         {
             while (!this.cts.IsCancellationRequested)
             {
@@ -43,10 +43,10 @@ namespace Metrics.Visualization
                 {
                     using (timer.NewContext())
                     {
-                        var context = await this.httpListener.GetContextAsync();
+                        var context = this.httpListener.GetContext();
                         try
                         {
-                            await ProcessRequest(context).ConfigureAwait(false);
+                            ProcessRequest(context);
                             context.Response.Close();
                         }
                         catch (Exception ex)
@@ -71,7 +71,7 @@ namespace Metrics.Visualization
             }
         }
 
-        private Task ProcessRequest(HttpListenerContext context)
+        private void ProcessRequest(HttpListenerContext context)
         {
             switch (context.Request.RawUrl)
             {
@@ -80,89 +80,100 @@ namespace Metrics.Visualization
                     {
                         context.Response.Redirect(context.Request.Url.ToString() + "/");
                         context.Response.Close();
-                        return Task.FromResult(0);
                     }
                     else
                     {
-                        return WriteFlotApp(context);
+                        WriteFlotApp(context);
                     }
+                    break;
                 case "/favicon.ico":
-                    return WriteFavIcon(context);
+                    WriteFavIcon(context);
+                    break;
                 case "/json":
-                    return WriteJsonMetrics(context, this.metricsDataProvider);
+                    WriteJsonMetrics(context, this.metricsDataProvider);
+                    break;
                 case "/v1/json":
-                    return WriteJsonMetricsV1(context, this.metricsDataProvider);
+                    WriteJsonMetricsV1(context, this.metricsDataProvider);
+                    break;
                 case "/v2/json":
-                    return WriteJsonMetricsV2(context, this.metricsDataProvider);
-
+                    WriteJsonMetricsV2(context, this.metricsDataProvider);
+                    break;
                 case "/health":
-                    return WriteHealthStatus(context, this.healthStatus);
+                    WriteHealthStatus(context, this.healthStatus);
+                    break;
                 case "/v1/health":
-                    return WriteHealthStatus(context, this.healthStatus);
-
+                    WriteHealthStatus(context, this.healthStatus);
+                    break;
                 case "/text":
-                    return WriteTextMetrics(context, this.metricsDataProvider, this.healthStatus);
+                    WriteTextMetrics(context, this.metricsDataProvider, this.healthStatus);
+                    break;
                 case "/ping":
-                    return WritePong(context);
+                    WritePong(context);
+                    break;
+                default:
+                    WriteNotFound(context);
+                    break;
+
             }
-            return WriteNotFound(context);
         }
 
-        private static async Task WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
+        private static void WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
         {
             var status = healthStatus();
             var json = JsonHealthChecks.BuildJson(status);
 
-            await WriteString(context, json, JsonHealthChecks.HealthChecksMimeType);
+            WriteString(context, json, JsonHealthChecks.HealthChecksMimeType);
             context.Response.StatusCode = status.IsHealty ? 200 : 500;
             context.Response.StatusDescription = status.IsHealty ? "OK" : "Internal Server Error";
         }
 
-        private static Task WritePong(HttpListenerContext context)
+        private static void WritePong(HttpListenerContext context)
         {
-            return WriteString(context, "pong", "text/plain");
+            WriteString(context, "pong", "text/plain");
         }
 
-        private static async Task WriteNotFound(HttpListenerContext context)
+        private static void WriteNotFound(HttpListenerContext context)
         {
-            await WriteString(context, NotFoundResponse, "text/plain").ConfigureAwait(false);
+            WriteString(context, NotFoundResponse, "text/plain");
             context.Response.StatusCode = 404;
             context.Response.StatusDescription = "NOT FOUND";
         }
 
-        private static Task WriteTextMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
+        private void WriteTextMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
         {
             var text = StringReporter.RenderMetrics(metricsDataProvider.CurrentMetricsData, healthStatus);
-            return WriteString(context, text, "text/plain");
+            WriteString(context, text, "text/plain");
         }
 
-        private static Task WriteJsonMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
+        private static void WriteJsonMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
         {
             var acceptHeader = context.Request.Headers["Accept"];
 
             if (acceptHeader.Contains(JsonBuilderV2.MetricsMimeType))
             {
-                return WriteJsonMetricsV2(context, metricsDataProvider);
+                WriteJsonMetricsV2(context, metricsDataProvider);
             }
-
-            return WriteJsonMetricsV1(context, metricsDataProvider);
+            else
+            {
+                WriteJsonMetricsV1(context, metricsDataProvider);
+            }
         }
 
-        private static Task WriteJsonMetricsV1(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
+        private static void WriteJsonMetricsV1(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
         {
             var json = JsonBuilderV1.BuildJson(metricsDataProvider.CurrentMetricsData);
             jsonSize.Update(json.Length / 1024);
-            return WriteString(context, json, JsonBuilderV1.MetricsMimeType);
+            WriteString(context, json, JsonBuilderV1.MetricsMimeType);
         }
 
-        private static Task WriteJsonMetricsV2(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
+        private static void WriteJsonMetricsV2(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
         {
             var json = JsonBuilderV2.BuildJson(metricsDataProvider.CurrentMetricsData);
             jsonSize.Update(json.Length / 1024);
-            return WriteString(context, json, JsonBuilderV2.MetricsMimeType);
+            WriteString(context, json, JsonBuilderV2.MetricsMimeType);
         }
 
-        private static async Task WriteString(HttpListenerContext context, string data, string contentType)
+        private static void WriteString(HttpListenerContext context, string data, string contentType)
         {
             AddCORSHeaders(context.Response);
             AddNoCacheHeaders(context.Response);
@@ -176,28 +187,31 @@ namespace Metrics.Visualization
             {
                 using (var writer = new StreamWriter(context.Response.OutputStream))
                 {
-                    await writer.WriteAsync(data).ConfigureAwait(false);
+                    writer.Write(data);
                 }
             }
-
-            context.Response.AddHeader("Content-Encoding", "gzip");
-            using (GZipStream gzip = new GZipStream(context.Response.OutputStream, CompressionMode.Compress))
-            using (var writer = new StreamWriter(gzip))
+            else
             {
-                await writer.WriteAsync(data).ConfigureAwait(false);
+                context.Response.AddHeader("Content-Encoding", "gzip");
+                using (GZipStream gzip = new GZipStream(context.Response.OutputStream, CompressionMode.Compress))
+                using (var writer = new StreamWriter(gzip))
+                {
+                    writer.Write(data);
+                }
             }
         }
 
-        private Task WriteFavIcon(HttpListenerContext context)
+
+        private void WriteFavIcon(HttpListenerContext context)
         {
             context.Response.ContentType = FlotWebApp.FavIconMimeType;
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
 
-            return FlotWebApp.WriteFavIcon(context.Response.OutputStream);
+            FlotWebApp.WriteFavIcon(context.Response.OutputStream);
         }
 
-        private static Task WriteFlotApp(HttpListenerContext context)
+        private static void WriteFlotApp(HttpListenerContext context)
         {
             context.Response.ContentType = "text/html";
             context.Response.StatusCode = 200;
@@ -210,7 +224,7 @@ namespace Metrics.Visualization
                 context.Response.AddHeader("Content-Encoding", "gzip");
             }
 
-            return FlotWebApp.WriteFlotAppAsync(context.Response.OutputStream, !acceptsGzip);
+            FlotWebApp.WriteFlotAppAsync(context.Response.OutputStream, !acceptsGzip);
         }
 
         private static bool AcceptsGzip(HttpListenerRequest request)

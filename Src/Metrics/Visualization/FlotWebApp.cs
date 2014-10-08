@@ -2,7 +2,6 @@
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Metrics.Visualization
 {
@@ -27,11 +26,11 @@ namespace Metrics.Visualization
 
         public const string FavIconMimeType = "image/png";
 
-        public static async Task WriteFavIcon(Stream output)
+        public static void WriteFavIcon(Stream output)
         {
             using (var stream = Assembly.GetAssembly(typeof(FlotWebApp)).GetManifestResourceStream("Metrics.Visualization.metrics_32.png"))
             {
-                await stream.CopyToAsync(output);
+                stream.CopyTo(output);
             }
         }
 
@@ -47,13 +46,13 @@ namespace Metrics.Visualization
             }
         }
 
-        public static async Task WriteFlotAppAsync(Stream output, bool decompress = false)
+        public static void WriteFlotAppAsync(Stream output, bool decompress = false)
         {
             if (!decompress)
             {
                 using (var stream = Assembly.GetAssembly(typeof(FlotWebApp)).GetManifestResourceStream("Metrics.Visualization.index.full.html.gz"))
                 {
-                    await stream.CopyToAsync(output).ConfigureAwait(false);
+                    stream.CopyTo(output);
                 }
             }
             else
@@ -61,7 +60,7 @@ namespace Metrics.Visualization
                 using (var stream = Assembly.GetAssembly(typeof(FlotWebApp)).GetManifestResourceStream("Metrics.Visualization.index.full.html.gz"))
                 using (var gzip = new GZipStream(stream, CompressionMode.Decompress))
                 {
-                    await gzip.CopyToAsync(output).ConfigureAwait(false);
+                    gzip.CopyTo(output);
                 }
             }
         }
