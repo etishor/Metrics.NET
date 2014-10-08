@@ -11,4 +11,32 @@ namespace Metrics
         /// </summary>
         MetricsData CurrentMetricsData { get; }
     }
+
+    public sealed class FilteredMetrics : MetricsDataProvider
+    {
+        private readonly MetricsDataProvider provider;
+        private readonly MetricsFilter filter;
+
+        public FilteredMetrics(MetricsDataProvider provider, MetricsFilter filter)
+        {
+            this.provider = provider;
+            this.filter = filter;
+        }
+
+        public MetricsData CurrentMetricsData
+        {
+            get
+            {
+                return this.provider.CurrentMetricsData.Filter(this.filter);
+            }
+        }
+    }
+
+    public static class FilteredMetricsExtensions
+    {
+        public static MetricsDataProvider WithFilter(this MetricsDataProvider provider, MetricsFilter filter)
+        {
+            return new FilteredMetrics(provider, filter);
+        }
+    }
 }
