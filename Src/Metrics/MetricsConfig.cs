@@ -163,6 +163,12 @@ namespace Metrics
             return extension(this.context, this.healthStatus);
         }
 
+        public MetricsConfig WithInternalMetrics()
+        {
+            Metric.EnableInternalMetrics();
+            return this;
+        }
+
         public void Dispose()
         {
             this.reports.Dispose();

@@ -5,23 +5,41 @@ using Metrics.Utils;
 
 namespace Metrics.Json
 {
-    public class OldJsonBuilder
+    public class JsonBuilderV1
     {
+        public const int Version = 1;
+
+        public const string MetricsMimeType = "application/vnd.metrics.net.v1.metrics+json";
+
         private readonly List<JsonProperty> root = new List<JsonProperty>();
         private readonly List<JsonProperty> units = new List<JsonProperty>();
+
+        public static string BuildJson(MetricsData data) { return BuildJson(data, Clock.Default, indented: false); }
 
         public static string BuildJson(MetricsData data, Clock clock, bool indented = true)
         {
             var flatData = data.OldFormat();
 
-            return new OldJsonBuilder()
+            return new JsonBuilderV1()
+                .AddVersion(Version)
                 .AddTimestamp(Clock.Default)
+                .AddEnvironment()
                 .AddObject(flatData.Gauges)
                 .AddObject(flatData.Counters)
                 .AddObject(flatData.Meters)
                 .AddObject(flatData.Histograms)
                 .AddObject(flatData.Timers)
-                .GetJson();
+                .GetJson(indented);
+        }
+
+        public JsonBuilderV1 AddEnvironment()
+        {
+            var environment = AppEnvironment.Current
+                .Select(e => new JsonProperty(e.Name, e.Value));
+
+            root.Add(new JsonProperty("Environment", new ObjectJsonValue(new JsonObject(environment))));
+
+            return this;
         }
 
         public string GetJson(bool indented = true)
@@ -34,41 +52,47 @@ namespace Metrics.Json
             return new JsonObject(root).AsJson(indented);
         }
 
-        public OldJsonBuilder AddTimestamp(Clock clock)
+        public JsonBuilderV1 AddVersion(int version)
+        {
+            root.Add(new JsonProperty("Version", version.ToString(CultureInfo.InvariantCulture)));
+            return this;
+        }
+
+        public JsonBuilderV1 AddTimestamp(Clock clock)
         {
             root.Add(new JsonProperty("Timestamp", clock.UTCDateTime.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture)));
             return this;
         }
 
-        public OldJsonBuilder AddObject(IEnumerable<GaugeValueSource> gauges)
+        public JsonBuilderV1 AddObject(IEnumerable<GaugeValueSource> gauges)
         {
             root.Add(new JsonProperty("Gauges", gauges.Select(g => new JsonProperty(g.Name, g.Value))));
             units.Add(new JsonProperty("Gauges", gauges.Select(g => new JsonProperty(g.Name, g.Unit.Name))));
             return this;
         }
 
-        public OldJsonBuilder AddObject(IEnumerable<CounterValueSource> counters)
+        public JsonBuilderV1 AddObject(IEnumerable<CounterValueSource> counters)
         {
             root.Add(new JsonProperty("Counters", counters.Select(c => new JsonProperty(c.Name, c.Value.Count))));
             units.Add(new JsonProperty("Counters", counters.Select(c => new JsonProperty(c.Name, c.Unit.Name))));
             return this;
         }
 
-        public OldJsonBuilder AddObject(IEnumerable<MeterValueSource> meters)
+        public JsonBuilderV1 AddObject(IEnumerable<MeterValueSource> meters)
         {
             root.Add(new JsonProperty("Meters", meters.Select(m => new JsonProperty(m.Name, Meter(m.Value.Scale(m.RateUnit))))));
             units.Add(new JsonProperty("Meters", meters.Select(m => new JsonProperty(m.Name, string.Format("{0}/{1}", m.Unit.Name, m.RateUnit.Unit())))));
             return this;
         }
 
-        public OldJsonBuilder AddObject(IEnumerable<HistogramValueSource> histograms)
+        public JsonBuilderV1 AddObject(IEnumerable<HistogramValueSource> histograms)
         {
             root.Add(new JsonProperty("Histograms", histograms.Select(m => new JsonProperty(m.Name, Histogram(m.Value)))));
             units.Add(new JsonProperty("Histograms", histograms.Select(m => new JsonProperty(m.Name, m.Unit.Name))));
             return this;
         }
 
-        public OldJsonBuilder AddObject(IEnumerable<TimerValueSource> timers)
+        public JsonBuilderV1 AddObject(IEnumerable<TimerValueSource> timers)
         {
             var properties = timers.Select(t => new { Name = t.Name, Value = t.Value, RateUnit = t.RateUnit, DurationUnit = t.DurationUnit })
                 .Select(t => new JsonProperty(t.Name, new[] 
@@ -87,19 +111,6 @@ namespace Metrics.Json
 
             this.units.Add(new JsonProperty("Timers", units));
 
-            return this;
-        }
-
-        public OldJsonBuilder AddObject(HealthStatus status)
-        {
-            var properties = new List<JsonProperty>() { new JsonProperty("IsHealthy", status.IsHealty) };
-            var unhealty = status.Results.Where(r => !r.Check.IsHealthy)
-                .Select(r => new JsonProperty(r.Name, r.Check.Message));
-            properties.Add(new JsonProperty("Unhealthy", unhealty));
-            var healty = status.Results.Where(r => r.Check.IsHealthy)
-                    .Select(r => new JsonProperty(r.Name, r.Check.Message));
-            properties.Add(new JsonProperty("Healthy", healty));
-            this.root.AddRange(properties);
             return this;
         }
 
