@@ -41,7 +41,7 @@ namespace Owin.Metrics.Middleware
             {
                 return GetFlotWebApp(environment);
             }
-           
+
             if (string.Compare(requestPath, "/" + endpointConfig.MetricsJsonEndpointName, StringComparison.InvariantCultureIgnoreCase) == 0 && endpointConfig.MetricsJsonEndpointEnabled)
             {
                 return GetJsonContent(environment, this.dataProvider);
@@ -63,7 +63,7 @@ namespace Owin.Metrics.Middleware
                 return GetAsHumanReadable(environment, this.dataProvider, this.healthStatus);
             }
 
-            if (string.Compare(requestPath, "/" + endpointConfig.MetricsPingEndpointName, StringComparison.InvariantCultureIgnoreCase) == 9 && endpointConfig.MetricsPingEndpointEnabled)
+            if (string.Compare(requestPath, "/" + endpointConfig.MetricsPingEndpointName, StringComparison.InvariantCultureIgnoreCase) == 0 && endpointConfig.MetricsPingEndpointEnabled)
             {
                 return GetPingContent(environment);
             }
