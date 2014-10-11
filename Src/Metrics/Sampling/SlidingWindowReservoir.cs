@@ -33,23 +33,27 @@ namespace Metrics.Sampling
 
         public int Size { get { return Math.Min((int)this.count.Value, values.Length); } }
 
-        public Snapshot Snapshot
+        public Snapshot GetSnapshot(bool resetReservoir = false)
         {
-            get
+            var size = this.Size;
+            if (size == 0)
             {
-                var size = this.Size;
-                if (size == 0)
-                {
-                    return new UniformSnapshot(Enumerable.Empty<long>());
-                }
-
-                UserValueWrapper[] values = new UserValueWrapper[size];
-                Array.Copy(this.values, values, size);
-                Array.Sort(values, UserValueWrapper.Comparer);
-                var minValue = values[0].UserValue;
-                var maxValue = values[size - 1].UserValue;
-                return new UniformSnapshot(values.Select(v => v.Value), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
+                return new UniformSnapshot(Enumerable.Empty<long>());
             }
+
+            UserValueWrapper[] values = new UserValueWrapper[size];
+            Array.Copy(this.values, values, size);
+
+            if (resetReservoir)
+            {
+                Array.Clear(this.values, 0, values.Length);
+                count.SetValue(0L);
+            }
+
+            Array.Sort(values, UserValueWrapper.Comparer);
+            var minValue = values[0].UserValue;
+            var maxValue = values[size - 1].UserValue;
+            return new UniformSnapshot(values.Select(v => v.Value), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
         }
     }
 }

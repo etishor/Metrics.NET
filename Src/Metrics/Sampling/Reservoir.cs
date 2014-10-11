@@ -6,7 +6,7 @@ namespace Metrics.Sampling
     {
         int Size { get; }
         void Update(long value, string userValue = null);
-        Snapshot Snapshot { get; }
+        Snapshot GetSnapshot(bool resetReservoir = false);
         void Reset();
     }
 }

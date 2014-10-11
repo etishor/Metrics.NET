@@ -26,7 +26,7 @@ namespace Metrics.Tests.Sampling
             }
 
             reservoir.Size.Should().Be(100);
-            var snapshot = reservoir.Snapshot;
+            var snapshot = reservoir.GetSnapshot();
             snapshot.Size.Should().Be(100);
             snapshot.Values.Should().OnlyContain(v => 0 <= v && v < 1000);
         }
@@ -41,7 +41,7 @@ namespace Metrics.Tests.Sampling
             }
 
             reservoir.Size.Should().Be(10);
-            var snapshot = reservoir.Snapshot;
+            var snapshot = reservoir.GetSnapshot();
             snapshot.Size.Should().Be(10);
             snapshot.Values.Should().OnlyContain(v => 0 <= v && v < 10);
         }
@@ -56,7 +56,7 @@ namespace Metrics.Tests.Sampling
             }
 
             reservoir.Size.Should().Be(100);
-            var snapshot = reservoir.Snapshot;
+            var snapshot = reservoir.GetSnapshot();
             snapshot.Size.Should().Be(100);
             snapshot.Values.Should().OnlyContain(v => 0 <= v && v < 100);
         }
@@ -73,8 +73,8 @@ namespace Metrics.Tests.Sampling
                 clock.Advance(TimeUnit.Milliseconds, 100);
             }
 
-            reservoir.Snapshot.Size.Should().Be(10);
-            reservoir.Snapshot.Values.Should().OnlyContain(v => 1000 <= v && v < 2000);
+            reservoir.GetSnapshot().Size.Should().Be(10);
+            reservoir.GetSnapshot().Values.Should().OnlyContain(v => 1000 <= v && v < 2000);
 
             // wait for 15 hours and add another value.
             // this should trigger a rescale. Note that the number of samples will be reduced to 2
@@ -82,7 +82,7 @@ namespace Metrics.Tests.Sampling
             // zero after rescale.
             clock.Advance(TimeUnit.Hours, 15);
             reservoir.Update(2000);
-            var snapshot = reservoir.Snapshot;
+            var snapshot = reservoir.GetSnapshot();
             snapshot.Size.Should().Be(2);
             snapshot.Values.Should().OnlyContain(v => 1000 <= v && v < 3000);
 
@@ -93,7 +93,7 @@ namespace Metrics.Tests.Sampling
                 clock.Advance(TimeUnit.Milliseconds, 100);
             }
 
-            var finalSnapshot = reservoir.Snapshot;
+            var finalSnapshot = reservoir.GetSnapshot();
 
             finalSnapshot.Size.Should().Be(10);
             // TODO: double check the Skip first value - sometimes first value is 2000 - which might or not be correct
@@ -122,7 +122,7 @@ namespace Metrics.Tests.Sampling
             }
 
             // expect that quantiles should be more about mode 2 after 10 minutes
-            reservoir.Snapshot.Median.Should().Be(9999);
+            reservoir.GetSnapshot().Median.Should().Be(9999);
         }
 
         [Fact]
@@ -147,7 +147,7 @@ namespace Metrics.Tests.Sampling
             }
 
             // expect that quantiles should be more about mode 2 after 10 minutes
-            reservoir.Snapshot.Percentile95.Should().Be(178);
+            reservoir.GetSnapshot().Percentile95.Should().Be(178);
         }
 
         [Fact]
@@ -167,13 +167,13 @@ namespace Metrics.Tests.Sampling
                 reservoir.Update(9999);
             }
 
-            reservoir.Snapshot.Size.Should().Be(50);
+            reservoir.GetSnapshot().Size.Should().Be(50);
 
             // the first added 40 items (177) have weights 1 
             // the next added 10 items (9999) have weights ~6 
             // so, it's 40 vs 60 distribution, not 40 vs 10
-            reservoir.Snapshot.Median.Should().Be(9999);
-            reservoir.Snapshot.Percentile75.Should().Be(9999);
+            reservoir.GetSnapshot().Median.Should().Be(9999);
+            reservoir.GetSnapshot().Percentile75.Should().Be(9999);
         }
 
         [Fact]
@@ -184,8 +184,8 @@ namespace Metrics.Tests.Sampling
             reservoir.Update(2L, "B");
             reservoir.Update(1L, "A");
 
-            reservoir.Snapshot.MinUserValue.Should().Be("A");
-            reservoir.Snapshot.MaxUserValue.Should().Be("B");
+            reservoir.GetSnapshot().MinUserValue.Should().Be("A");
+            reservoir.GetSnapshot().MaxUserValue.Should().Be("B");
         }
     }
 }

@@ -62,22 +62,24 @@ namespace Metrics.Sampling
 
         public int Size { get { return Math.Min(this.size, (int)this.count.Value); } }
 
-        public Snapshot Snapshot
+        public Snapshot GetSnapshot(bool resetReservoir = false)
         {
-            get
+            bool lockTaken = false;
+            try
             {
-                bool lockTaken = false;
-                try
+                this.@lock.Enter(ref lockTaken);
+                var snapshot = new WeightedSnapshot(this.values.Values);
+                if (resetReservoir)
                 {
-                    this.@lock.Enter(ref lockTaken);
-                    return new WeightedSnapshot(this.values.Values);
+                    ResetReservoir();
                 }
-                finally
+                return snapshot;
+            }
+            finally
+            {
+                if (lockTaken)
                 {
-                    if (lockTaken)
-                    {
-                        this.@lock.Exit();
-                    }
+                    this.@lock.Exit();
                 }
             }
         }
@@ -93,9 +95,7 @@ namespace Metrics.Sampling
             try
             {
                 this.@lock.Enter(ref lockTaken);
-                this.values.Clear();
-                this.count.SetValue(0L);
-                this.startTime = new AtomicLong(this.clock.Seconds);
+                ResetReservoir();
             }
             finally
             {
@@ -104,6 +104,13 @@ namespace Metrics.Sampling
                     this.@lock.Exit();
                 }
             }
+        }
+
+        private void ResetReservoir()
+        {
+            this.values.Clear();
+            this.count.SetValue(0L);
+            this.startTime = new AtomicLong(this.clock.Seconds);
         }
 
         private void Update(long value, string userValue, long timestamp)
