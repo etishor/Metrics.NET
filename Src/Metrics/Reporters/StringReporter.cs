@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Text;
+using System.Threading;
+using Metrics.MetricData;
 
 namespace Metrics.Reporters
 {
@@ -8,7 +10,7 @@ namespace Metrics.Reporters
         public static string RenderMetrics(MetricsData metricsData, Func<HealthStatus> healthStatus)
         {
             var report = new StringReporter();
-            report.RunReport(metricsData, healthStatus);
+            report.RunReport(metricsData, healthStatus, CancellationToken.None);
             return report.Result;
         }
 

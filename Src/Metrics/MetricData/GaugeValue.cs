@@ -1,5 +1,5 @@
 ﻿
-namespace Metrics
+namespace Metrics.MetricData
 {
     /// <summary>
     /// Combines the value of a gauge with the defined unit for the value.

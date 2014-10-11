@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using Metrics.MetricData;
 using Metrics.Reporters;
 namespace Metrics.Reports
 {
@@ -23,7 +24,7 @@ namespace Metrics.Reports
         /// <param name="reporterName">Name of the reporter</param>
         /// <param name="reporter">Function that returns an instance of a reporter</param>
         /// <param name="interval">Interval at which to run the report.</param>
-        public MetricsReports WithReporter(string reporterName, Func<Reporter> reporter, TimeSpan interval)
+        public MetricsReports WithReporter(string reporterName, Func<MetricsReporter> reporter, TimeSpan interval)
         {
             var report = new ScheduledReporter(reporterName, reporter, this.metricsDataProvider, this.healthStatus, interval);
             report.Start();

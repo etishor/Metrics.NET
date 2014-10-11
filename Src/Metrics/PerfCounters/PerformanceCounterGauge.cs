@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Security.Principal;
+using Metrics.MetricData;
 
 namespace Metrics.PerfCounters
 {
@@ -38,6 +39,11 @@ namespace Metrics.PerfCounters
             {
                 return "[Unknown user | " + x.Message + " ]";
             }
+        }
+
+        public double GetValue(bool resetMetric = false)
+        {
+            return this.Value;
         }
 
         public double Value

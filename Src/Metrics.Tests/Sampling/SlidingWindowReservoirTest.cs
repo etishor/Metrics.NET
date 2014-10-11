@@ -14,7 +14,7 @@ namespace Metrics.Tests.Sampling
             reservoir.Update(1L);
             reservoir.Update(2L);
 
-            reservoir.Snapshot.Values.Should().ContainInOrder(1L, 2L);
+            reservoir.GetSnapshot().Values.Should().ContainInOrder(1L, 2L);
         }
 
         [Fact]
@@ -26,7 +26,7 @@ namespace Metrics.Tests.Sampling
             reservoir.Update(4L);
             reservoir.Update(5L);
 
-            reservoir.Snapshot.Values.Should().ContainInOrder(3L, 4L, 5L);
+            reservoir.GetSnapshot().Values.Should().ContainInOrder(3L, 4L, 5L);
         }
 
         [Fact]
@@ -35,8 +35,8 @@ namespace Metrics.Tests.Sampling
             reservoir.Update(2L, "B");
             reservoir.Update(1L, "A");
 
-            reservoir.Snapshot.MinUserValue.Should().Be("A");
-            reservoir.Snapshot.MaxUserValue.Should().Be("B");
+            reservoir.GetSnapshot().MinUserValue.Should().Be("A");
+            reservoir.GetSnapshot().MaxUserValue.Should().Be("B");
         }
     }
 }

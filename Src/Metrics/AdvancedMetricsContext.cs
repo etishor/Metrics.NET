@@ -1,5 +1,6 @@
 ﻿using System;
 using Metrics.Core;
+using Metrics.MetricData;
 using Metrics.Sampling;
 
 namespace Metrics
@@ -112,7 +113,7 @@ namespace Metrics
         /// <param name="durationUnit">Time unit for reporting durations. Defaults to Milliseconds. </param>
         /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Timer Timer(string name, Unit unit, Func<Histogram> builder, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds, MetricTags tags = default(MetricTags));
+        Timer Timer(string name, Unit unit, Func<HistogramImplementation> builder, TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds, MetricTags tags = default(MetricTags));
 
         /// <summary>
         /// Register a Timer metric with a custom Reservoir implementation for the histogram.

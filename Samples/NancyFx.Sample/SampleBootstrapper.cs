@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Metrics;
+using Metrics.SampleReporter;
 using Nancy;
 using Nancy.Authentication.Stateless;
 using Nancy.Bootstrapper;
@@ -30,7 +31,10 @@ namespace NancyFx.Sample
 
             Metric.Config
                 .WithAllCounters()
-                .WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30)))
+                .WithReporting(r =>
+                    r//.WithConsoleReport(TimeSpan.FromSeconds(30))
+                    .WithReporter("Resetting Reporter", () => new SampleResettingReporter(), TimeSpan.FromSeconds(5))
+                )
                 .WithNancy(pipelines);
 
             pipelines.AfterRequest += ctx =>

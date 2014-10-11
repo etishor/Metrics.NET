@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using Metrics.Core;
+using Metrics.MetricData;
 namespace Metrics.PerfCounters
 {
     public static class PerformanceCounters

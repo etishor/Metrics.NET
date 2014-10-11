@@ -1,4 +1,5 @@
 ﻿using System;
+using Metrics.MetricData;
 namespace Metrics
 {
     /// <summary>
