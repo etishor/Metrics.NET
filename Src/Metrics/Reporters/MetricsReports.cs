@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using Metrics.MetricData;
 using Metrics.Reporters;
 namespace Metrics.Reports
 {

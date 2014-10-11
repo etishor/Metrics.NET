@@ -2,6 +2,7 @@
 using System.Linq;
 using Metrics;
 using Metrics.Json;
+using Metrics.MetricData;
 using Metrics.Reporters;
 using Metrics.Visualization;
 

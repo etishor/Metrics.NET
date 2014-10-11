@@ -1,14 +1,15 @@
-﻿using Metrics;
-using Metrics.Json;
-using Metrics.Reporters;
-using Metrics.Utils;
-using Metrics.Visualization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Metrics;
+using Metrics.Json;
+using Metrics.MetricData;
+using Metrics.Reporters;
+using Metrics.Utils;
+using Metrics.Visualization;
 
 namespace Owin.Metrics.Middleware
 {
@@ -41,7 +42,7 @@ namespace Owin.Metrics.Middleware
             {
                 return GetFlotWebApp(environment);
             }
-           
+
             if (string.Compare(requestPath, "/" + endpointConfig.MetricsJsonEndpointName, StringComparison.InvariantCultureIgnoreCase) == 0 && endpointConfig.MetricsJsonEndpointEnabled)
             {
                 return GetJsonContent(environment, this.dataProvider);

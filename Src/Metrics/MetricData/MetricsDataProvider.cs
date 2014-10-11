@@ -1,5 +1,6 @@
 ﻿
-namespace Metrics
+
+namespace Metrics.MetricData
 {
     /// <summary>
     /// A provider capable of returning the current values for a set of metrics

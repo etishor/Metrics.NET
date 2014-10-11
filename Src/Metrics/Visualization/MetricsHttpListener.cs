@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Metrics.Json;
+using Metrics.MetricData;
 using Metrics.Reporters;
 namespace Metrics.Visualization
 {

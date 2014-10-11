@@ -1,8 +1,8 @@
 ﻿
 using System.Collections.Generic;
 using System.Linq;
-using Metrics.MetricData;
-namespace Metrics
+
+namespace Metrics.MetricData
 {
     public class MetricsData
     {

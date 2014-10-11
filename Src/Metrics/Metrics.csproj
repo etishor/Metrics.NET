@@ -84,6 +84,7 @@
     <Compile Include="MetricData\GaugeValue.cs" />
     <Compile Include="MetricData\HistogramValue.cs" />
     <Compile Include="MetricData\MeterValue.cs" />
+    <Compile Include="MetricData\MetricsDataProvider.cs" />
     <Compile Include="MetricData\TimerValue.cs" />
     <Compile Include="MetricTags.cs" />
     <Compile Include="Reporters\MetricsReporter.cs" />
@@ -107,11 +108,10 @@
     <Compile Include="Meter.cs" />
     <Compile Include="Core\MetricsRegistry.cs" />
     <Compile Include="Core\DefaultMetricsContext.cs" />
-    <Compile Include="MetricsDataProvider.cs" />
-    <Compile Include="MetricsFilter.cs" />
+    <Compile Include="MetricData\MetricsFilter.cs" />
     <Compile Include="MetricsConfig.cs" />
     <Compile Include="Json\JsonBuilderV2.cs" />
-    <Compile Include="MetricsData.cs" />
+    <Compile Include="MetricData\MetricsData.cs" />
     <Compile Include="Reporters\CSVAppender.cs" />
     <Compile Include="Reporters\MetricsReports.cs" />
     <Compile Include="MetricData\MetricValueSource.cs" />
