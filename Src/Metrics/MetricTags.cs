@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace Metrics
 {
+    /// <summary>
+    /// Collection of tags that can be attached to a metric.
+    /// </summary>
     public struct MetricTags : Utils.IHideObjectMembers
     {
         private static readonly string[] empty = new string[0];
