@@ -1,4 +1,5 @@
 ﻿using System;
+using Metrics.MetricData;
 using Metrics.Sampling;
 using Metrics.Utils;
 
@@ -23,9 +24,6 @@ namespace Metrics.Core
             this.reservoir = reservoir;
         }
 
-        public long Count { get { return this.counter.Value; } }
-        public Snapshot Snapshot { get { return this.reservoir.Snapshot; } }
-
         public void Update(long value, string userValue = null)
         {
             this.last = new UserValueWrapper(value, userValue);
@@ -34,11 +32,16 @@ namespace Metrics.Core
             this.reservoir.Update(value, userValue);
         }
 
+        public HistogramValue GetValue(bool resetMetric = false)
+        {
+            return new HistogramValue(this.counter.Value, this.last.Value, this.last.UserValue, this.reservoir.GetSnapshot(resetMetric));
+        }
+
         public HistogramValue Value
         {
             get
             {
-                return new HistogramValue(this.counter.Value, this.last.Value, this.last.UserValue, this.Snapshot);
+                return GetValue();
             }
         }
 

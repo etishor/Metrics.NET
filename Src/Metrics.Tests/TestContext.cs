@@ -2,6 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using Metrics.Core;
+using Metrics.MetricData;
 
 namespace Metrics.Tests
 {

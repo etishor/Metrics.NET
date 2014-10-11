@@ -1,5 +1,6 @@
 ﻿
 using System;
+using Metrics.MetricData;
 using Metrics.Sampling;
 
 namespace Metrics.Core

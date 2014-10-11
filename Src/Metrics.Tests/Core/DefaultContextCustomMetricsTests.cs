@@ -2,6 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using Metrics.Core;
+using Metrics.MetricData;
 using Metrics.Sampling;
 using Xunit;
 
@@ -25,6 +26,10 @@ namespace Metrics.Tests.Core
 
             public void Reset() { }
 
+            public CounterValue GetValue(bool resetMetric = false)
+            {
+                return this.Value;
+            }
             public CounterValue Value
             {
                 get { return new CounterValue(10L, new CounterValue.SetItem[0]); }
@@ -48,9 +53,9 @@ namespace Metrics.Tests.Core
 
             public void Update(long value, string userValue) { this.values.Add(value); }
 
-            public Snapshot Snapshot
+            public Snapshot GetSnapshot(bool resetReservoir = false)
             {
-                get { return new UniformSnapshot(this.values); }
+                return new UniformSnapshot(this.values);
             }
 
             public void Reset()
@@ -81,12 +86,17 @@ namespace Metrics.Tests.Core
 
             public CustomReservoir Reservoir { get { return this.reservoir; } }
 
+            public HistogramValue GetValue(bool resetMetric = false)
+            {
+                return this.Value;
+            }
+
             public HistogramValue Value
             {
                 get
                 {
                     return new HistogramValue(this.reservoir.Size,
-                        this.reservoir.Values.Last(), null, this.reservoir.Snapshot);
+                        this.reservoir.Values.Last(), null, this.reservoir.GetSnapshot());
                 }
             }
         }

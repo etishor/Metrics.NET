@@ -1,5 +1,6 @@
 ﻿using System;
 using Metrics.Core;
+using Metrics.MetricData;
 using Metrics.PerfCounters;
 using Metrics.Sampling;
 using Metrics.Utils;

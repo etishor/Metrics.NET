@@ -80,7 +80,13 @@
     <Compile Include="Core\DefaultDataProvider.cs" />
     <Compile Include="Core\DefaultRegistryDataProvider.cs" />
     <Compile Include="Json\JsonHealthChecks.cs" />
+    <Compile Include="MetricData\CounterValue.cs" />
+    <Compile Include="MetricData\GaugeValue.cs" />
+    <Compile Include="MetricData\HistogramValue.cs" />
+    <Compile Include="MetricData\MeterValue.cs" />
+    <Compile Include="MetricData\TimerValue.cs" />
     <Compile Include="MetricTags.cs" />
+    <Compile Include="Reporters\MetricsReporter.cs" />
     <Compile Include="Sampling\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Core\HealthCheck.cs" />
     <Compile Include="Core\MetricsBuilder.cs" />
@@ -93,7 +99,6 @@
     <Compile Include="ResetableMetric.cs" />
     <Compile Include="HealthCheckResult.cs" />
     <Compile Include="Counter.cs" />
-    <Compile Include="Gauge.cs" />
     <Compile Include="HealthChecks.cs" />
     <Compile Include="Histogram.cs" />
     <Compile Include="MetricsContext.cs" />
@@ -109,7 +114,7 @@
     <Compile Include="MetricsData.cs" />
     <Compile Include="Reporters\CSVAppender.cs" />
     <Compile Include="Reporters\MetricsReports.cs" />
-    <Compile Include="MetricValueSource.cs" />
+    <Compile Include="MetricData\MetricValueSource.cs" />
     <Compile Include="PerfCounters\PerformanceCounters.cs" />
     <Compile Include="PerfCounters\PerformanceCounterGauge.cs" />
     <Compile Include="PerfCounters\PerformanceCountersConfigExtensions.cs" />
@@ -120,7 +125,7 @@
     <Compile Include="Json\JsonObject.cs" />
     <Compile Include="Reporters\StringReporter.cs" />
     <Compile Include="Reporters\TextFileReporter.cs" />
-    <Compile Include="Reporters\Reporter.cs" />
+    <Compile Include="Reporters\BaseReporter.cs" />
     <Compile Include="Reporters\HumanReadableReporter.cs" />
     <Compile Include="Reporters\ScheduledReporter.cs" />
     <Compile Include="SamplingType.cs" />
@@ -164,6 +169,7 @@
       <Link>Visualization\metrics_32.png</Link>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

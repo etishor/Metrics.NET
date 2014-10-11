@@ -1,4 +1,5 @@
 ﻿using System;
+using Metrics.MetricData;
 using Metrics.Sampling;
 using Metrics.Utils;
 
@@ -105,6 +106,11 @@ namespace Metrics.Core
             {
                 return new TimerValue(this.meterValue.Value, this.histogramValue.Value);
             }
+        }
+
+        public TimerValue GetValue(bool resetMetric = false)
+        {
+            return new TimerValue(this.meterValue.GetValue(resetMetric), this.histogramValue.GetValue(resetMetric));
         }
 
         public void Reset()

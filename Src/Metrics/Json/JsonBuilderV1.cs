@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Metrics.MetricData;
 using Metrics.Utils;
 
 namespace Metrics.Json
