@@ -8,6 +8,14 @@ namespace Metrics.Tests.Sampling
 {
     public class ExponentiallyDecayingReservoirTests
     {
+        private readonly TestClock clock = new TestClock();
+        private readonly TestScheduler scheduler;
+
+        public ExponentiallyDecayingReservoirTests()
+        {
+            this.scheduler = new TestScheduler(clock);
+        }
+
         [Fact]
         public void EDR_ReservoirOf100OutOf1000Elements()
         {
@@ -56,9 +64,6 @@ namespace Metrics.Tests.Sampling
         [Fact]
         public void EDR_longPeriodsOfInactivityShouldNotCorruptSamplingState()
         {
-            TestClock clock = new TestClock();
-            TestScheduler scheduler = new TestScheduler(clock);
-
             ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(10, 0.015, clock, scheduler);
 
             // add 1000 values at a rate of 10 values/second
@@ -98,9 +103,7 @@ namespace Metrics.Tests.Sampling
         [Fact]
         public void EDR_SpotLift()
         {
-            TestClock clock = new TestClock();
-            TestScheduler scheduler = new TestScheduler(clock);
-            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(1000, 0.015, clock, scheduler);
+            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(clock, scheduler);
 
             int valuesRatePerMinute = 10;
             int valuesIntervalMillis = (int)(TimeUnit.Minutes.ToMilliseconds(1) / valuesRatePerMinute);
@@ -125,9 +128,7 @@ namespace Metrics.Tests.Sampling
         [Fact]
         public void EDR_SpotFall()
         {
-            TestClock clock = new TestClock();
-            TestScheduler scheduler = new TestScheduler(clock);
-            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(1000, 0.015, clock, scheduler);
+            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(clock, scheduler);
 
             int valuesRatePerMinute = 10;
             int valuesIntervalMillis = (int)(TimeUnit.Minutes.ToMilliseconds(1) / valuesRatePerMinute);
@@ -152,9 +153,7 @@ namespace Metrics.Tests.Sampling
         [Fact]
         public void EDR_QuantiliesShouldBeBasedOnWeights()
         {
-            TestClock clock = new TestClock();
-            TestScheduler scheduler = new TestScheduler(clock);
-            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(1000, 0.015, clock, scheduler);
+            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(clock, scheduler);
 
             for (int i = 0; i < 40; i++)
             {
@@ -180,9 +179,7 @@ namespace Metrics.Tests.Sampling
         [Fact]
         public void EDR_RecordsUserValue()
         {
-            TestClock clock = new TestClock();
-            TestScheduler scheduler = new TestScheduler(clock);
-            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(1000, 0.015, clock, scheduler);
+            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(clock, scheduler);
 
             reservoir.Update(2L, "B");
             reservoir.Update(1L, "A");
