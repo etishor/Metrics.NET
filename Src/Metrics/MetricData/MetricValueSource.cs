@@ -6,7 +6,7 @@ namespace Metrics.MetricData
     /// This is the raw value. Consumers should use <see cref="MetricValueSource{T}"/>
     /// </summary>
     /// <typeparam name="T">Type of the value returned by the metric</typeparam>
-    public interface MetricValueProvider<T> : Utils.IHideObjectMembers where T : struct
+    public interface MetricValueProvider<T> : Utils.IHideObjectMembers
     {
         /// <summary>
         /// The current value of the metric.
@@ -28,7 +28,6 @@ namespace Metrics.MetricData
     /// </summary>
     /// <typeparam name="T">Type of the metric value</typeparam>
     public abstract class MetricValueSource<T> : Utils.IHideObjectMembers
-        where T : struct
     {
         protected MetricValueSource(string name, MetricValueProvider<T> valueProvider, Unit unit, MetricTags tags)
         {
@@ -47,7 +46,7 @@ namespace Metrics.MetricData
         /// The current value of the metric.
         /// </summary>
         public T Value { get { return this.ValueProvider.Value; } }
-        
+
         /// <summary>
         /// Unit representing what the metric is measuring.
         /// </summary>

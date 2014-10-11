@@ -6,7 +6,7 @@ namespace Metrics.MetricData
     /// <summary>
     /// The value reported by a Histogram Metric
     /// </summary>
-    public struct HistogramValue
+    public sealed class HistogramValue
     {
         public readonly long Count;
 

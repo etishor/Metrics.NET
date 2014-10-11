@@ -6,7 +6,7 @@ namespace Metrics.MetricData
     /// <summary>
     /// The value reported by a Meter Metric
     /// </summary>
-    public struct MeterValue
+    public sealed class MeterValue
     {
         public struct SetItem
         {

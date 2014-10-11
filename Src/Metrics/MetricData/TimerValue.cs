@@ -4,7 +4,7 @@ namespace Metrics.MetricData
     /// <summary>
     /// The value reported by a Timer Metric
     /// </summary>
-    public struct TimerValue
+    public sealed class TimerValue
     {
         public readonly MeterValue Rate;
         public readonly HistogramValue Histogram;

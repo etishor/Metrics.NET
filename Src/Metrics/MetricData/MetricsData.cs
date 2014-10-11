@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Metrics.MetricData
 {
-    public class MetricsData
+    public sealed class MetricsData
     {
         public static MetricsData Empty = new MetricsData(string.Empty,
             Enumerable.Empty<GaugeValueSource>(),
