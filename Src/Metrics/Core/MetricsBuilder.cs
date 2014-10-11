@@ -14,7 +14,7 @@ namespace Metrics.Core
         HistogramImplementation BuildHistogram(string name, Unit unit, SamplingType samplingType);
         HistogramImplementation BuildHistogram(string name, Unit unit, Reservoir reservoir);
         TimerImplementation BuildTimer(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, SamplingType samplingType);
-        TimerImplementation BuildTimer(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, Histogram histogram);
+        TimerImplementation BuildTimer(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, HistogramImplementation histogram);
         TimerImplementation BuildTimer(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, Reservoir reservoir);
     }
 }

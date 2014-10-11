@@ -10,10 +10,8 @@ namespace Metrics.Core
     public sealed class TimerMetric : TimerImplementation, IDisposable
     {
         private readonly Clock clock;
-        private readonly Meter meter;
-        private readonly Histogram histogram;
-        private readonly MetricValueProvider<MeterValue> meterValue;
-        private readonly MetricValueProvider<HistogramValue> histogramValue;
+        private readonly MeterImplementation meter;
+        private readonly HistogramImplementation histogram;
 
         public TimerMetric()
             : this(new HistogramMetric(), new MeterMetric(), Clock.Default) { }
@@ -21,33 +19,20 @@ namespace Metrics.Core
         public TimerMetric(SamplingType samplingType)
             : this(new HistogramMetric(samplingType), new MeterMetric(), Clock.Default) { }
 
-        public TimerMetric(Histogram histogram)
+        public TimerMetric(HistogramImplementation histogram)
             : this(histogram, new MeterMetric(), Clock.Default) { }
 
         public TimerMetric(Reservoir reservoir)
             : this(new HistogramMetric(reservoir), new MeterMetric(), Clock.Default) { }
 
-        public TimerMetric(SamplingType samplingType, Meter meter, Clock clock)
+        public TimerMetric(SamplingType samplingType, MeterImplementation meter, Clock clock)
             : this(new HistogramMetric(samplingType), meter, clock) { }
 
-        public TimerMetric(Histogram histogram, Meter meter, Clock clock)
+        public TimerMetric(HistogramImplementation histogram, MeterImplementation meter, Clock clock)
         {
             this.clock = clock;
             this.meter = meter;
             this.histogram = histogram;
-            this.meterValue = meter as MetricValueProvider<MeterValue>;
-
-            if (meterValue == null)
-            {
-                throw new InvalidOperationException("Meter type must also implement MetricValue<MeterValue>");
-            }
-
-            this.histogramValue = histogram as MetricValueProvider<HistogramValue>;
-
-            if (histogramValue == null)
-            {
-                throw new InvalidOperationException("Histogram type must also implement MetricValue<HistogramValue>");
-            }
         }
 
         public void Record(long duration, TimeUnit unit, string userValue = null)
@@ -104,13 +89,13 @@ namespace Metrics.Core
         {
             get
             {
-                return new TimerValue(this.meterValue.Value, this.histogramValue.Value);
+                return GetValue();
             }
         }
 
         public TimerValue GetValue(bool resetMetric = false)
         {
-            return new TimerValue(this.meterValue.GetValue(resetMetric), this.histogramValue.GetValue(resetMetric));
+            return new TimerValue(this.meter.GetValue(resetMetric), this.histogram.GetValue(resetMetric));
         }
 
         public void Reset()

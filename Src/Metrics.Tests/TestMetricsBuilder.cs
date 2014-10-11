@@ -57,7 +57,7 @@ namespace Metrics.Tests
             return new TimerMetric(new HistogramMetric(new ExponentiallyDecayingReservoir(this.clock, this.scheduler)), new MeterMetric(this.clock, this.scheduler), this.clock);
         }
 
-        public TimerImplementation BuildTimer(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, Histogram histogram)
+        public TimerImplementation BuildTimer(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, HistogramImplementation histogram)
         {
             return new TimerMetric(new HistogramMetric(new ExponentiallyDecayingReservoir(this.clock, this.scheduler)), new MeterMetric(this.clock, this.scheduler), this.clock);
         }

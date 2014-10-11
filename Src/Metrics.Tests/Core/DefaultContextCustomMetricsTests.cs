@@ -78,7 +78,7 @@ namespace Metrics.Tests.Core
             reservoir.Values.Single().Should().Be(10L);
         }
 
-        public class CustomHistogram : Histogram, MetricValueProvider<HistogramValue>
+        public class CustomHistogram : HistogramImplementation
         {
             private readonly CustomReservoir reservoir = new CustomReservoir();
             public void Update(long value, string userValue) { this.reservoir.Update(value, userValue); }
@@ -106,7 +106,7 @@ namespace Metrics.Tests.Core
         {
             var histogram = new CustomHistogram();
 
-            var timer = context.Advanced.Timer("custom", Unit.Calls, () => (Histogram)histogram);
+            var timer = context.Advanced.Timer("custom", Unit.Calls, () => (HistogramImplementation)histogram);
 
             timer.Record(10L, TimeUnit.Nanoseconds);
 
