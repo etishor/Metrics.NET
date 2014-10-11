@@ -18,7 +18,7 @@ namespace Metrics.Sampling
         }
     }
 
-    public struct WeightedSnapshot : Snapshot
+    public sealed class WeightedSnapshot : Snapshot
     {
         private readonly long count;
         private readonly long[] values;

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Metrics.Sampling
 {
-    public struct UniformSnapshot : Snapshot
+    public sealed class UniformSnapshot : Snapshot
     {
         private readonly long count;
         private readonly long[] values;
