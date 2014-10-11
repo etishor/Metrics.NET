@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Metrics.Sampling;
 using Xunit;
 
@@ -125,6 +126,14 @@ namespace Metrics.Tests.Sampling
         {
             Snapshot snapshot = new UniformSnapshot(0, new long[] { 1 });
             snapshot.StdDev.Should().Be(0);
+        }
+
+        [Fact]
+        public void UniformSnapshot_ThrowsOnBadQuantileValue()
+        {
+            ((Action)(() => snapshot.GetValue(-0.5))).ShouldThrow<ArgumentException>();
+            ((Action)(() => snapshot.GetValue(1.5))).ShouldThrow<ArgumentException>();
+            ((Action)(() => snapshot.GetValue(double.NaN))).ShouldThrow<ArgumentException>();
         }
     }
 }

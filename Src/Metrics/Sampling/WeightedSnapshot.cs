@@ -124,7 +124,7 @@ namespace Metrics.Sampling
 
         public double GetValue(double quantile)
         {
-            if (quantile < 0.0 || quantile > 1.0)
+            if (quantile < 0.0 || quantile > 1.0 || double.IsNaN(quantile))
             {
                 throw new ArgumentException(string.Format("{0} is not in [0..1]", quantile));
             }

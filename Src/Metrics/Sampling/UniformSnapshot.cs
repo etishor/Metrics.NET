@@ -60,7 +60,7 @@ namespace Metrics.Sampling
 
         public double GetValue(double quantile)
         {
-            if (quantile < 0.0 || quantile > 1.0)
+            if (quantile < 0.0 || quantile > 1.0 || double.IsNaN(quantile))
             {
                 throw new ArgumentException(string.Format("{0} is not in [0..1]", quantile));
             }
@@ -71,19 +71,20 @@ namespace Metrics.Sampling
             }
 
             double pos = quantile * (values.Length + 1);
+            int index = (int)pos;
 
-            if (pos < 1)
+            if (index < 1)
             {
                 return values[0];
             }
 
-            if (pos >= values.Length)
+            if (index >= values.Length)
             {
                 return values[values.Length - 1];
             }
 
-            double lower = values[(int)pos - 1];
-            double upper = values[(int)pos];
+            double lower = values[index - 1];
+            double upper = values[index];
 
             return lower + (pos - Math.Floor(pos)) * (upper - lower);
         }
