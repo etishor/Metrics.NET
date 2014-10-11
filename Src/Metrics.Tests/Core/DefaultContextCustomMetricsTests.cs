@@ -49,13 +49,14 @@ namespace Metrics.Tests.Core
         {
             private readonly List<long> values = new List<long>();
 
+            public long Count { get { return this.values.Count; } }
             public int Size { get { return this.values.Count; } }
 
             public void Update(long value, string userValue) { this.values.Add(value); }
 
             public Snapshot GetSnapshot(bool resetReservoir = false)
             {
-                return new UniformSnapshot(this.values);
+                return new UniformSnapshot(this.values.Count, this.values);
             }
 
             public void Reset()
@@ -95,8 +96,7 @@ namespace Metrics.Tests.Core
             {
                 get
                 {
-                    return new HistogramValue(this.reservoir.Size,
-                        this.reservoir.Values.Last(), null, this.reservoir.GetSnapshot());
+                    return new HistogramValue(this.reservoir.Values.Last(), null, this.reservoir.GetSnapshot());
                 }
             }
         }

@@ -60,6 +60,7 @@ namespace Metrics.Sampling
             this.startTime = new AtomicLong(clock.Seconds);
         }
 
+        public long Count { get { return this.count.Value; } }
         public int Size { get { return Math.Min(this.size, (int)this.count.Value); } }
 
         public Snapshot GetSnapshot(bool resetReservoir = false)
@@ -68,7 +69,7 @@ namespace Metrics.Sampling
             try
             {
                 this.@lock.Enter(ref lockTaken);
-                var snapshot = new WeightedSnapshot(this.values.Values);
+                var snapshot = new WeightedSnapshot(this.count.Value, this.values.Values);
                 if (resetReservoir)
                 {
                     ResetReservoir();

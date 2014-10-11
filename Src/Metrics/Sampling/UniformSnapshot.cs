@@ -6,12 +6,14 @@ namespace Metrics.Sampling
 {
     public struct UniformSnapshot : Snapshot
     {
+        private readonly long count;
         private readonly long[] values;
         private readonly string minUserValue;
         private readonly string maxUserValue;
 
-        public UniformSnapshot(IEnumerable<long> values, bool valuesAreSorted = false, string minUserValue = null, string maxUserValue = null)
+        public UniformSnapshot(long count, IEnumerable<long> values, bool valuesAreSorted = false, string minUserValue = null, string maxUserValue = null)
         {
+            this.count = count;
             this.values = values.ToArray();
             if (!valuesAreSorted)
             {
@@ -21,6 +23,7 @@ namespace Metrics.Sampling
             this.maxUserValue = maxUserValue;
         }
 
+        public long Count { get { return this.count; } }
         public int Size { get { return this.values.Length; } }
 
         public long Max { get { return this.values.LastOrDefault(); } }

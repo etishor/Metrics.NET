@@ -1,7 +1,6 @@
 ﻿using System;
 using Metrics.MetricData;
 using Metrics.Sampling;
-using Metrics.Utils;
 
 namespace Metrics.Core
 {
@@ -10,7 +9,6 @@ namespace Metrics.Core
     public sealed class HistogramMetric : HistogramImplementation
     {
         private readonly Reservoir reservoir;
-        private AtomicLong counter = new AtomicLong();
         private UserValueWrapper last = new UserValueWrapper();
 
         public HistogramMetric()
@@ -27,14 +25,17 @@ namespace Metrics.Core
         public void Update(long value, string userValue = null)
         {
             this.last = new UserValueWrapper(value, userValue);
-
-            this.counter.Increment();
             this.reservoir.Update(value, userValue);
         }
 
         public HistogramValue GetValue(bool resetMetric = false)
         {
-            return new HistogramValue(this.counter.Value, this.last.Value, this.last.UserValue, this.reservoir.GetSnapshot(resetMetric));
+            var value = new HistogramValue(this.last.Value, this.last.UserValue, this.reservoir.GetSnapshot(resetMetric));
+            if (resetMetric)
+            {
+                this.last = new UserValueWrapper();
+            }
+            return value;
         }
 
         public HistogramValue Value
@@ -48,7 +49,6 @@ namespace Metrics.Core
         public void Reset()
         {
             this.last = new UserValueWrapper();
-            this.counter.SetValue(0L);
             this.reservoir.Reset();
         }
 

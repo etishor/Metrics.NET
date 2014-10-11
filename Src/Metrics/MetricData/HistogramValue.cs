@@ -26,8 +26,8 @@ namespace Metrics.MetricData
         public readonly double Percentile999;
         public readonly int SampleSize;
 
-        public HistogramValue(long count, double lastValue, string lastUserValue, Snapshot snapshot)
-            : this(count,
+        public HistogramValue(double lastValue, string lastUserValue, Snapshot snapshot)
+            : this(snapshot.Count,
             lastValue,
             lastUserValue,
             snapshot.Max,

@@ -3,6 +3,7 @@ namespace Metrics.Sampling
 {
     public interface Snapshot
     {
+        long Count { get; }
         double GetValue(double quantile);
         long Max { get; }
         string MaxUserValue { get; }

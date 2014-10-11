@@ -20,6 +20,7 @@ namespace Metrics.Sampling
 
     public struct WeightedSnapshot : Snapshot
     {
+        private readonly long count;
         private readonly long[] values;
         private readonly double[] normWeights;
         private readonly double[] quantiles;
@@ -37,8 +38,9 @@ namespace Metrics.Sampling
             }
         }
 
-        public WeightedSnapshot(IEnumerable<WeightedSample> values)
+        public WeightedSnapshot(long count, IEnumerable<WeightedSample> values)
         {
+            this.count = count;
             var sample = values.ToArray();
             Array.Sort(sample, WeightedSampleComparer.Instance);
 
@@ -62,6 +64,7 @@ namespace Metrics.Sampling
             this.maxUserValue = sample.Select(s => s.UserValue).LastOrDefault();
         }
 
+        public long Count { get { return this.count; } }
         public int Size { get { return this.values.Length; } }
 
         public long Max { get { return this.values.LastOrDefault(); } }
