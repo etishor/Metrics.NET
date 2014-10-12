@@ -14,13 +14,13 @@ namespace NancyFx.Sample
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings { Formatting = Formatting.Indented };
 
             using (ActionScheduler scheduler = new ActionScheduler())
-            using (var host = new NancyHost(new Uri("http://localhost:12345")))
+            using (var host = new NancyHost(new Uri("http://localhost:8090")))
             {
                 host.Start();
-                Console.WriteLine("Nancy Running at http://localhost:12345");
+                Console.WriteLine("Nancy Running at http://localhost:8090");
                 Console.WriteLine("Press any key to exit");
 
-                Process.Start("http://localhost:12345/metrics/");
+                Process.Start("http://localhost:8090/metrics/");
 
                 SampleMetrics.RunSomeRequests();
 
