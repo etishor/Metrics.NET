@@ -7,12 +7,12 @@ namespace Metrics.Json
 {
     public class JsonMetricsContext
     {
-        private JsonGauge[] gauges;
-        private JsonCounter[] counters;
-        private JsonMeter[] meters;
-        private JsonHistogram[] histograms;
-        private JsonTimer[] timers;
-        private JsonMetricsContext[] childContexts;
+        private JsonGauge[] gauges = new JsonGauge[0];
+        private JsonCounter[] counters = new JsonCounter[0];
+        private JsonMeter[] meters = new JsonMeter[0];
+        private JsonHistogram[] histograms = new JsonHistogram[0];
+        private JsonTimer[] timers = new JsonTimer[0];
+        private JsonMetricsContext[] childContexts = new JsonMetricsContext[0];
 
         public string Version { get; set; }
         public string Timestamp { get; set; }

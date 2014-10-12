@@ -6,18 +6,9 @@ namespace Metrics.Core
     /// <summary>
     /// Read only metrics context ( ex: to capture metrics from a remote system )
     /// </summary>
-    public class ReadOnlyMetricsContext : MetricsContext
+    public abstract class ReadOnlyMetricsContext : MetricsContext
     {
-        public ReadOnlyMetricsContext(MetricsContext context)
-            : this(context.DataProvider)
-        { }
-
-        public ReadOnlyMetricsContext(MetricsDataProvider dataProvider)
-        {
-            this.DataProvider = dataProvider;
-        }
-
-        public MetricsDataProvider DataProvider { get; private set; }
+        public abstract MetricsDataProvider DataProvider { get; }
 
         public AdvancedMetricsContext Advanced { get { throw new ReadOnlyMetricsContextException(); } }
         public MetricsContext Context(string contextName) { throw new ReadOnlyMetricsContextException(); }
@@ -30,8 +21,15 @@ namespace Metrics.Core
         public Histogram Histogram(string name, Unit unit, SamplingType samplingType, MetricTags tags) { throw new ReadOnlyMetricsContextException(); }
         public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags) { throw new ReadOnlyMetricsContextException(); }
 
+        public virtual void Dispose(bool disposing)
+        {
+        }
+
         public void Dispose()
-        { }
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
     }
 
     [Serializable]

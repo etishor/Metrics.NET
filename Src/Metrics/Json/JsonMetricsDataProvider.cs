@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Metrics.MetricData;
 
@@ -18,6 +17,12 @@ namespace Metrics.Json
             get
             {
                 var data = jsonDataProvider();
+
+                if (data == null)
+                {
+                    return MetricsData.Empty;
+                }
+
                 return ToMetricsData(data);
             }
         }

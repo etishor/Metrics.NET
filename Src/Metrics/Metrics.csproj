@@ -97,6 +97,8 @@
     <Compile Include="MetricData\MetricsDataProvider.cs" />
     <Compile Include="MetricData\TimerValue.cs" />
     <Compile Include="MetricTags.cs" />
+    <Compile Include="RemoteMetrics\HttpRemoteMetrics.cs" />
+    <Compile Include="RemoteMetrics\RemoteMetricsContext.cs" />
     <Compile Include="Reporters\MetricsReporter.cs" />
     <Compile Include="Sampling\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Core\HealthCheck.cs" />
