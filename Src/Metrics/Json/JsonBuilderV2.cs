@@ -11,10 +11,17 @@ namespace Metrics.Json
         public const int Version = 2;
         public const string MetricsMimeType = "application/vnd.metrics.net.v2.metrics+json";
 
+#if !DEBUG
+        private const bool DefaultIndented = false;
+#else
+        private const bool DefaultIndented = true;
+#endif
+
         private readonly List<JsonProperty> root = new List<JsonProperty>();
 
-        public static string BuildJson(MetricsData data) { return BuildJson(data, Clock.Default, indented: false); }
-        public static string BuildJson(MetricsData data, Clock clock, bool indented = true)
+        public static string BuildJson(MetricsData data) { return BuildJson(data, Clock.Default, indented: DefaultIndented); }
+
+        public static string BuildJson(MetricsData data, Clock clock, bool indented = DefaultIndented)
         {
             return new JsonBuilderV2()
                 .AddVersion(Version)
@@ -24,7 +31,7 @@ namespace Metrics.Json
                 .GetJson(indented);
         }
 
-        public JsonBuilderV2 AddEnvironment()
+        private JsonBuilderV2 AddEnvironment()
         {
             var environment = AppEnvironment.Current
                 .Select(e => new JsonProperty(e.Name, e.Value));
@@ -34,7 +41,7 @@ namespace Metrics.Json
             return this;
         }
 
-        public JsonBuilderV2 AddVersion(int version)
+        private JsonBuilderV2 AddVersion(int version)
         {
             root.Add(new JsonProperty("Version", version.ToString(CultureInfo.InvariantCulture)));
             return this;
@@ -83,7 +90,7 @@ namespace Metrics.Json
             return this;
         }
 
-        private string GetJson(bool indented = true)
+        private string GetJson(bool indented = DefaultIndented)
         {
             return new JsonObject(root).AsJson(indented);
         }
