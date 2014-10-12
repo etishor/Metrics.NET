@@ -27,7 +27,12 @@ namespace Metrics.RemoteMetrics
         {
             try
             {
-                this.data = await HttpRemoteMetrics.FetchRemoteMetrics(remoteUri, deserializer, token);
+                var remoteContext = await HttpRemoteMetrics.FetchRemoteMetrics(remoteUri, deserializer, token);
+                remoteContext.Environment.Add("RemoteUri", remoteUri.ToString());
+                remoteContext.Environment.Add("RemoteVersion", remoteContext.Version);
+                remoteContext.Environment.Add("RemoteTimestamp", remoteContext.Timestamp);
+
+                this.data = remoteContext;
             }
             catch
             {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Metrics.MetricData;
 
 namespace Metrics.Json
@@ -23,19 +22,8 @@ namespace Metrics.Json
                     return MetricsData.Empty;
                 }
 
-                return ToMetricsData(data);
+                return data.ToMetricsData();
             }
-        }
-
-        private static MetricsData ToMetricsData(JsonMetricsContext data)
-        {
-            return new MetricsData(data.Context,
-                    data.Gauges.Select(g => g.ToValueSource()),
-                    data.Counters.Select(c => c.ToValueSource()),
-                    data.Meters.Select(m => m.ToValueSource()),
-                    data.Histograms.Select(h => h.ToValueSource()),
-                    data.Timers.Select(t => t.ToValueSource()),
-                    data.ChildContexts.Select(c => ToMetricsData(c)));
         }
     }
 }

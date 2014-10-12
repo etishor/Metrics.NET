@@ -91,6 +91,7 @@
     <Compile Include="Json\JsonHealthChecks.cs" />
     <Compile Include="MetricData\ConstantValue.cs" />
     <Compile Include="MetricData\CounterValue.cs" />
+    <Compile Include="MetricData\EnvironmentEntry.cs" />
     <Compile Include="MetricData\GaugeValue.cs" />
     <Compile Include="MetricData\HistogramValue.cs" />
     <Compile Include="MetricData\MeterValue.cs" />

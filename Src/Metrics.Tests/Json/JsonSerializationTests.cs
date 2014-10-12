@@ -61,10 +61,11 @@ namespace Metrics.Tests.Json
             this.histogram = new HistogramValueSource("test3", Provider(histogramValue), Unit.Items, MetricTags.None);
             this.timer = new TimerValueSource("test4", Provider(timerValue), Unit.Requests, TimeUnit.Seconds, TimeUnit.Milliseconds, MetricTags.None);
 
-            this.data = new MetricsData("test", new[] { gauge }, new[] { counter }, new[] { meter }, new[] { histogram }, new[] { timer },
+            this.data = new MetricsData("test", new[] { new EnvironmentEntry("name", "1") },
+                new[] { gauge }, new[] { counter }, new[] { meter }, new[] { histogram }, new[] { timer },
                     Enumerable.Empty<MetricsData>()
             );
-            this.jsonContext = JsonMetricsContext.FromContext(this.data, "1", "time", new[] { new AppEnvironment.Entry("name", "value") });
+            this.jsonContext = JsonMetricsContext.FromContext(this.data, "1", "time");
         }
 
         [Fact]
