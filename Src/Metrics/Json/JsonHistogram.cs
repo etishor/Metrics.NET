@@ -88,6 +88,11 @@ namespace Metrics.Json
             {
                 yield return new JsonProperty("MinUserValue", this.MinUserValue);
             }
+            yield return new JsonProperty("Max", this.Max);
+            if (hasUserValues)
+            {
+                yield return new JsonProperty("MaxUserValue", this.MaxUserValue);
+            }
             yield return new JsonProperty("Mean", this.Mean);
             if (hasUserValues)
             {

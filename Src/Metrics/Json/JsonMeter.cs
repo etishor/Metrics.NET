@@ -83,7 +83,7 @@ namespace Metrics.Json
             yield return new JsonProperty("OneMinuteRate", item.OneMinuteRate);
             yield return new JsonProperty("FiveMinuteRate", item.FiveMinuteRate);
             yield return new JsonProperty("FifteenMinuteRate", item.FifteenMinuteRate);
-            yield return new JsonProperty("Percentage", item.Percent);
+            yield return new JsonProperty("Percent", item.Percent);
         }
     }
 }

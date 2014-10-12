@@ -37,7 +37,7 @@ namespace Metrics.Json
         public IEnumerable<JsonProperty> ToJsonProperties()
         {
             yield return new JsonProperty("Name", this.Name);
-            yield return new JsonProperty("Value", this.Count);
+            yield return new JsonProperty("Count", this.Count);
             yield return new JsonProperty("Unit", this.Unit);
 
             if (this.Items.Length > 0)
@@ -50,7 +50,7 @@ namespace Metrics.Json
         {
             yield return new JsonProperty("Item", item.Item);
             yield return new JsonProperty("Count", item.Count);
-            yield return new JsonProperty("Percentage", item.Percent);
+            yield return new JsonProperty("Percent", item.Percent);
         }
     }
 }

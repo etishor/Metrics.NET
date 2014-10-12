@@ -5,7 +5,7 @@ namespace Metrics
 {
     public struct Unit : IHideObjectMembers
     {
-        public static readonly Unit None = new Unit();
+        public static readonly Unit None = new Unit(string.Empty);
         public static readonly Unit Requests = new Unit("Requests");
         public static readonly Unit Errors = new Unit("Errors");
         public static readonly Unit Results = new Unit("Results");
