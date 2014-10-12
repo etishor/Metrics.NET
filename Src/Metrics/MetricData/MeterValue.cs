@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Metrics.Utils;
 
 namespace Metrics.MetricData
@@ -34,6 +35,11 @@ namespace Metrics.MetricData
 
         public MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate, SetItem[] items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
+
             this.Count = count;
             this.MeanRate = meanRate;
             this.OneMinuteRate = oneMinuteRate;

@@ -1,4 +1,5 @@
 ﻿
+using System;
 namespace Metrics.MetricData
 {
 
@@ -41,6 +42,11 @@ namespace Metrics.MetricData
 
         public CounterValue(long count, SetItem[] items)
         {
+            if (items == null)
+            {
+                throw new ArgumentNullException("items");
+            }
+
             this.Count = count;
             this.Items = items;
         }
