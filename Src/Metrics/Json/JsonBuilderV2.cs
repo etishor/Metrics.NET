@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Linq;
 using Metrics.MetricData;
 using Metrics.Utils;
@@ -16,9 +15,6 @@ namespace Metrics.Json
 #else
         private const bool DefaultIndented = true;
 #endif
-
-        private readonly List<JsonProperty> root = new List<JsonProperty>();
-
         public static string BuildJson(MetricsData data) { return BuildJson(data, Clock.Default, indented: DefaultIndented); }
 
         public static string BuildJson(MetricsData data, Clock clock, bool indented = DefaultIndented)
