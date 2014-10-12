@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Metrics.Json;
+using Metrics.MetricData;
 using Metrics.Reporters;
 namespace Metrics.Visualization
 {
@@ -41,22 +42,22 @@ namespace Metrics.Visualization
             {
                 try
                 {
-                    using (timer.NewContext())
+                    var context = await this.httpListener.GetContextAsync();
+                    try
                     {
-                        var context = await this.httpListener.GetContextAsync();
-                        try
+                        using (timer.NewContext())
                         {
                             await ProcessRequest(context).ConfigureAwait(false);
                             context.Response.Close();
                         }
-                        catch (Exception ex)
-                        {
-                            errors.Mark();
-                            context.Response.StatusCode = 500;
-                            context.Response.StatusDescription = "Internal Server Error";
-                            context.Response.Close();
-                            MetricsErrorHandler.Handle(ex, "Error processing HTTP request");
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.Mark();
+                        context.Response.StatusCode = 500;
+                        context.Response.StatusDescription = "Internal Server Error";
+                        context.Response.Close();
+                        MetricsErrorHandler.Handle(ex, "Error processing HTTP request");
                     }
                 }
                 catch (Exception ex)
@@ -138,7 +139,7 @@ namespace Metrics.Visualization
 
         private static Task WriteJsonMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
         {
-            var acceptHeader = context.Request.Headers["Accept"];
+            var acceptHeader = context.Request.Headers["Accept"] ?? string.Empty;
 
             if (acceptHeader.Contains(JsonBuilderV2.MetricsMimeType))
             {

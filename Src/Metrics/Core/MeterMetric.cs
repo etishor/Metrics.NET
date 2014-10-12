@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using Metrics.MetricData;
 using Metrics.Utils;
 namespace Metrics.Core
 {
@@ -102,6 +103,16 @@ namespace Metrics.Core
         {
             this.Mark(count);
             this.setMeters.GetOrAdd(item, v => new MeterWrapper()).Mark(count);
+        }
+
+        public MeterValue GetValue(bool resetMetric = false)
+        {
+            var value = this.Value;
+            if (resetMetric)
+            {
+                this.Reset();
+            }
+            return value;
         }
 
         public MeterValue Value

@@ -1,10 +1,11 @@
 ﻿
 using System.Collections.Generic;
 using System.Linq;
+using Metrics.MetricData;
 using Metrics.Utils;
 namespace Metrics.Reporters
 {
-    public class CSVReporter : Reporter
+    public class CSVReporter : BaseReporter
     {
         public class Value
         {

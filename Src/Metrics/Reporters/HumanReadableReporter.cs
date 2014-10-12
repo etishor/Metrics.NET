@@ -1,9 +1,10 @@
 ﻿using System.Globalization;
 using System.Linq;
+using Metrics.MetricData;
 
 namespace Metrics.Reporters
 {
-    public abstract class HumanReadableReporter : Reporter
+    public abstract class HumanReadableReporter : BaseReporter
     {
         private readonly int padding;
 

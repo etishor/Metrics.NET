@@ -1,5 +1,6 @@
 ﻿
 using System;
+using Metrics.MetricData;
 using Metrics.PerfCounters;
 using Metrics.Sampling;
 namespace Metrics.Core
@@ -41,7 +42,7 @@ namespace Metrics.Core
             return new TimerMetric(samplingType);
         }
 
-        public TimerImplementation BuildTimer(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, Histogram histogram)
+        public TimerImplementation BuildTimer(string name, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, HistogramImplementation histogram)
         {
             return new TimerMetric(histogram);
         }

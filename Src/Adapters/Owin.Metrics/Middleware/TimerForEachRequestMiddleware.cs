@@ -42,7 +42,10 @@ namespace Owin.Metrics.Middleware
 
                 if (environment.ContainsKey("metrics-net.routetemplate"))
                 {
-                    metricName = environment["metrics-net.routetemplate"] as string;
+                    var requestMethod = environment["owin.RequestMethod"] as string;
+                    var routeTemplate = environment["metrics-net.routetemplate"] as string;
+
+                    metricName = requestMethod.ToUpperInvariant() + " " + routeTemplate;
                 }
 
                 if (httpResponseStatusCode != (int)HttpStatusCode.NotFound)

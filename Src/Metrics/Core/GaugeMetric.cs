@@ -1,5 +1,6 @@
 ﻿
 using System;
+using Metrics.MetricData;
 namespace Metrics.Core
 {
     public interface GaugeImplementation : MetricValueProvider<double> { }
@@ -11,6 +12,11 @@ namespace Metrics.Core
         public FunctionGauge(Func<double> valueProvider)
         {
             this.valueProvider = valueProvider;
+        }
+
+        public double GetValue(bool resetMetric = false)
+        {
+            return this.Value;
         }
 
         public double Value
@@ -39,6 +45,11 @@ namespace Metrics.Core
         {
             this.gauge = gauge;
             this.transformation = transformation;
+        }
+
+        public double GetValue(bool resetMetric = false)
+        {
+            return this.Value;
         }
 
         public double Value

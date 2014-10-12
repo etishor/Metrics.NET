@@ -2,18 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Metrics.MetricData;
 using Metrics.Utils;
 
 namespace Metrics.Reporters
 {
-    public abstract class Reporter : Utils.IHideObjectMembers
+    public abstract class BaseReporter : MetricsReporter
     {
         private CancellationToken token;
-
-        public void RunReport(MetricsData metricsData, Func<HealthStatus> healthStatus)
-        {
-            RunReport(metricsData, healthStatus, CancellationToken.None);
-        }
 
         public void RunReport(MetricsData metricsData, Func<HealthStatus> healthStatus, CancellationToken token)
         {

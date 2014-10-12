@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Metrics.MetricData;
 
 namespace Metrics.Core
 {
@@ -9,7 +10,6 @@ namespace Metrics.Core
     {
         private class MetricMetaCatalog<TMetric, TValue, TMetricValue>
             where TValue : MetricValueSource<TMetricValue>
-            where TMetricValue : struct
         {
             public class MetricMeta
             {

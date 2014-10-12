@@ -53,12 +53,15 @@ namespace Metrics.Tests
 
         private void RunIfNeeded()
         {
-            long elapsed = clock.Seconds - lastRun;
+            long clockSeconds = clock.Seconds;
+            long elapsed = clockSeconds - lastRun;
             var times = elapsed / interval.TotalSeconds;
             using (CancellationTokenSource ts = new CancellationTokenSource())
-                while (times-- > 0)
+                while (times-- >= 1)
+                {
+                    lastRun = clockSeconds;
                     action(ts.Token);
-            lastRun = clock.Seconds;
+                }
         }
 
         public void Stop() { }
