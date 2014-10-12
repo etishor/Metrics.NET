@@ -10,12 +10,7 @@ namespace Metrics.RemoteMetrics
 {
     public sealed class RemoteMetricsContext : ReadOnlyMetricsContext
     {
-        private readonly Uri remoteUri;
-        private readonly TimeSpan updateInterval;
-        private readonly Func<string, JsonMetricsContext> deserializer;
-
         private readonly Scheduler scheduler;
-
         private JsonMetricsContext data = null;
 
         public RemoteMetricsContext(Uri remoteUri, TimeSpan updateInterval, Func<string, JsonMetricsContext> deserializer)
@@ -24,19 +19,15 @@ namespace Metrics.RemoteMetrics
 
         public RemoteMetricsContext(Scheduler scheduler, Uri remoteUri, TimeSpan updateInterval, Func<string, JsonMetricsContext> deserializer)
         {
-            this.remoteUri = remoteUri;
-            this.updateInterval = updateInterval;
-            this.deserializer = deserializer;
             this.scheduler = scheduler;
-
-            this.scheduler.Start(updateInterval, (c) => UpdateMetrics(c));
+            this.scheduler.Start(updateInterval, (c) => UpdateMetrics(remoteUri, deserializer, c));
         }
 
-        private async Task UpdateMetrics(CancellationToken token)
+        private async Task UpdateMetrics(Uri remoteUri, Func<string, JsonMetricsContext> deserializer, CancellationToken token)
         {
             try
             {
-                this.data = await HttpRemoteMetrics.FetchRemoteMetrics(this.remoteUri, this.deserializer, token);
+                this.data = await HttpRemoteMetrics.FetchRemoteMetrics(remoteUri, deserializer, token);
             }
             catch
             {
