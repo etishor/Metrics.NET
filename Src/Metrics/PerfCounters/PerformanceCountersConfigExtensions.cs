@@ -19,7 +19,7 @@ namespace Metrics
         /// Register all pre-defined system performance counters as Gauge metrics.
         /// This includes: Available RAM, CPU Usage, Disk Writes/sec, Disk Reads/sec
         /// </summary>
-        public static MetricsConfig WithSystemCounters(this MetricsConfig config, string context)
+        public static MetricsConfig WithSystemCounters(this MetricsConfig config, string context = "Machine")
         {
             config.WithConfigExtension((ctx, hs) => PerformanceCounters.RegisterSystemCounters(ctx.Context(context)));
             return config;
@@ -29,7 +29,7 @@ namespace Metrics
         /// Register global, CLR related performance counters as Gauge metrics.
         /// This includes: total .NET Mb in all heaps and total .NET time spent in GC
         /// </summary>
-        public static MetricsConfig WithCLRGlobalCounters(this MetricsConfig config, string context)
+        public static MetricsConfig WithCLRGlobalCounters(this MetricsConfig config, string context = "Machine")
         {
             config.WithConfigExtension((ctx, hs) => PerformanceCounters.RegisterCLRGlobalCounters(ctx.Context(context)));
             return config;
@@ -39,7 +39,7 @@ namespace Metrics
         /// Register application level, CLR related performance counters as Gauge metrics.
         /// This includes: Mb in all heaps, time in GC, exceptions per sec, Threads etc.
         /// </summary>
-        public static MetricsConfig WithCLRAppCounters(this MetricsConfig config, string context)
+        public static MetricsConfig WithCLRAppCounters(this MetricsConfig config, string context = "Application")
         {
             config.WithConfigExtension((ctx, hs) => PerformanceCounters.RegisterCLRAppCounters(ctx.Context(context)));
             return config;

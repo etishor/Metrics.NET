@@ -74,7 +74,20 @@ namespace Metrics.Visualization
 
         private Task ProcessRequest(HttpListenerContext context)
         {
-            switch (context.Request.RawUrl)
+            if (context.Request.HttpMethod.ToUpperInvariant() == "POST")
+            {
+                if (context.Request.RawUrl.ToLowerInvariant() == "/remote/register/")
+                {
+                    return RegisterRemote(context);
+                }
+            }
+
+            if (context.Request.HttpMethod.ToUpperInvariant() != "GET")
+            {
+                return WriteNotFound(context);
+            }
+
+            switch (context.Request.RawUrl.ToLowerInvariant())
             {
                 case "/":
                     if (!context.Request.Url.ToString().EndsWith("/"))
@@ -107,6 +120,23 @@ namespace Metrics.Visualization
                     return WritePong(context);
             }
             return WriteNotFound(context);
+        }
+
+        private async Task RegisterRemote(HttpListenerContext context)
+        {
+            using (var reader = new StreamReader(context.Request.InputStream))
+            {
+                var content = await reader.ReadToEndAsync();
+                Uri remoteUri;
+                if (!Uri.TryCreate(content, UriKind.Absolute, out remoteUri))
+                {
+                    context.Response.StatusCode = 400;
+                    context.Response.StatusDescription = "Bad Request";
+                    return;
+                }
+
+                Metric.Config.RegisterRemote(remoteUri.ToString(), remoteUri, TimeSpan.FromSeconds(1));
+            }
         }
 
         private static async Task WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
