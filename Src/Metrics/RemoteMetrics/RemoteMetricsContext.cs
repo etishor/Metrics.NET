@@ -8,10 +8,11 @@ using Metrics.Utils;
 
 namespace Metrics.RemoteMetrics
 {
-    public sealed class RemoteMetricsContext : ReadOnlyMetricsContext
+    public sealed class RemoteMetricsContext : ReadOnlyMetricsContext, MetricsDataProvider
     {
         private readonly Scheduler scheduler;
-        private JsonMetricsContext data = null;
+
+        private MetricsData currentData = MetricsData.Empty;
 
         public RemoteMetricsContext(Uri remoteUri, TimeSpan updateInterval, Func<string, JsonMetricsContext> deserializer)
             : this(new ActionScheduler(), remoteUri, updateInterval, deserializer)
@@ -32,21 +33,16 @@ namespace Metrics.RemoteMetrics
                 remoteContext.Environment.Add("RemoteVersion", remoteContext.Version);
                 remoteContext.Environment.Add("RemoteTimestamp", remoteContext.Timestamp);
 
-                this.data = remoteContext;
+                this.currentData = remoteContext.ToMetricsData();
             }
             catch
             {
-                this.data = null;
+                this.currentData = MetricsData.Empty;
             }
         }
 
-        public override MetricsDataProvider DataProvider
-        {
-            get
-            {
-                return new JsonMetricsDataProvider(() => this.data);
-            }
-        }
+        public override MetricsDataProvider DataProvider { get { return this; } }
+        public MetricsData CurrentMetricsData { get { return this.currentData; } }
 
         public override void Dispose(bool disposing)
         {

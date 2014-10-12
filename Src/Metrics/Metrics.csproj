@@ -81,7 +81,6 @@
     <Compile Include="Core\DefaultRegistryDataProvider.cs" />
     <Compile Include="Json\JsonMetric.cs" />
     <Compile Include="Json\JsonMetricsContext.cs" />
-    <Compile Include="Json\JsonMetricsDataProvider.cs" />
     <Compile Include="Json\JsonTimer.cs" />
     <Compile Include="Json\JsonHistogram.cs" />
     <Compile Include="Json\JsonMeter.cs" />
