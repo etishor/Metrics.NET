@@ -100,5 +100,22 @@ namespace Metrics.Utils
                     throw new ArgumentOutOfRangeException("unit");
             }
         }
+
+        public static TimeUnit FromUnit(string unit)
+        {
+            switch (unit)
+            {
+                case "ns": return TimeUnit.Nanoseconds;
+                case "us": return TimeUnit.Microseconds;
+                case "ms": return TimeUnit.Milliseconds;
+                case "s": return TimeUnit.Seconds;
+                case "min": return TimeUnit.Minutes;
+                case "h": return TimeUnit.Hours;
+                case "day": return TimeUnit.Days;
+                default:
+                    throw new ArgumentOutOfRangeException("unit");
+            }
+        }
+
     }
 }

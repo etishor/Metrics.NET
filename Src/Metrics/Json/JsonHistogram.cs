@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using Metrics.MetricData;
 namespace Metrics.Json
 {
-    public class JsonHistogram
+    public class JsonHistogram : JsonMetric
     {
-        public string Name { get; set; }
-
         public long Count { get; set; }
 
         public double LastValue { get; set; }
@@ -30,8 +28,6 @@ namespace Metrics.Json
         public double Percentile999 { get; set; }
 
         public int SampleSize { get; set; }
-
-        public string Unit { get; set; }
 
         public static JsonHistogram FromHistogram(HistogramValueSource histogram)
         {
@@ -62,7 +58,8 @@ namespace Metrics.Json
 
                 SampleSize = histogram.Value.SampleSize,
 
-                Unit = histogram.Unit.Name
+                Unit = histogram.Unit.Name,
+                Tags = histogram.Tags
             };
         }
 
@@ -108,6 +105,20 @@ namespace Metrics.Json
             yield return new JsonProperty("Percentile999", this.Percentile999);
             yield return new JsonProperty("SampleSize", this.SampleSize);
             yield return new JsonProperty("Unit", this.Unit);
+
+            if (this.Tags.Length > 0)
+            {
+                yield return new JsonProperty("Tags", this.Tags);
+            }
+        }
+
+        public HistogramValueSource ToValueSource()
+        {
+            var histogramValue = new HistogramValue(this.Count, this.LastValue, this.LastUserValue,
+                this.Max, this.MaxUserValue, this.Mean, this.Min, this.MinUserValue, this.StdDev, this.Median,
+                this.Percentile75, this.Percentile95, this.Percentile98, this.Percentile99, this.Percentile999, this.SampleSize);
+
+            return new HistogramValueSource(this.Name, ConstantValue.Provider(histogramValue), this.Unit, this.Tags);
         }
     }
 }

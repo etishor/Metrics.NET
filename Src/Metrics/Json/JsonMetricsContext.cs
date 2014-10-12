@@ -7,18 +7,25 @@ namespace Metrics.Json
 {
     public class JsonMetricsContext
     {
+        private JsonGauge[] gauges;
+        private JsonCounter[] counters;
+        private JsonMeter[] meters;
+        private JsonHistogram[] histograms;
+        private JsonTimer[] timers;
+        private JsonMetricsContext[] childContexts;
+
         public string Version { get; set; }
         public string Timestamp { get; set; }
         public Dictionary<string, string> Environment { get; set; }
 
         public string Context { get; set; }
-        public JsonGauge[] Gauges { get; set; }
-        public JsonCounter[] Counters { get; set; }
-        public JsonMeter[] Meters { get; set; }
-        public JsonHistogram[] Histograms { get; set; }
-        public JsonTimer[] Timers { get; set; }
 
-        public JsonMetricsContext[] ChildContexts { get; set; }
+        public JsonGauge[] Gauges { get { return this.gauges; } set { this.gauges = value ?? new JsonGauge[0]; } }
+        public JsonCounter[] Counters { get { return this.counters; } set { this.counters = value ?? new JsonCounter[0]; } }
+        public JsonMeter[] Meters { get { return this.meters; } set { this.meters = value ?? new JsonMeter[0]; } }
+        public JsonHistogram[] Histograms { get { return this.histograms; } set { this.histograms = value ?? new JsonHistogram[0]; } }
+        public JsonTimer[] Timers { get { return this.timers; } set { this.timers = value ?? new JsonTimer[0]; } }
+        public JsonMetricsContext[] ChildContexts { get { return this.childContexts; } set { this.childContexts = value ?? new JsonMetricsContext[0]; } }
 
         public static JsonMetricsContext FromContext(MetricsData contextData)
         {

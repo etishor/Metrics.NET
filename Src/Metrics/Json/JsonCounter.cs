@@ -4,7 +4,7 @@ using System.Linq;
 using Metrics.MetricData;
 namespace Metrics.Json
 {
-    public class JsonCounter
+    public class JsonCounter : JsonMetric
     {
         public class SetItem
         {
@@ -13,10 +13,10 @@ namespace Metrics.Json
             public double Percent { get; set; }
         }
 
-        public string Name { get; set; }
+        private SetItem[] items = new SetItem[0];
+
         public long Count { get; set; }
-        public string Unit { get; set; }
-        public SetItem[] Items { get; set; }
+        public SetItem[] Items { get { return this.items; } set { this.items = value ?? new SetItem[0]; } }
 
         public static JsonCounter FromCounter(CounterValueSource counter)
         {
@@ -25,7 +25,8 @@ namespace Metrics.Json
                 Name = counter.Name,
                 Count = counter.Value.Count,
                 Unit = counter.Unit.Name,
-                Items = counter.Value.Items.Select(i => new SetItem { Item = i.Item, Count = i.Count, Percent = i.Percent }).ToArray()
+                Items = counter.Value.Items.Select(i => new SetItem { Item = i.Item, Count = i.Count, Percent = i.Percent }).ToArray(),
+                Tags = counter.Tags
             };
         }
 
@@ -44,6 +45,11 @@ namespace Metrics.Json
             {
                 yield return new JsonProperty("Items", this.Items.Select(i => new JsonObject(ToJsonProperties(i))));
             }
+
+            if (this.Tags.Length > 0)
+            {
+                yield return new JsonProperty("Tags", this.Tags);
+            }
         }
 
         private static IEnumerable<JsonProperty> ToJsonProperties(SetItem item)
@@ -51,6 +57,16 @@ namespace Metrics.Json
             yield return new JsonProperty("Item", item.Item);
             yield return new JsonProperty("Count", item.Count);
             yield return new JsonProperty("Percent", item.Percent);
+        }
+
+        public CounterValueSource ToValueSource()
+        {
+            var items = this.items.Select(i => new CounterValue.SetItem(i.Item, i.Count, i.Percent))
+              .ToArray();
+
+            var counterValue = new CounterValue(this.Count, items);
+
+            return new CounterValueSource(this.Name, ConstantValue.Provider(counterValue), this.Unit, this.Tags);
         }
     }
 }

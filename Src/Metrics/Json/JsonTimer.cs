@@ -5,7 +5,7 @@ using Metrics.Utils;
 
 namespace Metrics.Json
 {
-    public class JsonTimer
+    public class JsonTimer : JsonMetric
     {
         public class RateData
         {
@@ -40,11 +40,9 @@ namespace Metrics.Json
             public int SampleSize { get; set; }
         }
 
-        public string Name { get; set; }
         public long Count { get; set; }
         public RateData Rate { get; set; }
         public HistogramData Histogram { get; set; }
-        public string Unit { get; set; }
         public string RateUnit { get; set; }
         public string DurationUnit { get; set; }
 
@@ -58,7 +56,8 @@ namespace Metrics.Json
                 Histogram = ToHistogram(timer.Value.Histogram.Scale(timer.DurationUnit)),
                 Unit = timer.Unit.Name,
                 RateUnit = timer.RateUnit.Unit(),
-                DurationUnit = timer.DurationUnit.Unit()
+                DurationUnit = timer.DurationUnit.Unit(),
+                Tags = timer.Tags
             };
         }
 
@@ -117,6 +116,11 @@ namespace Metrics.Json
             yield return new JsonProperty("Unit", this.Unit);
             yield return new JsonProperty("RateUnit", this.RateUnit);
             yield return new JsonProperty("DurationUnit", this.DurationUnit);
+
+            if (this.Tags.Length > 0)
+            {
+                yield return new JsonProperty("Tags", this.Tags);
+            }
         }
 
         private static IEnumerable<JsonProperty> ToJsonProperties(RateData rate)
@@ -158,6 +162,19 @@ namespace Metrics.Json
             yield return new JsonProperty("SampleSize", histogram.SampleSize);
         }
 
+        public TimerValueSource ToValueSource()
+        {
+            var rateValue = new MeterValue(this.Count,this.Rate.MeanRate,this.Rate.OneMinuteRate,this.Rate.FiveMinuteRate,this.Rate.FifteenMinuteRate);
+            var histogramValue = new HistogramValue(this.Count,
+                this.Histogram.LastValue, this.Histogram.LastUserValue,
+                this.Histogram.Max, this.Histogram.MaxUserValue, this.Histogram.Mean,
+                this.Histogram.Min, this.Histogram.MinUserValue, this.Histogram.StdDev, this.Histogram.Median,
+                this.Histogram.Percentile75, this.Histogram.Percentile95, this.Histogram.Percentile98,
+                this.Histogram.Percentile99, this.Histogram.Percentile999, this.Histogram.SampleSize);
 
+            var timerValue = new TimerValue(rateValue,histogramValue);
+            return new TimerValueSource(this.Name,ConstantValue.Provider(timerValue),this.Unit, 
+                TimeUnitExtensions.FromUnit(this.RateUnit),TimeUnitExtensions.FromUnit(this.DurationUnit), this.Tags);
+        }
     }
 }

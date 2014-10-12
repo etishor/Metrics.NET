@@ -21,6 +21,11 @@ namespace Metrics
             return new Unit(name);
         }
 
+        public static implicit operator Unit(string name)
+        {
+            return Unit.Custom(name);
+        }
+
         public readonly string Name;
 
         public Unit(string name)

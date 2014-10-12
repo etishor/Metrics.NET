@@ -5,7 +5,7 @@ using Metrics.MetricData;
 using Metrics.Utils;
 namespace Metrics.Json
 {
-    public class JsonMeter
+    public class JsonMeter : JsonMetric
     {
         public class SetItem
         {
@@ -18,15 +18,15 @@ namespace Metrics.Json
             public double Percent { get; set; }
         }
 
-        public string Name { get; set; }
+        private SetItem[] items = new SetItem[0];
+
         public long Count { get; set; }
         public double MeanRate { get; set; }
         public double OneMinuteRate { get; set; }
         public double FiveMinuteRate { get; set; }
         public double FifteenMinuteRate { get; set; }
-        public string Unit { get; set; }
         public string RateUnit { get; set; }
-        public SetItem[] Items { get; set; }
+        public SetItem[] Items { get { return this.items; } set { this.items = value ?? new SetItem[0]; } }
 
         public static JsonMeter FromMeter(MeterValueSource meter)
         {
@@ -49,7 +49,8 @@ namespace Metrics.Json
                     FiveMinuteRate = i.Value.FiveMinuteRate,
                     FifteenMinuteRate = i.Value.FifteenMinuteRate,
                     Percent = i.Percent
-                }).ToArray()
+                }).ToArray(),
+                Tags = meter.Tags
             };
         }
 
@@ -73,6 +74,11 @@ namespace Metrics.Json
             {
                 yield return new JsonProperty("Items", this.Items.Select(i => new JsonObject(ToJsonProperties(i))));
             }
+
+            if (this.Tags.Length > 0)
+            {
+                yield return new JsonProperty("Tags", this.Tags);
+            }
         }
 
         private static IEnumerable<JsonProperty> ToJsonProperties(SetItem item)
@@ -84,6 +90,17 @@ namespace Metrics.Json
             yield return new JsonProperty("FiveMinuteRate", item.FiveMinuteRate);
             yield return new JsonProperty("FifteenMinuteRate", item.FifteenMinuteRate);
             yield return new JsonProperty("Percent", item.Percent);
+        }
+
+        public MeterValueSource ToValueSource()
+        {
+            var items = this.Items.Select(i =>
+                new MeterValue.SetItem(i.Item, i.Percent,
+                    new MeterValue(i.Count, i.MeanRate, i.OneMinuteRate, i.FiveMinuteRate, i.FifteenMinuteRate)))
+                .ToArray();
+
+            var meterValue = new MeterValue(this.Count, this.MeanRate, this.OneMinuteRate, this.FiveMinuteRate, this.FifteenMinuteRate, items);
+            return new MeterValueSource(this.Name, ConstantValue.Provider(meterValue), this.Unit, TimeUnitExtensions.FromUnit(this.RateUnit), this.Tags);
         }
     }
 }
