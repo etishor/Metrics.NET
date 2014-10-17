@@ -11,7 +11,7 @@ namespace Metrics.SamplesConsole
             //Metric.CompletelyDisableMetrics();
 
             Metric.Config
-                .WithHttpEndpoint("http://localhost:1234/")
+                .WithHttpEndpoint("http://localhost:1234/metrics/")
                 .WithAllCounters()
                 .WithInternalMetrics()
                 .WithReporting(config => config
