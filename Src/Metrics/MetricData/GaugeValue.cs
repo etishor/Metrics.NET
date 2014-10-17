@@ -2,7 +2,7 @@
 namespace Metrics.MetricData
 {
     /// <summary>
-    /// Combines the value of a gauge with the defined unit for the value.
+    /// Combines the value of a gauge (a double) with the defined unit for the value.
     /// </summary>
     public sealed class GaugeValueSource : MetricValueSource<double>
     {

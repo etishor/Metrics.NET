@@ -98,6 +98,7 @@
     </Compile>
     <Compile Include="Core\DefaultContextCustomMetricsTests.cs" />
     <Compile Include="Core\MetricTagsTests.cs" />
+    <Compile Include="Json\JsonSerializationTests.cs" />
     <Compile Include="Metrics\CounterMetricTests.cs" />
     <Compile Include="Metrics\GaugeMetricTests.cs" />
     <Compile Include="Sampling\WeightedSnapshotTests.cs" />

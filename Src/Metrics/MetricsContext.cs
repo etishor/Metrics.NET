@@ -94,7 +94,10 @@ namespace Metrics
         /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.FavourRecent, MetricTags tags = default(MetricTags));
+        Histogram Histogram(string name,
+            Unit unit,
+            SamplingType samplingType = SamplingType.FavourRecent,
+            MetricTags tags = default(MetricTags));
 
         /// <summary>
         /// A timer is basically a histogram of the duration of a type of event and a meter of the rate of its occurrence.
@@ -107,7 +110,8 @@ namespace Metrics
         /// <param name="durationUnit">Time unit for reporting durations. Defaults to Milliseconds. </param>
         /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        Timer Timer(string name, Unit unit,
+        Timer Timer(string name,
+            Unit unit,
             SamplingType samplingType = SamplingType.FavourRecent,
             TimeUnit rateUnit = TimeUnit.Seconds,
             TimeUnit durationUnit = TimeUnit.Milliseconds,
