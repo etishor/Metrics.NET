@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Metrics.Json;
@@ -17,6 +18,7 @@ namespace Metrics.Visualization
         private readonly CancellationTokenSource cts = new CancellationTokenSource();
         private readonly MetricsDataProvider metricsDataProvider;
         private readonly Func<HealthStatus> healthStatus;
+        private readonly string prefixPath;
 
         private static readonly Timer timer = Metric.Internal.Timer("HTTP Request", Unit.Requests);
         private static readonly Meter errors = Metric.Internal.Meter("HTTP Request Errors", Unit.Errors);
@@ -24,10 +26,24 @@ namespace Metrics.Visualization
 
         public MetricsHttpListener(string listenerUriPrefix, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
         {
+            this.prefixPath = ParsePrefixPath(listenerUriPrefix);
             this.httpListener = new HttpListener();
             this.httpListener.Prefixes.Add(listenerUriPrefix);
             this.metricsDataProvider = metricsDataProvider;
             this.healthStatus = healthStatus;
+        }
+
+        private string ParsePrefixPath(string listenerUriPrefix)
+        {
+            var match = Regex.Match(listenerUriPrefix, @"http://(?:[^/]*)(?:\:\d+)?/(.*)");
+            if (match.Success)
+            {
+                return match.Groups[1].Value.ToLowerInvariant();
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         public void Start()
@@ -87,7 +103,10 @@ namespace Metrics.Visualization
                 return WriteNotFound(context);
             }
 
-            switch (context.Request.RawUrl.ToLowerInvariant())
+            var urlPath = context.Request.RawUrl.Substring(this.prefixPath.Length)
+                .ToLowerInvariant();
+
+            switch (urlPath)
             {
                 case "/":
                     if (!context.Request.Url.ToString().EndsWith("/"))
