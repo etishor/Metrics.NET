@@ -7,13 +7,16 @@ namespace Metrics
     {
         public static readonly Unit None = new Unit(string.Empty);
         public static readonly Unit Requests = new Unit("Requests");
+        public static readonly Unit Commands = new Unit("Commands");
+        public static readonly Unit Calls = new Unit("Calls");
+        public static readonly Unit Events = new Unit("Events");
         public static readonly Unit Errors = new Unit("Errors");
         public static readonly Unit Results = new Unit("Results");
-        public static readonly Unit Calls = new Unit("Calls");
         public static readonly Unit Items = new Unit("Items");
         public static readonly Unit MegaBytes = new Unit("Mb");
         public static readonly Unit KiloBytes = new Unit("Kb");
         public static readonly Unit Bytes = new Unit("bytes");
+        public static readonly Unit Percent = new Unit("%");
         public static readonly Unit Threads = new Unit("Threads");
 
         public static Unit Custom(string name)
