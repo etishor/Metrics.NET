@@ -6,16 +6,16 @@
 ##What it is
 Metrics.NET library is a .NET Port, with lots of additional functionality, of the awesome Java [metrics library](https://github.com/dropwizard/metrics) by Coda Hale.
 
-To paraphrase the Java library description - Metrics is a .NET library which gives you unparalleled insight into what your code does in production.
+To paraphrase the Java library description - Metrics is a library which gives you unparalleled insight into what your code does in production. Metrics provides a powerful toolkit of ways to measure the behavior of critical components in your production environment.
 
-##What it does?
+##What it does
 It can measure things like how long requests take, how often errors occur, how many items are in a cache and how often the cache is hit. It can measure any measurable aspect of the host application.
 
 One of the main goals of the library is to have a minimal impact on the measured application, while at the same time making it easy to capture the desired metrics. A lot of effort has been invested in making the public API as simple and intuitive as possible.
 
 Supported runtimes: .NET 4.5.1, .NET 4.5, .NET 4.0 (on a separate branch) & Mono 3.8.0+ ( tested on OsX ).
 
-##Who is it for?
+##Who is it for
 [Developers](https://www.youtube.com/watch?v=8To-6VIJZRE) who need to see what is happening inside their systems at run-time. 
 
 Any application, from a long running service to a console app can benefit from measuring what is happening it is running. 
