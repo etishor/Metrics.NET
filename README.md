@@ -3,7 +3,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2)](https://ci.appveyor.com/project/etishor/metrics-net)
 [![Mono Build Status](https://api.travis-ci.org/etishor/Metrics.NET.svg)](https://travis-ci.org/etishor/Metrics.NET)
 
-Metrics.NET library is a .NET Port, with lots of additional functionality, of the awesome Java [metrics library](https://github.com/dropwizard/metrics) by Coda Hale.
+Metrics.NET - a .NET Port, with lots of additional functionality, of the awesome Java [metrics library](https://github.com/dropwizard/metrics) by Coda Hale.
 
 A lot more [information and documentation are available in the wiki](https://github.com/etishor/Metrics.NET/wiki).
 
