@@ -18,7 +18,7 @@ Supported runtimes: .NET 4.5.1, .NET 4.5, .NET 4.0 (on a separate branch) & Mono
 ##Who is it for
 [Developers](https://www.youtube.com/watch?v=8To-6VIJZRE) who need to see what is happening inside their systems at run-time. 
 
-Any application, from a long running service to a console app can benefit from measuring what is happening it is running. 
+Any application, from a long running service to a web app to a console app can benefit from measuring what is happening while it is running. 
 
 ##Getting Started
 To start using the library, install the [Metrics.NET](https://www.nuget.org/packages/Metrics.NET/) NuGet package, using the package management UI or from the package management console run:
