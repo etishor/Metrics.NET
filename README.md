@@ -20,6 +20,9 @@ Supported runtimes: .NET 4.5.1, .NET 4.5, .NET 4.0 (on a separate branch) & Mono
 
 Any application, from a long running service to a web app to a console app can benefit from measuring what is happening while it is running. 
 
+For a very good introduction on why metrics are necesary I highly recommand Coda Hale's [talk about metrics](https://www.youtube.com/watch?v=czes-oa0yik) and [slides](https://dl.dropboxusercontent.com/u/2744222/2011-04-09-Metrics-Metrics-Everywhere.pdf).
+
+
 ##Getting Started
 To start using the library, install the [Metrics.NET](https://www.nuget.org/packages/Metrics.NET/) NuGet package, using the package management UI or from the package management console run:
 
