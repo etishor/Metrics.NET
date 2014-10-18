@@ -4,41 +4,47 @@ Metrics.NET
 [![Build status](https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2)](https://ci.appveyor.com/project/etishor/metrics-net)
 [![Mono Build Status](https://api.travis-ci.org/etishor/Metrics.NET.svg)](https://travis-ci.org/etishor/Metrics.NET)
 
-###Intro
+##What it does?
+Metrics.NET is a library meant to facilitate the measuring various run-time aspects of an application.
 
-The Metrics.NET library provides a way of instrumenting applications with custom metrics (timers, histograms, counters etc) that can be reported in various ways and can provide insights on what is happening inside a running application. 
+It can measure things like how long requests take, how often errors occur, how many items are in a cache and how often the cache is hit. It can measure any measurable aspect of the host application.
 
-This library is a .NET Port of the awesome Java [metrics library](https://github.com/dropwizard/metrics) by Coda Hale.
+One of the main goals of the library is to have a minimal impact on the measured application, while at the same time making it easy to capture the desired metrics. A lot of effort has been invested in making the public API as simple and intuitive as possible.
 
-For a very good introduction on why metrics are necesary I highly recommand Coda Hale's [talk about metrics](https://www.youtube.com/watch?v=czes-oa0yik) and [slides](https://dl.dropboxusercontent.com/u/2744222/2011-04-09-Metrics-Metrics-Everywhere.pdf).
+Supported runtimes: .NET 4.5.1, .NET 4.5, .NET 4.0 (on a separate branch) & Mono 3.8.0+ ( tested on OsX ).
 
-The library is [published on NuGet](https://www.nuget.org/packages/Metrics.NET/) can be installed with the following command:
+This library is a .NET Port, with lots of additional functionality, of the awesome Java [metrics library](https://github.com/dropwizard/metrics) by Coda Hale.
+
+##Who is it for?
+[Developers](https://www.youtube.com/watch?v=8To-6VIJZRE) who need to see what is happening inside their systems at run-time. 
+
+Any application, from a long running service to a console app can benefit from measuring what is happening it is running. 
+
+##Getting Started
+To start using the library, install the [Metrics.NET](https://www.nuget.org/packages/Metrics.NET/) NuGet package, using the package management UI or from the package management console run:
 
     Install-Package Metrics.NET
 
-Supported runtimes: .NET 4.5.1, .NET 4.5, .NET 4.0 (on a separate branch) & Mono 3.8.0 ( tested on OsX )
+Add the following Metrics.NET configuration code somewhere in the initialization section of your application:
 
-The API of the library might change until a 1.X version will be made available.
+```csharp
+using Metrics;
 
-###Visualization Demo
+Metric.Config
+    .WithHttpEndpoint("http://localhost:1234/")
+    .WithAllCounters();
+```
 
-A demo of the visualization app is available [here](http://www.erata.net/Metrics.NET/demo/). This demo uses fake, generated values for the metrics.
+Run the application and point a web browser to http://localhost:1234/ 
 
-The visualization app is also avaliable on github : [Metrics.NET.FlotVisualization](https://github.com/etishor/Metrics.NET.FlotVisualization). 
+The Metrics Visualization App should already have a number of Gauges that are captured from various performance counters.
 
-###Documentation
-
-* [Available Metrics](https://github.com/etishor/Metrics.NET/wiki/Available-Metrics)
-* [Health Checks](https://github.com/etishor/Metrics.NET/wiki/Health-Checks)
-* [Metric Visualization](https://github.com/etishor/Metrics.NET/wiki/Metrics-Visualization)
-* [Documentation Wiki](https://github.com/etishor/Metrics.NET/wiki/)
-
-###Quick Usage Sample
+You can now start measuring things: 
 
 ```csharp
 public class SampleMetrics
 {
-    private readonly Timer timer = Metric.Timer("Requests", SamplingType.FavourRecent, Unit.Requests);
+    private readonly Timer timer = Metric.Timer("Requests", Unit.Requests);
     private readonly Counter counter = Metric.Counter("ConcurrentRequests", Unit.Requests);
 
     public void Request(int i)
@@ -53,24 +59,22 @@ public class SampleMetrics
 }
 ```
 
-###Adapters for other applications
+##Documentation
 
-Adapters integrate Metrics.NET with other libraries & frameworks.
+* [Available Metrics](https://github.com/etishor/Metrics.NET/wiki/Available-Metrics)
+* [Health Checks](https://github.com/etishor/Metrics.NET/wiki/Health-Checks)
+* [Metric Visualization](https://github.com/etishor/Metrics.NET/wiki/Metrics-Visualization)
+* [NancyFx Adapter](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter)
+* [Owin Adapter](https://github.com/etishor/Metrics.NET/wiki/OWIN-Metrics-Adapter)
 
-* [Nancy.Metrics](https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter)
-* [Owin.Metrics](https://github.com/etishor/Metrics.NET/wiki/OWIN-Metrics-Adapter) - thanks to [@alhardy - Allan Hardy](https://github.com/alhardy)
+The [Samples](https://github.com/etishor/Metrics.NET/tree/master/Samples) folder in the repository contains some usage samples.
 
-###TODO
-A live list of my future plan
+##Visualization Demo
+The visualization app is also avaliable on github: [Metrics.NET.FlotVisualization](https://github.com/etishor/Metrics.NET.FlotVisualization). 
 
-* Enhance the visualization app to support contexts, tags, user values and set metrics
-* Push metrics out of process, to dedicated metrics service
-* Investigate the possibility of using zeromq to delegate metrics to another process - for across cluster metrics
-* Adapter for graphite and other existing solutions for aggregating metrics
-* Investigate the possibility of using Redis as an off-process metrics container (the collections behind the metrics seem to map to redis data types)
-* Investigate the possibility for backend to receive metrics from client js app (not sure it makes sense to capture metrics from js apps - maybe from SPAs)
+A demo of the visualization app is available [here](http://www.erata.net/Metrics.NET/demo/). This demo uses fake, generated values for the metrics.
 
-###License
+##License
 .NET Port of the awesome [Java metrics library by Coda Hale](https://github.com/dropwizard/metrics)
 
 This port is also inspired and contains some code from [Daniel Crenna's port](https://github.com/danielcrenna/metrics-net) of the same library.
