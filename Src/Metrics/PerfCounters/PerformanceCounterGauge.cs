@@ -20,6 +20,7 @@ namespace Metrics.PerfCounters
                 this.performanceCounter = instance == null ?
                     new PerformanceCounter(category, counter, true) :
                     new PerformanceCounter(category, counter, instance, true);
+                Metric.Internal.Counter("Performance Counters", Unit.Custom("Perf Counters")).Increment();
             }
             catch (Exception x)
             {
