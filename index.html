@@ -1,38 +1,37 @@
 <!DOCTYPE html>
 <html>
-
   <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="Metrics.net : The Metrics.NET library provides a way of instrumenting applications with custom metrics (timers, histograms, counters etc) that can be reported in various ways and can provide insights on what is happening inside a running application." />
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-	<link rel="shortcut icon" href="http://www.erata.net/Metrics.NET/metrics_32.png"> 
-
-    <title>Metrics.net</title>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Metrics.net by etishor</title>
   </head>
 
   <body>
+    <div id="container">
+      <div class="inner">
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/etishor/Metrics.NET">View on GitHub</a>
-
-          <h1 id="project_title">Metrics.net</h1>
-          <h2 id="project_tagline">The Metrics.NET library provides a way of instrumenting applications with custom metrics (timers, histograms, counters etc) that can be reported in various ways and can provide insights on what is happening inside a running application.</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/etishor/Metrics.NET/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/etishor/Metrics.NET/tarball/master">Download this project as a tar.gz file</a>
-            </section>
+        <header>
+          <h1>Metrics.net</h1>
+          <h2>The Metrics.NET library provides a way of instrumenting applications with custom metrics (timers, histograms, counters etc) that can be reported in various ways and can provide insights on what is happening inside a running application.</h2>
         </header>
-    </div>
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/etishor/Metrics.NET/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/etishor/Metrics.NET/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/etishor/Metrics.NET" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <h1>
 <a name="metricsnet" class="anchor" href="#metricsnet"><span class="octicon octicon-link"></span></a>Metrics.NET</h1>
 
 <p><a href="https://ci.appveyor.com/project/etishor/metrics-net"><img src="https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2" alt="Build status"></a>
@@ -73,7 +72,9 @@
 <li><a href="https://github.com/etishor/Metrics.NET/wiki/Health-Checks">Health Checks</a></li>
 <li><a href="https://github.com/etishor/Metrics.NET/wiki/Metrics-Visualization">Metric Visualization</a></li>
 <li><a href="https://github.com/etishor/Metrics.NET/wiki/">Documentation Wiki</a></li>
-</ul><h3>
+</ul>
+
+<h3>
 <a name="quick-usage-sample" class="anchor" href="#quick-usage-sample"><span class="octicon octicon-link"></span></a>Quick Usage Sample</h3>
 
 <div class="highlight highlight-csharp"><pre><span class="k">public</span> <span class="k">class</span> <span class="nc">SampleMetrics</span>
@@ -100,7 +101,9 @@
 
 <ul>
 <li><a href="https://github.com/etishor/Metrics.NET/wiki/NancyFX-Metrics-Adapter">NancyFx.Metrics</a></li>
-</ul><h3>
+</ul>
+
+<h3>
 <a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h3>
 
 <p>A live list of my future plan</p>
@@ -125,7 +128,9 @@
 <li>Find/Implement ConcurrentSkipMap like collection form java - low prio as the performance is good for now</li>
 <li>Write more "stupid" benchmarks to be able to keep an eye on how performance changes in time</li>
 <li>Profile &amp; optimize. Also profile existing apps to see the impact of adding metrics</li>
-</ul><h3>
+</ul>
+
+<h3>
 <a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h3>
 
 <p>.NET Port of the awesome <a href="https://github.com/dropwizard/metrics">Java metrics library by Coda Hale</a></p>
@@ -148,18 +153,14 @@ Both works are published under The MIT License, see LICENSE</p>
 
 <p>This port ( Metrics.NET ) is release under Apache 2.0 License ( see LICENSE ) 
 Copyright (c) 2014 Iulian Margarintescu</p>
-      </section>
-    </div>
+        </section>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Metrics.net maintained by <a href="https://github.com/etishor">etishor</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
+        <footer>
+          Metrics.net is maintained by <a href="https://github.com/etishor">etishor</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
 
-              <script type="text/javascript">
+                  <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -170,6 +171,7 @@ Copyright (c) 2014 Iulian Margarintescu</p>
             } catch(err) {}
           </script>
 
-
+      </div>
+    </div>
   </body>
 </html>
