@@ -90,14 +90,6 @@ namespace Metrics.Visualization
 
         private Task ProcessRequest(HttpListenerContext context)
         {
-            if (context.Request.HttpMethod.ToUpperInvariant() == "POST")
-            {
-                if (context.Request.RawUrl.ToLowerInvariant() == "/remote/register/")
-                {
-                    return RegisterRemote(context);
-                }
-            }
-
             if (context.Request.HttpMethod.ToUpperInvariant() != "GET")
             {
                 return WriteNotFound(context);
