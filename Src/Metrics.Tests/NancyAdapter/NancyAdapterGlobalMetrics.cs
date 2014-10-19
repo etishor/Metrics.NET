@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Metrics.Utils;
 using Nancy;
 using Nancy.Testing;
 using Xunit;
@@ -77,8 +76,8 @@ namespace Metrics.Tests.NancyAdapter
             timer.Rate.Count.Should().Be(1);
             timer.Histogram.Count.Should().Be(1);
 
-            timer.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
-            timer.Histogram.Min.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
+            timer.Histogram.Max.Should().Be(100);
+            timer.Histogram.Min.Should().Be(100);
 
             browser.Post("/test/post").StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -87,8 +86,8 @@ namespace Metrics.Tests.NancyAdapter
             timer.Rate.Count.Should().Be(2);
             timer.Histogram.Count.Should().Be(2);
 
-            timer.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(200));
-            timer.Histogram.Min.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
+            timer.Histogram.Max.Should().Be(200);
+            timer.Histogram.Min.Should().Be(100);
         }
 
         [Fact]

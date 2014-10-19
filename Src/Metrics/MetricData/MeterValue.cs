@@ -50,7 +50,12 @@ namespace Metrics.MetricData
 
         public MeterValue Scale(TimeUnit unit)
         {
-            var factor = unit.ToSeconds(1);
+            if (unit == TimeUnit.Seconds)
+            {
+                return this;
+            }
+
+            var factor = unit.ScalingFactorFor(TimeUnit.Seconds);
             return new MeterValue(this.Count,
                 this.MeanRate * factor,
                 this.OneMinuteRate * factor,
@@ -66,7 +71,7 @@ namespace Metrics.MetricData
     public sealed class MeterValueSource : MetricValueSource<MeterValue>
     {
         public MeterValueSource(string name, MetricValueProvider<MeterValue> value, Unit unit, TimeUnit rateUnit, MetricTags tags)
-            : base(name, value, unit, tags)
+            : base(name, new ScaledValueProvider<MeterValue>(value, v => v.Scale(rateUnit)), unit, tags)
         {
             this.RateUnit = rateUnit;
         }

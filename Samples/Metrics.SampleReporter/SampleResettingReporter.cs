@@ -11,8 +11,7 @@ namespace Metrics.SampleReporter
         {
             foreach (var timer in metricsData.Timers)
             {
-                var timerValue = timer.ValueProvider.GetValue(resetMetric: true)
-                    .Scale(timer.RateUnit, timer.DurationUnit);
+                var timerValue = timer.ValueProvider.GetValue(resetMetric: true);
 
                 Console.WriteLine("{0} : {1} {2} {3}", timer.Name, timerValue.Rate.Count, timerValue.Histogram.Count, timerValue.Histogram.Percentile75);
             }

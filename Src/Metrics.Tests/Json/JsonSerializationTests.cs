@@ -57,7 +57,7 @@ namespace Metrics.Tests.Json
             this.timerValue = new TimerValue(this.meterValue, this.histogramValue);
 
             this.counter = new CounterValueSource("test1", Provider(counterValue), Unit.Errors, MetricTags.None);
-            this.meter = new MeterValueSource("test2", Provider(meterValue), Unit.Calls, TimeUnit.Milliseconds, MetricTags.None);
+            this.meter = new MeterValueSource("test2", Provider(meterValue), Unit.Calls, TimeUnit.Seconds, MetricTags.None);
             this.histogram = new HistogramValueSource("test3", Provider(histogramValue), Unit.Items, MetricTags.None);
             this.timer = new TimerValueSource("test4", Provider(timerValue), Unit.Requests, TimeUnit.Seconds, TimeUnit.Milliseconds, MetricTags.None);
 

@@ -52,8 +52,8 @@ namespace Metrics.Json
             {
                 Name = timer.Name,
                 Count = timer.Value.Rate.Count,
-                Rate = ToRate(timer.Value.Rate.Scale(timer.RateUnit)),
-                Histogram = ToHistogram(timer.Value.Histogram.Scale(timer.DurationUnit)),
+                Rate = ToRate(timer.Value.Rate),
+                Histogram = ToHistogram(timer.Value.Histogram),
                 Unit = timer.Unit.Name,
                 RateUnit = timer.RateUnit.Unit(),
                 DurationUnit = timer.DurationUnit.Unit(),
