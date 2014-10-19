@@ -1,0 +1,12 @@
+﻿# add uris to json v2 url of remotes
+# ex : http://localhost/metrics/v2/json
+# lines starting with # and empty lines are ignored 
+
+# samplesconsole
+http://localhost:1234/metrics/v2/json
+
+# nancyfx sample
+http://localhost:8090/metrics/v2/json
+
+# owin sample
+http://localhost:1235/v2/json
