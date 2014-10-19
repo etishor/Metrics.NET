@@ -29,9 +29,9 @@ namespace Metrics.Tests.Json
             return new ConstantProvider<T>(value);
         }
 
-        private readonly MeterValue meterValue = new MeterValue(5, 1, 2, 3, 4, new[] 
+        private readonly MeterValue meterValue = new MeterValue(5, 1, 2, 3, 4, TimeUnit.Seconds, new[] 
         {
-            new MeterValue.SetItem("item",0.5,new MeterValue(1,2,3,4,5, new MeterValue.SetItem[0])) 
+            new MeterValue.SetItem("item",0.5,new MeterValue(1,2,3,4,5,TimeUnit.Seconds, new MeterValue.SetItem[0])) 
         });
 
         private readonly CounterValue counterValue = new CounterValue(7, new[]
@@ -54,7 +54,7 @@ namespace Metrics.Tests.Json
 
         public JsonSerializationTests()
         {
-            this.timerValue = new TimerValue(this.meterValue, this.histogramValue);
+            this.timerValue = new TimerValue(this.meterValue, this.histogramValue, TimeUnit.Nanoseconds);
 
             this.counter = new CounterValueSource("test1", Provider(counterValue), Unit.Errors, MetricTags.None);
             this.meter = new MeterValueSource("test2", Provider(meterValue), Unit.Calls, TimeUnit.Seconds, MetricTags.None);

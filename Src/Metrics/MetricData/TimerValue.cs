@@ -9,17 +9,19 @@ namespace Metrics.MetricData
     {
         public readonly MeterValue Rate;
         public readonly HistogramValue Histogram;
+        private readonly TimeUnit DurationUnit;
 
-        public TimerValue(MeterValue rate, HistogramValue histogram)
+        public TimerValue(MeterValue rate, HistogramValue histogram, TimeUnit durationUnit)
         {
             this.Rate = rate;
             this.Histogram = histogram;
+            this.DurationUnit = durationUnit;
         }
 
         public TimerValue Scale(TimeUnit rate, TimeUnit duration)
         {
-            var durationFactor = TimeUnit.Nanoseconds.ScalingFactorFor(duration);
-            return new TimerValue(this.Rate.Scale(rate), this.Histogram.Scale(durationFactor));
+            var durationFactor = this.DurationUnit.ScalingFactorFor(duration);
+            return new TimerValue(this.Rate.Scale(rate), this.Histogram.Scale(durationFactor), duration);
         }
     }
 

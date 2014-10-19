@@ -44,7 +44,7 @@ namespace Metrics.Core
 
             public MeterValue GetValue(double elapsed)
             {
-                return new MeterValue(this.count.Value, this.GetMeanRate(elapsed), this.OneMinuteRate, this.FiveMinuteRate, this.FifteenMinuteRate);
+                return new MeterValue(this.count.Value, this.GetMeanRate(elapsed), this.OneMinuteRate, this.FiveMinuteRate, this.FifteenMinuteRate, TimeUnit.Seconds);
             }
 
             private double GetMeanRate(double elapsed)
@@ -128,7 +128,7 @@ namespace Metrics.Core
                     .OrderBy(m => m.Item)
                     .ToArray();
 
-                return new MeterValue(value.Count, value.MeanRate, value.OneMinuteRate, value.FiveMinuteRate, value.FifteenMinuteRate, items);
+                return new MeterValue(value.Count, value.MeanRate, value.OneMinuteRate, value.FiveMinuteRate, value.FifteenMinuteRate, TimeUnit.Seconds, items);
             }
         }
 

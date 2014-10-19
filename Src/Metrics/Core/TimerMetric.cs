@@ -95,7 +95,7 @@ namespace Metrics.Core
 
         public TimerValue GetValue(bool resetMetric = false)
         {
-            return new TimerValue(this.meter.GetValue(resetMetric), this.histogram.GetValue(resetMetric));
+            return new TimerValue(this.meter.GetValue(resetMetric), this.histogram.GetValue(resetMetric), TimeUnit.Nanoseconds);
         }
 
         public void Reset()

@@ -94,13 +94,15 @@ namespace Metrics.Json
 
         public MeterValueSource ToValueSource()
         {
+            var rateUnit = TimeUnitExtensions.FromUnit(this.RateUnit);
+
             var items = this.Items.Select(i =>
                 new MeterValue.SetItem(i.Item, i.Percent,
-                    new MeterValue(i.Count, i.MeanRate, i.OneMinuteRate, i.FiveMinuteRate, i.FifteenMinuteRate)))
+                    new MeterValue(i.Count, i.MeanRate, i.OneMinuteRate, i.FiveMinuteRate, i.FifteenMinuteRate, rateUnit)))
                 .ToArray();
 
-            var meterValue = new MeterValue(this.Count, this.MeanRate, this.OneMinuteRate, this.FiveMinuteRate, this.FifteenMinuteRate, items);
-            return new MeterValueSource(this.Name, ConstantValue.Provider(meterValue), this.Unit, TimeUnitExtensions.FromUnit(this.RateUnit), this.Tags);
+            var meterValue = new MeterValue(this.Count, this.MeanRate, this.OneMinuteRate, this.FiveMinuteRate, this.FifteenMinuteRate, rateUnit, items);
+            return new MeterValueSource(this.Name, ConstantValue.Provider(meterValue), this.Unit, rateUnit, this.Tags);
         }
     }
 }

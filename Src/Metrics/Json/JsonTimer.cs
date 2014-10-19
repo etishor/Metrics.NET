@@ -164,7 +164,10 @@ namespace Metrics.Json
 
         public TimerValueSource ToValueSource()
         {
-            var rateValue = new MeterValue(this.Count,this.Rate.MeanRate,this.Rate.OneMinuteRate,this.Rate.FiveMinuteRate,this.Rate.FifteenMinuteRate);
+            var rateUnit = TimeUnitExtensions.FromUnit(this.RateUnit);
+            var durationUnit = TimeUnitExtensions.FromUnit(this.DurationUnit);
+
+            var rateValue = new MeterValue(this.Count, this.Rate.MeanRate, this.Rate.OneMinuteRate, this.Rate.FiveMinuteRate, this.Rate.FifteenMinuteRate, rateUnit);
             var histogramValue = new HistogramValue(this.Count,
                 this.Histogram.LastValue, this.Histogram.LastUserValue,
                 this.Histogram.Max, this.Histogram.MaxUserValue, this.Histogram.Mean,
@@ -172,9 +175,9 @@ namespace Metrics.Json
                 this.Histogram.Percentile75, this.Histogram.Percentile95, this.Histogram.Percentile98,
                 this.Histogram.Percentile99, this.Histogram.Percentile999, this.Histogram.SampleSize);
 
-            var timerValue = new TimerValue(rateValue,histogramValue);
-            return new TimerValueSource(this.Name,ConstantValue.Provider(timerValue),this.Unit, 
-                TimeUnitExtensions.FromUnit(this.RateUnit),TimeUnitExtensions.FromUnit(this.DurationUnit), this.Tags);
+            var timerValue = new TimerValue(rateValue, histogramValue, durationUnit);
+
+            return new TimerValueSource(this.Name, ConstantValue.Provider(timerValue), this.Unit, rateUnit, durationUnit, this.Tags);
         }
     }
 }
