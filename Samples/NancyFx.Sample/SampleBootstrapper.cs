@@ -39,11 +39,11 @@ namespace NancyFx.Sample
                 .WithNancy(pipelines);
 
             // read remote metrics from NancySample
-            Metric.Advanced.AttachContext("Remote",
-                new RemoteMetricsContext(
-                    new Uri("http://localhost:1234/v2/json"),
-                    TimeSpan.FromSeconds(5),
-                    s => JsonConvert.DeserializeObject<JsonMetricsContext>(s)));
+            //Metric.Advanced.AttachContext("Remote",
+            //    new RemoteMetricsContext(
+            //        new Uri("http://localhost:1234/v2/json"),
+            //        TimeSpan.FromSeconds(5),
+            //        s => JsonConvert.DeserializeObject<JsonMetricsContext>(s)));
 
 
             pipelines.AfterRequest += ctx =>
