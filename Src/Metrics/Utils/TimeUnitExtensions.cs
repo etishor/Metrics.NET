@@ -33,6 +33,26 @@ namespace Metrics.Utils
             return matrix;
         }
 
+        public static double ScalingFactorFor(this TimeUnit sourceUnit, TimeUnit targetUnit)
+        {
+            if (sourceUnit == targetUnit)
+            {
+                return 1.0;
+            }
+
+            var sourceIndex = (int)sourceUnit;
+            var targetIndex = (int)targetUnit;
+
+            if (sourceIndex < targetIndex)
+            {
+                return 1 / (double)conversionFactors[targetIndex, sourceIndex];
+            }
+            else
+            {
+                return conversionFactors[sourceIndex, targetIndex];
+            }
+        }
+
         public static long Convert(this TimeUnit sourceUnit, TimeUnit targetUnit, long value)
         {
             if (sourceUnit == targetUnit)
@@ -40,14 +60,7 @@ namespace Metrics.Utils
                 return value;
             }
 
-            var sourceIndex = (int)sourceUnit;
-            var targetIndex = (int)targetUnit;
-
-            var result = (sourceIndex > targetIndex) ?
-                value * conversionFactors[sourceIndex, targetIndex] :
-                value / conversionFactors[targetIndex, sourceIndex];
-
-            return result;
+            return System.Convert.ToInt64(value * sourceUnit.ScalingFactorFor(targetUnit));
         }
 
         public static long ToNanoseconds(this TimeUnit unit, long value)
