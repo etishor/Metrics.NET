@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metrics", "Src\Metrics\Metrics.csproj", "{95E29D40-DBEC-49E2-9CC5-26B88966DADE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metrics.Tests", "Src\Metrics.Tests\Metrics.Tests.csproj", "{4E0F8CB9-6919-48B8-8212-BCE75D04E0D9}"
@@ -23,9 +25,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CHANGELOG.md = CHANGELOG.md
 		create-nuget.bat = create-nuget.bat
 		Publishing\Metrics.NET.net40.nuspec = Publishing\Metrics.NET.net40.nuspec
-		Publishing\NancyFx.Metrics.net40.nuspec = Publishing\NancyFx.Metrics.net40.nuspec
 		Publishing\Metrics.NET.nuspec = Publishing\Metrics.NET.nuspec
 		Publishing\Nancy.Metrics.nuspec = Publishing\Nancy.Metrics.nuspec
+		Publishing\NancyFx.Metrics.net40.nuspec = Publishing\NancyFx.Metrics.net40.nuspec
 		Publishing\Owin.Metrics.nuspec = Publishing\Owin.Metrics.nuspec
 		Publishing\push-nuget.bat = Publishing\push-nuget.bat
 		README.md = README.md
@@ -33,10 +35,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metrics.NLog", "Src\Adapters\Metrics.NLog\Metrics.NLog.csproj", "{68F25A01-AF00-4D57-9D1A-81213E4EF56F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Metrics", "Src\Adapters\Owin.Metrics\Owin.Metrics.csproj", "{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Sample", "Samples\Owin.Sample\Owin.Sample.csproj", "{828188F9-26C2-4C93-A156-D9EA13D7E2FA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metrics.Central", "Src\Metrics.Central\Metrics.Central.csproj", "{450184A4-9916-4AE5-87F8-A8067105CE40}"
 EndProject
@@ -62,28 +60,8 @@ Global
 		{68F25A01-AF00-4D57-9D1A-81213E4EF56F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68F25A01-AF00-4D57-9D1A-81213E4EF56F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68F25A01-AF00-4D57-9D1A-81213E4EF56F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.MonoDebug|Any CPU.ActiveCfg = MonoDebug|Any CPU
-		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.MonoDebug|Any CPU.Build.0 = MonoDebug|Any CPU
-		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.MonoRelease|Any CPU.ActiveCfg = MonoRelease|Any CPU
-		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.MonoRelease|Any CPU.Build.0 = MonoRelease|Any CPU
-		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.Release|Any CPU.Build.0 = Release|Any CPU
-		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.MonoDebug|Any CPU.ActiveCfg = MonoDebug|Any CPU
-		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.MonoDebug|Any CPU.Build.0 = MonoDebug|Any CPU
-		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.MonoRelease|Any CPU.ActiveCfg = MonoRelease|Any CPU
-		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.MonoRelease|Any CPU.Build.0 = MonoRelease|Any CPU
-		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{450184A4-9916-4AE5-87F8-A8067105CE40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{450184A4-9916-4AE5-87F8-A8067105CE40}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{450184A4-9916-4AE5-87F8-A8067105CE40}.MonoDebug|Any CPU.ActiveCfg = Debug|Any CPU
-		{450184A4-9916-4AE5-87F8-A8067105CE40}.MonoDebug|Any CPU.Build.0 = Debug|Any CPU
-		{450184A4-9916-4AE5-87F8-A8067105CE40}.MonoRelease|Any CPU.ActiveCfg = Release|Any CPU
-		{450184A4-9916-4AE5-87F8-A8067105CE40}.MonoRelease|Any CPU.Build.0 = Release|Any CPU
 		{450184A4-9916-4AE5-87F8-A8067105CE40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{450184A4-9916-4AE5-87F8-A8067105CE40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection

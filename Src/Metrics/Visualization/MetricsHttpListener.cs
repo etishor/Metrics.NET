@@ -93,7 +93,8 @@ namespace Metrics.Visualization
         {
             if (context.Request.HttpMethod.ToUpperInvariant() != "GET")
             {
-                return WriteNotFound(context);
+                WriteNotFound(context);
+                return;
             }
 
             var urlPath = context.Request.RawUrl.Substring(this.prefixPath.Length)
