@@ -33,8 +33,9 @@ namespace Metrics.RemoteMetrics
 
                 this.currentData = remoteContext.ToMetricsData();
             }
-            catch
+            catch (Exception x)
             {
+                MetricsErrorHandler.Handle(x, "Error updating metrics data from " + remoteUri.ToString());
                 this.currentData = MetricsData.Empty;
             }
         }

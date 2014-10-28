@@ -38,7 +38,7 @@ namespace Metrics.Visualization
             var match = Regex.Match(listenerUriPrefix, @"http://(?:[^/]*)(?:\:\d+)?/(.*)");
             if (match.Success)
             {
-                return match.Groups[1].Value;
+                return match.Groups[1].Value.ToLowerInvariant();
             }
             else
             {
@@ -91,7 +91,14 @@ namespace Metrics.Visualization
 
         private void ProcessRequest(HttpListenerContext context)
         {
-            var urlPath = context.Request.RawUrl.Substring(this.prefixPath.Length);
+            if (context.Request.HttpMethod.ToUpperInvariant() != "GET")
+            {
+                return WriteNotFound(context);
+            }
+
+            var urlPath = context.Request.RawUrl.Substring(this.prefixPath.Length)
+                .ToLowerInvariant();
+
             switch (urlPath)
             {
                 case "/":

@@ -20,6 +20,7 @@ namespace Metrics.Utils
                 yield return new EnvironmentEntry("UserName", Environment.UserName);
                 yield return new EnvironmentEntry("ProcessName", SafeGetString(() => Process.GetCurrentProcess().ProcessName));
                 yield return new EnvironmentEntry("OSVersion", Environment.OSVersion.ToString());
+                yield return new EnvironmentEntry("CPUCount", Environment.ProcessorCount.ToString());
                 yield return new EnvironmentEntry("CommandLine", Environment.CommandLine);
                 yield return new EnvironmentEntry("HostName", SafeGetString(() => Dns.GetHostName()));
                 yield return new EnvironmentEntry("IPAddress", SafeGetString(() => GetIpAddress()));

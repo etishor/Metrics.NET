@@ -28,12 +28,13 @@ namespace Metrics.MetricData
         public readonly double OneMinuteRate;
         public readonly double FiveMinuteRate;
         public readonly double FifteenMinuteRate;
+        public readonly TimeUnit RateUnit;
         public readonly SetItem[] Items;
 
-        internal MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate)
-            : this(count, meanRate, oneMinuteRate, fiveMinuteRate, fifteenMinuteRate, new SetItem[0]) { }
+        internal MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate, TimeUnit rateUnit)
+            : this(count, meanRate, oneMinuteRate, fiveMinuteRate, fifteenMinuteRate, rateUnit, new SetItem[0]) { }
 
-        public MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate, SetItem[] items)
+        public MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate, TimeUnit rateUnit, SetItem[] items)
         {
             if (items == null)
             {
@@ -45,17 +46,24 @@ namespace Metrics.MetricData
             this.OneMinuteRate = oneMinuteRate;
             this.FiveMinuteRate = fiveMinuteRate;
             this.FifteenMinuteRate = fifteenMinuteRate;
+            this.RateUnit = rateUnit;
             this.Items = items;
         }
 
         public MeterValue Scale(TimeUnit unit)
         {
-            var factor = unit.ToSeconds(1);
+            if (unit == this.RateUnit)
+            {
+                return this;
+            }
+
+            var factor = unit.ScalingFactorFor(TimeUnit.Seconds);
             return new MeterValue(this.Count,
                 this.MeanRate * factor,
                 this.OneMinuteRate * factor,
                 this.FiveMinuteRate * factor,
                 this.FifteenMinuteRate * factor,
+                unit,
                 this.Items.Select(i => new SetItem(i.Item, i.Percent, i.Value.Scale(unit))).ToArray());
         }
     }
@@ -66,7 +74,7 @@ namespace Metrics.MetricData
     public sealed class MeterValueSource : MetricValueSource<MeterValue>
     {
         public MeterValueSource(string name, MetricValueProvider<MeterValue> value, Unit unit, TimeUnit rateUnit, MetricTags tags)
-            : base(name, value, unit, tags)
+            : base(name, new ScaledValueProvider<MeterValue>(value, v => v.Scale(rateUnit)), unit, tags)
         {
             this.RateUnit = rateUnit;
         }

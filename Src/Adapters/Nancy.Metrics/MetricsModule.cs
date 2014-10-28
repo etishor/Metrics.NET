@@ -79,7 +79,7 @@ namespace Nancy.Metrics
             Get["/json"] = _ => Response.AsText(JsonBuilderV1.BuildJson(Config.DataProvider.CurrentMetricsData), "text/json")
                 .WithHeaders(noCacheHeaders);
 
-            Get["/jsonnew"] = _ => Response.AsText(JsonBuilderV2.BuildJson(Config.DataProvider.CurrentMetricsData), "text/json")
+            Get["/v2/json"] = _ => Response.AsText(JsonBuilderV2.BuildJson(Config.DataProvider.CurrentMetricsData), "text/json")
                 .WithHeaders(noCacheHeaders);
 
             Get["/ping"] = _ => Response.AsText("pong", "text/plain")

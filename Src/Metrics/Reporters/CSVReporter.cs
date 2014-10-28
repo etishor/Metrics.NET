@@ -47,7 +47,7 @@ namespace Metrics.Reporters
 
         protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit)
         {
-            Write("Meter", name, MeterValues(value.Scale(rateUnit), unit, rateUnit));
+            Write("Meter", name, MeterValues(value, unit, rateUnit));
         }
 
         protected override void ReportHistogram(string name, HistogramValue value, Unit unit)
@@ -57,8 +57,8 @@ namespace Metrics.Reporters
 
         protected override void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
         {
-            var values = MeterValues(value.Rate.Scale(rateUnit), unit, rateUnit)
-                .Concat(HistogramValues(value.Histogram.Scale(durationUnit), unit, durationUnit));
+            var values = MeterValues(value.Rate, unit, rateUnit)
+                .Concat(HistogramValues(value.Histogram, unit, durationUnit));
 
             Write("Timer", name, values);
         }

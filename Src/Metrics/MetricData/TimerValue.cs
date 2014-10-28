@@ -1,4 +1,5 @@
-﻿
+﻿using Metrics.Utils;
+
 namespace Metrics.MetricData
 {
     /// <summary>
@@ -8,16 +9,19 @@ namespace Metrics.MetricData
     {
         public readonly MeterValue Rate;
         public readonly HistogramValue Histogram;
+        private readonly TimeUnit DurationUnit;
 
-        public TimerValue(MeterValue rate, HistogramValue histogram)
+        public TimerValue(MeterValue rate, HistogramValue histogram, TimeUnit durationUnit)
         {
             this.Rate = rate;
             this.Histogram = histogram;
+            this.DurationUnit = durationUnit;
         }
 
         public TimerValue Scale(TimeUnit rate, TimeUnit duration)
         {
-            return new TimerValue(this.Rate.Scale(rate), this.Histogram.Scale(duration));
+            var durationFactor = this.DurationUnit.ScalingFactorFor(duration);
+            return new TimerValue(this.Rate.Scale(rate), this.Histogram.Scale(durationFactor), duration);
         }
     }
 
@@ -27,7 +31,7 @@ namespace Metrics.MetricData
     public class TimerValueSource : MetricValueSource<TimerValue>
     {
         public TimerValueSource(string name, MetricValueProvider<TimerValue> value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
-            : base(name, value, unit, tags)
+            : base(name, new ScaledValueProvider<TimerValue>(value, v => v.Scale(rateUnit, durationUnit)), unit, tags)
         {
             this.RateUnit = rateUnit;
             this.DurationUnit = durationUnit;

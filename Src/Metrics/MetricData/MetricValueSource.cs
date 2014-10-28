@@ -1,4 +1,5 @@
 ﻿
+using System;
 namespace Metrics.MetricData
 {
     /// <summary>
@@ -20,6 +21,31 @@ namespace Metrics.MetricData
         /// <param name="resetMetric">if set to true the metric will be reset.</param>
         /// <returns>The current value for the metric.</returns>
         T GetValue(bool resetMetric = false);
+    }
+
+    public sealed class ScaledValueProvider<T> : MetricValueProvider<T>
+    {
+        private readonly MetricValueProvider<T> valueProvider;
+        private readonly Func<T, T> scalingFunction;
+
+        public ScaledValueProvider(MetricValueProvider<T> valueProvider, Func<T, T> transformation)
+        {
+            this.valueProvider = valueProvider;
+            this.scalingFunction = transformation;
+        }
+
+        public T Value
+        {
+            get
+            {
+                return this.scalingFunction(this.valueProvider.Value);
+            }
+        }
+
+        public T GetValue(bool resetMetric = false)
+        {
+            return this.scalingFunction(this.valueProvider.GetValue(resetMetric));
+        }
     }
 
     /// <summary>

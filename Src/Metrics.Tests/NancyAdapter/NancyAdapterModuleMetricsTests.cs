@@ -62,7 +62,7 @@ namespace Metrics.Tests.NancyAdapter
 
             timer.Rate.Count.Should().Be(1);
             timer.Histogram.Count.Should().Be(1);
-            timer.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
+            timer.Histogram.Max.Should().Be(100);
         }
 
         [Fact]

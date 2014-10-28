@@ -24,7 +24,14 @@ namespace NancyFx.Sample
 
                 SampleMetrics.RunSomeRequests();
 
-                scheduler.Start(TimeSpan.FromMilliseconds(500), () => SampleMetrics.RunSomeRequests());
+                scheduler.Start(TimeSpan.FromMilliseconds(500), () =>
+                {
+                    SetCounterSample.RunSomeRequests();
+                    SetMeterSample.RunSomeRequests();
+                    UserValueHistogramSample.RunSomeRequests();
+                    UserValueTimerSample.RunSomeRequests();
+                    SampleMetrics.RunSomeRequests();
+                });
 
                 HealthChecksSample.RegisterHealthChecks();
 

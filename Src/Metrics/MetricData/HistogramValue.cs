@@ -1,5 +1,4 @@
 ﻿using Metrics.Sampling;
-using Metrics.Utils;
 
 namespace Metrics.MetricData
 {
@@ -82,6 +81,11 @@ namespace Metrics.MetricData
 
         public HistogramValue Scale(double factor)
         {
+            if (factor == 1)
+            {
+                return this;
+            }
+
             return new HistogramValue(this.Count,
                 this.LastValue * factor,
                 this.LastUserValue,
@@ -98,11 +102,6 @@ namespace Metrics.MetricData
                 this.Percentile99 * factor,
                 this.Percentile999 * factor,
                 this.SampleSize);
-        }
-
-        public HistogramValue Scale(TimeUnit durationUnit)
-        {
-            return this.Scale(1.0 / (double)durationUnit.ToNanoseconds(1));
         }
     }
 
