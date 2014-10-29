@@ -1,4 +1,7 @@
-###0.2.7 / 2014-10-17
+###0.2.8 / 2014-10-29
+* handle access issues for perf counters
+
+###0.2.7 / 2014-10-28
 * preparations for out-of-process metrics
 
 ###0.2.6 / 2014-10-17
