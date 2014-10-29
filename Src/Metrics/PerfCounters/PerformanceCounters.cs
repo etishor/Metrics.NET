@@ -2,9 +2,9 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Principal;
 using Metrics.Core;
 using Metrics.Logging;
-using Metrics.MetricData;
 
 namespace Metrics.PerfCounters
 {
@@ -90,6 +90,43 @@ namespace Metrics.PerfCounters
             Func<double, double> derivate = null,
             MetricTags tags = default(MetricTags))
         {
+            try
+            {
+                WrappedRegister(context, name, unit, category, counter, instance, derivate, tags);
+            }
+            catch (UnauthorizedAccessException x)
+            {
+                var message = "Error reading performance counter data. The application is currently running as user " + GetIdentity() +
+                   ". Make sure the user has access to the performance counters. The user needs to be either Admin or belong to Performance Monitor user group.";
+                MetricsErrorHandler.Handle(x, message);
+            }
+            catch (Exception x)
+            {
+                var message = "Error reading performance counter data. The application is currently running as user " + GetIdentity() +
+                   ". Make sure the user has access to the performance counters. The user needs to be either Admin or belong to Performance Monitor user group.";
+                MetricsErrorHandler.Handle(x, message);
+            }
+
+            return context;
+        }
+
+        private static string GetIdentity()
+        {
+            try
+            {
+                return WindowsIdentity.GetCurrent().Name;
+            }
+            catch (Exception x)
+            {
+                return "[Unknown user | " + x.Message + " ]";
+            }
+        }
+
+        private static void WrappedRegister(MetricsContext context, string name, Unit unit,
+            string category, string counter, string instance = null,
+            Func<double, double> derivate = null,
+            MetricTags tags = default(MetricTags))
+        {
             log.Debug(() => string.Format("Registering performance counter Name {0} Category {1} Instance {2}", counter, category, instance));
 
             if (PerformanceCounterCategory.Exists(category))
@@ -107,13 +144,11 @@ namespace Metrics.PerfCounters
                         {
                             context.Advanced.Gauge(name, () => new DerivedGauge(new PerformanceCounterGauge(category, counter, instance), derivate), unit, counterTags);
                         }
-                        return context;
                     }
                 }
             }
 
             log.ErrorFormat("Performance counter does not exist Name {0} Category {1} Instance {2}", counter, category, instance);
-            return context;
         }
     }
 }
