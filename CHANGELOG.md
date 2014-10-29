@@ -1,3 +1,18 @@
+###0.2.7 / 2014-10-17
+* preparations for out-of-process metrics
+
+###0.2.6 / 2014-10-17
+* fix http listener prefix handling
+
+###0.2.5 / 2014-10-12
+* JSON metrics refactor
+* remote metrics 
+
+###0.2.4 / 2014-10-07
+* JSON version
+* added environment 
+* various fixes
+
 ###0.2.3 / 2014-10-01
 * add support for set counter & set meters [details](https://github.com/etishor/Metrics.NET/issues/21)
 * cleanup owin adapter

@@ -1,8 +1,8 @@
-﻿using Metrics.Samples;
+﻿using System;
+using System.Diagnostics;
+using Metrics.Samples;
 using Metrics.Utils;
 using Microsoft.Owin.Hosting;
-using System;
-using System.Diagnostics;
 
 namespace Owin.Sample
 {
@@ -22,7 +22,14 @@ namespace Owin.Sample
 
                     SampleMetrics.RunSomeRequests();
 
-                    scheduler.Start(TimeSpan.FromMilliseconds(500), () => SampleMetrics.RunSomeRequests());
+                    scheduler.Start(TimeSpan.FromMilliseconds(500), () =>
+                    {
+                        SetCounterSample.RunSomeRequests();
+                        SetMeterSample.RunSomeRequests();
+                        UserValueHistogramSample.RunSomeRequests();
+                        UserValueTimerSample.RunSomeRequests();
+                        SampleMetrics.RunSomeRequests();
+                    });
 
                     HealthChecksSample.RegisterHealthChecks();
 

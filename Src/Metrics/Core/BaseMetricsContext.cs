@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using Metrics.MetricData;
 using Metrics.Sampling;
 
 namespace Metrics.Core
@@ -145,7 +146,7 @@ namespace Metrics.Core
             return this.registry.Timer(name, builder, unit, rateUnit, durationUnit, tags);
         }
 
-        public Timer Timer(string name, Unit unit, Func<Histogram> builder, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
+        public Timer Timer(string name, Unit unit, Func<HistogramImplementation> builder, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
         {
             return this.Timer(name, unit, () => this.metricsBuilder.BuildTimer(name, unit, rateUnit, durationUnit, builder()), rateUnit, durationUnit, tags);
         }

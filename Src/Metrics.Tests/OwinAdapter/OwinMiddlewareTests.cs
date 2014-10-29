@@ -1,7 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http;
 using FluentAssertions;
-using Metrics.Utils;
 using Microsoft.Owin.Testing;
 using Owin;
 using Owin.Metrics;
@@ -82,9 +81,9 @@ namespace Metrics.Tests.OwinAdapter
 
             var timer = context.TimerValue("Owin", "Requests");
 
-            timer.Histogram.Min.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(timePerRequest));
-            timer.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(timePerRequest));
-            timer.Histogram.Mean.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(timePerRequest));
+            timer.Histogram.Min.Should().Be(timePerRequest);
+            timer.Histogram.Max.Should().Be(timePerRequest);
+            timer.Histogram.Mean.Should().Be(timePerRequest);
         }
 
         [Fact]

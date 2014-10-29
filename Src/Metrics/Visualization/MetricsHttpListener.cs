@@ -3,9 +3,11 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Metrics.Json;
+using Metrics.MetricData;
 using Metrics.Reporters;
 namespace Metrics.Visualization
 {
@@ -16,6 +18,7 @@ namespace Metrics.Visualization
         private readonly CancellationTokenSource cts = new CancellationTokenSource();
         private readonly MetricsDataProvider metricsDataProvider;
         private readonly Func<HealthStatus> healthStatus;
+        private readonly string prefixPath;
 
         private static readonly Timer timer = Metric.Internal.Timer("HTTP Request", Unit.Requests);
         private static readonly Meter errors = Metric.Internal.Meter("HTTP Request Errors", Unit.Errors);
@@ -23,10 +26,24 @@ namespace Metrics.Visualization
 
         public MetricsHttpListener(string listenerUriPrefix, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
         {
+            this.prefixPath = ParsePrefixPath(listenerUriPrefix);
             this.httpListener = new HttpListener();
             this.httpListener.Prefixes.Add(listenerUriPrefix);
             this.metricsDataProvider = metricsDataProvider;
             this.healthStatus = healthStatus;
+        }
+
+        private string ParsePrefixPath(string listenerUriPrefix)
+        {
+            var match = Regex.Match(listenerUriPrefix, @"http://(?:[^/]*)(?:\:\d+)?/(.*)");
+            if (match.Success)
+            {
+                return match.Groups[1].Value.ToLowerInvariant();
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         public void Start()
@@ -41,22 +58,22 @@ namespace Metrics.Visualization
             {
                 try
                 {
-                    using (timer.NewContext())
+                    var context = await this.httpListener.GetContextAsync();
+                    try
                     {
-                        var context = await this.httpListener.GetContextAsync();
-                        try
+                        using (timer.NewContext())
                         {
                             await ProcessRequest(context).ConfigureAwait(false);
                             context.Response.Close();
                         }
-                        catch (Exception ex)
-                        {
-                            errors.Mark();
-                            context.Response.StatusCode = 500;
-                            context.Response.StatusDescription = "Internal Server Error";
-                            context.Response.Close();
-                            MetricsErrorHandler.Handle(ex, "Error processing HTTP request");
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.Mark();
+                        context.Response.StatusCode = 500;
+                        context.Response.StatusDescription = "Internal Server Error";
+                        context.Response.Close();
+                        MetricsErrorHandler.Handle(ex, "Error processing HTTP request");
                     }
                 }
                 catch (Exception ex)
@@ -73,7 +90,15 @@ namespace Metrics.Visualization
 
         private Task ProcessRequest(HttpListenerContext context)
         {
-            switch (context.Request.RawUrl)
+            if (context.Request.HttpMethod.ToUpperInvariant() != "GET")
+            {
+                return WriteNotFound(context);
+            }
+
+            var urlPath = context.Request.RawUrl.Substring(this.prefixPath.Length)
+                .ToLowerInvariant();
+
+            switch (urlPath)
             {
                 case "/":
                     if (!context.Request.Url.ToString().EndsWith("/"))
@@ -108,6 +133,23 @@ namespace Metrics.Visualization
             return WriteNotFound(context);
         }
 
+        private async Task RegisterRemote(HttpListenerContext context)
+        {
+            using (var reader = new StreamReader(context.Request.InputStream))
+            {
+                var content = await reader.ReadToEndAsync();
+                Uri remoteUri;
+                if (!Uri.TryCreate(content, UriKind.Absolute, out remoteUri))
+                {
+                    context.Response.StatusCode = 400;
+                    context.Response.StatusDescription = "Bad Request";
+                    return;
+                }
+
+                Metric.Config.RegisterRemote(remoteUri.ToString(), remoteUri, TimeSpan.FromSeconds(1));
+            }
+        }
+
         private static async Task WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
         {
             var status = healthStatus();
@@ -138,7 +180,7 @@ namespace Metrics.Visualization
 
         private static Task WriteJsonMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
         {
-            var acceptHeader = context.Request.Headers["Accept"];
+            var acceptHeader = context.Request.Headers["Accept"] ?? string.Empty;
 
             if (acceptHeader.Contains(JsonBuilderV2.MetricsMimeType))
             {
