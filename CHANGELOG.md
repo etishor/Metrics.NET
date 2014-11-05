@@ -1,3 +1,6 @@
+###0.2.9 / 2014-11-05
+* record active sessions for timers
+
 ###0.2.8 / 2014-10-29
 * handle access issues for perf counters
 

@@ -12,6 +12,7 @@ namespace Metrics.Core
         private readonly Clock clock;
         private readonly MeterImplementation meter;
         private readonly HistogramImplementation histogram;
+        private AtomicLong counter = new AtomicLong();
 
         public TimerMetric()
             : this(new HistogramMetric(), new MeterMetric(), Clock.Default) { }
@@ -50,10 +51,12 @@ namespace Metrics.Core
             var start = this.clock.Nanoseconds;
             try
             {
+                counter.Increment();
                 action();
             }
             finally
             {
+                counter.Decrement();
                 Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds, userValue);
             }
         }
@@ -63,23 +66,32 @@ namespace Metrics.Core
             var start = this.clock.Nanoseconds;
             try
             {
+                counter.Increment();
                 return action();
             }
             finally
             {
+                counter.Decrement();
                 Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds, userValue);
             }
         }
 
         public TimerContext NewContext(string userValue = null)
         {
-            return new TimeMeasuringContext(this.clock, (t) => Record(t, TimeUnit.Nanoseconds, userValue));
+            counter.Increment();
+            return new TimeMeasuringContext(this.clock, (t) =>
+            {
+                counter.Decrement();
+                Record(t, TimeUnit.Nanoseconds, userValue);
+            });
         }
 
         public TimerContext NewContext(Action<TimeSpan> finalAction, string userValue = null)
         {
+            counter.Increment();
             return new TimeMeasuringContext(this.clock, (t) =>
             {
+                counter.Decrement();
                 Record(t, TimeUnit.Nanoseconds, userValue);
                 finalAction(TimeSpan.FromMilliseconds(TimeUnit.Nanoseconds.ToMilliseconds(t)));
             });
@@ -95,7 +107,7 @@ namespace Metrics.Core
 
         public TimerValue GetValue(bool resetMetric = false)
         {
-            return new TimerValue(this.meter.GetValue(resetMetric), this.histogram.GetValue(resetMetric), TimeUnit.Nanoseconds);
+            return new TimerValue(this.meter.GetValue(resetMetric), this.histogram.GetValue(resetMetric), this.counter.Value, TimeUnit.Nanoseconds);
         }
 
         public void Reset()
