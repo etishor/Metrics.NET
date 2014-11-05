@@ -18,7 +18,7 @@ namespace Metrics
 
         private MetricsErrorHandler()
         {
-			this.AddHandler((x, msg) => log.ErrorException("Metrics: Unhandled exception in Metrics.NET Library " + x.Message, x));
+            this.AddHandler((x, msg) => log.ErrorException("Metrics: Unhandled exception in Metrics.NET Library " + x.Message, x));
             this.AddHandler((x, msg) => Trace.TraceError("Metrics: Unhandled exception in Metrics.NET Library " + x.ToString()));
 
             if (Environment.UserInteractive || IsMono)
