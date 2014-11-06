@@ -21,7 +21,6 @@ namespace Metrics.Reports
         /// <summary>
         /// Schedule a generic reporter to be executed at a fixed <paramref name="interval"/>
         /// </summary>
-        /// <param name="reporterName">Name of the reporter</param>
         /// <param name="reporter">Function that returns an instance of a reporter</param>
         /// <param name="interval">Interval at which to run the report.</param>
         public MetricsReports WithReporter(Func<MetricsReporter> reporter, TimeSpan interval)
