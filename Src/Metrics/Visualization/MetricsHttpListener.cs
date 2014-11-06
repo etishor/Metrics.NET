@@ -157,7 +157,7 @@ namespace Metrics.Visualization
 
         private static Task WriteTextMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
         {
-            var text = StringReporter.RenderMetrics(metricsDataProvider.CurrentMetricsData, healthStatus);
+            var text = StringReport.RenderMetrics(metricsDataProvider.CurrentMetricsData, healthStatus);
             return WriteString(context, text, "text/plain");
         }
 

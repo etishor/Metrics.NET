@@ -7,7 +7,7 @@ using Metrics.Utils;
 
 namespace Metrics.Reporters
 {
-    public abstract class BaseReporter : MetricsReporter
+    public abstract class BaseReport : MetricsReport
     {
         private CancellationToken token;
 
@@ -78,6 +78,5 @@ namespace Metrics.Reporters
             StartMetricGroup("Health Checks");
             ReportHealth(status);
         }
-
     }
 }

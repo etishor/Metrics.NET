@@ -30,7 +30,7 @@ namespace Metrics.SampleReporter
             this.getLogger = getLogger;
         }
 
-        public override void AppendLine(DateTime timestamp, string metricType, string metricName, IEnumerable<CSVReporter.Value> values)
+        public override void AppendLine(DateTime timestamp, string metricType, string metricName, IEnumerable<CSVReport.Value> values)
         {
             var fileName = FormatFileName(directory, metricName, metricType);
 

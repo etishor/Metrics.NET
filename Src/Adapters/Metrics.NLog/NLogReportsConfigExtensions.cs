@@ -22,7 +22,7 @@ namespace Metrics
             global::NLog.Config.ConfigurationItemFactory.Default.Layouts.RegisterDefinition("CsvHistogramLayout", typeof(CsvHistogramLayout));
             global::NLog.Config.ConfigurationItemFactory.Default.Layouts.RegisterDefinition("CsvTimerLayout", typeof(CsvTimerLayout));
 
-            reports.WithReporter(() => new CSVReporter(new NLogCSVAppender(delimiter)), interval);
+            reports.WithReporter(() => new CSVReport(new NLogCSVAppender(delimiter)), interval);
 
             return reports;
         }

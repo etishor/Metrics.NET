@@ -5,7 +5,7 @@ using Metrics.Reporters;
 
 namespace Metrics.SampleReporter
 {
-    public class SampleResettingReporter : MetricsReporter
+    public class SampleResettingReporter : MetricsReport
     {
         public void RunReport(MetricsData metricsData, Func<HealthStatus> healthStatus, CancellationToken token)
         {

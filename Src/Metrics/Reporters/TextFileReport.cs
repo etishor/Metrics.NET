@@ -3,12 +3,12 @@ using System.IO;
 
 namespace Metrics.Reporters
 {
-    public class TextFileReporter : HumanReadableReporter
+    public class TextFileReport : HumanReadableReport
     {
         private readonly string fileName;
         private readonly List<string> buffer = new List<string>();
 
-        public TextFileReporter(string fileName)
+        public TextFileReport(string fileName)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(fileName));
             this.fileName = fileName;

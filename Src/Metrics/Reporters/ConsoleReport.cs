@@ -2,7 +2,7 @@
 
 namespace Metrics.Reporters
 {
-    public class ConsoleReporter : HumanReadableReporter
+    public class ConsoleReport : HumanReadableReport
     {
         protected override void StartReport()
         {

@@ -4,11 +4,11 @@ using Metrics.MetricData;
 
 namespace Metrics.Reporters
 {
-    public abstract class HumanReadableReporter : BaseReporter
+    public abstract class HumanReadableReport : BaseReport
     {
         private readonly int padding;
 
-        protected HumanReadableReporter(int padding = 20)
+        protected HumanReadableReport(int padding = 20)
         {
             this.padding = padding;
         }

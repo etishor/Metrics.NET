@@ -8,7 +8,7 @@ namespace Metrics.NLog
     using LogLevel = global::NLog.LogLevel;
     using LogManager = global::NLog.LogManager;
 
-    public class NLogTextReporter : HumanReadableReporter
+    public class NLogTextReporter : HumanReadableReport
     {
         private string metricType = null;
         private string metricName = null;
