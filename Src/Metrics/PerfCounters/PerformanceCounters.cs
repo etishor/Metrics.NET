@@ -127,7 +127,7 @@ namespace Metrics.PerfCounters
             Func<double, double> derivate = null,
             MetricTags tags = default(MetricTags))
         {
-            log.Debug(() => string.Format("Registering performance counter Name {0} Category {1} Instance {2}", counter, category, instance));
+            log.Debug(() => string.Format("Registering performance counter [{0}] in category [{1}] for instance [{2}]", counter, category, instance ?? "none"));
 
             if (PerformanceCounterCategory.Exists(category))
             {
@@ -144,11 +144,12 @@ namespace Metrics.PerfCounters
                         {
                             context.Advanced.Gauge(name, () => new DerivedGauge(new PerformanceCounterGauge(category, counter, instance), derivate), unit, counterTags);
                         }
+                        return;
                     }
                 }
             }
 
-            log.ErrorFormat("Performance counter does not exist Name {0} Category {1} Instance {2}", counter, category, instance);
+            log.ErrorFormat("Performance counter does not exist [{0}] in category [{1}] for instance [{2}]", counter, category, instance ?? "none");
         }
     }
 }
