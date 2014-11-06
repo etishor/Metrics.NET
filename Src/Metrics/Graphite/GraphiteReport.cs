@@ -14,7 +14,7 @@ namespace Metrics.Graphite
 
         protected override void ReportGauge(string name, double value, Unit unit)
         {
-
+            this.sender.Send(new[] { name }, value.ToString(), 0); // just to fix build
         }
 
         protected override void ReportCounter(string name, CounterValue value, Unit unit)
