@@ -5,7 +5,7 @@ using Metrics.Utils;
 
 namespace Metrics.Json
 {
-    public sealed class JsonBuilderV2
+    public static class JsonBuilderV2
     {
         public const int Version = 2;
         public const string MetricsMimeType = "application/vnd.metrics.net.v2.metrics+json";

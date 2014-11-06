@@ -29,7 +29,7 @@ namespace Metrics.Json
 
         public int SampleSize { get; set; }
 
-        public static JsonHistogram FromHistogram(HistogramValueSource histogram)
+        public static JsonHistogram FromHistogram(MetricValueSource<HistogramValue> histogram)
         {
             return new JsonHistogram
             {

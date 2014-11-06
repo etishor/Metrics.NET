@@ -56,7 +56,7 @@ namespace Metrics.MetricData
 
         public Filter WhereContext(string context)
         {
-            return WhereContext(c => c.Equals(context, StringComparison.InvariantCultureIgnoreCase));
+            return WhereContext(c => c.Equals(context, StringComparison.OrdinalIgnoreCase));
         }
 
         public Filter WhereName(Predicate<string> condition)
@@ -67,7 +67,7 @@ namespace Metrics.MetricData
 
         public Filter WhereNameStartsWith(string name)
         {
-            return WhereName(n => n.StartsWith(name, StringComparison.InvariantCultureIgnoreCase));
+            return WhereName(n => n.StartsWith(name, StringComparison.OrdinalIgnoreCase));
         }
 
         public Filter WhereType(params MetricType[] types)

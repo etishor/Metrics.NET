@@ -21,7 +21,7 @@ namespace Metrics.Reporters
 
         private readonly string delimiter;
 
-        public CSVAppender(string delimiter)
+        protected CSVAppender(string delimiter)
         {
             if (delimiter == null)
             {

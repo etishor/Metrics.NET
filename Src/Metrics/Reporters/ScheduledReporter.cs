@@ -14,10 +14,10 @@ namespace Metrics.Reporters
         private readonly MetricsDataProvider metricsDataProvider;
         private readonly Func<HealthStatus> healthStatus;
 
-        public ScheduledReporter(string name, Func<MetricsReporter> reporter, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus, TimeSpan interval)
-            : this(name, reporter, metricsDataProvider, healthStatus, interval, new ActionScheduler()) { }
+        public ScheduledReporter(Func<MetricsReporter> reporter, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus, TimeSpan interval)
+            : this(reporter, metricsDataProvider, healthStatus, interval, new ActionScheduler()) { }
 
-        public ScheduledReporter(string name, Func<MetricsReporter> reporter, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus, TimeSpan interval, Scheduler scheduler)
+        public ScheduledReporter(Func<MetricsReporter> reporter, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus, TimeSpan interval, Scheduler scheduler)
         {
             this.reporter = reporter;
             this.metricsDataProvider = metricsDataProvider;

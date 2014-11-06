@@ -67,7 +67,7 @@ namespace Metrics.Reporters
         protected override void ReportHealth(HealthStatus status)
         {
             Write("All", "HealthChecks", new[] { 
-                new Value("All Healthy", status.IsHealty) }.Union(
+                new Value("All Healthy", status.IsHealthy) }.Union(
                 status.Results.SelectMany(r => new[]
             {
                 new Value(r.Name + " IsHealthy" ,r.Check.IsHealthy),

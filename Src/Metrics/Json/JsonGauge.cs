@@ -10,7 +10,7 @@ namespace Metrics.Json
 
         public double? Value { get { return this.value; } set { this.value = value ?? double.NaN; } }
 
-        public static JsonGauge FromGauge(GaugeValueSource gauge)
+        public static JsonGauge FromGauge(MetricValueSource<double> gauge)
         {
             return new JsonGauge
             {

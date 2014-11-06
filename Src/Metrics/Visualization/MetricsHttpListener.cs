@@ -33,7 +33,7 @@ namespace Metrics.Visualization
             this.healthStatus = healthStatus;
         }
 
-        private string ParsePrefixPath(string listenerUriPrefix)
+        private static string ParsePrefixPath(string listenerUriPrefix)
         {
             var match = Regex.Match(listenerUriPrefix, @"http://(?:[^/]*)(?:\:\d+)?/(.*)");
             if (match.Success)
@@ -133,31 +133,14 @@ namespace Metrics.Visualization
             return WriteNotFound(context);
         }
 
-        private async Task RegisterRemote(HttpListenerContext context)
-        {
-            using (var reader = new StreamReader(context.Request.InputStream))
-            {
-                var content = await reader.ReadToEndAsync();
-                Uri remoteUri;
-                if (!Uri.TryCreate(content, UriKind.Absolute, out remoteUri))
-                {
-                    context.Response.StatusCode = 400;
-                    context.Response.StatusDescription = "Bad Request";
-                    return;
-                }
-
-                Metric.Config.RegisterRemote(remoteUri.ToString(), remoteUri, TimeSpan.FromSeconds(1));
-            }
-        }
-
         private static async Task WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
         {
             var status = healthStatus();
             var json = JsonHealthChecks.BuildJson(status);
 
             await WriteString(context, json, JsonHealthChecks.HealthChecksMimeType);
-            context.Response.StatusCode = status.IsHealty ? 200 : 500;
-            context.Response.StatusDescription = status.IsHealty ? "OK" : "Internal Server Error";
+            context.Response.StatusCode = status.IsHealthy ? 200 : 500;
+            context.Response.StatusDescription = status.IsHealthy ? "OK" : "Internal Server Error";
         }
 
         private static Task WritePong(HttpListenerContext context)
@@ -230,7 +213,7 @@ namespace Metrics.Visualization
             }
         }
 
-        private Task WriteFavIcon(HttpListenerContext context)
+        private static Task WriteFavIcon(HttpListenerContext context)
         {
             context.Response.ContentType = FlotWebApp.FavIconMimeType;
             context.Response.StatusCode = 200;

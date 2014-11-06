@@ -92,7 +92,7 @@ namespace Metrics.Reporters
         protected override void ReportHealth(HealthStatus status)
         {
             WriteLine();
-            WriteValue("Is Healthy", status.IsHealty ? "Yes" : "No");
+            WriteValue("Is Healthy", status.IsHealthy ? "Yes" : "No");
             WriteLine();
 
             var unhealthy = status.Results.Where(r => !r.Check.IsHealthy);
