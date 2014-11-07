@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Metrics.Reporters
@@ -19,11 +20,11 @@ namespace Metrics.Reporters
             this.buffer.Add(string.Format(line, args));
         }
 
-        protected override void EndReport()
+        protected override void EndReport(string contextName, DateTime timestamp)
         {
-            base.EndReport();
             File.WriteAllLines(this.fileName, this.buffer);
             buffer.Clear();
+            base.EndReport(contextName, timestamp);
         }
     }
 }

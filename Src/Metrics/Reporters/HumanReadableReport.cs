@@ -1,6 +1,7 @@
-﻿using System.Globalization;
+﻿using System;
 using System.Linq;
 using Metrics.MetricData;
+using Metrics.Utils;
 
 namespace Metrics.Reporters
 {
@@ -15,16 +16,16 @@ namespace Metrics.Reporters
 
         protected abstract void WriteLine(string line, params string[] args);
 
-        protected override void StartReport()
+        protected override void StartReport(string contextName, DateTime timestamp)
         {
-            this.WriteLine("{0} - {1}", base.Context, base.Timestamp.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture));
+            this.WriteLine("{0} - {1}", contextName, Clock.FormatTimestamp(timestamp));
         }
 
-        protected override void StartMetricGroup(string metricType)
+        protected override void StartMetricGroup(string metricType, DateTime timestamp)
         {
             this.WriteLine();
             this.WriteLine();
-            this.WriteLine("***** {0} - {1} - {2} *****", metricType, this.Context, base.Timestamp.ToString());
+            this.WriteLine("***** {0} - {1} *****", metricType, Clock.FormatTimestamp(timestamp));
         }
 
         protected void WriteMetricName(string name)
