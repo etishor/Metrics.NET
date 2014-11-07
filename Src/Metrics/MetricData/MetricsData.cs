@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,7 +7,7 @@ namespace Metrics.MetricData
 {
     public sealed class MetricsData
     {
-        public static MetricsData Empty = new MetricsData(string.Empty,
+        public static MetricsData Empty = new MetricsData(string.Empty, DateTime.MinValue,
             Enumerable.Empty<EnvironmentEntry>(),
             Enumerable.Empty<GaugeValueSource>(),
             Enumerable.Empty<CounterValueSource>(),
@@ -16,6 +17,7 @@ namespace Metrics.MetricData
             Enumerable.Empty<MetricsData>());
 
         public readonly string Context;
+        public readonly DateTime Timestamp;
 
         public readonly IEnumerable<EnvironmentEntry> Environment;
 
@@ -26,11 +28,7 @@ namespace Metrics.MetricData
         public readonly IEnumerable<TimerValueSource> Timers;
         public readonly IEnumerable<MetricsData> ChildMetrics;
 
-        public MetricsData(string context, IEnumerable<EnvironmentEntry> environment, MetricsData data, IEnumerable<MetricsData> childMetrics)
-            : this(context, environment, data.Gauges, data.Counters, data.Meters, data.Histograms, data.Timers, childMetrics)
-        { }
-
-        public MetricsData(string context,
+        public MetricsData(string context, DateTime timestamp,
             IEnumerable<EnvironmentEntry> environment,
             IEnumerable<GaugeValueSource> gauges,
             IEnumerable<CounterValueSource> counters,
@@ -40,6 +38,7 @@ namespace Metrics.MetricData
             IEnumerable<MetricsData> childMetrics)
         {
             this.Context = context;
+            this.Timestamp = timestamp;
             this.Environment = environment;
             this.Gauges = gauges;
             this.Counters = counters;
@@ -56,7 +55,7 @@ namespace Metrics.MetricData
                 return MetricsData.Empty;
             }
 
-            return new MetricsData(this.Context,
+            return new MetricsData(this.Context, this.Timestamp,
                 this.Environment,
                 this.Gauges.Where(g => filter.IsMatch(g)),
                 this.Counters.Where(c => filter.IsMatch(c)),
@@ -68,7 +67,7 @@ namespace Metrics.MetricData
 
         public MetricsData Flatten()
         {
-            return new MetricsData(this.Context,
+            return new MetricsData(this.Context, this.Timestamp,
                 this.Environment.Union(this.ChildMetrics.SelectMany(m => m.Flatten().Environment)),
                 this.Gauges.Union(this.ChildMetrics.SelectMany(m => m.Flatten().Gauges)),
                 this.Counters.Union(this.ChildMetrics.SelectMany(m => m.Flatten().Counters)),
@@ -110,7 +109,7 @@ namespace Metrics.MetricData
                 .Select(e => new EnvironmentEntry(FormatName(prefix, e.Name), e.Value))
                 .Union(this.ChildMetrics.SelectMany(e => e.OldFormat(FormatPrefix(prefix, e.Context)).Environment));
 
-            return new MetricsData(this.Context, environment, gauges, counters, meters, histograms, timers, Enumerable.Empty<MetricsData>());
+            return new MetricsData(this.Context, this.Timestamp, environment, gauges, counters, meters, histograms, timers, Enumerable.Empty<MetricsData>());
         }
 
         private static string FormatPrefix(string prefix, string context)

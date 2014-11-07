@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -24,7 +23,7 @@ namespace Metrics.Utils
                 yield return new EnvironmentEntry("CommandLine", Environment.CommandLine);
                 yield return new EnvironmentEntry("HostName", SafeGetString(() => Dns.GetHostName()));
                 yield return new EnvironmentEntry("IPAddress", SafeGetString(() => GetIpAddress()));
-                yield return new EnvironmentEntry("LocalTime", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture));
+                yield return new EnvironmentEntry("LocalTime", Clock.FormatTimestamp(DateTime.Now));
             }
         }
 

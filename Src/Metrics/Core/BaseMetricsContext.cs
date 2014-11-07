@@ -16,12 +16,12 @@ namespace Metrics.Core
 
         private bool isDisabled;
 
-        protected BaseMetricsContext(string context, MetricsRegistry registry, MetricsBuilder metricsBuilder)
+        protected BaseMetricsContext(string context, MetricsRegistry registry, MetricsBuilder metricsBuilder, Func<DateTime> timestampProvider)
         {
             this.context = context;
             this.registry = registry;
             this.metricsBuilder = metricsBuilder;
-            this.DataProvider = new DefaultDataProvider(this.context, this.registry.DataProvider, () => this.childContexts.Values.Select(c => c.DataProvider));
+            this.DataProvider = new DefaultDataProvider(this.context, timestampProvider, this.registry.DataProvider, () => this.childContexts.Values.Select(c => c.DataProvider));
         }
 
         protected abstract MetricsContext CreateChildContextInstance(string contextName);

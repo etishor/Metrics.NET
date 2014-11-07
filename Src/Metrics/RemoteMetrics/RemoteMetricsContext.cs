@@ -31,7 +31,7 @@ namespace Metrics.RemoteMetrics
                 var remoteContext = await HttpRemoteMetrics.FetchRemoteMetrics(remoteUri, deserializer, token).ConfigureAwait(false);
                 remoteContext.Environment.Add("RemoteUri", remoteUri.ToString());
                 remoteContext.Environment.Add("RemoteVersion", remoteContext.Version);
-                remoteContext.Environment.Add("RemoteTimestamp", remoteContext.Timestamp);
+                remoteContext.Environment.Add("RemoteTimestamp", Clock.FormatTimestamp(remoteContext.Timestamp));
 
                 this.currentData = remoteContext.ToMetricsData();
             }

@@ -9,7 +9,7 @@ namespace Metrics.Tests
     public class TestContext : BaseMetricsContext
     {
         public TestContext(string contextName, TestClock clock, TestScheduler scheduler)
-            : base(contextName, new DefaultMetricsRegistry(), new TestMetricsBuilder(clock, scheduler))
+            : base(contextName, new DefaultMetricsRegistry(), new TestMetricsBuilder(clock, scheduler), () => clock.UTCDateTime)
         {
             this.Clock = clock;
             this.Scheduler = scheduler;
