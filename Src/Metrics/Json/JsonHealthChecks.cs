@@ -36,7 +36,7 @@ namespace Metrics.Json
 
         public JsonHealthChecks AddObject(HealthStatus status)
         {
-            var properties = new List<JsonProperty>() { new JsonProperty("IsHealthy", status.IsHealty) };
+            var properties = new List<JsonProperty>() { new JsonProperty("IsHealthy", status.IsHealthy) };
             var unhealty = status.Results.Where(r => !r.Check.IsHealthy)
                 .Select(r => new JsonProperty(r.Name, r.Check.Message));
             properties.Add(new JsonProperty("Unhealthy", unhealty));

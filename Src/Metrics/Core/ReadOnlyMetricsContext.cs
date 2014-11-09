@@ -21,14 +21,14 @@ namespace Metrics.Core
         public Histogram Histogram(string name, Unit unit, SamplingType samplingType, MetricTags tags) { throw new ReadOnlyMetricsContextException(); }
         public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags) { throw new ReadOnlyMetricsContextException(); }
 
-        public virtual void Dispose(bool disposing)
-        {
-        }
-
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
         }
     }
 

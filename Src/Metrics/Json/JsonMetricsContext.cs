@@ -55,11 +55,6 @@ namespace Metrics.Json
             };
         }
 
-        private static Dictionary<string, string> ToEnvironment(EnvironmentEntry[] environment)
-        {
-            return environment.ToDictionary(e => e.Name, e => e.Value);
-        }
-
         public JsonObject ToJsonObject()
         {
             return new JsonObject(ToJsonProperties());

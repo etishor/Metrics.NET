@@ -21,8 +21,6 @@ namespace Metrics.Sampling
 
         private class UserValueComparer : IComparer<UserValueWrapper>
         {
-            public static readonly IComparer<UserValueWrapper> Instance = new UserValueComparer();
-
             public int Compare(UserValueWrapper x, UserValueWrapper y)
             {
                 return Comparer<long>.Default.Compare(x.Value, y.Value);

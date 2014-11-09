@@ -18,7 +18,7 @@ namespace Metrics
         private Func<HealthStatus> healthStatus;
         private MetricsHttpListener listener;
 
-        private static readonly bool globalyDisabled = false;
+        private static readonly bool globalyDisabled;
 
         private bool isDisabled = MetricsConfig.globalyDisabled;
 

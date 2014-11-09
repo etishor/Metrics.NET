@@ -58,7 +58,8 @@ namespace Metrics.Reporters
         protected override void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
         {
             var values = MeterValues(value.Rate, unit, rateUnit)
-                .Concat(HistogramValues(value.Histogram, unit, durationUnit));
+                .Concat(HistogramValues(value.Histogram, unit, durationUnit))
+                .Concat(new[] { new Value("Active Sessions", value.ActiveSessions) });
 
             Write("Timer", name, values);
         }
@@ -66,7 +67,7 @@ namespace Metrics.Reporters
         protected override void ReportHealth(HealthStatus status)
         {
             Write("All", "HealthChecks", new[] { 
-                new Value("All Healthy", status.IsHealty) }.Union(
+                new Value("All Healthy", status.IsHealthy) }.Union(
                 status.Results.SelectMany(r => new[]
             {
                 new Value(r.Name + " IsHealthy" ,r.Check.IsHealthy),

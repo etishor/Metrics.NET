@@ -4,9 +4,9 @@ using System.Threading;
 
 namespace Metrics.PerfCounters
 {
-    public static class ThreadPoolMetrics
+    internal static class ThreadPoolMetrics
     {
-        public static void RegisterThreadPoolGauges(MetricsContext context)
+        internal static void RegisterThreadPoolGauges(MetricsContext context)
         {
             context.Gauge("Thread Pool Available Threads", () => { int threads, ports; ThreadPool.GetAvailableThreads(out threads, out ports); return threads; }, Unit.Threads, tags: "threads");
             context.Gauge("Thread Pool Available Completion Ports", () => { int threads, ports; ThreadPool.GetAvailableThreads(out threads, out ports); return ports; }, Unit.Custom("Ports"), tags: "threads");

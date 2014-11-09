@@ -19,7 +19,7 @@ namespace Metrics
         /// <summary>
         /// All health checks passed.
         /// </summary>
-        public readonly bool IsHealty;
+        public readonly bool IsHealthy;
 
         /// <summary>
         /// Result of each health check operation
@@ -29,7 +29,7 @@ namespace Metrics
         public HealthStatus(IEnumerable<HealthCheck.Result> results)
         {
             this.Results = results.ToArray();
-            this.IsHealty = this.Results.All(r => r.Check.IsHealthy);
+            this.IsHealthy = this.Results.All(r => r.Check.IsHealthy);
             this.HasRegisteredChecks = this.Results.Length > 0;
         }
     }

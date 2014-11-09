@@ -7,7 +7,7 @@ namespace Metrics.Core
 {
     public sealed class DefaultMetricsBuilder : MetricsBuilder
     {
-        public MetricValueProvider<double> BuildePerformanceCounter(string name, Unit unit, string counterCategory, string counterName, string counterInstance)
+        public MetricValueProvider<double> BuildPerformanceCounter(string name, Unit unit, string counterCategory, string counterName, string counterInstance)
         {
             return new PerformanceCounterGauge(counterCategory, counterName, counterInstance);
         }

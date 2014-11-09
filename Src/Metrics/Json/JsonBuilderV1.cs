@@ -103,6 +103,7 @@ namespace Metrics.Json
             var properties = timers.Select(t => new { Name = t.Name, Value = t.Value, RateUnit = t.RateUnit, DurationUnit = t.DurationUnit })
                 .Select(t => new JsonProperty(t.Name, new[] 
                 {
+                    new JsonProperty("ActiveSessions", t.Value.ActiveSessions),
                     new JsonProperty("Rate", Meter(t.Value.Rate)), 
                     new JsonProperty("Histogram", Histogram(t.Value.Histogram)) 
                 }));

@@ -41,6 +41,11 @@ namespace Metrics
             this.Name = name;
         }
 
+        public override string ToString()
+        {
+            return this.Name;
+        }
+
         public string FormatCount(long value)
         {
             if (!string.IsNullOrEmpty(this.Name))

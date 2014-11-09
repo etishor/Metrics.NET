@@ -9,7 +9,7 @@ using Metrics.MetricData;
 
 namespace Metrics.Utils
 {
-    public class AppEnvironment
+    public static class AppEnvironment
     {
         public static IEnumerable<EnvironmentEntry> Current
         {
