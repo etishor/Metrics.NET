@@ -1,9 +1,10 @@
 ﻿using System.Globalization;
 using System.Linq;
+using Metrics.MetricData;
 
 namespace Metrics.Reporters
 {
-    public abstract class HumanReadableReporter : Reporter
+    public abstract class HumanReadableReporter : BaseReporter
     {
         private readonly int padding;
 
@@ -58,7 +59,7 @@ namespace Metrics.Reporters
         protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit)
         {
             this.WriteMetricName(name);
-            this.WriteMeter(value.Scale(rateUnit), unit, rateUnit);
+            this.WriteMeter(value, unit, rateUnit);
 
             if (value.Items.Length > 0)
             {
@@ -83,8 +84,9 @@ namespace Metrics.Reporters
         protected override void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
         {
             this.WriteMetricName(name);
-            this.WriteMeter(value.Rate.Scale(rateUnit), unit, rateUnit);
-            this.WriteHistogram(value.Histogram.Scale(durationUnit), unit, durationUnit);
+            this.WriteValue("Active Sessions", value.ActiveSessions.ToString());
+            this.WriteMeter(value.Rate, unit, rateUnit);
+            this.WriteHistogram(value.Histogram, unit, durationUnit);
         }
 
         protected override void ReportHealth(HealthStatus status)

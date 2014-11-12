@@ -3,6 +3,7 @@
 namespace Metrics.NLog
 {
     using System.IO;
+    using Metrics.MetricData;
     using LogEventInfo = global::NLog.LogEventInfo;
     using LogLevel = global::NLog.LogLevel;
     using LogManager = global::NLog.LogManager;

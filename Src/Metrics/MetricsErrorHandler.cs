@@ -8,15 +8,17 @@ namespace Metrics
     public class MetricsErrorHandler
     {
         private static readonly ILog log = LogProvider.GetCurrentClassLogger();
+        private static readonly Meter errorMeter = Metric.Internal.Meter("Metrics Errors", Unit.Errors);
+
         private static readonly MetricsErrorHandler handler = new MetricsErrorHandler();
 
         private ConcurrentBag<Action<Exception, string>> handlers = new ConcurrentBag<Action<Exception, string>>();
 
-        private static readonly bool IsMono = Type.GetType("Mono.Runtime") == null;
+        private static readonly bool IsMono = Type.GetType("Mono.Runtime") != null;
 
         private MetricsErrorHandler()
         {
-            this.AddHandler((x, msg) => log.ErrorException("Metrics: Unhandled exception in Metrics.NET Library", x));
+            this.AddHandler((x, msg) => log.ErrorException("Metrics: Unhandled exception in Metrics.NET Library " + x.Message, x));
             this.AddHandler((x, msg) => Trace.TraceError("Metrics: Unhandled exception in Metrics.NET Library " + x.ToString()));
 
             if (Environment.UserInteractive || IsMono)
@@ -48,6 +50,8 @@ namespace Metrics
 
         private void InternalHandle(Exception exception, string message)
         {
+            errorMeter.Mark();
+
             foreach (var handler in this.handlers)
             {
                 try

@@ -1,18 +1,23 @@
 ﻿
 using System.Collections.Generic;
 using System.Linq;
-namespace Metrics
+
+namespace Metrics.MetricData
 {
-    public struct MetricsData
+    public sealed class MetricsData
     {
         public static MetricsData Empty = new MetricsData(string.Empty,
+            Enumerable.Empty<EnvironmentEntry>(),
             Enumerable.Empty<GaugeValueSource>(),
             Enumerable.Empty<CounterValueSource>(),
             Enumerable.Empty<MeterValueSource>(),
             Enumerable.Empty<HistogramValueSource>(),
-            Enumerable.Empty<TimerValueSource>());
+            Enumerable.Empty<TimerValueSource>(),
+            Enumerable.Empty<MetricsData>());
 
         public readonly string Context;
+
+        public readonly IEnumerable<EnvironmentEntry> Environment;
 
         public readonly IEnumerable<GaugeValueSource> Gauges;
         public readonly IEnumerable<CounterValueSource> Counters;
@@ -21,20 +26,21 @@ namespace Metrics
         public readonly IEnumerable<TimerValueSource> Timers;
         public readonly IEnumerable<MetricsData> ChildMetrics;
 
-        public MetricsData(string context, MetricsData data, IEnumerable<MetricsData> childMetrics)
-            : this(context, data.Gauges, data.Counters, data.Meters, data.Histograms, data.Timers, childMetrics)
+        public MetricsData(string context, IEnumerable<EnvironmentEntry> environment, MetricsData data, IEnumerable<MetricsData> childMetrics)
+            : this(context, environment, data.Gauges, data.Counters, data.Meters, data.Histograms, data.Timers, childMetrics)
         { }
 
-        public MetricsData(string context, IEnumerable<GaugeValueSource> gauges, IEnumerable<CounterValueSource> counters,
-            IEnumerable<MeterValueSource> meters, IEnumerable<HistogramValueSource> histograms, IEnumerable<TimerValueSource> timers)
-            : this(context, gauges, counters, meters, histograms, timers, Enumerable.Empty<MetricsData>())
-        { }
-
-        public MetricsData(string context, IEnumerable<GaugeValueSource> gauges, IEnumerable<CounterValueSource> counters,
-            IEnumerable<MeterValueSource> meters, IEnumerable<HistogramValueSource> histograms, IEnumerable<TimerValueSource> timers,
+        public MetricsData(string context,
+            IEnumerable<EnvironmentEntry> environment,
+            IEnumerable<GaugeValueSource> gauges,
+            IEnumerable<CounterValueSource> counters,
+            IEnumerable<MeterValueSource> meters,
+            IEnumerable<HistogramValueSource> histograms,
+            IEnumerable<TimerValueSource> timers,
             IEnumerable<MetricsData> childMetrics)
         {
             this.Context = context;
+            this.Environment = environment;
             this.Gauges = gauges;
             this.Counters = counters;
             this.Meters = meters;
@@ -51,6 +57,7 @@ namespace Metrics
             }
 
             return new MetricsData(this.Context,
+                this.Environment,
                 this.Gauges.Where(g => filter.IsMatch(g)),
                 this.Counters.Where(c => filter.IsMatch(c)),
                 this.Meters.Where(m => filter.IsMatch(m)),
@@ -62,11 +69,13 @@ namespace Metrics
         public MetricsData Flaten()
         {
             return new MetricsData(this.Context,
+                this.Environment.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Environment)),
                 this.Gauges.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Gauges)),
                 this.Counters.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Counters)),
                 this.Meters.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Meters)),
                 this.Histograms.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Histograms)),
-                this.Timers.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Timers))
+                this.Timers.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Timers)),
+                Enumerable.Empty<MetricsData>()
             );
         }
 
@@ -78,40 +87,30 @@ namespace Metrics
         private MetricsData OldFormat(string prefix)
         {
             var gauges = this.Gauges
-                .Select(g => new GaugeValueSource(FormatName(prefix, g.Name), Constant(g.Value), g.Unit, g.Tags))
+                .Select(g => new GaugeValueSource(FormatName(prefix, g.Name), g.ValueProvider, g.Unit, g.Tags))
                 .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Gauges));
 
             var counters = this.Counters
-                .Select(c => new CounterValueSource(FormatName(prefix, c.Name), Constant(c.Value), c.Unit, c.Tags))
+                .Select(c => new CounterValueSource(FormatName(prefix, c.Name), c.ValueProvider, c.Unit, c.Tags))
                 .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Counters));
 
             var meters = this.Meters
-                .Select(m => new MeterValueSource(FormatName(prefix, m.Name), Constant(m.Value), m.Unit, m.RateUnit, m.Tags))
+                .Select(m => new MeterValueSource(FormatName(prefix, m.Name), m.ValueProvider, m.Unit, m.RateUnit, m.Tags))
                 .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Meters));
 
             var histograms = this.Histograms
-                .Select(h => new HistogramValueSource(FormatName(prefix, h.Name), Constant(h.Value), h.Unit, h.Tags))
+                .Select(h => new HistogramValueSource(FormatName(prefix, h.Name), h.ValueProvider, h.Unit, h.Tags))
                 .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Histograms));
 
             var timers = this.Timers
-                .Select(t => new TimerValueSource(FormatName(prefix, t.Name), Constant(t.Value), t.Unit, t.RateUnit, t.DurationUnit, t.Tags))
+                .Select(t => new TimerValueSource(FormatName(prefix, t.Name), t.ValueProvider, t.Unit, t.RateUnit, t.DurationUnit, t.Tags))
                 .Union(this.ChildMetrics.SelectMany(m => m.OldFormat(FormatPrefix(prefix, m.Context)).Timers));
 
-            return new MetricsData(this.Context, gauges, counters, meters, histograms, timers);
-        }
+            var environment = this.Environment
+                .Select(e => new EnvironmentEntry(FormatName(prefix, e.Name), e.Value))
+                .Union(this.ChildMetrics.SelectMany(e => e.OldFormat(FormatPrefix(prefix, e.Context)).Environment));
 
-        private class Provider<T> : MetricValueProvider<T> where T : struct
-        {
-            public Provider(T value)
-            {
-                this.Value = value;
-            }
-            public T Value { get; private set; }
-        }
-
-        private static MetricValueProvider<T> Constant<T>(T value) where T : struct
-        {
-            return new Provider<T>(value);
+            return new MetricsData(this.Context, environment, gauges, counters, meters, histograms, timers, Enumerable.Empty<MetricsData>());
         }
 
         private static string FormatPrefix(string prefix, string context)

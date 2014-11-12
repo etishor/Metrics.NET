@@ -2,6 +2,7 @@
 using System.Linq;
 using FluentAssertions;
 using Metrics.Core;
+using Metrics.MetricData;
 
 namespace Metrics.Tests
 {
@@ -55,7 +56,7 @@ namespace Metrics.Tests
             return ValueFor<TimerValue>(GetDataFor(nameWithContext).Timers, nameWithContext);
         }
 
-        private T ValueFor<T>(IEnumerable<MetricValueSource<T>> values, string[] nameWithContext) where T : struct
+        private T ValueFor<T>(IEnumerable<MetricValueSource<T>> values, string[] nameWithContext)
         {
             var value = values.Where(t => t.Name == nameWithContext.Last())
                 .Select(t => t.Value);

@@ -1,4 +1,5 @@
 ﻿using System;
+using Metrics.MetricData;
 using Metrics.Sampling;
 using Metrics.Utils;
 
@@ -9,10 +10,9 @@ namespace Metrics.Core
     public sealed class TimerMetric : TimerImplementation, IDisposable
     {
         private readonly Clock clock;
-        private readonly Meter meter;
-        private readonly Histogram histogram;
-        private readonly MetricValueProvider<MeterValue> meterValue;
-        private readonly MetricValueProvider<HistogramValue> histogramValue;
+        private readonly MeterImplementation meter;
+        private readonly HistogramImplementation histogram;
+        private AtomicLong counter = new AtomicLong();
 
         public TimerMetric()
             : this(new HistogramMetric(), new MeterMetric(), Clock.Default) { }
@@ -20,33 +20,20 @@ namespace Metrics.Core
         public TimerMetric(SamplingType samplingType)
             : this(new HistogramMetric(samplingType), new MeterMetric(), Clock.Default) { }
 
-        public TimerMetric(Histogram histogram)
+        public TimerMetric(HistogramImplementation histogram)
             : this(histogram, new MeterMetric(), Clock.Default) { }
 
         public TimerMetric(Reservoir reservoir)
             : this(new HistogramMetric(reservoir), new MeterMetric(), Clock.Default) { }
 
-        public TimerMetric(SamplingType samplingType, Meter meter, Clock clock)
+        public TimerMetric(SamplingType samplingType, MeterImplementation meter, Clock clock)
             : this(new HistogramMetric(samplingType), meter, clock) { }
 
-        public TimerMetric(Histogram histogram, Meter meter, Clock clock)
+        public TimerMetric(HistogramImplementation histogram, MeterImplementation meter, Clock clock)
         {
             this.clock = clock;
             this.meter = meter;
             this.histogram = histogram;
-            this.meterValue = meter as MetricValueProvider<MeterValue>;
-
-            if (meterValue == null)
-            {
-                throw new InvalidOperationException("Meter type must also implement MetricValue<MeterValue>");
-            }
-
-            this.histogramValue = histogram as MetricValueProvider<HistogramValue>;
-
-            if (histogramValue == null)
-            {
-                throw new InvalidOperationException("Histogram type must also implement MetricValue<HistogramValue>");
-            }
         }
 
         public void Record(long duration, TimeUnit unit, string userValue = null)
@@ -64,10 +51,12 @@ namespace Metrics.Core
             var start = this.clock.Nanoseconds;
             try
             {
+                counter.Increment();
                 action();
             }
             finally
             {
+                counter.Decrement();
                 Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds, userValue);
             }
         }
@@ -77,23 +66,32 @@ namespace Metrics.Core
             var start = this.clock.Nanoseconds;
             try
             {
+                counter.Increment();
                 return action();
             }
             finally
             {
+                counter.Decrement();
                 Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds, userValue);
             }
         }
 
         public TimerContext NewContext(string userValue = null)
         {
-            return new TimeMeasuringContext(this.clock, (t) => Record(t, TimeUnit.Nanoseconds, userValue));
+            counter.Increment();
+            return new TimeMeasuringContext(this.clock, (t) =>
+            {
+                counter.Decrement();
+                Record(t, TimeUnit.Nanoseconds, userValue);
+            });
         }
 
         public TimerContext NewContext(Action<TimeSpan> finalAction, string userValue = null)
         {
+            counter.Increment();
             return new TimeMeasuringContext(this.clock, (t) =>
             {
+                counter.Decrement();
                 Record(t, TimeUnit.Nanoseconds, userValue);
                 finalAction(TimeSpan.FromMilliseconds(TimeUnit.Nanoseconds.ToMilliseconds(t)));
             });
@@ -103,8 +101,13 @@ namespace Metrics.Core
         {
             get
             {
-                return new TimerValue(this.meterValue.Value, this.histogramValue.Value);
+                return GetValue();
             }
+        }
+
+        public TimerValue GetValue(bool resetMetric = false)
+        {
+            return new TimerValue(this.meter.GetValue(resetMetric), this.histogram.GetValue(resetMetric), this.counter.Value, TimeUnit.Nanoseconds);
         }
 
         public void Reset()

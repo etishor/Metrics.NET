@@ -1,7 +1,7 @@
 ﻿
 using System;
 using System.Collections.Generic;
-namespace Metrics
+namespace Metrics.MetricData
 {
     public enum MetricType
     {

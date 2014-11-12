@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Metrics.MetricData;
 using Metrics.Utils;
 
 namespace Metrics.Json
@@ -8,15 +9,20 @@ namespace Metrics.Json
     public class JsonBuilderV1
     {
         public const int Version = 1;
-
         public const string MetricsMimeType = "application/vnd.metrics.net.v1.metrics+json";
+
+#if !DEBUG
+        private const bool DefaultIndented = false;
+#else
+        private const bool DefaultIndented = true;
+#endif
 
         private readonly List<JsonProperty> root = new List<JsonProperty>();
         private readonly List<JsonProperty> units = new List<JsonProperty>();
 
-        public static string BuildJson(MetricsData data) { return BuildJson(data, Clock.Default, indented: false); }
+        public static string BuildJson(MetricsData data) { return BuildJson(data, Clock.Default, indented: DefaultIndented); }
 
-        public static string BuildJson(MetricsData data, Clock clock, bool indented = true)
+        public static string BuildJson(MetricsData data, Clock clock, bool indented = DefaultIndented)
         {
             var flatData = data.OldFormat();
 
@@ -32,7 +38,7 @@ namespace Metrics.Json
                 .GetJson(indented);
         }
 
-        public JsonBuilderV1 AddEnvironment()
+        private JsonBuilderV1 AddEnvironment()
         {
             var environment = AppEnvironment.Current
                 .Select(e => new JsonProperty(e.Name, e.Value));
@@ -42,7 +48,7 @@ namespace Metrics.Json
             return this;
         }
 
-        public string GetJson(bool indented = true)
+        private string GetJson(bool indented = DefaultIndented)
         {
             if (units.Any() && !root.Any(p => p.Name == "Units"))
             {
@@ -80,7 +86,7 @@ namespace Metrics.Json
 
         public JsonBuilderV1 AddObject(IEnumerable<MeterValueSource> meters)
         {
-            root.Add(new JsonProperty("Meters", meters.Select(m => new JsonProperty(m.Name, Meter(m.Value.Scale(m.RateUnit))))));
+            root.Add(new JsonProperty("Meters", meters.Select(m => new JsonProperty(m.Name, Meter(m.Value)))));
             units.Add(new JsonProperty("Meters", meters.Select(m => new JsonProperty(m.Name, string.Format("{0}/{1}", m.Unit.Name, m.RateUnit.Unit())))));
             return this;
         }
@@ -97,8 +103,9 @@ namespace Metrics.Json
             var properties = timers.Select(t => new { Name = t.Name, Value = t.Value, RateUnit = t.RateUnit, DurationUnit = t.DurationUnit })
                 .Select(t => new JsonProperty(t.Name, new[] 
                 {
-                    new JsonProperty("Rate", Meter(t.Value.Rate.Scale(t.RateUnit))), 
-                    new JsonProperty("Histogram", Histogram(t.Value.Histogram.Scale(t.DurationUnit))) 
+                    new JsonProperty("ActiveSessions", t.Value.ActiveSessions),
+                    new JsonProperty("Rate", Meter(t.Value.Rate)), 
+                    new JsonProperty("Histogram", Histogram(t.Value.Histogram)) 
                 }));
 
             root.Add(new JsonProperty("Timers", properties));

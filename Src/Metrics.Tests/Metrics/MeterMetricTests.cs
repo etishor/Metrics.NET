@@ -134,5 +134,44 @@ namespace Metrics.Tests.Metrics
             meter.Value.Items[0].Value.Count.Should().Be(0);
             meter.Value.Items[0].Percent.Should().Be(0);
         }
+
+        [Fact]
+        public void MeterMetric_ValueCanScaleDown()
+        {
+            this.meter.Mark();
+            this.clock.Advance(TimeUnit.Milliseconds, 1);
+            this.meter.Mark();
+            this.clock.Advance(TimeUnit.Milliseconds, 1);
+
+            var scaledValue = this.meter.Value.Scale(TimeUnit.Milliseconds);
+
+            scaledValue.MeanRate.Should().Be(1);
+        }
+
+        [Fact]
+        public void MeterMetric_ValueCanScaleDownToDecimals()
+        {
+            this.meter.Mark();
+            this.clock.Advance(TimeUnit.Seconds, 1);
+            this.meter.Mark();
+            this.clock.Advance(TimeUnit.Seconds, 1);
+
+            var scaledValue = this.meter.Value.Scale(TimeUnit.Milliseconds);
+
+            scaledValue.MeanRate.Should().Be(0.001);
+        }
+
+        [Fact]
+        public void MeterMetric_ValueCanScaleUp()
+        {
+            this.meter.Mark();
+            this.clock.Advance(TimeUnit.Minutes, 1);
+            this.meter.Mark();
+            this.clock.Advance(TimeUnit.Minutes, 1);
+
+            var scaledValue = this.meter.Value.Scale(TimeUnit.Minutes);
+
+            scaledValue.MeanRate.Should().Be(1);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq;
+using Metrics.MetricData;
 using Metrics.Utils;
 
 namespace Metrics.Core
@@ -22,6 +23,16 @@ namespace Metrics.Core
                     .ToArray();
                 return new CounterValue(total, items);
             }
+        }
+
+        public CounterValue GetValue(bool resetMetric = false)
+        {
+            var value = this.Value;
+            if (resetMetric)
+            {
+                this.Reset();
+            }
+            return value;
         }
 
         public void Increment()

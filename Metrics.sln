@@ -51,6 +51,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Metrics", "Src\Adapter
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Sample", "Samples\Owin.Sample\Owin.Sample.csproj", "{828188F9-26C2-4C93-A156-D9EA13D7E2FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metrics.Central", "Src\Metrics.Central\Metrics.Central.csproj", "{450184A4-9916-4AE5-87F8-A8067105CE40}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -155,6 +157,14 @@ Global
 		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.MonoRelease|Any CPU.Build.0 = MonoRelease|Any CPU
 		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{450184A4-9916-4AE5-87F8-A8067105CE40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{450184A4-9916-4AE5-87F8-A8067105CE40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{450184A4-9916-4AE5-87F8-A8067105CE40}.MonoDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{450184A4-9916-4AE5-87F8-A8067105CE40}.MonoDebug|Any CPU.Build.0 = Debug|Any CPU
+		{450184A4-9916-4AE5-87F8-A8067105CE40}.MonoRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{450184A4-9916-4AE5-87F8-A8067105CE40}.MonoRelease|Any CPU.Build.0 = Release|Any CPU
+		{450184A4-9916-4AE5-87F8-A8067105CE40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{450184A4-9916-4AE5-87F8-A8067105CE40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

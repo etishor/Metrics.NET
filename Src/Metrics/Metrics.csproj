@@ -79,8 +79,28 @@
     <Compile Include="Core\DefaultMetricsRegistry.cs" />
     <Compile Include="Core\DefaultDataProvider.cs" />
     <Compile Include="Core\DefaultRegistryDataProvider.cs" />
+    <Compile Include="Json\JsonMetric.cs" />
+    <Compile Include="Json\JsonMetricsContext.cs" />
+    <Compile Include="Json\JsonTimer.cs" />
+    <Compile Include="Json\JsonHistogram.cs" />
+    <Compile Include="Json\JsonMeter.cs" />
+    <Compile Include="Json\JsonGauge.cs" />
+    <Compile Include="Json\JsonCounter.cs" />
+    <Compile Include="Core\ReadOnlyMetricsContext.cs" />
     <Compile Include="Json\JsonHealthChecks.cs" />
+    <Compile Include="MetricData\ConstantValue.cs" />
+    <Compile Include="MetricData\CounterValue.cs" />
+    <Compile Include="MetricData\EnvironmentEntry.cs" />
+    <Compile Include="MetricData\GaugeValue.cs" />
+    <Compile Include="MetricData\HistogramValue.cs" />
+    <Compile Include="MetricData\MeterValue.cs" />
+    <Compile Include="MetricData\MetricsDataProvider.cs" />
+    <Compile Include="MetricData\TimerValue.cs" />
     <Compile Include="MetricTags.cs" />
+    <Compile Include="RemoteMetrics\HttpRemoteMetrics.cs" />
+    <Compile Include="RemoteMetrics\RemoteMetricsExtensions.cs" />
+    <Compile Include="RemoteMetrics\RemoteMetricsContext.cs" />
+    <Compile Include="Reporters\MetricsReporter.cs" />
     <Compile Include="Sampling\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Core\HealthCheck.cs" />
     <Compile Include="Core\MetricsBuilder.cs" />
@@ -93,7 +113,6 @@
     <Compile Include="ResetableMetric.cs" />
     <Compile Include="HealthCheckResult.cs" />
     <Compile Include="Counter.cs" />
-    <Compile Include="Gauge.cs" />
     <Compile Include="HealthChecks.cs" />
     <Compile Include="Histogram.cs" />
     <Compile Include="MetricsContext.cs" />
@@ -102,14 +121,13 @@
     <Compile Include="Meter.cs" />
     <Compile Include="Core\MetricsRegistry.cs" />
     <Compile Include="Core\DefaultMetricsContext.cs" />
-    <Compile Include="MetricsDataProvider.cs" />
-    <Compile Include="MetricsFilter.cs" />
+    <Compile Include="MetricData\MetricsFilter.cs" />
     <Compile Include="MetricsConfig.cs" />
     <Compile Include="Json\JsonBuilderV2.cs" />
-    <Compile Include="MetricsData.cs" />
+    <Compile Include="MetricData\MetricsData.cs" />
     <Compile Include="Reporters\CSVAppender.cs" />
     <Compile Include="Reporters\MetricsReports.cs" />
-    <Compile Include="MetricValueSource.cs" />
+    <Compile Include="MetricData\MetricValueSource.cs" />
     <Compile Include="PerfCounters\PerformanceCounters.cs" />
     <Compile Include="PerfCounters\PerformanceCounterGauge.cs" />
     <Compile Include="PerfCounters\PerformanceCountersConfigExtensions.cs" />
@@ -120,7 +138,7 @@
     <Compile Include="Json\JsonObject.cs" />
     <Compile Include="Reporters\StringReporter.cs" />
     <Compile Include="Reporters\TextFileReporter.cs" />
-    <Compile Include="Reporters\Reporter.cs" />
+    <Compile Include="Reporters\BaseReporter.cs" />
     <Compile Include="Reporters\HumanReadableReporter.cs" />
     <Compile Include="Reporters\ScheduledReporter.cs" />
     <Compile Include="SamplingType.cs" />
@@ -164,6 +182,7 @@
       <Link>Visualization\metrics_32.png</Link>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

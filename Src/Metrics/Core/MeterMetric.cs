@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using Metrics.MetricData;
 using Metrics.Utils;
 namespace Metrics.Core
 {
@@ -43,7 +44,7 @@ namespace Metrics.Core
 
             public MeterValue GetValue(double elapsed)
             {
-                return new MeterValue(this.count.Value, this.GetMeanRate(elapsed), this.OneMinuteRate, this.FiveMinuteRate, this.FifteenMinuteRate);
+                return new MeterValue(this.count.Value, this.GetMeanRate(elapsed), this.OneMinuteRate, this.FiveMinuteRate, this.FifteenMinuteRate, TimeUnit.Seconds);
             }
 
             private double GetMeanRate(double elapsed)
@@ -104,6 +105,16 @@ namespace Metrics.Core
             this.setMeters.GetOrAdd(item, v => new MeterWrapper()).Mark(count);
         }
 
+        public MeterValue GetValue(bool resetMetric = false)
+        {
+            var value = this.Value;
+            if (resetMetric)
+            {
+                this.Reset();
+            }
+            return value;
+        }
+
         public MeterValue Value
         {
             get
@@ -117,7 +128,7 @@ namespace Metrics.Core
                     .OrderBy(m => m.Item)
                     .ToArray();
 
-                return new MeterValue(value.Count, value.MeanRate, value.OneMinuteRate, value.FiveMinuteRate, value.FifteenMinuteRate, items);
+                return new MeterValue(value.Count, value.MeanRate, value.OneMinuteRate, value.FiveMinuteRate, value.FifteenMinuteRate, TimeUnit.Seconds, items);
             }
         }
 

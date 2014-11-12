@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Metrics;
+using Metrics.Json;
+using Metrics.RemoteMetrics;
 using Nancy;
 using Nancy.Authentication.Stateless;
 using Nancy.Bootstrapper;
@@ -30,8 +32,19 @@ namespace NancyFx.Sample
 
             Metric.Config
                 .WithAllCounters()
-                .WithReporting(r => r.WithConsoleReport(TimeSpan.FromSeconds(30)))
+                .WithReporting(r =>
+                    r.WithConsoleReport(TimeSpan.FromSeconds(30))
+                //.WithReporter("Resetting Reporter", () => new SampleResettingReporter(), TimeSpan.FromSeconds(5))
+                )
                 .WithNancy(pipelines);
+
+            // read remote metrics from NancySample
+            //Metric.Advanced.AttachContext("Remote",
+            //    new RemoteMetricsContext(
+            //        new Uri("http://localhost:1234/v2/json"),
+            //        TimeSpan.FromSeconds(5),
+            //        s => JsonConvert.DeserializeObject<JsonMetricsContext>(s)));
+
 
             pipelines.AfterRequest += ctx =>
             {

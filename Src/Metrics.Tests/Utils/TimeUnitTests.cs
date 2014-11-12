@@ -71,5 +71,65 @@ namespace Metrics.Tests.Utils
             TimeUnit.Days.ToHours(10L).Should().Be(10L * 24L);
             TimeUnit.Days.ToDays(10L).Should().Be(10L);
         }
+
+        [Fact]
+        public void TimeUnit_HasCorrectScalingFactor()
+        {
+            TimeUnit.Nanoseconds.ScalingFactorFor(TimeUnit.Nanoseconds).Should().Be(1.0);
+            TimeUnit.Nanoseconds.ScalingFactorFor(TimeUnit.Microseconds).Should().Be(1.0 * 0.001);
+            TimeUnit.Nanoseconds.ScalingFactorFor(TimeUnit.Milliseconds).Should().Be(1.0 * 0.001 * 0.001);
+            TimeUnit.Nanoseconds.ScalingFactorFor(TimeUnit.Seconds).Should().Be(1.0 * 0.001 * 0.001 * 0.001);
+            TimeUnit.Nanoseconds.ScalingFactorFor(TimeUnit.Minutes).Should().Be(1.0 * 0.001 * 0.001 * 0.001 * 1 / 60.0);
+            TimeUnit.Nanoseconds.ScalingFactorFor(TimeUnit.Hours).Should().Be(1.0 * 0.001 * 0.001 * 0.001 * 1 / 60.0 * 1 / 60.0);
+            TimeUnit.Nanoseconds.ScalingFactorFor(TimeUnit.Days).Should().BeApproximately(1.0 * 0.001 * 0.001 * 0.001 * 1 / 60.0 * 1 / 60.0 * 1 / 24.0, 1.0E-20);
+
+            TimeUnit.Microseconds.ScalingFactorFor(TimeUnit.Nanoseconds).Should().Be(1.0 * 1000);
+            TimeUnit.Microseconds.ScalingFactorFor(TimeUnit.Microseconds).Should().Be(1);
+            TimeUnit.Microseconds.ScalingFactorFor(TimeUnit.Milliseconds).Should().Be(1.0 * 0.001);
+            TimeUnit.Microseconds.ScalingFactorFor(TimeUnit.Seconds).Should().Be(1.0 * 0.001 * 0.001);
+            TimeUnit.Microseconds.ScalingFactorFor(TimeUnit.Minutes).Should().Be(1.0 * 0.001 * 0.001 * 1 / 60.0);
+            TimeUnit.Microseconds.ScalingFactorFor(TimeUnit.Hours).Should().Be(1.0 * 0.001 * 0.001 * 1 / 60.0 * 1 / 60.0);
+            TimeUnit.Microseconds.ScalingFactorFor(TimeUnit.Days).Should().Be(1.0 * 0.001 * 0.001 * 1 / 60.0 * 1 / 60.0 * 1 / 24.0);
+
+            TimeUnit.Milliseconds.ScalingFactorFor(TimeUnit.Nanoseconds).Should().Be(1.0 * 1000 * 1000);
+            TimeUnit.Milliseconds.ScalingFactorFor(TimeUnit.Microseconds).Should().Be(1.0 * 1000);
+            TimeUnit.Milliseconds.ScalingFactorFor(TimeUnit.Milliseconds).Should().Be(1);
+            TimeUnit.Milliseconds.ScalingFactorFor(TimeUnit.Seconds).Should().Be(1.0 * 0.001);
+            TimeUnit.Milliseconds.ScalingFactorFor(TimeUnit.Minutes).Should().Be(1.0 * 0.001 * 1 / 60.0);
+            TimeUnit.Milliseconds.ScalingFactorFor(TimeUnit.Hours).Should().BeApproximately(1.0 * 0.001 * 1 / 60.0 * 1 / 60.0, 1.0E-20);
+            TimeUnit.Milliseconds.ScalingFactorFor(TimeUnit.Days).Should().BeApproximately(1.0 * 0.001 * 1 / 60.0 * 1 / 60.0 * 1 / 24.0, 1.0E-20);
+
+            TimeUnit.Seconds.ScalingFactorFor(TimeUnit.Nanoseconds).Should().Be(1.0 * 1000 * 1000 * 1000);
+            TimeUnit.Seconds.ScalingFactorFor(TimeUnit.Microseconds).Should().Be(1.0 * 1000 * 1000);
+            TimeUnit.Seconds.ScalingFactorFor(TimeUnit.Milliseconds).Should().Be(1.0 * 1000);
+            TimeUnit.Seconds.ScalingFactorFor(TimeUnit.Seconds).Should().Be(1.0);
+            TimeUnit.Seconds.ScalingFactorFor(TimeUnit.Minutes).Should().Be(1.0 * 1 / 60);
+            TimeUnit.Seconds.ScalingFactorFor(TimeUnit.Hours).Should().Be(1.0 * 1 / 60 * 1 / 60);
+            TimeUnit.Seconds.ScalingFactorFor(TimeUnit.Days).Should().Be(1.0 * 1 / 60 * 1 / 60 * 1 / 24);
+
+            TimeUnit.Minutes.ScalingFactorFor(TimeUnit.Nanoseconds).Should().Be(1.0 * 1000 * 1000 * 1000 * 60);
+            TimeUnit.Minutes.ScalingFactorFor(TimeUnit.Microseconds).Should().Be(1.0 * 1000 * 1000 * 60);
+            TimeUnit.Minutes.ScalingFactorFor(TimeUnit.Milliseconds).Should().Be(1.0 * 1000 * 60);
+            TimeUnit.Minutes.ScalingFactorFor(TimeUnit.Seconds).Should().Be(1.0 * 60);
+            TimeUnit.Minutes.ScalingFactorFor(TimeUnit.Minutes).Should().Be(1.0);
+            TimeUnit.Minutes.ScalingFactorFor(TimeUnit.Hours).Should().Be(1.0 / 60);
+            TimeUnit.Minutes.ScalingFactorFor(TimeUnit.Days).Should().Be(1.0 / 60 / 24);
+
+            TimeUnit.Hours.ScalingFactorFor(TimeUnit.Nanoseconds).Should().Be(1.0 * 1000 * 1000 * 1000 * 60 * 60);
+            TimeUnit.Hours.ScalingFactorFor(TimeUnit.Microseconds).Should().Be(1.0 * 1000 * 1000 * 60 * 60);
+            TimeUnit.Hours.ScalingFactorFor(TimeUnit.Milliseconds).Should().Be(1.0 * 1000 * 60 * 60);
+            TimeUnit.Hours.ScalingFactorFor(TimeUnit.Seconds).Should().Be(1.0 * 60 * 60);
+            TimeUnit.Hours.ScalingFactorFor(TimeUnit.Minutes).Should().Be(1.0 * 60);
+            TimeUnit.Hours.ScalingFactorFor(TimeUnit.Hours).Should().Be(1);
+            TimeUnit.Hours.ScalingFactorFor(TimeUnit.Days).Should().Be(1.0 / 24);
+
+            TimeUnit.Days.ScalingFactorFor(TimeUnit.Nanoseconds).Should().Be(1.0 * 1000 * 1000 * 1000 * 60 * 60 * 24);
+            TimeUnit.Days.ScalingFactorFor(TimeUnit.Microseconds).Should().Be(1.0 * 1000 * 1000 * 60 * 60 * 24);
+            TimeUnit.Days.ScalingFactorFor(TimeUnit.Milliseconds).Should().Be(1.0 * 1000 * 60 * 60 * 24);
+            TimeUnit.Days.ScalingFactorFor(TimeUnit.Seconds).Should().Be(1.0 * 60 * 60 * 24);
+            TimeUnit.Days.ScalingFactorFor(TimeUnit.Minutes).Should().Be(1.0 * 60 * 24);
+            TimeUnit.Days.ScalingFactorFor(TimeUnit.Hours).Should().Be(1.0 * 24);
+            TimeUnit.Days.ScalingFactorFor(TimeUnit.Days).Should().Be(1.0);
+        }
     }
 }
