@@ -79,6 +79,7 @@
     <Compile Include="Core\DefaultMetricsRegistry.cs" />
     <Compile Include="Core\DefaultDataProvider.cs" />
     <Compile Include="Core\DefaultRegistryDataProvider.cs" />
+    <Compile Include="Graphite\TcpGraphiteSender.cs" />
     <Compile Include="Graphite\GraphiteExtensions.cs" />
     <Compile Include="Graphite\GraphiteReport.cs" />
     <Compile Include="Graphite\GraphiteSender.cs" />

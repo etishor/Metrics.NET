@@ -34,11 +34,11 @@ namespace Metrics.Reporters
 
             ReportEnvironment(contextName, data.Environment);
 
-            ReportSection("Gauges", data.Timestamp, data.Gauges, g => ReportGauge(FormatMetricName(contextName, g.Name), g.Value, g.Unit));
-            ReportSection("Counters", data.Timestamp, data.Counters, c => ReportCounter(FormatMetricName(contextName, c.Name), c.Value, c.Unit));
-            ReportSection("Meters", data.Timestamp, data.Meters, m => ReportMeter(FormatMetricName(contextName, m.Name), m.Value, m.Unit, m.RateUnit));
-            ReportSection("Histograms", data.Timestamp, data.Histograms, h => ReportHistogram(FormatMetricName(contextName, h.Name), h.Value, h.Unit));
-            ReportSection("Timers", data.Timestamp, data.Timers, t => ReportTimer(FormatMetricName(contextName, t.Name), t.Value, t.Unit, t.RateUnit, t.DurationUnit));
+            ReportSection("Gauges", data.Timestamp, data.Gauges, g => ReportGauge(FormatMetricName(contextName, g), g.Value, g.Unit));
+            ReportSection("Counters", data.Timestamp, data.Counters, c => ReportCounter(FormatMetricName(contextName, c), c.Value, c.Unit));
+            ReportSection("Meters", data.Timestamp, data.Meters, m => ReportMeter(FormatMetricName(contextName, m), m.Value, m.Unit, m.RateUnit));
+            ReportSection("Histograms", data.Timestamp, data.Histograms, h => ReportHistogram(FormatMetricName(contextName, h), h.Value, h.Unit));
+            ReportSection("Timers", data.Timestamp, data.Timers, t => ReportTimer(FormatMetricName(contextName, t), t.Value, t.Unit, t.RateUnit, t.DurationUnit));
 
             var stack = Enumerable.Concat(contextStack, new[] { data.Context });
             foreach (var child in data.ChildMetrics)
@@ -77,9 +77,9 @@ namespace Metrics.Reporters
             return string.Concat(stack, " - ", contextName);
         }
 
-        protected virtual string FormatMetricName(string context, string name)
+        protected virtual string FormatMetricName<T>(string context, MetricValueSource<T> metric)
         {
-            return string.Concat("[",context, "] ", name);
+            return string.Concat("[", context, "] ", metric.Name);
         }
 
         private void ReportSection<T>(string name, DateTime timestamp, IEnumerable<T> metrics, Action<T> reporter)
