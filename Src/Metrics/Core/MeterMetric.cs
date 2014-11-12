@@ -125,7 +125,8 @@ namespace Metrics.Core
                 var items = this.setMeters
                     .Select(m => new { Item = m.Key, Value = m.Value.GetValue(elapsed) })
                     .Select(m => new MeterValue.SetItem(m.Item, value.Count > 0 ? m.Value.Count / (double)value.Count * 100 : 0.0, m.Value))
-                    .OrderBy(m => m.Item)
+                    .OrderBy(m => m.Percent)
+                    .ThenBy(m => m.Item)
                     .ToArray();
 
                 return new MeterValue(value.Count, value.MeanRate, value.OneMinuteRate, value.FiveMinuteRate, value.FifteenMinuteRate, TimeUnit.Seconds, items);

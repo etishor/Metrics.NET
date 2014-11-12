@@ -95,7 +95,7 @@ namespace Owin.Metrics.Middleware
             var responseStatusCode = HttpStatusCode.OK;
             var status = healthStatus();
             var content = JsonHealthChecks.BuildJson(status);
-            if (!status.IsHealty) responseStatusCode = HttpStatusCode.InternalServerError;
+            if (!status.IsHealthy) responseStatusCode = HttpStatusCode.InternalServerError;
             return WriteResponse(environment, content, "application/json", responseStatusCode);
 
         }

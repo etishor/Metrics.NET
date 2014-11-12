@@ -35,12 +35,12 @@ namespace Metrics.Utils
             });
         }
 
-        public void Start(TimeSpan interval, Func<Task> task)
+        public void Start(TimeSpan interval, Func<Task> action)
         {
-            Start(interval, t => t.IsCancellationRequested ? task() : Task.FromResult(true));
+            Start(interval, t => t.IsCancellationRequested ? action() : Task.FromResult(true));
         }
 
-        public void Start(TimeSpan interval, Func<CancellationToken, Task> task)
+        public void Start(TimeSpan interval, Func<CancellationToken, Task> action)
         {
             if (interval.TotalSeconds == 0)
             {
@@ -54,7 +54,7 @@ namespace Metrics.Utils
 
             this.token = new CancellationTokenSource();
 
-            RunScheduler(interval, task, this.token);
+            RunScheduler(interval, action, this.token);
         }
 
         private static void RunScheduler(TimeSpan interval, Func<CancellationToken, Task> action, CancellationTokenSource token)
@@ -86,18 +86,6 @@ namespace Metrics.Utils
             if (this.token != null)
             {
                 token.Cancel();
-            }
-        }
-
-        private void RunAction(Action<CancellationToken> action)
-        {
-            try
-            {
-                action(this.token.Token);
-            }
-            catch (Exception x)
-            {
-                MetricsErrorHandler.Handle(x, "Error while executing scheduled action.");
             }
         }
 

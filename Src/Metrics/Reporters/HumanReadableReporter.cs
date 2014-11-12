@@ -84,6 +84,7 @@ namespace Metrics.Reporters
         protected override void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
         {
             this.WriteMetricName(name);
+            this.WriteValue("Active Sessions", value.ActiveSessions.ToString());
             this.WriteMeter(value.Rate, unit, rateUnit);
             this.WriteHistogram(value.Histogram, unit, durationUnit);
         }
@@ -91,7 +92,7 @@ namespace Metrics.Reporters
         protected override void ReportHealth(HealthStatus status)
         {
             WriteLine();
-            WriteValue("Is Healthy", status.IsHealty ? "Yes" : "No");
+            WriteValue("Is Healthy", status.IsHealthy ? "Yes" : "No");
             WriteLine();
 
             var unhealthy = status.Results.Where(r => !r.Check.IsHealthy);

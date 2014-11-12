@@ -66,15 +66,15 @@ namespace Metrics.MetricData
                 this.ChildMetrics.Select(m => m.Filter(filter)));
         }
 
-        public MetricsData Flaten()
+        public MetricsData Flatten()
         {
             return new MetricsData(this.Context,
-                this.Environment.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Environment)),
-                this.Gauges.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Gauges)),
-                this.Counters.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Counters)),
-                this.Meters.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Meters)),
-                this.Histograms.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Histograms)),
-                this.Timers.Union(this.ChildMetrics.SelectMany(m => m.Flaten().Timers)),
+                this.Environment.Union(this.ChildMetrics.SelectMany(m => m.Flatten().Environment)),
+                this.Gauges.Union(this.ChildMetrics.SelectMany(m => m.Flatten().Gauges)),
+                this.Counters.Union(this.ChildMetrics.SelectMany(m => m.Flatten().Counters)),
+                this.Meters.Union(this.ChildMetrics.SelectMany(m => m.Flatten().Meters)),
+                this.Histograms.Union(this.ChildMetrics.SelectMany(m => m.Flatten().Histograms)),
+                this.Timers.Union(this.ChildMetrics.SelectMany(m => m.Flatten().Timers)),
                 Enumerable.Empty<MetricsData>()
             );
         }

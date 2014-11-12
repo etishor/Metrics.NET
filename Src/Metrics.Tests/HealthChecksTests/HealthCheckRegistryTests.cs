@@ -36,7 +36,7 @@ namespace Metrics.Tests.HealthChecksTests
 
             var status = HealthChecks.GetStatus();
 
-            status.IsHealty.Should().BeFalse();
+            status.IsHealthy.Should().BeFalse();
             status.Results.Length.Should().Be(2);
         }
 
@@ -50,7 +50,7 @@ namespace Metrics.Tests.HealthChecksTests
 
             var status = HealthChecks.GetStatus();
 
-            status.IsHealty.Should().BeTrue();
+            status.IsHealthy.Should().BeTrue();
             status.Results.Length.Should().Be(2);
         }
 

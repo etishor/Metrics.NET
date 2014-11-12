@@ -102,7 +102,7 @@ namespace Nancy.Metrics
             var response = Response.AsText(content, "application/json");
             if (!healthChecksAlwaysReturnHttpStatusOk)
             {
-                response.StatusCode = status.IsHealty ? HttpStatusCode.OK : HttpStatusCode.InternalServerError;
+                response.StatusCode = status.IsHealthy ? HttpStatusCode.OK : HttpStatusCode.InternalServerError;
             }
             else
             {
