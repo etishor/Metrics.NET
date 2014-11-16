@@ -2,21 +2,22 @@
 
 namespace Metrics.NLog
 {
+    using System;
     using System.IO;
     using Metrics.MetricData;
     using LogEventInfo = global::NLog.LogEventInfo;
     using LogLevel = global::NLog.LogLevel;
     using LogManager = global::NLog.LogManager;
 
-    public class NLogTextReporter : HumanReadableReporter
+    public class NLogTextReporter : HumanReadableReport
     {
         private string metricType = null;
         private string metricName = null;
 
-        protected override void StartMetricGroup(string metricType)
+        protected override void StartMetricGroup(string metricType, DateTime timestamp)
         {
             this.metricType = metricType;
-            base.StartMetricGroup(metricType);
+            base.StartMetricGroup(metricType, timestamp);
         }
 
         protected override void ReportGauge(string name, double value, Unit unit)

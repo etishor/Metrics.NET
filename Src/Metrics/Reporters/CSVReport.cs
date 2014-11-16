@@ -5,7 +5,7 @@ using Metrics.MetricData;
 using Metrics.Utils;
 namespace Metrics.Reporters
 {
-    public class CSVReporter : BaseReporter
+    public class CSVReport : BaseReport
     {
         public class Value
         {
@@ -30,7 +30,7 @@ namespace Metrics.Reporters
 
         private readonly CSVAppender appender;
 
-        public CSVReporter(CSVAppender appender)
+        public CSVReport(CSVAppender appender)
         {
             this.appender = appender;
         }

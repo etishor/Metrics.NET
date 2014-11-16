@@ -21,7 +21,9 @@ namespace Metrics.Samples
             {
                 // exceptions will be caught and 
                 // the result will be unhealthy
-                this.database.Ping();
+
+                //this.database.Ping();
+
                 return HealthCheckResult.Healthy();
             }
         }
@@ -50,8 +52,8 @@ namespace Metrics.Samples
                 }
             });
 
-            HealthChecks.RegisterHealthCheck("SampleOperation", () => SampleOperation());
-            HealthChecks.RegisterHealthCheck("AggregateSampleOperation", () => AggregateSampleOperation());
+            //HealthChecks.RegisterHealthCheck("SampleOperation", () => SampleOperation());
+            //HealthChecks.RegisterHealthCheck("AggregateSampleOperation", () => AggregateSampleOperation());
         }
 
         private static void SampleOperation()
@@ -98,7 +100,7 @@ namespace Metrics.Samples
 
         public static int GetFreeDiskSpace()
         {
-            return 100;
+            return 1024;
         }
 
     }

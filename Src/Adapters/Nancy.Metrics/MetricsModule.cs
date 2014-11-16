@@ -73,7 +73,7 @@ namespace Nancy.Metrics
                 return response;
             };
 
-            Get["/text"] = _ => Response.AsText(StringReporter.RenderMetrics(Config.DataProvider.CurrentMetricsData, Config.HealthStatus))
+            Get["/text"] = _ => Response.AsText(StringReport.RenderMetrics(Config.DataProvider.CurrentMetricsData, Config.HealthStatus))
                 .WithHeaders(noCacheHeaders);
 
             Get["/json"] = _ => Response.AsText(JsonBuilderV1.BuildJson(Config.DataProvider.CurrentMetricsData), "text/json")

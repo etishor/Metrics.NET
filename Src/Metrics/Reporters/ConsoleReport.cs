@@ -2,12 +2,12 @@
 
 namespace Metrics.Reporters
 {
-    public class ConsoleReporter : HumanReadableReporter
+    public class ConsoleReport : HumanReadableReport
     {
-        protected override void StartReport()
+        protected override void StartReport(string contextName, DateTime timestamp)
         {
             Console.Clear();
-            base.StartReport();
+            base.StartReport(contextName, timestamp);
         }
 
         protected override void WriteLine(string line, params string[] args)

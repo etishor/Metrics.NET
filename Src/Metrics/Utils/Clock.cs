@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Metrics.Utils
 {
@@ -26,5 +27,20 @@ namespace Metrics.Utils
         public abstract DateTime UTCDateTime { get; }
 
         public long Seconds { get { return TimeUnit.Nanoseconds.ToSeconds(Nanoseconds); } }
+
+        public static string FormatTimestamp(DateTime timestamp)
+        {
+            return timestamp.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture);
+        }
+    }
+
+    public static class DateTimeExtensions
+    {
+        private static readonly DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, 0).ToLocalTime().ToUniversalTime();
+
+        public static long ToUnixTime(this DateTime date)
+        {
+            return Convert.ToInt64((date.ToUniversalTime() - unixEpoch).TotalSeconds);
+        }
     }
 }

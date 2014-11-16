@@ -102,7 +102,7 @@ namespace Owin.Metrics.Middleware
 
         private static Task GetAsHumanReadable(IDictionary<string, object> environment, MetricsDataProvider dataProvider, Func<HealthStatus> healthStatus)
         {
-            string text = StringReporter.RenderMetrics(dataProvider.CurrentMetricsData, healthStatus);
+            string text = StringReport.RenderMetrics(dataProvider.CurrentMetricsData, healthStatus);
             return WriteResponse(environment, text, "text/plain");
         }
 
