@@ -22,7 +22,12 @@ namespace Metrics.Samples
                 // exceptions will be caught and 
                 // the result will be unhealthy
 
-                //this.database.Ping();
+                if (database == null)
+                {
+                    return HealthCheckResult.Unhealthy();
+                }
+
+                this.database.Ping();
 
                 return HealthCheckResult.Healthy();
             }
