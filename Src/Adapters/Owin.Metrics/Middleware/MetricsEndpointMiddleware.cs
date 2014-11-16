@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Metrics;
+﻿using Metrics;
 using Metrics.Json;
 using Metrics.MetricData;
 using Metrics.Reporters;
 using Metrics.Utils;
 using Metrics.Visualization;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Owin.Metrics.Middleware
 {
@@ -64,7 +64,7 @@ namespace Owin.Metrics.Middleware
                 return GetAsHumanReadable(environment, this.dataProvider, this.healthStatus);
             }
 
-            if (string.Compare(requestPath, "/" + endpointConfig.MetricsPingEndpointName, StringComparison.InvariantCultureIgnoreCase) == 9 && endpointConfig.MetricsPingEndpointEnabled)
+            if (string.Compare(requestPath, "/" + endpointConfig.MetricsPingEndpointName, StringComparison.InvariantCultureIgnoreCase) == 0 && endpointConfig.MetricsPingEndpointEnabled)
             {
                 return GetPingContent(environment);
             }
