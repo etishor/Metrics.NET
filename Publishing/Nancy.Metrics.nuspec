@@ -23,9 +23,5 @@
 		<file src="lib\net45\Nancy.Metrics.dll" target="lib\net45\Nancy.Metrics.dll" />
 		<file src="lib\net45\Nancy.Metrics.pdb" target="lib\net45\Nancy.Metrics.pdb" />
 		<file src="lib\net45\Nancy.Metrics.XML" target="lib\net45\Nancy.Metrics.XML" />
-		
-		<file src="lib\net451\Nancy.Metrics.dll" target="lib\net451\Nancy.Metrics.dll" />
-		<file src="lib\net451\Nancy.Metrics.pdb" target="lib\net451\Nancy.Metrics.pdb" />
-		<file src="lib\net451\Nancy.Metrics.XML" target="lib\net451\Nancy.Metrics.XML" />
 	</files>
 </package>

@@ -22,9 +22,5 @@
 		<file src="lib\net45\Owin.Metrics.dll" target="lib\net45\Owin.Metrics.dll" />
 		<file src="lib\net45\Owin.Metrics.pdb" target="lib\net45\Owin.Metrics.pdb" />
 		<file src="lib\net45\Owin.Metrics.XML" target="lib\net45\Owin.Metrics.XML" />
-		
-		<file src="lib\net451\Owin.Metrics.dll" target="lib\net451\Owin.Metrics.dll" />
-		<file src="lib\net451\Owin.Metrics.pdb" target="lib\net451\Owin.Metrics.pdb" />
-		<file src="lib\net451\Owin.Metrics.XML" target="lib\net451\Owin.Metrics.XML" />
 	</files>
 </package>

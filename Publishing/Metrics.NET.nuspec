@@ -18,9 +18,6 @@
     <files>
       <file src="lib\net45\Metrics.dll" target="lib\net45\Metrics.dll" />
       <file src="lib\net45\Metrics.pdb" target="lib\net45\Metrics.pdb" />
-      <file src="lib\net45\Metrics.XML" target="lib\net45\Metrics.XML" />
-      <file src="lib\net451\Metrics.dll" target="lib\net451\Metrics.dll" />
-      <file src="lib\net451\Metrics.pdb" target="lib\net451\Metrics.pdb" />
-      <file src="lib\net451\Metrics.XML" target="lib\net451\Metrics.XML" />
+      <file src="lib\net45\Metrics.XML" target="lib\net45\Metrics.XML" />      
     </files>
 </package>
