@@ -15,13 +15,13 @@ namespace Metrics.NLog
             : base(delimiter)
         { }
 
-        public override void AppendLine(DateTime timestamp, string metricType, string metricName, IEnumerable<CSVReporter.Value> values)
+        public override void AppendLine(DateTime timestamp, string metricType, string metricName, IEnumerable<CSVReport.Value> values)
         {
             var loggerName = string.Format("Metrics.CSV.{0}.{1}", metricType, metricName);
             LogManager.GetLogger(loggerName).Log(GetLogEvent(loggerName, timestamp, metricType, metricName, values));
         }
 
-        private LogEventInfo GetLogEvent(string logger, DateTime timestamp, string metricType, string metricName, IEnumerable<CSVReporter.Value> values)
+        private LogEventInfo GetLogEvent(string logger, DateTime timestamp, string metricType, string metricName, IEnumerable<CSVReport.Value> values)
         {
             var logEvent = new LogEventInfo(LogLevel.Info, logger, GetValues(timestamp, values));
             logEvent.Properties.Add("MetricType", CleanFileName(metricType));

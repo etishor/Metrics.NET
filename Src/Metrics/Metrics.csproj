@@ -10,9 +10,11 @@
     <RootNamespace>Metrics</RootNamespace>
     <AssemblyName>Metrics</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,31 +39,6 @@
     <DocumentationFile>..\..\bin\Release\Metrics.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MonoDebug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <OutputPath>..\..\bin\MonoDebug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>
-    </NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MonoRelease|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <OutputPath>..\..\bin\MonoRelease\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>..\..\bin\MonoRelease\Metrics.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
@@ -73,12 +50,17 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AdvancedMetricsContext.cs" />
-    <Compile Include="App_Packages\LibLog.1.3\Logging.cs" />
+    <Compile Include="App_Packages\LibLog.1.4\LibLog.cs" />
     <Compile Include="Core\BaseMetricsContext.cs" />
     <Compile Include="Core\DefaultMetricsBuilder.cs" />
     <Compile Include="Core\DefaultMetricsRegistry.cs" />
     <Compile Include="Core\DefaultDataProvider.cs" />
     <Compile Include="Core\DefaultRegistryDataProvider.cs" />
+    <Compile Include="Graphite\TcpGraphiteSender.cs" />
+    <Compile Include="Graphite\GraphiteExtensions.cs" />
+    <Compile Include="Graphite\GraphiteReport.cs" />
+    <Compile Include="Graphite\GraphiteSender.cs" />
+    <Compile Include="Graphite\UdpGraphiteSender.cs" />
     <Compile Include="Json\JsonMetric.cs" />
     <Compile Include="Json\JsonMetricsContext.cs" />
     <Compile Include="Json\JsonTimer.cs" />
@@ -100,7 +82,8 @@
     <Compile Include="RemoteMetrics\HttpRemoteMetrics.cs" />
     <Compile Include="RemoteMetrics\RemoteMetricsExtensions.cs" />
     <Compile Include="RemoteMetrics\RemoteMetricsContext.cs" />
-    <Compile Include="Reporters\MetricsReporter.cs" />
+    <Compile Include="Reporters\AsyncScheduledReporter.cs" />
+    <Compile Include="Reporters\MetricsReport.cs" />
     <Compile Include="Sampling\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Core\HealthCheck.cs" />
     <Compile Include="Core\MetricsBuilder.cs" />
@@ -131,15 +114,15 @@
     <Compile Include="PerfCounters\PerformanceCounters.cs" />
     <Compile Include="PerfCounters\PerformanceCounterGauge.cs" />
     <Compile Include="PerfCounters\PerformanceCountersConfigExtensions.cs" />
-    <Compile Include="Reporters\ConsoleReporter.cs" />
+    <Compile Include="Reporters\ConsoleReport.cs" />
     <Compile Include="Reporters\CSVFileAppender.cs" />
-    <Compile Include="Reporters\CSVReporter.cs" />
+    <Compile Include="Reporters\CSVReport.cs" />
     <Compile Include="Json\JsonBuilderV1.cs" />
     <Compile Include="Json\JsonObject.cs" />
-    <Compile Include="Reporters\StringReporter.cs" />
-    <Compile Include="Reporters\TextFileReporter.cs" />
-    <Compile Include="Reporters\BaseReporter.cs" />
-    <Compile Include="Reporters\HumanReadableReporter.cs" />
+    <Compile Include="Reporters\StringReport.cs" />
+    <Compile Include="Reporters\TextFileReport.cs" />
+    <Compile Include="Reporters\BaseReport.cs" />
+    <Compile Include="Reporters\HumanReadableReport.cs" />
     <Compile Include="Reporters\ScheduledReporter.cs" />
     <Compile Include="SamplingType.cs" />
     <Compile Include="Sampling\SlidingWindowReservoir.cs" />
@@ -162,6 +145,7 @@
     <Compile Include="Utils\EWMA.cs" />
     <Compile Include="Utils\AtomicLong.cs" />
     <Compile Include="TimeUnit.cs" />
+    <Compile Include="Utils\HostResolver.cs" />
     <Compile Include="Utils\IHideObjectMembers.cs" />
     <Compile Include="Utils\Scheduler.cs" />
     <Compile Include="Utils\ThreadLocalRandom.cs" />
@@ -175,14 +159,13 @@
     <EmbeddedResource Include="Visualization\index.full.html.gz" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="..\..\Publishing\metrics_32.png">
       <Link>Visualization\metrics_32.png</Link>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

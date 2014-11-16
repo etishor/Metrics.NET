@@ -33,7 +33,7 @@ namespace Metrics.Visualization
             this.healthStatus = healthStatus;
         }
 
-        private string ParsePrefixPath(string listenerUriPrefix)
+        private static string ParsePrefixPath(string listenerUriPrefix)
         {
             var match = Regex.Match(listenerUriPrefix, @"http://(?:[^/]*)(?:\:\d+)?/(.*)");
             if (match.Success)
@@ -150,8 +150,8 @@ namespace Metrics.Visualization
             var json = JsonHealthChecks.BuildJson(status);
 
             WriteString(context, json, JsonHealthChecks.HealthChecksMimeType);
-            context.Response.StatusCode = status.IsHealty ? 200 : 500;
-            context.Response.StatusDescription = status.IsHealty ? "OK" : "Internal Server Error";
+            context.Response.StatusCode = status.IsHealthy ? 200 : 500;
+            context.Response.StatusDescription = status.IsHealthy ? "OK" : "Internal Server Error";
         }
 
         private static void WritePong(HttpListenerContext context)
@@ -168,7 +168,7 @@ namespace Metrics.Visualization
 
         private void WriteTextMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
         {
-            var text = StringReporter.RenderMetrics(metricsDataProvider.CurrentMetricsData, healthStatus);
+            var text = StringReport.RenderMetrics(metricsDataProvider.CurrentMetricsData, healthStatus);
             WriteString(context, text, "text/plain");
         }
 
@@ -227,7 +227,6 @@ namespace Metrics.Visualization
                 }
             }
         }
-
 
         private void WriteFavIcon(HttpListenerContext context)
         {

@@ -5,7 +5,7 @@ using Metrics.MetricData;
 using Metrics.Utils;
 namespace Metrics.Reporters
 {
-    public class CSVReporter : BaseReporter
+    public class CSVReport : BaseReport
     {
         public class Value
         {
@@ -30,7 +30,7 @@ namespace Metrics.Reporters
 
         private readonly CSVAppender appender;
 
-        public CSVReporter(CSVAppender appender)
+        public CSVReport(CSVAppender appender)
         {
             this.appender = appender;
         }
@@ -67,7 +67,7 @@ namespace Metrics.Reporters
         protected override void ReportHealth(HealthStatus status)
         {
             Write("All", "HealthChecks", new[] { 
-                new Value("All Healthy", status.IsHealty) }.Union(
+                new Value("All Healthy", status.IsHealthy) }.Union(
                 status.Results.SelectMany(r => new[]
             {
                 new Value(r.Name + " IsHealthy" ,r.Check.IsHealthy),

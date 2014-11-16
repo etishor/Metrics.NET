@@ -37,12 +37,12 @@ namespace Metrics.Utils
             });
         }
 
-        public void Start(TimeSpan interval, Func<Task> task)
+        public void Start(TimeSpan interval, Func<Task> action)
         {
-            Start(interval, t => t.IsCancellationRequested ? task() : Completed());
+            Start(interval, t => t.IsCancellationRequested ? action() : Completed());
         }
 
-        public void Start(TimeSpan interval, Func<CancellationToken, Task> task)
+        public void Start(TimeSpan interval, Func<CancellationToken, Task> action)
         {
             if (interval.TotalSeconds == 0)
             {
@@ -53,7 +53,7 @@ namespace Metrics.Utils
             {
                 try
                 {
-                    task(CancellationToken.None).Wait();
+                    action(CancellationToken.None).Wait();
                 }
                 catch (Exception x)
                 {

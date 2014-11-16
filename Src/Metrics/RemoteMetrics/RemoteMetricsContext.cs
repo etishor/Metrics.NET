@@ -29,7 +29,7 @@ namespace Metrics.RemoteMetrics
                 var remoteContext = HttpRemoteMetrics.FetchRemoteMetrics(remoteUri, deserializer);
                 remoteContext.Environment.Add("RemoteUri", remoteUri.ToString());
                 remoteContext.Environment.Add("RemoteVersion", remoteContext.Version);
-                remoteContext.Environment.Add("RemoteTimestamp", remoteContext.Timestamp);
+                remoteContext.Environment.Add("RemoteTimestamp", Clock.FormatTimestamp(remoteContext.Timestamp));
 
                 this.currentData = remoteContext.ToMetricsData();
             }
@@ -43,9 +43,12 @@ namespace Metrics.RemoteMetrics
         public override MetricsDataProvider DataProvider { get { return this; } }
         public MetricsData CurrentMetricsData { get { return this.currentData; } }
 
-        public override void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
-            using (this.scheduler) { }
+            if (disposing)
+            {
+                using (this.scheduler) { }
+            }
             base.Dispose(disposing);
         }
     }

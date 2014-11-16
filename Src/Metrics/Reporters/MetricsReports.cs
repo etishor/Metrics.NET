@@ -21,14 +21,12 @@ namespace Metrics.Reports
         /// <summary>
         /// Schedule a generic reporter to be executed at a fixed <paramref name="interval"/>
         /// </summary>
-        /// <param name="reporterName">Name of the reporter</param>
-        /// <param name="reporter">Function that returns an instance of a reporter</param>
+        /// <param name="report">Function that returns an instance of a reporter</param>
         /// <param name="interval">Interval at which to run the report.</param>
-        public MetricsReports WithReporter(string reporterName, Func<MetricsReporter> reporter, TimeSpan interval)
+        public MetricsReports WithReport(MetricsReport report, TimeSpan interval)
         {
-            var report = new ScheduledReporter(reporterName, reporter, this.metricsDataProvider, this.healthStatus, interval);
-            report.Start();
-            this.reports.Add(report);
+            var newReport = new ScheduledReporter(report, this.metricsDataProvider, this.healthStatus, interval);
+            this.reports.Add(newReport);
             return this;
         }
 
@@ -38,7 +36,7 @@ namespace Metrics.Reports
         /// <param name="interval">Interval at which to display the report on the Console.</param>
         public MetricsReports WithConsoleReport(TimeSpan interval)
         {
-            return WithReporter("Console", () => new ConsoleReporter(), interval);
+            return WithReport(new ConsoleReport(), interval);
         }
 
         /// <summary>
@@ -49,7 +47,7 @@ namespace Metrics.Reports
         /// <param name="delimiter">CSV delimiter to use</param>
         public MetricsReports WithCSVReports(string directory, TimeSpan interval, string delimiter = CSVAppender.CommaDelimiter)
         {
-            return WithReporter("CSVFiles", () => new CSVReporter(new CSVFileAppender(directory, delimiter)), interval);
+            return WithReport(new CSVReport(new CSVFileAppender(directory, delimiter)), interval);
         }
 
         /// <summary>
@@ -59,7 +57,7 @@ namespace Metrics.Reports
         /// <param name="interval">Interval at which to run the report.</param>
         public MetricsReports WithTextFileReport(string filePath, TimeSpan interval)
         {
-            return WithReporter("TextFile", () => new TextFileReporter(filePath), interval);
+            return WithReport(new TextFileReport(filePath), interval);
         }
 
         /// <summary>

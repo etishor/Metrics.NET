@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Metrics.Reporters
 {
-    public class TextFileReporter : HumanReadableReporter
+    public class TextFileReport : HumanReadableReport
     {
         private readonly string fileName;
         private readonly List<string> buffer = new List<string>();
 
-        public TextFileReporter(string fileName)
+        public TextFileReport(string fileName)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(fileName));
             this.fileName = fileName;
@@ -19,11 +20,11 @@ namespace Metrics.Reporters
             this.buffer.Add(string.Format(line, args));
         }
 
-        protected override void EndReport()
+        protected override void EndReport(string contextName, DateTime timestamp)
         {
-            base.EndReport();
             File.WriteAllLines(this.fileName, this.buffer);
             buffer.Clear();
+            base.EndReport(contextName, timestamp);
         }
     }
 }

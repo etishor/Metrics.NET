@@ -8,7 +8,7 @@ using Metrics.Logging;
 
 namespace Metrics.PerfCounters
 {
-    public static class PerformanceCounters
+    internal static class PerformanceCounters
     {
         private static readonly ILog log = LogProvider.GetCurrentClassLogger();
 
@@ -20,7 +20,7 @@ namespace Metrics.PerfCounters
         private const string LocksAndThreads = ".NET CLR LocksAndThreads";
         private const string Networking = ".NET CLR Networking 4.0.0.0";
 
-        public static void RegisterSystemCounters(MetricsContext context)
+        internal static void RegisterSystemCounters(MetricsContext context)
         {
             context.Register("Available RAM", Unit.MegaBytes, "Memory", "Available MBytes", tags: "memory");
             context.Register("Free System Page Table Entries", Unit.Custom("entries"), "Memory", "Free System Page Table Entries", tags: "memory");
@@ -49,7 +49,7 @@ namespace Metrics.PerfCounters
             context.Register("Physical Disk Reads/sec", Unit.Custom("kb/s"), "PhysicalDisk", "Disk Writes/sec", TotalInstance, f => f / 1024.0, tags: "disk");
         }
 
-        public static void RegisterAppCounters(MetricsContext context)
+        internal static void RegisterAppCounters(MetricsContext context)
         {
             var app = Process.GetCurrentProcess().ProcessName;
 

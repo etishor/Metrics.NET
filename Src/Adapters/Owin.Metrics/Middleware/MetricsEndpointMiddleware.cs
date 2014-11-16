@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Metrics;
+﻿using Metrics;
 using Metrics.Json;
 using Metrics.MetricData;
 using Metrics.Reporters;
 using Metrics.Utils;
 using Metrics.Visualization;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Owin.Metrics.Middleware
 {
@@ -64,7 +64,7 @@ namespace Owin.Metrics.Middleware
                 return GetAsHumanReadable(environment, this.dataProvider, this.healthStatus);
             }
 
-            if (string.Compare(requestPath, "/" + endpointConfig.MetricsPingEndpointName, StringComparison.InvariantCultureIgnoreCase) == 9 && endpointConfig.MetricsPingEndpointEnabled)
+            if (string.Compare(requestPath, "/" + endpointConfig.MetricsPingEndpointName, StringComparison.InvariantCultureIgnoreCase) == 0 && endpointConfig.MetricsPingEndpointEnabled)
             {
                 return GetPingContent(environment);
             }
@@ -95,14 +95,14 @@ namespace Owin.Metrics.Middleware
             var responseStatusCode = HttpStatusCode.OK;
             var status = healthStatus();
             var content = JsonHealthChecks.BuildJson(status);
-            if (!status.IsHealty) responseStatusCode = HttpStatusCode.InternalServerError;
+            if (!status.IsHealthy) responseStatusCode = HttpStatusCode.InternalServerError;
             return WriteResponse(environment, content, "application/json", responseStatusCode);
 
         }
 
         private static Task GetAsHumanReadable(IDictionary<string, object> environment, MetricsDataProvider dataProvider, Func<HealthStatus> healthStatus)
         {
-            string text = StringReporter.RenderMetrics(dataProvider.CurrentMetricsData, healthStatus);
+            string text = StringReport.RenderMetrics(dataProvider.CurrentMetricsData, healthStatus);
             return WriteResponse(environment, text, "text/plain");
         }
 

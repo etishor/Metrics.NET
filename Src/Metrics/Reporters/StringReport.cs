@@ -5,11 +5,11 @@ using Metrics.MetricData;
 
 namespace Metrics.Reporters
 {
-    public class StringReporter : HumanReadableReporter
+    public class StringReport : HumanReadableReport
     {
         public static string RenderMetrics(MetricsData metricsData, Func<HealthStatus> healthStatus)
         {
-            var report = new StringReporter();
+            var report = new StringReport();
             report.RunReport(metricsData, healthStatus, CancellationToken.None);
             return report.Result;
         }

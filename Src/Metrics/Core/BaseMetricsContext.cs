@@ -16,12 +16,12 @@ namespace Metrics.Core
 
         private bool isDisabled;
 
-        public BaseMetricsContext(string context, MetricsRegistry registry, MetricsBuilder metricsBuilder)
+        protected BaseMetricsContext(string context, MetricsRegistry registry, MetricsBuilder metricsBuilder, Func<DateTime> timestampProvider)
         {
             this.context = context;
             this.registry = registry;
             this.metricsBuilder = metricsBuilder;
-            this.DataProvider = new DefaultDataProvider(this.context, this.registry.DataProvider, () => this.childContexts.Values.Select(c => c.DataProvider));
+            this.DataProvider = new DefaultDataProvider(this.context, timestampProvider, this.registry.DataProvider, () => this.childContexts.Values.Select(c => c.DataProvider));
         }
 
         protected abstract MetricsContext CreateChildContextInstance(string contextName);
@@ -84,7 +84,7 @@ namespace Metrics.Core
 
         public void PerformanceCounter(string name, string counterCategory, string counterName, string counterInstance, Unit unit, MetricTags tags)
         {
-            this.Gauge(name, () => this.metricsBuilder.BuildePerformanceCounter(name, unit, counterCategory, counterName, counterInstance), unit, tags);
+            this.Gauge(name, () => this.metricsBuilder.BuildPerformanceCounter(name, unit, counterCategory, counterName, counterInstance), unit, tags);
         }
 
         public void Gauge(string name, Func<double> valueProvider, Unit unit, MetricTags tags)
@@ -185,11 +185,20 @@ namespace Metrics.Core
 
         public void Dispose()
         {
-            if (!this.isDisabled)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                if (this.ContextShuttingDown != null)
+                if (!this.isDisabled)
                 {
-                    this.ContextShuttingDown(this, EventArgs.Empty);
+                    if (this.ContextShuttingDown != null)
+                    {
+                        this.ContextShuttingDown(this, EventArgs.Empty);
+                    }
                 }
             }
         }
@@ -210,7 +219,7 @@ namespace Metrics.Core
         {
             foreach (var context in this.childContexts.Values)
             {
-                context.Advanced.ResetMetricsValues();
+                action(context);
             }
         }
 

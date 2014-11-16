@@ -18,7 +18,7 @@ namespace Metrics.Json
         public long Count { get; set; }
         public SetItem[] Items { get { return this.items; } set { this.items = value ?? new SetItem[0]; } }
 
-        public static JsonCounter FromCounter(CounterValueSource counter)
+        public static JsonCounter FromCounter(MetricValueSource<CounterValue> counter)
         {
             return new JsonCounter
             {
