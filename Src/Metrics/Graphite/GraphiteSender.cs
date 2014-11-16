@@ -1,26 +1,17 @@
 ﻿using System;
-using System.Globalization;
-using Metrics.Utils;
 
 namespace Metrics.Graphite
 {
     public abstract class GraphiteSender : IDisposable
     {
-        public void Send(string name, long value, DateTime timestamp)
+        public void Send(string name, string value, string timestamp)
         {
-            Send(name, value.ToString("D", CultureInfo.InvariantCulture), timestamp);
-        }
-
-        public void Send(string name, double value, DateTime timestamp)
-        {
-            Send(name, value.ToString("F", CultureInfo.InvariantCulture), timestamp);
-        }
-
-        public void Send(string name, string value, DateTime timestamp)
-        {
-            var data = string.Concat(name, " ", value, " ", timestamp.ToUnixTime().ToString("D", CultureInfo.InvariantCulture), "\n");
+            var data = string.Concat(name, " ", value, " ", timestamp, "\n");
             SendData(data);
         }
+
+        public abstract void Flush();
+
         protected abstract void SendData(string data);
 
         public void Dispose()
