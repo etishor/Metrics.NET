@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace Metrics.Reporters
 {
     public class TextFileReport : HumanReadableReport
     {
         private readonly string fileName;
-        private readonly List<string> buffer = new List<string>();
+        private StringBuilder buffer = new StringBuilder();
 
         public TextFileReport(string fileName)
         {
@@ -17,13 +17,22 @@ namespace Metrics.Reporters
 
         protected override void WriteLine(string line, params string[] args)
         {
-            this.buffer.Add(string.Format(line, args));
+            buffer.AppendFormat(line, args);
+            buffer.AppendLine();
         }
 
         protected override void EndReport(string contextName, DateTime timestamp)
         {
-            File.WriteAllLines(this.fileName, this.buffer);
-            buffer.Clear();
+            try
+            {
+                File.WriteAllText(this.fileName, this.buffer.ToString());
+            }
+            catch (Exception x)
+            {
+                MetricsErrorHandler.Handle(x, "Error writing text file " + this.fileName);
+            }
+
+            buffer = new StringBuilder();
             base.EndReport(contextName, timestamp);
         }
     }
