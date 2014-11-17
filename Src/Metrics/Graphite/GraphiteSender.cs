@@ -4,7 +4,7 @@ namespace Metrics.Graphite
 {
     public abstract class GraphiteSender : IDisposable
     {
-        public void Send(string name, string value, string timestamp)
+        public virtual void Send(string name, string value, string timestamp)
         {
             var data = string.Concat(name, " ", value, " ", timestamp, "\n");
             SendData(data);
