@@ -54,7 +54,7 @@ namespace Metrics.Graphite
             {
                 using (this.client) { }
                 this.client = null;
-                MetricsErrorHandler.Handle(x, "Error sending TCP data to graphite endpoint " + host + ":" + port.ToString());
+                MetricsErrorHandler.Handle(x, "Error sending Pickled data to graphite endpoint " + host + ":" + port.ToString());
             }
         }
 
@@ -75,7 +75,7 @@ namespace Metrics.Graphite
             {
                 using (this.client) { }
                 this.client = null;
-                MetricsErrorHandler.Handle(x, "Error sending TCP data to graphite endpoint " + host + ":" + port.ToString());
+                MetricsErrorHandler.Handle(x, "Error sending Pickled data to graphite endpoint " + host + ":" + port.ToString());
             }
         }
 
@@ -84,7 +84,7 @@ namespace Metrics.Graphite
             var endpoint = new IPEndPoint(HostResolver.Resolve(host), port);
             var client = new TcpClient();
             client.Connect(endpoint);
-            log.Debug(() => "TCP client for graphite initialized for " + host + ":" + port.ToString());
+            log.Debug(() => "Picked client for graphite initialized for " + host + ":" + port.ToString());
             return client;
         }
 
