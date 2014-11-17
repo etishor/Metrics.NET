@@ -7,12 +7,19 @@ namespace Metrics.Reporters
     public class TextFileReport : HumanReadableReport
     {
         private readonly string fileName;
-        private StringBuilder buffer = new StringBuilder();
+
+        private StringBuilder buffer = null;
 
         public TextFileReport(string fileName)
         {
             Directory.CreateDirectory(Path.GetDirectoryName(fileName));
             this.fileName = fileName;
+        }
+
+        protected override void StartReport(string contextName, DateTime timestamp)
+        {
+            this.buffer = new StringBuilder();
+            base.StartReport(contextName, timestamp);
         }
 
         protected override void WriteLine(string line, params string[] args)
@@ -32,8 +39,8 @@ namespace Metrics.Reporters
                 MetricsErrorHandler.Handle(x, "Error writing text file " + this.fileName);
             }
 
-            buffer = new StringBuilder();
             base.EndReport(contextName, timestamp);
+            this.buffer = null;
         }
     }
 }
