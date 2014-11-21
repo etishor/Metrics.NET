@@ -34,11 +34,11 @@ namespace Metrics.Reporters
 
             ReportEnvironment(contextName, data.Environment);
 
-            ReportSection("Gauges", data.Timestamp, data.Gauges, g => ReportGauge(FormatMetricName(contextName, g), g.Value, g.Unit));
-            ReportSection("Counters", data.Timestamp, data.Counters, c => ReportCounter(FormatMetricName(contextName, c), c.Value, c.Unit));
-            ReportSection("Meters", data.Timestamp, data.Meters, m => ReportMeter(FormatMetricName(contextName, m), m.Value, m.Unit, m.RateUnit));
-            ReportSection("Histograms", data.Timestamp, data.Histograms, h => ReportHistogram(FormatMetricName(contextName, h), h.Value, h.Unit));
-            ReportSection("Timers", data.Timestamp, data.Timers, t => ReportTimer(FormatMetricName(contextName, t), t.Value, t.Unit, t.RateUnit, t.DurationUnit));
+            ReportSection("Gauges", data.Timestamp, data.Gauges, g => ReportGauge(FormatMetricName(contextName, g), g.Value, g.Unit, g.Tags));
+            ReportSection("Counters", data.Timestamp, data.Counters, c => ReportCounter(FormatMetricName(contextName, c), c.Value, c.Unit, c.Tags));
+            ReportSection("Meters", data.Timestamp, data.Meters, m => ReportMeter(FormatMetricName(contextName, m), m.Value, m.Unit, m.RateUnit, m.Tags));
+            ReportSection("Histograms", data.Timestamp, data.Histograms, h => ReportHistogram(FormatMetricName(contextName, h), h.Value, h.Unit, h.Tags));
+            ReportSection("Timers", data.Timestamp, data.Timers, t => ReportTimer(FormatMetricName(contextName, t), t.Value, t.Unit, t.RateUnit, t.DurationUnit, t.Tags));
 
             var stack = Enumerable.Concat(contextStack, new[] { data.Context });
             foreach (var child in data.ChildMetrics)
@@ -60,11 +60,11 @@ namespace Metrics.Reporters
 
         protected virtual void ReportEnvironment(string name, IEnumerable<EnvironmentEntry> environment) { }
 
-        protected abstract void ReportGauge(string name, double value, Unit unit);
-        protected abstract void ReportCounter(string name, CounterValue value, Unit unit);
-        protected abstract void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit);
-        protected abstract void ReportHistogram(string name, HistogramValue value, Unit unit);
-        protected abstract void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit);
+        protected abstract void ReportGauge(string name, double value, Unit unit, MetricTags tags);
+        protected abstract void ReportCounter(string name, CounterValue value, Unit unit, MetricTags tags);
+        protected abstract void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit, MetricTags tags);
+        protected abstract void ReportHistogram(string name, HistogramValue value, Unit unit, MetricTags tags);
+        protected abstract void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags);
         protected abstract void ReportHealth(HealthStatus status);
 
         protected virtual string FormatContextName(IEnumerable<string> contextStack, string contextName)
