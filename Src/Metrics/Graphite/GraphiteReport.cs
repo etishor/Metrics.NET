@@ -35,7 +35,7 @@ namespace Metrics.Graphite
             this.sender.Flush();
         }
 
-        protected override void ReportGauge(string name, double value, Unit unit)
+        protected override void ReportGauge(string name, double value, Unit unit, MetricTags tags)
         {
             if (!double.IsNaN(value) && !double.IsInfinity(value))
             {
@@ -43,7 +43,7 @@ namespace Metrics.Graphite
             }
         }
 
-        protected override void ReportCounter(string name, CounterValue value, Unit unit)
+        protected override void ReportCounter(string name, CounterValue value, Unit unit, MetricTags tags)
         {
             if (value.Items.Length == 0)
             {
@@ -61,7 +61,7 @@ namespace Metrics.Graphite
             }
         }
 
-        protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit)
+        protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit, MetricTags tags)
         {
             Send(SubfolderName(name, unit, "Total"), value.Count, this.lastTimestamp);
             Send(SubfolderName(name, AsRate(unit, rateUnit), "Rate-Mean"), value.MeanRate, this.lastTimestamp);
@@ -80,7 +80,7 @@ namespace Metrics.Graphite
             }
         }
 
-        protected override void ReportHistogram(string name, HistogramValue value, Unit unit)
+        protected override void ReportHistogram(string name, HistogramValue value, Unit unit, MetricTags tags)
         {
             Send(SubfolderName(name, unit, "Count"), value.Count, this.lastTimestamp);
             Send(SubfolderName(name, unit, "Last"), value.LastValue, this.lastTimestamp);
@@ -96,7 +96,7 @@ namespace Metrics.Graphite
             Send(SubfolderName(name, unit, "p99,9"), value.Percentile999, this.lastTimestamp);
         }
 
-        protected override void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
+        protected override void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
         {
             Send(SubfolderName(name, unit, "Count"), value.Rate.Count, this.lastTimestamp);
             Send(SubfolderName(name, unit, "Active_Sessions"), value.ActiveSessions, this.lastTimestamp);
