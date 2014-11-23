@@ -35,27 +35,27 @@ namespace Metrics.Reporters
             this.appender = appender;
         }
 
-        protected override void ReportGauge(string name, double value, Unit unit)
+        protected override void ReportGauge(string name, double value, Unit unit, MetricTags tags)
         {
             Write("Gauge", name, GaugeValues(value, unit));
         }
 
-        protected override void ReportCounter(string name, CounterValue value, Unit unit)
+        protected override void ReportCounter(string name, CounterValue value, Unit unit, MetricTags tags)
         {
             Write("Counter", name, CounterValues(value.Count, unit));
         }
 
-        protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit)
+        protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit, MetricTags tags)
         {
             Write("Meter", name, MeterValues(value, unit, rateUnit));
         }
 
-        protected override void ReportHistogram(string name, HistogramValue value, Unit unit)
+        protected override void ReportHistogram(string name, HistogramValue value, Unit unit, MetricTags tags)
         {
             Write("Histogram", name, HistogramValues(value, unit));
         }
 
-        protected override void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
+        protected override void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
         {
             var values = MeterValues(value.Rate, unit, rateUnit)
                 .Concat(HistogramValues(value.Histogram, unit, durationUnit))
