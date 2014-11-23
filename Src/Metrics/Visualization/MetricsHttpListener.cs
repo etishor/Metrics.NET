@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using Metrics.Json;
 using Metrics.MetricData;
 using Metrics.Reporters;
+using System.Text;
+
+
 namespace Metrics.Visualization
 {
     public sealed class MetricsHttpListener : IDisposable
@@ -48,7 +51,7 @@ namespace Metrics.Visualization
 
         public void Start()
         {
-            this.httpListener.Start();
+			this.httpListener.Start();
             Task.Factory.StartNew(async () => await ProcessRequests(), TaskCreationOptions.LongRunning);
         }
 
@@ -133,14 +136,15 @@ namespace Metrics.Visualization
             return WriteNotFound(context);
         }
 
-        private static async Task WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
+        private static Task WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
         {
             var status = healthStatus();
             var json = JsonHealthChecks.BuildJson(status);
 
-            await WriteString(context, json, JsonHealthChecks.HealthChecksMimeType);
-            context.Response.StatusCode = status.IsHealthy ? 200 : 500;
-            context.Response.StatusDescription = status.IsHealthy ? "OK" : "Internal Server Error";
+			var httpStatus = status.IsHealthy ? 200 : 500;
+			var httpStatusDescription = status.IsHealthy ? "OK" : "Internal Server Error";
+
+			return WriteString(context, json, JsonHealthChecks.HealthChecksMimeType,httpStatus, httpStatusDescription);
         }
 
         private static Task WritePong(HttpListenerContext context)
@@ -148,11 +152,9 @@ namespace Metrics.Visualization
             return WriteString(context, "pong", "text/plain");
         }
 
-        private static async Task WriteNotFound(HttpListenerContext context)
+        private static Task WriteNotFound(HttpListenerContext context)
         {
-            await WriteString(context, NotFoundResponse, "text/plain").ConfigureAwait(false);
-            context.Response.StatusCode = 404;
-            context.Response.StatusDescription = "NOT FOUND";
+			return WriteString (context, NotFoundResponse, "text/plain", 404, "NOT FOUND");
         }
 
         private static Task WriteTextMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
@@ -187,30 +189,28 @@ namespace Metrics.Visualization
             return WriteString(context, json, JsonBuilderV2.MetricsMimeType);
         }
 
-        private static async Task WriteString(HttpListenerContext context, string data, string contentType)
+		private static async Task WriteString(HttpListenerContext context, string data, string contentType, 
+			int httpStatus = 200, string httpStatusDescription = "OK")
         {
             AddCORSHeaders(context.Response);
             AddNoCacheHeaders(context.Response);
 
             context.Response.ContentType = contentType;
-            context.Response.StatusCode = 200;
-            context.Response.StatusDescription = "OK";
+			context.Response.StatusCode = httpStatus;
+			context.Response.StatusDescription = httpStatusDescription;
 
             var acceptsGzip = AcceptsGzip(context.Request);
-            if (!acceptsGzip)
-            {
-                using (var writer = new StreamWriter(context.Response.OutputStream))
-                {
-                    await writer.WriteAsync(data).ConfigureAwait(false);
-                }
-            }
-
-            context.Response.AddHeader("Content-Encoding", "gzip");
-            using (GZipStream gzip = new GZipStream(context.Response.OutputStream, CompressionMode.Compress))
-            using (var writer = new StreamWriter(gzip))
-            {
-                await writer.WriteAsync(data).ConfigureAwait(false);
-            }
+			if (!acceptsGzip) {
+				using (var writer = new StreamWriter (context.Response.OutputStream, Encoding.UTF8, 4096, true)) {
+					await writer.WriteAsync (data).ConfigureAwait (false);
+				}
+			} else {
+				context.Response.AddHeader ("Content-Encoding", "gzip");
+				using (GZipStream gzip = new GZipStream (context.Response.OutputStream, CompressionMode.Compress, true))
+				using (var writer = new StreamWriter (gzip, Encoding.UTF8, 4096, true)) {
+					await writer.WriteAsync (data).ConfigureAwait (false);
+				}
+			}
         }
 
         private static Task WriteFavIcon(HttpListenerContext context)
