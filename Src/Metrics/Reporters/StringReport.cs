@@ -29,7 +29,6 @@ namespace Metrics.Reporters
         protected override void EndReport(string contextName, DateTime timestamp)
         {
             base.EndReport(contextName, timestamp);
-            this.buffer = null;
         }
 
         public string Result { get { return this.buffer.ToString(); } }
