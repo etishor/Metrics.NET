@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using Metrics.MetricData;
+using Metrics.Logging;
 
 namespace Metrics.Utils
 {
     public static class AppEnvironment
     {
+		private static readonly ILog log = LogProvider.GetCurrentClassLogger();
+
         public static IEnumerable<EnvironmentEntry> Current
         {
             get
@@ -24,21 +26,34 @@ namespace Metrics.Utils
                 yield return new EnvironmentEntry("CommandLine", Environment.CommandLine);
                 yield return new EnvironmentEntry("HostName", SafeGetString(() => Dns.GetHostName()));
                 yield return new EnvironmentEntry("IPAddress", SafeGetString(() => GetIpAddress()));
-                yield return new EnvironmentEntry("LocalTime", DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture));
+                yield return new EnvironmentEntry("LocalTime", Clock.FormatTimestamp(DateTime.Now));
             }
         }
 
         private static string GetIpAddress()
         {
-            var ipAddress = Dns.GetHostEntry(Dns.GetHostName())
-                .AddressList
-                .FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
+			string hostName = SafeGetString(() => Dns.GetHostName ());
+			try
+			{
+				var ipAddress = Dns.GetHostEntry(hostName)
+	                .AddressList
+	                .FirstOrDefault (ip => ip.AddressFamily == AddressFamily.InterNetwork);
 
-            if (ipAddress != null)
-            {
-                return ipAddress.ToString();
-            }
-            return string.Empty;
+				if (ipAddress != null) 
+				{
+					return ipAddress.ToString();
+				}
+				return string.Empty;
+			}
+			catch (SocketException x) 
+			{
+				if (x.SocketErrorCode == SocketError.HostNotFound) 
+				{
+					log.Warn ( () => "Unable to resolve hostname " + hostName);
+					return string.Empty;
+				}
+				throw;
+			}
         }
 
         private static string SafeGetString(Func<string> action)

@@ -1,3 +1,7 @@
+###0.2.11 / 2014-11-16
+* graphite adapter (early bits, might have issues)
+* refactor & cleanup reporting infra
+
 ###0.2.10 / 2014-11-06
 * fix error logging for not found performance counters
 

@@ -28,7 +28,7 @@ namespace Metrics.Samples
 
         private void ActualCommandProcessing(Command command)
         {
-            throw new DivideByZeroException();
+            //throw new DivideByZeroException();
         }
 
         public static void RunSomeRequests()

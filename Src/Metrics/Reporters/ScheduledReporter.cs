@@ -10,41 +10,32 @@ namespace Metrics.Reporters
         private readonly Scheduler scheduler;
         private readonly TimeSpan interval;
 
-        private readonly Func<MetricsReporter> reporter;
+        private readonly MetricsReport report;
         private readonly MetricsDataProvider metricsDataProvider;
         private readonly Func<HealthStatus> healthStatus;
 
-        public ScheduledReporter(Func<MetricsReporter> reporter, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus, TimeSpan interval)
+        public ScheduledReporter(MetricsReport reporter, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus, TimeSpan interval)
             : this(reporter, metricsDataProvider, healthStatus, interval, new ActionScheduler()) { }
 
-        public ScheduledReporter(Func<MetricsReporter> reporter, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus, TimeSpan interval, Scheduler scheduler)
+        public ScheduledReporter(MetricsReport report, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus, TimeSpan interval, Scheduler scheduler)
         {
-            this.reporter = reporter;
+            this.report = report;
             this.metricsDataProvider = metricsDataProvider;
             this.healthStatus = healthStatus;
             this.interval = interval;
             this.scheduler = scheduler;
+            this.scheduler.Start(this.interval, t => RunReport(t));
         }
 
         private void RunReport(CancellationToken token)
         {
-            reporter().RunReport(this.metricsDataProvider.CurrentMetricsData, this.healthStatus, token);
-        }
-
-        public void Start()
-        {
-            this.scheduler.Start(this.interval, t => RunReport(t));
-        }
-
-        public void Stop()
-        {
-            this.scheduler.Stop();
+            report.RunReport(this.metricsDataProvider.CurrentMetricsData, this.healthStatus, token);
         }
 
         public void Dispose()
         {
-            this.Stop();
-            this.scheduler.Dispose();
+            using (this.scheduler) { }
+            using (this.report as IDisposable) { }
         }
     }
 }

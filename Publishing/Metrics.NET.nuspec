@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
         <id>Metrics.NET</id>
-        <version>0.2.10</version>
+        <version>0.2.11</version>
         <title>Metrics.NET</title>
         <authors>iulian.margarintescu</authors>
         <owners>Iulian Margarintescu</owners>
@@ -18,9 +18,6 @@
     <files>
       <file src="lib\net45\Metrics.dll" target="lib\net45\Metrics.dll" />
       <file src="lib\net45\Metrics.pdb" target="lib\net45\Metrics.pdb" />
-      <file src="lib\net45\Metrics.XML" target="lib\net45\Metrics.XML" />
-      <file src="lib\net451\Metrics.dll" target="lib\net451\Metrics.dll" />
-      <file src="lib\net451\Metrics.pdb" target="lib\net451\Metrics.pdb" />
-      <file src="lib\net451\Metrics.XML" target="lib\net451\Metrics.XML" />
+      <file src="lib\net45\Metrics.XML" target="lib\net45\Metrics.XML" />      
     </files>
 </package>

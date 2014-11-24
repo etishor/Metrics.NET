@@ -22,7 +22,7 @@ namespace Metrics
             global::NLog.Config.ConfigurationItemFactory.Default.Layouts.RegisterDefinition("CsvHistogramLayout", typeof(CsvHistogramLayout));
             global::NLog.Config.ConfigurationItemFactory.Default.Layouts.RegisterDefinition("CsvTimerLayout", typeof(CsvTimerLayout));
 
-            reports.WithReporter(() => new CSVReporter(new NLogCSVAppender(delimiter)), interval);
+            reports.WithReport(new CSVReport(new NLogCSVAppender(delimiter)), interval);
 
             return reports;
         }
@@ -35,7 +35,7 @@ namespace Metrics
         /// <returns>Same Reports instance for chaining</returns>
         public static MetricsReports WithNLogTextReports(this MetricsReports reports, TimeSpan interval)
         {
-            reports.WithReporter(() => new NLogTextReporter(), interval);
+            reports.WithReport(new NLogTextReporter(), interval);
             return reports;
         }
     }

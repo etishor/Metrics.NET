@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FluentAssertions;
 using Metrics.Json;
 using Metrics.MetricData;
@@ -61,18 +62,18 @@ namespace Metrics.Tests.Json
             this.histogram = new HistogramValueSource("test3", Provider(histogramValue), Unit.Items, MetricTags.None);
             this.timer = new TimerValueSource("test4", Provider(timerValue), Unit.Requests, TimeUnit.Seconds, TimeUnit.Milliseconds, MetricTags.None);
 
-            this.data = new MetricsData("test", new[] { new EnvironmentEntry("name", "1") },
+            this.data = new MetricsData("test", new DateTime(2014, 2, 17), new[] { new EnvironmentEntry("name", "1") },
                 new[] { gauge }, new[] { counter }, new[] { meter }, new[] { histogram }, new[] { timer },
                     Enumerable.Empty<MetricsData>()
             );
-            this.jsonContext = JsonMetricsContext.FromContext(this.data, "1", "time");
+            this.jsonContext = JsonMetricsContext.FromContext(this.data, "1");
         }
 
         [Fact]
         public void JsonSerialization_CanSerializeContext()
         {
             jsonContext.Version.Should().Be("1");
-            jsonContext.Timestamp.Should().Be("time");
+            jsonContext.Timestamp.Should().Be(new DateTime(2014, 2, 17));
             jsonContext.Environment.Should().HaveCount(1);
             jsonContext.Environment.Single().Key.Should().Be("name");
 

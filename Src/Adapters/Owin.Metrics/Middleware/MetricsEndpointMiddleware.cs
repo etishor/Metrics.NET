@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Metrics;
+﻿using Metrics;
 using Metrics.Json;
 using Metrics.MetricData;
 using Metrics.Reporters;
 using Metrics.Utils;
 using Metrics.Visualization;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Owin.Metrics.Middleware
 {
@@ -102,7 +102,7 @@ namespace Owin.Metrics.Middleware
 
         private static Task GetAsHumanReadable(IDictionary<string, object> environment, MetricsDataProvider dataProvider, Func<HealthStatus> healthStatus)
         {
-            string text = StringReporter.RenderMetrics(dataProvider.CurrentMetricsData, healthStatus);
+            string text = StringReport.RenderMetrics(dataProvider.CurrentMetricsData, healthStatus);
             return WriteResponse(environment, text, "text/plain");
         }
 

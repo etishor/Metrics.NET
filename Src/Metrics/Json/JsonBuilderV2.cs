@@ -23,9 +23,8 @@ namespace Metrics.Json
         public static string BuildJson(MetricsData data, IEnumerable<EnvironmentEntry> environment, Clock clock, bool indented = DefaultIndented)
         {
             var version = Version.ToString(CultureInfo.InvariantCulture);
-            var timestamp = clock.UTCDateTime.ToString("yyyy-MM-ddTHH:mm:ss.ffffK", CultureInfo.InvariantCulture);
 
-            return JsonMetricsContext.FromContext(data, environment, version, timestamp)
+            return JsonMetricsContext.FromContext(data, environment, version)
                 .ToJsonObject()
                 .AsJson(indented);
         }
