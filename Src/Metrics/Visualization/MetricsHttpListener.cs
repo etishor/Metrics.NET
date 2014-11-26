@@ -20,6 +20,8 @@ namespace Metrics.Visualization
         private readonly Func<HealthStatus> healthStatus;
         private readonly string prefixPath;
 
+        private Task processingTask;
+
         private static readonly Timer timer = Metric.Internal.Timer("HTTP Request", Unit.Requests);
         private static readonly Meter errors = Metric.Internal.Meter("HTTP Request Errors", Unit.Errors);
         private static readonly Histogram jsonSize = Metric.Internal.Histogram("HTTP JSON Size", Unit.KiloBytes);
@@ -49,7 +51,7 @@ namespace Metrics.Visualization
         public void Start()
         {
             this.httpListener.Start();
-            Task.Factory.StartNew(async () => await ProcessRequests(), TaskCreationOptions.LongRunning);
+            this.processingTask = Task.Factory.StartNew(async () => await ProcessRequests(), TaskCreationOptions.LongRunning);
         }
 
         private async Task ProcessRequests()
@@ -266,6 +268,11 @@ namespace Metrics.Visualization
         {
             cts.Cancel();
             this.httpListener.Stop();
+            this.httpListener.Prefixes.Clear();
+            if (processingTask != null && !processingTask.IsCompleted)
+            {
+                processingTask.Wait();
+            }
         }
 
         public void Dispose()
