@@ -14,11 +14,21 @@ namespace Metrics.Reporters
             return report.Result;
         }
 
-        private readonly StringBuilder buffer = new StringBuilder();
+        private StringBuilder buffer = null;
 
+        protected override void StartReport(string contextName, DateTime timestamp)
+        {
+            this.buffer = new StringBuilder();
+            base.StartReport(contextName, timestamp);
+        }
         protected override void WriteLine(string line, params string[] args)
         {
             this.buffer.AppendLine(string.Format(line, args));
+        }
+
+        protected override void EndReport(string contextName, DateTime timestamp)
+        {
+            base.EndReport(contextName, timestamp);
         }
 
         public string Result { get { return this.buffer.ToString(); } }

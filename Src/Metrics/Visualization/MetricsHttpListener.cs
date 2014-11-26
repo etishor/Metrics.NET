@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Metrics.Json;
 using Metrics.MetricData;
 using Metrics.Reporters;
+
+
 namespace Metrics.Visualization
 {
     public sealed class MetricsHttpListener : IDisposable
@@ -19,6 +21,8 @@ namespace Metrics.Visualization
         private readonly MetricsDataProvider metricsDataProvider;
         private readonly Func<HealthStatus> healthStatus;
         private readonly string prefixPath;
+
+        private Task processingTask;
 
         private static readonly Timer timer = Metric.Internal.Timer("HTTP Request", Unit.Requests);
         private static readonly Meter errors = Metric.Internal.Meter("HTTP Request Errors", Unit.Errors);
@@ -49,7 +53,7 @@ namespace Metrics.Visualization
         public void Start()
         {
             this.httpListener.Start();
-            Task.Factory.StartNew(ProcessRequests, TaskCreationOptions.LongRunning);
+            this.processingTask = Task.Factory.StartNew(ProcessRequests, TaskCreationOptions.LongRunning);
         }
 
         private void ProcessRequests()
@@ -149,9 +153,9 @@ namespace Metrics.Visualization
             var status = healthStatus();
             var json = JsonHealthChecks.BuildJson(status);
 
-            WriteString(context, json, JsonHealthChecks.HealthChecksMimeType);
-            context.Response.StatusCode = status.IsHealthy ? 200 : 500;
-            context.Response.StatusDescription = status.IsHealthy ? "OK" : "Internal Server Error";
+            var httpStatus = status.IsHealthy ? 200 : 500;
+            var httpStatusDescription = status.IsHealthy ? "OK" : "Internal Server Error";
+            WriteString(context, json, JsonHealthChecks.HealthChecksMimeType, httpStatus, httpStatusDescription);
         }
 
         private static void WritePong(HttpListenerContext context)
@@ -161,9 +165,7 @@ namespace Metrics.Visualization
 
         private static void WriteNotFound(HttpListenerContext context)
         {
-            WriteString(context, NotFoundResponse, "text/plain");
-            context.Response.StatusCode = 404;
-            context.Response.StatusDescription = "NOT FOUND";
+            WriteString(context, NotFoundResponse, "text/plain", 404, "NOT FOUND");
         }
 
         private void WriteTextMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
@@ -200,14 +202,15 @@ namespace Metrics.Visualization
             WriteString(context, json, JsonBuilderV2.MetricsMimeType);
         }
 
-        private static void WriteString(HttpListenerContext context, string data, string contentType)
+        private static void WriteString(HttpListenerContext context, string data, string contentType,
+            int httpStatus = 200, string httpStatusDescription = "OK")
         {
             AddCORSHeaders(context.Response);
             AddNoCacheHeaders(context.Response);
 
             context.Response.ContentType = contentType;
-            context.Response.StatusCode = 200;
-            context.Response.StatusDescription = "OK";
+            context.Response.StatusCode = httpStatus;
+            context.Response.StatusDescription = httpStatusDescription;
 
             var acceptsGzip = AcceptsGzip(context.Request);
             if (!acceptsGzip)
@@ -281,6 +284,11 @@ namespace Metrics.Visualization
         {
             cts.Cancel();
             this.httpListener.Stop();
+            this.httpListener.Prefixes.Clear();
+            if (processingTask != null && !processingTask.IsCompleted)
+            {
+                processingTask.Wait();
+            }
         }
 
         public void Dispose()

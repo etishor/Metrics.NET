@@ -18,7 +18,17 @@ namespace Metrics
                 return reports.WithUDPGraphite(graphiteUri.Host, graphiteUri.Port, interval);
             }
 
-            throw new ArgumentException("Graphite uri scheme must be either net.tcp or net.udp (ex: net.udp://graphite.myhost.com:2003 )", "graphiteUri");
+            if (graphiteUri.Scheme.ToLowerInvariant() == "net.pickled")
+            {
+                return reports.WithPickledGraphite(graphiteUri.Host, graphiteUri.Port, interval);
+            }
+
+            throw new ArgumentException("Graphite uri scheme must be either net.tcp or net.udp or net.pickled (ex: net.udp://graphite.myhost.com:2003 )", "graphiteUri");
+        }
+
+        public static MetricsReports WithPickledGraphite(this MetricsReports reports, string host, int port, TimeSpan interval, int batchSize = PickleGraphiteSender.DefaultPickleJarSize)
+        {
+            return reports.WithGraphite(new PickleGraphiteSender(host, port, batchSize), interval);
         }
 
         public static MetricsReports WithTCPGraphite(this MetricsReports reports, string host, int port, TimeSpan interval)
