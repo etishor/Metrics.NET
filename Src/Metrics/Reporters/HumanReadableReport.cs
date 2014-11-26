@@ -34,13 +34,13 @@ namespace Metrics.Reporters
             this.WriteLine("    {0}", name);
         }
 
-        protected override void ReportGauge(string name, double value, Unit unit)
+        protected override void ReportGauge(string name, double value, Unit unit, MetricTags tags)
         {
             this.WriteMetricName(name);
             this.WriteValue("value", unit.FormatValue(value));
         }
 
-        protected override void ReportCounter(string name, CounterValue value, Unit unit)
+        protected override void ReportCounter(string name, CounterValue value, Unit unit, MetricTags tags)
         {
             this.WriteMetricName(name);
             WriteValue("Count", unit.FormatCount(value.Count));
@@ -57,7 +57,7 @@ namespace Metrics.Reporters
             }
         }
 
-        protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit)
+        protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit, MetricTags tags)
         {
             this.WriteMetricName(name);
             this.WriteMeter(value, unit, rateUnit);
@@ -76,13 +76,13 @@ namespace Metrics.Reporters
             }
         }
 
-        protected override void ReportHistogram(string name, HistogramValue value, Unit unit)
+        protected override void ReportHistogram(string name, HistogramValue value, Unit unit, MetricTags tags)
         {
             this.WriteMetricName(name);
             this.WriteHistogram(value, unit);
         }
 
-        protected override void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit)
+        protected override void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
         {
             this.WriteMetricName(name);
             this.WriteValue("Active Sessions", value.ActiveSessions.ToString());
