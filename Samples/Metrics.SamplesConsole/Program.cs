@@ -19,6 +19,7 @@ namespace Metrics.SamplesConsole
                 //.WithCSVReports(@"c:\temp\reports\", TimeSpan.FromSeconds(10))
                 //.WithTextFileReport(@"C:\temp\reports\metrics.txt", TimeSpan.FromSeconds(10))
                 //.WithGraphite(new Uri("net.udp://localhost:2003"), TimeSpan.FromSeconds(1))
+                //.WithInfluxDb("192.168.1.8", 8086, "admin", "admin", "metrics", TimeSpan.FromSeconds(1))
                 );
 
             using (var scheduler = new ActionScheduler())
