@@ -88,8 +88,8 @@ namespace Metrics.Graphite
             Send(SubfolderName(name, unit, "Mean"), value.Mean, this.lastTimestamp);
             Send(SubfolderName(name, unit, "Max"), value.Max, this.lastTimestamp);
             Send(SubfolderName(name, unit, "StdDev"), value.StdDev, this.lastTimestamp);
-            Send(SubfolderName(name, unit, "p75"), value.Median, this.lastTimestamp);
-            Send(SubfolderName(name, unit, "p95"), value.Percentile75, this.lastTimestamp);
+            Send(SubfolderName(name, unit, "Median"), value.Median, this.lastTimestamp);
+            Send(SubfolderName(name, unit, "p75"), value.Percentile75, this.lastTimestamp);
             Send(SubfolderName(name, unit, "p95"), value.Percentile95, this.lastTimestamp);
             Send(SubfolderName(name, unit, "p98"), value.Percentile98, this.lastTimestamp);
             Send(SubfolderName(name, unit, "p99"), value.Percentile99, this.lastTimestamp);
@@ -111,8 +111,8 @@ namespace Metrics.Graphite
             Send(SubfolderName(name, durationUnit.Unit(), "Duration-Mean"), value.Histogram.Mean, this.lastTimestamp);
             Send(SubfolderName(name, durationUnit.Unit(), "Duration-Max"), value.Histogram.Max, this.lastTimestamp);
             Send(SubfolderName(name, durationUnit.Unit(), "Duration-StdDev"), value.Histogram.StdDev, this.lastTimestamp);
-            Send(SubfolderName(name, durationUnit.Unit(), "Duration-p75"), value.Histogram.Median, this.lastTimestamp);
-            Send(SubfolderName(name, durationUnit.Unit(), "Duration-p95"), value.Histogram.Percentile75, this.lastTimestamp);
+            Send(SubfolderName(name, durationUnit.Unit(), "Duration-Median"), value.Histogram.Median, this.lastTimestamp);
+            Send(SubfolderName(name, durationUnit.Unit(), "Duration-p75"), value.Histogram.Percentile75, this.lastTimestamp);
             Send(SubfolderName(name, durationUnit.Unit(), "Duration-p95"), value.Histogram.Percentile95, this.lastTimestamp);
             Send(SubfolderName(name, durationUnit.Unit(), "Duration-p98"), value.Histogram.Percentile98, this.lastTimestamp);
             Send(SubfolderName(name, durationUnit.Unit(), "Duration-p99"), value.Histogram.Percentile99, this.lastTimestamp);
