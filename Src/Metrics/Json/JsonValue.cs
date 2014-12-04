@@ -131,4 +131,19 @@ namespace Metrics.Json
             return "[" + string.Join(",", this.values.Select(v => new StringJsonValue(v).AsJson(indented, indent))) + "]";
         }
     }
+
+    public class JsonValueArray : JsonValue
+    {
+        private readonly IEnumerable<JsonValue> values;
+
+        public JsonValueArray(IEnumerable<JsonValue> values)
+        {
+            this.values = values;
+        }
+
+        public override string AsJson(bool indented = true, int indent = 0)
+        {
+            return "[" + string.Join(",", this.values.Select(v => v.AsJson(indented, indent))) + "]";
+        }
+    }
 }

@@ -55,9 +55,16 @@ namespace Metrics
         {
             if (!isDisabled)
             {
-                using (this.listener) { }
-                this.listener = new MetricsHttpListener(httpUriPrefix, this.context.DataProvider, this.healthStatus);
-                this.listener.Start();
+                try
+                {
+                    using (this.listener) { }
+                    this.listener = new MetricsHttpListener(httpUriPrefix, this.context.DataProvider, this.healthStatus);
+                    this.listener.Start();
+                }
+                catch (Exception x)
+                {
+                    MetricsErrorHandler.Handle(x, "Unable to start HTTP Listener");
+                }
             }
             return this;
         }
