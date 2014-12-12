@@ -16,6 +16,7 @@ namespace Metrics
         static Metric()
         {
             globalContext = new DefaultMetricsContext(MetricsConfig.GetGlobalContextName());
+            MetricsConfig.CheckMetricsEnabledDisabled();
             config = new MetricsConfig(globalContext);
             config.ApplySettingsFromConfigFile();
         }
