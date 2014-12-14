@@ -141,7 +141,7 @@ namespace Metrics.Reporters
 
         private void Write(string metricType, string metricName, IEnumerable<Value> values)
         {
-            this.appender.AppendLine(base.Timestamp, metricType, metricName, values);
+            this.appender.AppendLine(base.CurrentContextTimestamp, metricType, metricName, values);
         }
     }
 }

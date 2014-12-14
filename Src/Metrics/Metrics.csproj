@@ -55,6 +55,8 @@
     <Compile Include="Core\DefaultMetricsRegistry.cs" />
     <Compile Include="Core\DefaultDataProvider.cs" />
     <Compile Include="Core\DefaultRegistryDataProvider.cs" />
+    <Compile Include="ElasticSearch\ElasticSearchConfigExtensions.cs" />
+    <Compile Include="ElasticSearch\ElasticSearchReport.cs" />
     <Compile Include="Graphite\PickleGraphiteSender.cs" />
     <Compile Include="Graphite\PickleJar.cs" />
     <Compile Include="Graphite\TcpGraphiteSender.cs" />
