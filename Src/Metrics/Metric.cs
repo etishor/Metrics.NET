@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Configuration;
+using System.Diagnostics;
+using Metrics.Logging;
 
 namespace Metrics
 {
@@ -7,6 +10,8 @@ namespace Metrics
     /// </summary>
     public static class Metric
     {
+        private static readonly ILog log = LogProvider.GetCurrentClassLogger();
+
         private static readonly DefaultMetricsContext globalContext;
         private static readonly MetricsConfig config;
 
@@ -15,8 +20,12 @@ namespace Metrics
 
         static Metric()
         {
-            globalContext = new DefaultMetricsContext(MetricsConfig.GetGlobalContextName());
-            MetricsConfig.CheckMetricsEnabledDisabled();
+            globalContext = new DefaultMetricsContext(GetGlobalContextName());
+            if(MetricsConfig.GlobalyDisabledMetrics)
+            {
+                globalContext.CompletelyDisableMetrics();
+                log.Info(() => "Metrics: Metrics.NET Library is completely disabled. Set Metrics.CompetelyDisableMetrics to false to re-enable.");                
+            }
             config = new MetricsConfig(globalContext);
             config.ApplySettingsFromConfigFile();
         }
@@ -171,6 +180,22 @@ namespace Metrics
         internal static void EnableInternalMetrics()
         {
             globalContext.AttachContext("Metrics.NET", internalContext);
+        }
+
+        private static string GetGlobalContextName()
+        {
+            try
+            {
+                var configName = ConfigurationManager.AppSettings["Metrics.GlobalContextName"];
+                var name = string.IsNullOrEmpty(configName) ? Process.GetCurrentProcess().ProcessName : configName;
+                log.Debug(() => "Metrics: GlobalContext Name set to " + name);
+                return name;
+            }
+            catch (Exception x)
+            {
+                log.ErrorException("Metrics: Error reading config value for Metrics.GlobalContetName", x);
+                throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.GlobalContextName must be non empty string", x);
+            }
         }
     }
 }
