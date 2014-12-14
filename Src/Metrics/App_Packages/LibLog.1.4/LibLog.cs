@@ -27,6 +27,7 @@
 namespace Metrics.Logging
 {
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.Globalization;
     using Metrics.Logging.LogProviders;
@@ -382,29 +383,30 @@ namespace Metrics.Logging
             _currentLogProvider = logProvider;
         }
 
+        public delegate bool IsLoggerAvailable();
+
+        public delegate ILogProvider CreateLogProvider();
+
+        public static readonly List<Tuple<IsLoggerAvailable, CreateLogProvider>> LogProviderResolvers =
+            new List<Tuple<IsLoggerAvailable, CreateLogProvider>>
+        {
+            new Tuple<IsLoggerAvailable, CreateLogProvider>(SerilogLogProvider.IsLoggerAvailable, () => new SerilogLogProvider()),
+            new Tuple<IsLoggerAvailable, CreateLogProvider>(NLogLogProvider.IsLoggerAvailable, () => new NLogLogProvider()),
+            new Tuple<IsLoggerAvailable, CreateLogProvider>(Log4NetLogProvider.IsLoggerAvailable, () => new Log4NetLogProvider()),
+            new Tuple<IsLoggerAvailable, CreateLogProvider>(EntLibLogProvider.IsLoggerAvailable, () => new EntLibLogProvider()),
+            new Tuple<IsLoggerAvailable, CreateLogProvider>(LoupeLogProvider.IsLoggerAvailable, () => new LoupeLogProvider())
+        };
+
         private static ILogProvider ResolveLogProvider()
         {
             try
             {
-                if (NLogLogProvider.IsLoggerAvailable())
+                foreach (var providerResolver in LogProviderResolvers)
                 {
-                    return new NLogLogProvider();
-                }
-                if (Log4NetLogProvider.IsLoggerAvailable())
-                {
-                    return new Log4NetLogProvider();
-                }
-                if (EntLibLogProvider.IsLoggerAvailable())
-                {
-                    return new EntLibLogProvider();
-                }
-                if (SerilogLogProvider.IsLoggerAvailable())
-                {
-                    return new SerilogLogProvider();
-                }
-                if (LoupeLogProvider.IsLoggerAvailable())
-                {
-                    return new LoupeLogProvider();
+                    if (providerResolver.Item1())
+                    {
+                        return providerResolver.Item2();
+                    }
                 }
             }
             catch (Exception ex)
@@ -491,8 +493,10 @@ namespace Metrics.Logging.LogProviders
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using System.Linq.Expressions;
     using System.Reflection;
+    using System.Text;
 
     public class NLogLogProvider : ILogProvider
     {
@@ -540,6 +544,7 @@ namespace Metrics.Logging.LogProviders
 
         public class NLogLogger : ILog
         {
+
 #pragma warning disable 414
             private readonly dynamic _logger;
 #pragma warning restore 414
@@ -1124,7 +1129,7 @@ namespace Metrics.Logging.LogProviders
             {
                 if (messageFunc == null)
                 {
-                    return IsEnabled(_logger, DebugLevel);
+                    return IsEnabled(_logger, logLevel);
                 }
 
                 switch (logLevel)
@@ -1236,6 +1241,12 @@ namespace Metrics.Logging.LogProviders
             _logWriteDelegate = GetLogWriteDelegate();
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [provider is available override]. Used in tests.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if [provider is available override]; otherwise, <c>false</c>.
+        /// </value>
         public static bool ProviderIsAvailableOverride
         {
             get { return _providerIsAvailableOverride; }
@@ -1353,5 +1364,121 @@ namespace Metrics.Logging.LogProviders
             string description,
             params object[] args
             );
+    }
+
+    public class ColouredConsoleLogProvider : ILogProvider
+    {
+        static ColouredConsoleLogProvider()
+        {
+            MessageFormatter = DefaultMessageFormatter;
+            Colors = new Dictionary<LogLevel, ConsoleColor> {
+                        { LogLevel.Fatal, ConsoleColor.Red },
+                        { LogLevel.Error, ConsoleColor.Yellow },
+                        { LogLevel.Warn, ConsoleColor.Magenta },
+                        { LogLevel.Info, ConsoleColor.White },
+                        { LogLevel.Debug, ConsoleColor.Gray },
+                        { LogLevel.Trace, ConsoleColor.DarkGray },
+                    };
+        }
+
+        public ILog GetLogger(string name)
+        {
+            return new ColouredConsoleLogger(name);
+        }
+
+        /// <summary>
+        /// A delegate returning a formatted log message
+        /// </summary>
+        /// <param name="loggerName">The name of the Logger</param>
+        /// <param name="level">The Log Level</param>
+        /// <param name="message">The Log Message</param>
+        /// <param name="e">The Exception, if there is one</param>
+        /// <returns>A formatted Log Message string.</returns>
+        public delegate string MessageFormatterDelegate(
+            string loggerName,
+            LogLevel level,
+            object message,
+            Exception e);
+
+        public static Dictionary<LogLevel, ConsoleColor> Colors { get; set; }
+
+        public static MessageFormatterDelegate MessageFormatter { get; set; }
+
+        protected static string DefaultMessageFormatter(string loggerName, LogLevel level, object message, Exception e)
+        {
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder.Append(DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
+
+            stringBuilder.Append(" ");
+
+            // Append a readable representation of the log level
+            stringBuilder.Append(("[" + level.ToString().ToUpper() + "]").PadRight(8));
+
+            stringBuilder.Append("(" + loggerName + ") ");
+
+            // Append the message
+            stringBuilder.Append(message);
+
+            // Append stack trace if there is an exception
+            if (e != null)
+            {
+                stringBuilder.Append(Environment.NewLine).Append(e.GetType());
+                stringBuilder.Append(Environment.NewLine).Append(e.Message);
+                stringBuilder.Append(Environment.NewLine).Append(e.StackTrace);
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        public class ColouredConsoleLogger : ILog
+        {
+            private readonly string _name;
+
+            public ColouredConsoleLogger(string name)
+            {
+                _name = name;
+            }
+
+            public bool Log(LogLevel logLevel, Func<string> messageFunc)
+            {
+                if (messageFunc == null)
+                {
+                    return true;
+                }
+
+                this.Write(logLevel, messageFunc());
+                return true;
+            }
+
+            public void Log<TException>(LogLevel logLevel, Func<string> messageFunc, TException exception) where TException : Exception
+            {
+                this.Write(logLevel, messageFunc(), exception);
+            }
+
+            protected void Write(LogLevel logLevel, string message, Exception e = null)
+            {
+                var formattedMessage = MessageFormatter(this._name, logLevel, message, e);
+                ConsoleColor color;
+
+                if (Colors.TryGetValue(logLevel, out color))
+                {
+                    var originalColor = Console.ForegroundColor;
+                    try
+                    {
+                        Console.ForegroundColor = color;
+                        Console.Out.WriteLine(formattedMessage);
+                    }
+                    finally
+                    {
+                        Console.ForegroundColor = originalColor;
+                    }
+                }
+                else
+                {
+                    Console.Out.WriteLine(formattedMessage);
+                }
+            }
+        }
     }
 }

@@ -2,7 +2,6 @@
 
 namespace Metrics.NLog
 {
-    using System;
     using System.IO;
     using Metrics.MetricData;
     using LogEventInfo = global::NLog.LogEventInfo;
@@ -14,10 +13,10 @@ namespace Metrics.NLog
         private string metricType = null;
         private string metricName = null;
 
-        protected override void StartMetricGroup(string metricType, DateTime timestamp)
+        protected override void StartMetricGroup(string metricType)
         {
             this.metricType = metricType;
-            base.StartMetricGroup(metricType, timestamp);
+            base.StartMetricGroup(metricType);
         }
 
         protected override void ReportGauge(string name, double value, Unit unit, MetricTags tags)

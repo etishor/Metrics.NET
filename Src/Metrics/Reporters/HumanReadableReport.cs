@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Metrics.MetricData;
 using Metrics.Utils;
 
@@ -16,16 +15,16 @@ namespace Metrics.Reporters
 
         protected abstract void WriteLine(string line, params string[] args);
 
-        protected override void StartReport(string contextName, DateTime timestamp)
+        protected override void StartReport(string contextName)
         {
-            this.WriteLine("{0} - {1}", contextName, Clock.FormatTimestamp(timestamp));
+            this.WriteLine("{0} - {1}", contextName, Clock.FormatTimestamp(this.ReportTimestamp));
         }
 
-        protected override void StartMetricGroup(string metricType, DateTime timestamp)
+        protected override void StartMetricGroup(string metricType)
         {
             this.WriteLine();
             this.WriteLine();
-            this.WriteLine("***** {0} - {1} *****", metricType, Clock.FormatTimestamp(timestamp));
+            this.WriteLine("***** {0} - {1} *****", metricType, Clock.FormatTimestamp(this.CurrentContextTimestamp));
         }
 
         protected void WriteMetricName(string name)

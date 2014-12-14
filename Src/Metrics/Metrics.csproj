@@ -55,6 +55,8 @@
     <Compile Include="Core\DefaultMetricsRegistry.cs" />
     <Compile Include="Core\DefaultDataProvider.cs" />
     <Compile Include="Core\DefaultRegistryDataProvider.cs" />
+    <Compile Include="ElasticSearch\ElasticSearchConfigExtensions.cs" />
+    <Compile Include="ElasticSearch\ElasticSearchReport.cs" />
     <Compile Include="Graphite\PickleGraphiteSender.cs" />
     <Compile Include="Graphite\PickleJar.cs" />
     <Compile Include="Graphite\TcpGraphiteSender.cs" />
@@ -62,6 +64,8 @@
     <Compile Include="Graphite\GraphiteReport.cs" />
     <Compile Include="Graphite\GraphiteSender.cs" />
     <Compile Include="Graphite\UdpGraphiteSender.cs" />
+    <Compile Include="Influxdb\InfluxdbConfigExtensions.cs" />
+    <Compile Include="Influxdb\InfluxdbReport.cs" />
     <Compile Include="Json\JsonMetric.cs" />
     <Compile Include="Json\JsonMetricsContext.cs" />
     <Compile Include="Json\JsonTimer.cs" />

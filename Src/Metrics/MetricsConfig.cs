@@ -1,7 +1,6 @@
 ﻿
 using System;
 using System.Configuration;
-using System.Diagnostics;
 using Metrics.Logging;
 using Metrics.Reports;
 using Metrics.Visualization;
@@ -12,26 +11,21 @@ namespace Metrics
     {
         private static readonly ILog log = LogProvider.GetCurrentClassLogger();
 
+        public static readonly bool GlobalyDisabledMetrics = ReadGlobalyDisableMetricsSetting();
+
         private readonly MetricsContext context;
         private readonly MetricsReports reports;
 
         private Func<HealthStatus> healthStatus;
         private MetricsHttpListener listener;
 
-        private static readonly bool globalyDisabled;
-
-        private bool isDisabled = MetricsConfig.globalyDisabled;
-
-        static MetricsConfig()
-        {
-            globalyDisabled = ConfigureMetricsEnabledDisabled();
-        }
+        private bool isDisabled = MetricsConfig.GlobalyDisabledMetrics;
 
         public MetricsConfig(MetricsContext context)
         {
             this.context = context;
 
-            if (!globalyDisabled)
+            if (!GlobalyDisabledMetrics)
             {
                 this.healthStatus = () => HealthChecks.GetStatus();
                 this.reports = new MetricsReports(this.context.DataProvider, this.healthStatus);
@@ -192,7 +186,7 @@ namespace Metrics
 
         internal void ApplySettingsFromConfigFile()
         {
-            if (!globalyDisabled)
+            if (!GlobalyDisabledMetrics)
             {
                 ConfigureCsvReports();
                 ConfigureHttpListener();
@@ -241,15 +235,13 @@ namespace Metrics
             }
         }
 
-        private static bool ConfigureMetricsEnabledDisabled()
+        private static bool ReadGlobalyDisableMetricsSetting()
         {
             try
             {
                 var isDisabled = ConfigurationManager.AppSettings["Metrics.CompetelyDisableMetrics"];
                 if (!string.IsNullOrEmpty(isDisabled) && isDisabled.ToUpperInvariant() == "TRUE")
                 {
-                    Metric.Advanced.CompletelyDisableMetrics();
-                    log.Info(() => "Metrics: Metrics.NET Library is completely disabled. Set Metrics.CompetelyDisableMetrics to false to re-enable.");
                     return true;
                 }
                 return false;
@@ -260,22 +252,5 @@ namespace Metrics
                 throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.CompetelyDisableMetrics must be set to true or false", x);
             }
         }
-
-        internal static string GetGlobalContextName()
-        {
-            try
-            {
-                var configName = ConfigurationManager.AppSettings["Metrics.GlobalContextName"];
-                var name = string.IsNullOrEmpty(configName) ? Process.GetCurrentProcess().ProcessName : configName;
-                log.Debug(() => "Metrics: GlobalContext Name set to " + name);
-                return name;
-            }
-            catch (Exception x)
-            {
-                log.ErrorException("Metrics: Error reading config value for Metrics.GlobalContetName", x);
-                throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.GlobalContextName must be non empty string", x);
-            }
-        }
-
     }
 }
