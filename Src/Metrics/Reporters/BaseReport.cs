@@ -15,30 +15,31 @@ namespace Metrics.Reporters
         {
             this.token = token;
 
-            this.Timestamp = Clock.Default.UTCDateTime;
+            this.ReportTimestamp = Clock.Default.UTCDateTime;
 
-            StartReport(metricsData.Context, metricsData.Timestamp);
+            StartReport(metricsData.Context);
 
             ReportContext(metricsData, Enumerable.Empty<string>());
 
-            ReportHealthStatus(healthStatus, metricsData.Timestamp);
+            ReportHealthStatus(healthStatus);
 
-            EndReport(metricsData.Context, metricsData.Timestamp);
+            EndReport(metricsData.Context);
         }
 
         private void ReportContext(MetricsData data, IEnumerable<string> contextStack)
         {
+            this.CurrentContextTimestamp = data.Timestamp;
             var contextName = FormatContextName(contextStack, data.Context);
 
-            StartContext(contextName, data.Timestamp);
+            StartContext(contextName);
 
             ReportEnvironment(contextName, data.Environment);
 
-            ReportSection("Gauges", data.Timestamp, data.Gauges, g => ReportGauge(FormatMetricName(contextName, g), g.Value, g.Unit, g.Tags));
-            ReportSection("Counters", data.Timestamp, data.Counters, c => ReportCounter(FormatMetricName(contextName, c), c.Value, c.Unit, c.Tags));
-            ReportSection("Meters", data.Timestamp, data.Meters, m => ReportMeter(FormatMetricName(contextName, m), m.Value, m.Unit, m.RateUnit, m.Tags));
-            ReportSection("Histograms", data.Timestamp, data.Histograms, h => ReportHistogram(FormatMetricName(contextName, h), h.Value, h.Unit, h.Tags));
-            ReportSection("Timers", data.Timestamp, data.Timers, t => ReportTimer(FormatMetricName(contextName, t), t.Value, t.Unit, t.RateUnit, t.DurationUnit, t.Tags));
+            ReportSection("Gauges", data.Gauges, g => ReportGauge(FormatMetricName(contextName, g), g.Value, g.Unit, g.Tags));
+            ReportSection("Counters", data.Counters, c => ReportCounter(FormatMetricName(contextName, c), c.Value, c.Unit, c.Tags));
+            ReportSection("Meters", data.Meters, m => ReportMeter(FormatMetricName(contextName, m), m.Value, m.Unit, m.RateUnit, m.Tags));
+            ReportSection("Histograms", data.Histograms, h => ReportHistogram(FormatMetricName(contextName, h), h.Value, h.Unit, h.Tags));
+            ReportSection("Timers", data.Timers, t => ReportTimer(FormatMetricName(contextName, t), t.Value, t.Unit, t.RateUnit, t.DurationUnit, t.Tags));
 
             var stack = Enumerable.Concat(contextStack, new[] { data.Context });
             foreach (var child in data.ChildMetrics)
@@ -46,17 +47,18 @@ namespace Metrics.Reporters
                 ReportContext(child, stack);
             }
 
-            EndContext(contextName, data.Timestamp);
+            EndContext(contextName);
         }
 
-        protected DateTime Timestamp { get; private set; }
+        protected DateTime ReportTimestamp { get; private set; }
+        protected DateTime CurrentContextTimestamp { get; private set; }
 
-        protected virtual void StartReport(string contextName, DateTime timestamp) { }
-        protected virtual void StartContext(string contextName, DateTime timestamp) { }
-        protected virtual void StartMetricGroup(string metricName, DateTime timestamp) { }
-        protected virtual void EndMetricGroup(string metricName, DateTime timestamp) { }
-        protected virtual void EndContext(string contextName, DateTime timestamp) { }
-        protected virtual void EndReport(string contextName, DateTime timestamp) { }
+        protected virtual void StartReport(string contextName) { }
+        protected virtual void StartContext(string contextName) { }
+        protected virtual void StartMetricGroup(string metricName) { }
+        protected virtual void EndMetricGroup(string metricName) { }
+        protected virtual void EndContext(string contextName) { }
+        protected virtual void EndReport(string contextName) { }
 
         protected virtual void ReportEnvironment(string name, IEnumerable<EnvironmentEntry> environment) { }
 
@@ -82,7 +84,7 @@ namespace Metrics.Reporters
             return string.Concat("[", context, "] ", metric.Name);
         }
 
-        private void ReportSection<T>(string name, DateTime timestamp, IEnumerable<T> metrics, Action<T> reporter)
+        private void ReportSection<T>(string name, IEnumerable<T> metrics, Action<T> reporter)
         {
             if (token.IsCancellationRequested)
             {
@@ -91,7 +93,7 @@ namespace Metrics.Reporters
 
             if (metrics.Any())
             {
-                StartMetricGroup(name, timestamp);
+                StartMetricGroup(name);
                 foreach (var metric in metrics)
                 {
                     if (token.IsCancellationRequested)
@@ -101,18 +103,18 @@ namespace Metrics.Reporters
 
                     reporter(metric);
                 }
-                EndMetricGroup(name, timestamp);
+                EndMetricGroup(name);
             }
         }
 
-        private void ReportHealthStatus(Func<HealthStatus> healthStatus, DateTime timestamp)
+        private void ReportHealthStatus(Func<HealthStatus> healthStatus)
         {
             var status = healthStatus();
             if (!status.HasRegisteredChecks)
             {
                 return;
             }
-            StartMetricGroup("Health Checks", timestamp);
+            StartMetricGroup("Health Checks");
             ReportHealth(status);
         }
     }

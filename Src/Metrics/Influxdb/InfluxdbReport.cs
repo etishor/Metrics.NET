@@ -58,7 +58,7 @@ namespace Metrics.Influxdb
 
         private void Pack(string name, IEnumerable<string> columns, IEnumerable<JsonValue> values)
         {
-            this.data.Add(new InfluxRecord(name, Timestamp.ToUnixTime(), columns, values));
+            this.data.Add(new InfluxRecord(name, CurrentContextTimestamp.ToUnixTime(), columns, values));
         }
 
         private JsonValue Value(long value)
@@ -76,15 +76,15 @@ namespace Metrics.Influxdb
             return new StringJsonValue(value);
         }
 
-        protected override void StartReport(string contextName, DateTime timestamp)
+        protected override void StartReport(string contextName)
         {
             this.data = new List<InfluxRecord>();
-            base.StartReport(contextName, timestamp);
+            base.StartReport(contextName);
         }
 
-        protected override void EndReport(string contextName, DateTime timestamp)
+        protected override void EndReport(string contextName)
         {
-            base.EndReport(contextName, timestamp);
+            base.EndReport(contextName);
 
             using (var client = new WebClient())
             {

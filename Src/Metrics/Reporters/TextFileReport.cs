@@ -16,10 +16,10 @@ namespace Metrics.Reporters
             this.fileName = fileName;
         }
 
-        protected override void StartReport(string contextName, DateTime timestamp)
+        protected override void StartReport(string contextName)
         {
             this.buffer = new StringBuilder();
-            base.StartReport(contextName, timestamp);
+            base.StartReport(contextName);
         }
 
         protected override void WriteLine(string line, params string[] args)
@@ -28,7 +28,7 @@ namespace Metrics.Reporters
             buffer.AppendLine();
         }
 
-        protected override void EndReport(string contextName, DateTime timestamp)
+        protected override void EndReport(string contextName)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace Metrics.Reporters
                 MetricsErrorHandler.Handle(x, "Error writing text file " + this.fileName);
             }
 
-            base.EndReport(contextName, timestamp);
+            base.EndReport(contextName);
             this.buffer = null;
         }
     }
