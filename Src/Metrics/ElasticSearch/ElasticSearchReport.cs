@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using Metrics.Json;
+using Metrics.MetricData;
 using Metrics.Reporters;
 using Metrics.Utils;
 
@@ -76,7 +77,7 @@ namespace Metrics.ElasticSearch
             }
         }
 
-        protected override void ReportCounter(string name, MetricData.CounterValue value, Unit unit, MetricTags tags)
+        protected override void ReportCounter(string name, CounterValue value, Unit unit, MetricTags tags)
         {
             var itemProperties = value.Items.SelectMany(i => new[] 
             {
@@ -89,7 +90,7 @@ namespace Metrics.ElasticSearch
             }.Concat(itemProperties));
         }
 
-        protected override void ReportMeter(string name, MetricData.MeterValue value, Unit unit, TimeUnit rateUnit, MetricTags tags)
+        protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit, MetricTags tags)
         {
             var itemProperties = value.Items.SelectMany(i => new[] 
             {
@@ -108,17 +109,55 @@ namespace Metrics.ElasticSearch
                 new JsonProperty("5 Min Rate", value.FiveMinuteRate),
                 new JsonProperty("15 Min Rate", value.FifteenMinuteRate)
             }.Concat(itemProperties));
-
         }
 
-        protected override void ReportHistogram(string name, MetricData.HistogramValue value, Unit unit, MetricTags tags)
+        protected override void ReportHistogram(string name, HistogramValue value, Unit unit, MetricTags tags)
         {
-
+            Pack("Histogram", name, unit, tags, new[] { 
+                new JsonProperty("Total Count",value.Count),
+                new JsonProperty("Last", value.LastValue),
+                new JsonProperty("Last User Value", value.LastUserValue),
+                new JsonProperty("Min",value.Min),
+                new JsonProperty("Min User Value",value.MinUserValue),
+                new JsonProperty("Mean",value.Mean),
+                new JsonProperty("Max",value.Max),
+                new JsonProperty("Max User Value",value.MaxUserValue),
+                new JsonProperty("StdDev",value.StdDev),
+                new JsonProperty("Median",value.Median),
+                new JsonProperty("Percentile 75%",value.Percentile75),
+                new JsonProperty("Percentile 95%",value.Percentile95),
+                new JsonProperty("Percentile 98%",value.Percentile98),
+                new JsonProperty("Percentile 99%",value.Percentile99),
+                new JsonProperty("Percentile 99.9%" ,value.Percentile999),
+                new JsonProperty("Sample Size", value.SampleSize)
+            });
         }
 
-        protected override void ReportTimer(string name, MetricData.TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
+        protected override void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
         {
-
+            Pack("Timer", name, unit, tags, new[] { 
+                new JsonProperty("Total Count",value.Rate.Count),
+                new JsonProperty("Active Sessions",value.ActiveSessions),
+                new JsonProperty("Mean Rate", value.Rate.MeanRate),
+                new JsonProperty("1 Min Rate", value.Rate.OneMinuteRate),
+                new JsonProperty("5 Min Rate", value.Rate.FiveMinuteRate),
+                new JsonProperty("15 Min Rate", value.Rate.FifteenMinuteRate),
+                new JsonProperty("Last", value.Histogram.LastValue),
+                new JsonProperty("Last User Value", value.Histogram.LastUserValue),
+                new JsonProperty("Min",value.Histogram.Min),
+                new JsonProperty("Min User Value",value.Histogram.MinUserValue),
+                new JsonProperty("Mean",value.Histogram.Mean),
+                new JsonProperty("Max",value.Histogram.Max),
+                new JsonProperty("Max User Value",value.Histogram.MaxUserValue),
+                new JsonProperty("StdDev",value.Histogram.StdDev),
+                new JsonProperty("Median",value.Histogram.Median),
+                new JsonProperty("Percentile 75%",value.Histogram.Percentile75),
+                new JsonProperty("Percentile 95%",value.Histogram.Percentile95),
+                new JsonProperty("Percentile 98%",value.Histogram.Percentile98),
+                new JsonProperty("Percentile 99%",value.Histogram.Percentile99),
+                new JsonProperty("Percentile 99.9%" ,value.Histogram.Percentile999),
+                new JsonProperty("Sample Size", value.Histogram.SampleSize)
+            });
         }
 
         protected override void ReportHealth(HealthStatus status)
