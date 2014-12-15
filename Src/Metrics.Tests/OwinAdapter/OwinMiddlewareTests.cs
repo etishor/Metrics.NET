@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Owin.Testing;
 using Owin;
@@ -56,27 +57,27 @@ namespace Metrics.Tests.OwinAdapter
         }
 
         [Fact]
-        public void OwinMetrics_ShouldBeAbleToRecordErrors()
+        public async Task OwinMetrics_ShouldBeAbleToRecordErrors()
         {
             context.MeterValue("Owin", "Errors").Count.Should().Be(0);
-            server.HttpClient.GetAsync("http://local.test/test/error").Result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            (await server.HttpClient.GetAsync("http://local.test/test/error")).StatusCode.Should().Be(HttpStatusCode.InternalServerError);
             context.MeterValue("Owin", "Errors").Count.Should().Be(1);
 
-            server.HttpClient.GetAsync("http://local.test/test/error").Result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+            (await server.HttpClient.GetAsync("http://local.test/test/error")).StatusCode.Should().Be(HttpStatusCode.InternalServerError);
             context.MeterValue("Owin", "Errors").Count.Should().Be(2);
         }
 
         [Fact]
-        public void OwinMetrics_ShouldBeAbleToRecordActiveRequestCounts()
+        public async Task OwinMetrics_ShouldBeAbleToRecordActiveRequestCounts()
         {
             context.TimerValue("Owin", "Requests").Rate.Count.Should().Be(0);
-            server.HttpClient.GetAsync("http://local.test/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            (await server.HttpClient.GetAsync("http://local.test/test/action")).StatusCode.Should().Be(HttpStatusCode.OK);
             context.TimerValue("Owin", "Requests").Rate.Count.Should().Be(1);
-            server.HttpClient.GetAsync("http://local.test/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            (await server.HttpClient.GetAsync("http://local.test/test/action")).StatusCode.Should().Be(HttpStatusCode.OK);
             context.TimerValue("Owin", "Requests").Rate.Count.Should().Be(2);
-            server.HttpClient.GetAsync("http://local.test/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            (await server.HttpClient.GetAsync("http://local.test/test/action")).StatusCode.Should().Be(HttpStatusCode.OK);
             context.TimerValue("Owin", "Requests").Rate.Count.Should().Be(3);
-            server.HttpClient.GetAsync("http://local.test/test/action").Result.StatusCode.Should().Be(HttpStatusCode.OK);
+            (await server.HttpClient.GetAsync("http://local.test/test/action")).StatusCode.Should().Be(HttpStatusCode.OK);
             context.TimerValue("Owin", "Requests").Rate.Count.Should().Be(4);
 
             var timer = context.TimerValue("Owin", "Requests");
@@ -87,12 +88,12 @@ namespace Metrics.Tests.OwinAdapter
         }
 
         [Fact]
-        public void OwinMetrics_ShouldRecordHistogramMetricsForPostSizeAndTimePerRequest()
+        public async Task OwinMetrics_ShouldRecordHistogramMetricsForPostSizeAndTimePerRequest()
         {
             const string json = "{ 'id': '1'} ";
             var postContent = new StringContent(json);
             postContent.Headers.Add("Content-Length", json.Length.ToString());
-            server.HttpClient.PostAsync("http://local.test/test/post", postContent).Wait();
+            await server.HttpClient.PostAsync("http://local.test/test/post", postContent);
 
             var histogram = context.HistogramValue("Owin", "Post & Put Request Size");
 
