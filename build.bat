@@ -12,8 +12,8 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 %MSBUILD% Metrics.Sln /p:Configuration="Release"
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-%XUNIT% .\bin\Debug\Tests\Metrics.Tests.dll
+%XUNIT% .\bin\Debug\Tests\Metrics.Tests.dll -parallel none
 if %errorlevel% neq 0 exit /b %errorlevel%
 
-%XUNIT% .\bin\Release\Tests\Metrics.Tests.dll
+%XUNIT% .\bin\Release\Tests\Metrics.Tests.dll -parallel none
 if %errorlevel% neq 0 exit /b %errorlevel%
