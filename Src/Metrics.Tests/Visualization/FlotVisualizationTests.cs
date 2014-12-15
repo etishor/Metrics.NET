@@ -1,4 +1,5 @@
-﻿using CsQuery;
+﻿using System;
+using CsQuery;
 using FluentAssertions;
 using Metrics.Visualization;
 using Xunit;
@@ -12,7 +13,9 @@ namespace Metrics.Tests.Visualization
         {
             var html = FlotWebApp.GetFlotApp();
             html.Should().NotBeEmpty();
-            Assert.DoesNotThrow(() => CQ.CreateDocument(html));
+
+            Action createHtml = () => CQ.CreateDocument(html);
+            createHtml.ShouldNotThrow();
         }
     }
 }

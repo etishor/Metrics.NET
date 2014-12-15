@@ -1,3 +1,10 @@
+###0.2.14 / 2014-12-15
+* fix possible issue when metrics are disabled and timer returns null TimerContext
+
+###0.2.13 / 2014-12-14
+* fix error when trying to globally disable metrics
+* first elasticsearch bits
+
 ###0.2.11 / 2014-11-16
 * graphite adapter (early bits, might have issues)
 * refactor & cleanup reporting infra
