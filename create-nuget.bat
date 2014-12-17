@@ -15,6 +15,7 @@ copy .\bin\release\nancy.metrics.xml .\Publishing\lib\net40\
 copy .\bin\release\nancy.metrics.pdb .\Publishing\lib\net40\
 
 .\.nuget\NuGet.exe pack .\Publishing\Metrics.Net.net40.nuspec -OutputDirectory .\Publishing
+
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 .\.nuget\NuGet.exe pack .\Publishing\NancyFx.Metrics.net40.nuspec -OutputDirectory .\Publishing
