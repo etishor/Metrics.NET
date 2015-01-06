@@ -7,7 +7,7 @@ namespace Metrics.MetricData
 {
     public sealed class MetricsData
     {
-        public static MetricsData Empty = new MetricsData(string.Empty, DateTime.MinValue,
+        public static readonly MetricsData Empty = new MetricsData(string.Empty, DateTime.MinValue,
             Enumerable.Empty<EnvironmentEntry>(),
             Enumerable.Empty<GaugeValueSource>(),
             Enumerable.Empty<CounterValueSource>(),
