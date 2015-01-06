@@ -24,15 +24,15 @@ namespace Metrics.Utils
                 yield return new EnvironmentEntry("OSVersion", Environment.OSVersion.ToString());
                 yield return new EnvironmentEntry("CPUCount", Environment.ProcessorCount.ToString());
                 yield return new EnvironmentEntry("CommandLine", Environment.CommandLine);
-                yield return new EnvironmentEntry("HostName", SafeGetString(() => Dns.GetHostName()));
-                yield return new EnvironmentEntry("IPAddress", SafeGetString(() => GetIpAddress()));
+                yield return new EnvironmentEntry("HostName", SafeGetString(Dns.GetHostName));
+                yield return new EnvironmentEntry("IPAddress", SafeGetString(GetIpAddress));
                 yield return new EnvironmentEntry("LocalTime", Clock.FormatTimestamp(DateTime.Now));
             }
         }
 
         private static string GetIpAddress()
         {
-			string hostName = SafeGetString(() => Dns.GetHostName ());
+			string hostName = SafeGetString(Dns.GetHostName);
 			try
 			{
 				var ipAddress = Dns.GetHostEntry(hostName)
