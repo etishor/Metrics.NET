@@ -150,7 +150,7 @@ namespace Metrics.Sampling
                 return values[values.Length - 1];
             }
 
-            return values[(int)posx];
+            return values[posx];
         }
     }
 }

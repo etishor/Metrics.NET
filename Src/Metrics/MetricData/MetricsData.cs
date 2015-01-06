@@ -57,11 +57,11 @@ namespace Metrics.MetricData
 
             return new MetricsData(this.Context, this.Timestamp,
                 this.Environment,
-                this.Gauges.Where(g => filter.IsMatch(g)),
-                this.Counters.Where(c => filter.IsMatch(c)),
-                this.Meters.Where(m => filter.IsMatch(m)),
-                this.Histograms.Where(h => filter.IsMatch(h)),
-                this.Timers.Where(t => filter.IsMatch(t)),
+                this.Gauges.Where(filter.IsMatch),
+                this.Counters.Where(filter.IsMatch),
+                this.Meters.Where(filter.IsMatch),
+                this.Histograms.Where(filter.IsMatch),
+                this.Timers.Where(filter.IsMatch),
                 this.ChildMetrics.Select(m => m.Filter(filter)));
         }
 
