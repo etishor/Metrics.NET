@@ -15,16 +15,16 @@ namespace Metrics
         private static readonly DefaultMetricsContext globalContext;
         private static readonly MetricsConfig config;
 
-        private static MetricsContext internalContext = new DefaultMetricsContext("Metrics.NET");
+        private static readonly MetricsContext internalContext = new DefaultMetricsContext("Metrics.NET");
         internal static MetricsContext Internal { get { return internalContext; } }
 
         static Metric()
         {
             globalContext = new DefaultMetricsContext(GetGlobalContextName());
-            if(MetricsConfig.GlobalyDisabledMetrics)
+            if (MetricsConfig.GlobalyDisabledMetrics)
             {
                 globalContext.CompletelyDisableMetrics();
-                log.Info(() => "Metrics: Metrics.NET Library is completely disabled. Set Metrics.CompetelyDisableMetrics to false to re-enable.");                
+                log.Info(() => "Metrics: Metrics.NET Library is completely disabled. Set Metrics.CompetelyDisableMetrics to false to re-enable.");
             }
             config = new MetricsConfig(globalContext);
             config.ApplySettingsFromConfigFile();
