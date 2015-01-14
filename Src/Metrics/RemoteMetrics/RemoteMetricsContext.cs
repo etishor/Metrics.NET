@@ -21,7 +21,7 @@ namespace Metrics.RemoteMetrics
         public RemoteMetricsContext(Scheduler scheduler, Uri remoteUri, TimeSpan updateInterval, Func<string, JsonMetricsContext> deserializer)
         {
             this.scheduler = scheduler;
-            this.scheduler.Start(updateInterval, (c) => UpdateMetrics(remoteUri, deserializer, c));
+            this.scheduler.Start(updateInterval, c => UpdateMetrics(remoteUri, deserializer, c));
         }
 
         private async Task UpdateMetrics(Uri remoteUri, Func<string, JsonMetricsContext> deserializer, CancellationToken token)
