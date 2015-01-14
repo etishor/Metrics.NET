@@ -89,7 +89,7 @@ namespace Metrics.Core
         public TimerContext NewContext(Action<TimeSpan> finalAction, string userValue = null)
         {
             counter.Increment();
-            return new TimeMeasuringContext(this.clock, (t) =>
+            return new TimeMeasuringContext(this.clock, t =>
             {
                 counter.Decrement();
                 Record(t, TimeUnit.Nanoseconds, userValue);

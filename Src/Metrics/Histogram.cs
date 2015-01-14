@@ -1,12 +1,10 @@
-﻿using Metrics.Sampling;
-using Metrics.Utils;
-
+﻿
 namespace Metrics
 {
     /// <summary>
     /// A Histogram measures the distribution of values in a stream of data: e.g., the number of results returned by a search.
     /// </summary>
-    public interface Histogram : ResetableMetric, Utils.IHideObjectMembers
+    public interface Histogram : ResetableMetric
     {
         /// <summary>
         /// Records a value.

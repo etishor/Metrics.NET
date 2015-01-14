@@ -91,7 +91,7 @@ namespace Metrics.Core
 
         private AtomicLongHolder SetCounter(string item)
         {
-            return this.setCounters.GetOrAdd(item, (v) => new AtomicLongHolder());
+            return this.setCounters.GetOrAdd(item, v => new AtomicLongHolder());
         }
     }
 }
