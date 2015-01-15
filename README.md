@@ -1,6 +1,6 @@
 #Metrics.NET
 
-[![Build status](https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2)](https://ci.appveyor.com/project/etishor/metrics-net)
+[![Build status](https://img.shields.io/appveyor/ci/etishor/metrics-net.svg)](https://ci.appveyor.com/project/etishor/metrics-net)
 [![Mono Build Status](https://api.travis-ci.org/etishor/Metrics.NET.svg)](https://travis-ci.org/etishor/Metrics.NET)
 [![NuGet Status](http://img.shields.io/nuget/v/Metrics.NET.svg?style=flat)](https://www.nuget.org/packages/Metrics.NET/) 
 
