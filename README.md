@@ -2,7 +2,7 @@
 
 [![Build status](https://img.shields.io/appveyor/ci/etishor/metrics-net.svg)](https://ci.appveyor.com/project/etishor/metrics-net)
 [![Mono Build Status](https://img.shields.io/travis/etishor/Metrics.NET.svg)](https://travis-ci.org/etishor/Metrics.NET)
-[![NuGet Status](http://img.shields.io/nuget/v/Metrics.NET.svg?style=flat)](https://www.nuget.org/packages/Metrics.NET/) 
+[![NuGet Status](http://img.shields.io/nuget/v/Metrics.NET.svg)](https://www.nuget.org/packages/Metrics.NET/) 
 
 [![Issue Stats](http://www.issuestats.com/github/etishor/Metrics.NET/badge/pr)](http://www.issuestats.com/github/etishor/Metrics.NET)
 [![Issue Stats](http://www.issuestats.com/github/etishor/Metrics.NET/badge/issue)](http://www.issuestats.com/github/etishor/Metrics.NET)
