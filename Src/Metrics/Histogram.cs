@@ -14,5 +14,12 @@ namespace Metrics
         /// Useful for tracking (for example) for which id the max or min value was recorded.
         /// </param>
         void Update(long value, string userValue = null);
+
+        /// <summary>
+        /// Merges the stat of another histogram into this one
+        /// </summary>
+        /// <param name="other">the other histogram to merge into the stats</param>
+        /// <returns>whether or not other was merged in</returns>
+        bool Merge(Histogram other);
     }
 }

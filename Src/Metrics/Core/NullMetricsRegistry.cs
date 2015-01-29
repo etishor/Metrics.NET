@@ -37,6 +37,11 @@ namespace Metrics.Core
 
             public void Reset() { }
 
+            public bool Merge(Histogram other)
+            {
+                return true;
+            }
+
             public IEnumerable<GaugeValueSource> Gauges { get { yield break; } }
             public IEnumerable<CounterValueSource> Counters { get { yield break; } }
             public IEnumerable<MeterValueSource> Meters { get { yield break; } }

@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Linq;
+using FluentAssertions;
 using Metrics.Sampling;
 using Xunit;
 
@@ -18,7 +19,7 @@ namespace Metrics.Tests.Sampling
 
             reservoir.Size.Should().Be(100);
             reservoir.GetSnapshot().Size.Should().Be(100);
-            reservoir.GetSnapshot().Values.Should().OnlyContain(v => 0 <= v && v < 1000);
+            reservoir.GetSnapshot().Values.Select(val => val.Item1).Should().OnlyContain(v => 0 <= v && v < 1000);
         }
 
         [Fact]
@@ -31,6 +32,24 @@ namespace Metrics.Tests.Sampling
 
             reservoir.GetSnapshot().MinUserValue.Should().Be("A");
             reservoir.GetSnapshot().MaxUserValue.Should().Be("B");
+        }
+
+        [Fact]
+        public void UniformReservoir_MergePreservesUserValue()
+        {
+            UniformReservoir reservoir = new UniformReservoir(100);
+            UniformReservoir other = new UniformReservoir(100);
+
+            reservoir.Update(2L, "B");
+            reservoir.Update(3L, "C");
+
+            other.Update(1L, "A");
+            other.Update(4L, "D");
+
+            reservoir.Merge(other);
+
+            reservoir.GetSnapshot().MinUserValue.Should().Be("A");
+            reservoir.GetSnapshot().MaxUserValue.Should().Be("D");
         }
     }
 }

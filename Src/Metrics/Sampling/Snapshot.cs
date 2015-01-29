@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 namespace Metrics.Sampling
 {
     public interface Snapshot
@@ -18,6 +19,6 @@ namespace Metrics.Sampling
         double Percentile999 { get; }
         int Size { get; }
         double StdDev { get; }
-        IEnumerable<long> Values { get; }
+        IEnumerable<Tuple<long, string>> Values { get; }
     }
 }

@@ -28,7 +28,7 @@ namespace Metrics.Tests.Sampling
             reservoir.Size.Should().Be(100);
             var snapshot = reservoir.GetSnapshot();
             snapshot.Size.Should().Be(100);
-            snapshot.Values.Should().OnlyContain(v => 0 <= v && v < 1000);
+            snapshot.Values.Select(value => value.Item1).Should().OnlyContain(v => 0 <= v && v < 1000);
         }
 
         [Fact]
@@ -43,7 +43,7 @@ namespace Metrics.Tests.Sampling
             reservoir.Size.Should().Be(10);
             var snapshot = reservoir.GetSnapshot();
             snapshot.Size.Should().Be(10);
-            snapshot.Values.Should().OnlyContain(v => 0 <= v && v < 10);
+            snapshot.Values.Select(value => value.Item1).Should().OnlyContain(v => 0 <= v && v < 10);
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace Metrics.Tests.Sampling
             reservoir.Size.Should().Be(100);
             var snapshot = reservoir.GetSnapshot();
             snapshot.Size.Should().Be(100);
-            snapshot.Values.Should().OnlyContain(v => 0 <= v && v < 100);
+            snapshot.Values.Select(value => value.Item1).Should().OnlyContain(v => 0 <= v && v < 100);
         }
 
         [Fact]
@@ -74,7 +74,7 @@ namespace Metrics.Tests.Sampling
             }
 
             reservoir.GetSnapshot().Size.Should().Be(10);
-            reservoir.GetSnapshot().Values.Should().OnlyContain(v => 1000 <= v && v < 2000);
+            reservoir.GetSnapshot().Values.Select(value => value.Item1).Should().OnlyContain(v => 1000 <= v && v < 2000);
 
             // wait for 15 hours and add another value.
             // this should trigger a rescale. Note that the number of samples will be reduced to 2
@@ -84,7 +84,7 @@ namespace Metrics.Tests.Sampling
             reservoir.Update(2000);
             var snapshot = reservoir.GetSnapshot();
             snapshot.Size.Should().Be(2);
-            snapshot.Values.Should().OnlyContain(v => 1000 <= v && v < 3000);
+            snapshot.Values.Select(value => value.Item1).Should().OnlyContain(v => 1000 <= v && v < 3000);
 
             // add 1000 values at a rate of 10 values/second
             for (int i = 0; i < 1000; i++)
@@ -97,7 +97,7 @@ namespace Metrics.Tests.Sampling
 
             finalSnapshot.Size.Should().Be(10);
             // TODO: double check the Skip first value - sometimes first value is 2000 - which might or not be correct
-            finalSnapshot.Values.Skip(1).Should().OnlyContain(v => 3000 <= v && v < 4000);
+            finalSnapshot.Values.Skip(1).Select(value => value.Item1).Should().OnlyContain(v => 3000 <= v && v < 4000);
         }
 
         [Fact]
@@ -186,6 +186,84 @@ namespace Metrics.Tests.Sampling
 
             reservoir.GetSnapshot().MinUserValue.Should().Be("A");
             reservoir.GetSnapshot().MaxUserValue.Should().Be("B");
+        }
+
+        [Fact]
+        public void EDR_MergeIsApplied()
+        {
+            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(clock, scheduler);
+
+            for (int i = 0; i < 40; i++)
+            {
+                reservoir.Update(177);
+            }
+
+            clock.Advance(TimeUnit.Seconds, 120);
+            ExponentiallyDecayingReservoir other = new ExponentiallyDecayingReservoir(clock, scheduler);
+
+            for (int i = 0; i < 10; i++)
+            {
+                other.Update(9999);
+            }
+
+            reservoir.Merge(other);
+            reservoir.GetSnapshot().Size.Should().Be(50);
+
+            // the first added 40 items (177) have weights 1 
+            // the next added 10 items (9999) have weights ~6 
+            // so, it's 40 vs 60 distribution, not 40 vs 10
+            reservoir.GetSnapshot().Median.Should().Be(9999);
+            reservoir.GetSnapshot().Percentile75.Should().Be(9999);
+        }
+
+
+        [Fact]
+        public void EDR_MergeDoesntCorruptAverage()
+        {
+            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(clock, scheduler);
+            ExponentiallyDecayingReservoir other = new ExponentiallyDecayingReservoir(clock, scheduler);
+
+            int valuesRatePerMinute = 10;
+            int valuesIntervalMillis = (int)(TimeUnit.Minutes.ToMilliseconds(1) / valuesRatePerMinute);
+            
+            // mode 1: steady regime for 120 minutes between two reservoirs
+            for (int i = 0; i < 120 * valuesRatePerMinute; i++)
+            {
+                if ((i%2) > 0)
+                {
+                    other.Update(9998);
+                }
+                else
+                {
+                    reservoir.Update(9998);
+                }
+                clock.Advance(TimeUnit.Milliseconds, valuesIntervalMillis);
+            }
+
+            clock.Advance(TimeUnit.Hours, 2);
+            reservoir.Merge(other);
+            
+            // expect that quantiles should be more about mode 2 after 10 minutes
+            reservoir.GetSnapshot().Percentile95.Should().Be(9998);
+            reservoir.GetSnapshot().Count.Should().Be(120*valuesRatePerMinute);
+            other.GetSnapshot().Count.Should().Be(60 * valuesRatePerMinute);
+        }
+
+        [Fact]
+        public void EDR_MergeCarriesUserValues()
+        {
+            ExponentiallyDecayingReservoir reservoir = new ExponentiallyDecayingReservoir(clock, scheduler);
+
+            reservoir.Update(3L, "C");
+            reservoir.Update(2L, "B");
+
+            ExponentiallyDecayingReservoir other = new ExponentiallyDecayingReservoir(clock, scheduler);
+
+            reservoir.Update(1L, "A");
+            reservoir.Update(4L, "D");
+
+            reservoir.GetSnapshot().MinUserValue.Should().Be("A");
+            reservoir.GetSnapshot().MaxUserValue.Should().Be("D");
         }
     }
 }

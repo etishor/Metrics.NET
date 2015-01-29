@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using Metrics.Core;
@@ -47,12 +48,12 @@ namespace Metrics.Tests.Core
 
         public class CustomReservoir : Reservoir
         {
-            private readonly List<long> values = new List<long>();
+            private readonly List<Tuple<long, string>> values = new List<Tuple<long, string>>();
 
             public long Count { get { return this.values.Count; } }
             public int Size { get { return this.values.Count; } }
 
-            public void Update(long value, string userValue) { this.values.Add(value); }
+            public void Update(long value, string userValue) { this.values.Add(new Tuple<long, string>(value, userValue)); }
 
             public Snapshot GetSnapshot(bool resetReservoir = false)
             {
@@ -64,7 +65,18 @@ namespace Metrics.Tests.Core
                 this.values.Clear();
             }
 
-            public IEnumerable<long> Values { get { return this.values; } }
+            public bool Merge(Reservoir other)
+            {
+                var snapshot = other.GetSnapshot();
+                foreach (var value in snapshot.Values)
+                {
+                    values.Add(new Tuple<long, string>(value.Item1, value.Item2));
+                }
+
+                return true;
+            }
+
+            public IEnumerable<Tuple<long, string>> Values { get { return this.values; } }
         }
 
         [Fact]
@@ -76,7 +88,7 @@ namespace Metrics.Tests.Core
             timer.Record(10L, TimeUnit.Nanoseconds);
 
             reservoir.Size.Should().Be(1);
-            reservoir.Values.Single().Should().Be(10L);
+            reservoir.Values.Select(val => val.Item1).Single().Should().Be(10L);
         }
 
         public class CustomHistogram : HistogramImplementation
@@ -96,8 +108,19 @@ namespace Metrics.Tests.Core
             {
                 get
                 {
-                    return new HistogramValue(this.reservoir.Values.Last(), null, this.reservoir.GetSnapshot());
+                    return new HistogramValue(this.reservoir.Values.Select(val => val.Item1).Last(), null, this.reservoir.GetSnapshot());
                 }
+            }
+
+            public bool Merge(Histogram other)
+            {
+                var chist = other as CustomHistogram;
+                if (chist != null)
+                {
+                    return reservoir.Merge(chist.reservoir);
+                }
+
+                return false;
             }
         }
 
@@ -111,7 +134,7 @@ namespace Metrics.Tests.Core
             timer.Record(10L, TimeUnit.Nanoseconds);
 
             histogram.Reservoir.Size.Should().Be(1);
-            histogram.Reservoir.Values.Single().Should().Be(10L);
+            histogram.Reservoir.Values.Select(val => val.Item1).Single().Should().Be(10L);
         }
     }
 }

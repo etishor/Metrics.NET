@@ -9,5 +9,6 @@ namespace Metrics.Sampling
         void Update(long value, string userValue = null);
         Snapshot GetSnapshot(bool resetReservoir = false);
         void Reset();
+        bool Merge(Reservoir reservoir);
     }
 }

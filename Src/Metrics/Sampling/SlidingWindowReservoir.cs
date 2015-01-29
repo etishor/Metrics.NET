@@ -31,6 +31,17 @@ namespace Metrics.Sampling
             count.SetValue(0L);
         }
 
+        public bool Merge(Reservoir other)
+        {
+            var snapshot = other.GetSnapshot();
+            foreach (var value in snapshot.Values)
+            {
+                Update(value.Item1, value.Item2);
+            }
+
+            return true;
+        }
+
         public long Count { get { return this.count.Value; } }
         public int Size { get { return Math.Min((int)this.count.Value, values.Length); } }
 
@@ -39,7 +50,7 @@ namespace Metrics.Sampling
             var size = this.Size;
             if (size == 0)
             {
-                return new UniformSnapshot(0, Enumerable.Empty<long>());
+                return new UniformSnapshot(0, Enumerable.Empty<Tuple<long, string>>());
             }
 
             UserValueWrapper[] values = new UserValueWrapper[size];
@@ -54,7 +65,7 @@ namespace Metrics.Sampling
             Array.Sort(values, UserValueWrapper.Comparer);
             var minValue = values[0].UserValue;
             var maxValue = values[size - 1].UserValue;
-            return new UniformSnapshot(this.count.Value, values.Select(v => v.Value), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
+            return new UniformSnapshot(this.count.Value, values.Select(v => new Tuple<long, string>(v.Value, v.UserValue)), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
         }
     }
 }
