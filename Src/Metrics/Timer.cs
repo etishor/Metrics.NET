@@ -16,7 +16,6 @@ namespace Metrics
         /// <param name="userValue">A custom user value that will be associated to the results.
         /// Useful for tracking (for example) for which id the max or min value was recorded.
         /// </param>
-
         void Record(long time, TimeUnit unit, string userValue = null);
 
         /// <summary>
@@ -70,6 +69,13 @@ namespace Metrics
         /// </param>
         /// <returns>A disposable instance that will record the time passed until disposed.</returns>
         TimerContext NewContext(Action<TimeSpan> finalAction, string userValue = null);
+
+        /// <summary>
+        /// Merge the data already in the provided Timer
+        /// </summary>
+        /// <param name="other">The other timer to merge in</param>
+        /// <returns>Whether or not the Timer was merged in</returns>
+        bool Merge(Timer other);
     }
 
     /// <summary>

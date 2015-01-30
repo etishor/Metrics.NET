@@ -121,5 +121,18 @@ namespace Metrics.Core
             using (this.histogram as IDisposable) { }
             using (this.meter as IDisposable) { }
         }
+
+        public bool Merge(Timer other)
+        {
+            var tOther = other as TimerMetric;
+            if (tOther == null)
+            {
+                return false;
+            }
+
+            meter.Merge(tOther.meter);
+            histogram.Merge(tOther.histogram);
+            return true;
+        }
     }
 }

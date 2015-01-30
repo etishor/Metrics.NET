@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Metrics.MetricData;
 
@@ -43,6 +43,12 @@ namespace Metrics.Core
             }
 
             public bool Merge(Meter other)
+            {
+                return true;
+            }
+
+
+            public bool Merge(Timer other)
             {
                 return true;
             }
