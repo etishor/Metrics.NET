@@ -42,6 +42,11 @@ namespace Metrics.Core
                 return true;
             }
 
+            public bool Merge(Meter other)
+            {
+                return true;
+            }
+
             public IEnumerable<GaugeValueSource> Gauges { get { yield break; } }
             public IEnumerable<CounterValueSource> Counters { get { yield break; } }
             public IEnumerable<MeterValueSource> Meters { get { yield break; } }

@@ -37,5 +37,12 @@ namespace Metrics
         /// <param name="count"></param>
         /// <param name="item">Item from the set for which to record the events.</param>
         void Mark(string item, long count);
+
+        /// <summary>
+        /// Merge another meter's data into this one
+        /// </summary>
+        /// <param name="other">The other meter to merge in</param>
+        /// <returns>Whether or not the meter was merged</returns>
+        bool Merge(Meter other);
     }
 }

@@ -79,5 +79,50 @@ namespace Metrics.Utils
             uncounted.SetValue(0L);
             rate.Set(0.0);
         }
+
+        public void Merge(EWMA other)
+        {
+            if (initialized)
+            {
+                while (true)
+                {
+                    var workingUc = uncounted.Value;
+                    var newUncounted = workingUc + other.uncounted.Value;
+
+                    if (other.initialized)
+                    {
+                        var workingRate = rate.Get();
+                        // We're adding two weighted averages... they should just be added
+                        var newRate = workingRate + other.rate.Get();
+
+                        if (uncounted.CompareAndSet(workingUc, newUncounted))
+                        {
+                            // very slight potential for a 
+                            // race condition if another thread gets
+                            // through Tick(), start to finish, in between
+                            // the execution of the line above and the
+                            // line below
+                            rate.Set(newRate);
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (uncounted.CompareAndSet(workingUc, newUncounted))
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                uncounted.Add(other.uncounted.Value);
+                if (other.initialized)
+                {
+                    rate.Set(other.rate.Get());
+                }
+            }
+        }
     }
 }
