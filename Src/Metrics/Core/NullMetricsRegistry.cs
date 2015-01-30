@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Metrics.MetricData;
 
@@ -47,6 +47,10 @@ namespace Metrics.Core
                 return true;
             }
 
+            public bool Merge(Counter other)
+            {
+                return true;
+            }
 
             public bool Merge(Timer other)
             {

@@ -35,6 +35,11 @@ namespace Metrics.Tests.Core
             {
                 get { return new CounterValue(10L, new CounterValue.SetItem[0]); }
             }
+
+            public bool Merge(Counter other)
+            {
+                return true;
+            }
         }
 
         [Fact]

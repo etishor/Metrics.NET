@@ -89,6 +89,23 @@ namespace Metrics.Core
             SetCounter(item).Add(-amount);
         }
 
+        public bool Merge(Counter other)
+        {
+            var cOther = other as CounterMetric;
+            if (cOther == null)
+            {
+                return false;
+            }
+
+            Increment(cOther.counter.Value);
+            foreach (var setCounter in cOther.setCounters)
+            {
+                SetCounter(setCounter.Key).Add(setCounter.Value.Value);
+            }
+
+            return true;
+        }
+
         private AtomicLongHolder SetCounter(string item)
         {
             return this.setCounters.GetOrAdd(item, v => new AtomicLongHolder());
