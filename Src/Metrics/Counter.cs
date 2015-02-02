@@ -64,12 +64,5 @@ namespace Metrics
         /// <param name="item">Item from the set for which to increment the counter value.</param>
         /// <param name="amount">The amount with which to increment the counter.</param>
         void Decrement(string item, long amount);
-
-        /// <summary>
-        /// Merge another counter into this one
-        /// </summary>
-        /// <param name="other">The other counter to merge</param>
-        /// <returns>Whether or not the counter was merged</returns>
-        bool Merge(Counter other);
     }
 }

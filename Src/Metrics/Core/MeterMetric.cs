@@ -168,7 +168,7 @@ namespace Metrics.Core
             }
         }
 
-        public bool Merge(Meter other)
+        public bool Merge(MetricValueProvider<MeterValue> other)
         {
             var mOther = other as MeterMetric;
             if (mOther == null)

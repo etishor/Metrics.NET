@@ -89,7 +89,7 @@ namespace Metrics.Core
             SetCounter(item).Add(-amount);
         }
 
-        public bool Merge(Counter other)
+        public bool Merge(MetricValueProvider<CounterValue> other)
         {
             var cOther = other as CounterMetric;
             if (cOther == null)

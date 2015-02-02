@@ -69,13 +69,6 @@ namespace Metrics
         /// </param>
         /// <returns>A disposable instance that will record the time passed until disposed.</returns>
         TimerContext NewContext(Action<TimeSpan> finalAction, string userValue = null);
-
-        /// <summary>
-        /// Merge the data already in the provided Timer
-        /// </summary>
-        /// <param name="other">The other timer to merge in</param>
-        /// <returns>Whether or not the Timer was merged in</returns>
-        bool Merge(Timer other);
     }
 
     /// <summary>

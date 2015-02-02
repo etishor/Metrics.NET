@@ -23,6 +23,11 @@ namespace Metrics.Tests.Json
             {
                 return this.Value;
             }
+
+            public bool Merge(MetricValueProvider<T> other)
+            {
+                return false;
+            }
         }
 
         private static MetricValueProvider<T> Provider<T>(T value)

@@ -28,7 +28,7 @@ namespace Metrics.Core
             this.reservoir.Update(value, userValue);
         }
 
-        public bool Merge(Histogram other)
+        public bool Merge(MetricValueProvider<HistogramValue> other)
         {
             var hOther = other as HistogramMetric;
             if (hOther != null)

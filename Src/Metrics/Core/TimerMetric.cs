@@ -122,7 +122,7 @@ namespace Metrics.Core
             using (this.meter as IDisposable) { }
         }
 
-        public bool Merge(Timer other)
+        public bool Merge(MetricValueProvider<TimerValue> other)
         {
             var tOther = other as TimerMetric;
             if (tOther == null)

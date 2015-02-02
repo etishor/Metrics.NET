@@ -36,7 +36,7 @@ namespace Metrics.Tests.Core
                 get { return new CounterValue(10L, new CounterValue.SetItem[0]); }
             }
 
-            public bool Merge(Counter other)
+            public bool Merge(MetricValueProvider<CounterValue> other)
             {
                 return true;
             }
@@ -80,7 +80,7 @@ namespace Metrics.Tests.Core
 
                 return true;
             }
-
+            
             public IEnumerable<Tuple<long, string>> Values { get { return this.values; } }
         }
 
@@ -117,7 +117,7 @@ namespace Metrics.Tests.Core
                 }
             }
 
-            public bool Merge(Histogram other)
+            public bool Merge(MetricValueProvider<HistogramValue> other)
             {
                 var chist = other as CustomHistogram;
                 if (chist != null)
