@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
+using FluentAssertions.Events;
 using Metrics.MetricData;
 using Xunit;
 
@@ -315,6 +316,32 @@ namespace Metrics.Tests.Core
             primary.DataProvider.CurrentMetricsData.Gauges.Single().Value.Should().BeApproximately(97.31, 0.0001);
 
             secondary.DataProvider.CurrentMetricsData.Gauges.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public void MetricsContext_MergeContextMergesChildren()
+        {
+            var primary = new DefaultMetricsContext();
+            var pchild = new DefaultMetricsContext();
+
+            var secondary = new DefaultMetricsContext();
+            var schild1 = new DefaultMetricsContext();
+            var schild2 = new DefaultMetricsContext();
+
+            pchild.Counter("Child1", Unit.Calls, new MetricTags()).Increment(5);
+            primary.AttachContext("C1", pchild);
+
+            schild1.Counter("Child1", Unit.Calls, new MetricTags()).Increment(15);
+            schild2.Counter("Child2", Unit.Calls, new MetricTags()).Increment(10);
+            secondary.AttachContext("C1", schild1);
+            secondary.AttachContext("C2", schild2);
+
+            primary.MergeContext(secondary, false);
+
+            // make sure there's one and it uses our median
+            primary.Context("C1").Should().NotBeNull();
+            primary.Context("C1").DataProvider.CurrentMetricsData.Counters.Single().Value.Count.Should().Be(20);
+            primary.Context("C2").DataProvider.CurrentMetricsData.Counters.Single().Value.Count.Should().Be(10);
         }
     }
 }

@@ -162,7 +162,24 @@ namespace Metrics.Core
                 return false;
             }
 
-            return registry.Merge(bmcOther.registry, resetAfterMerge);
+            if (!registry.Merge(bmcOther.registry, resetAfterMerge))
+            {
+                return false;
+            }
+
+            foreach (var child in bmcOther.childContexts)
+            {
+                MetricsContext childContext;
+                if (childContexts.TryGetValue(child.Key, out childContext))
+                {
+                    childContext.MergeContext(child.Value, resetAfterMerge);
+                }
+                else
+                {
+                    AttachContext(child.Key, child.Value);
+                }
+            }
+            return true;
         }
 
         public void CompletelyDisableMetrics()
