@@ -31,6 +31,8 @@ namespace Metrics.Core
         Timer Timer<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
             where T : TimerImplementation;
 
+        bool Merge(MetricsRegistry other, bool reset);
+
         void ClearAllMetrics();
         void ResetMetricsValues();
     }

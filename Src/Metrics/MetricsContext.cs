@@ -116,5 +116,12 @@ namespace Metrics
             TimeUnit rateUnit = TimeUnit.Seconds,
             TimeUnit durationUnit = TimeUnit.Milliseconds,
             MetricTags tags = default(MetricTags));
+
+        /// <summary>
+        /// Merge all of the collected metrics from another context into the context
+        /// </summary>
+        /// <param name="other">the other context to merge from</param>
+        /// <param name="resetAfterMerge">whether or not the other context should be reset once it is merged</param>
+        bool MergeContext(MetricsContext other, bool resetAfterMerge = true);
     }
 }

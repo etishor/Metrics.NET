@@ -154,6 +154,17 @@ namespace Metrics.Core
             return this.Timer(name, unit, () => this.metricsBuilder.BuildTimer(name, unit, rateUnit, durationUnit, builder()), rateUnit, durationUnit, tags);
         }
 
+        public bool MergeContext(MetricsContext other, bool resetAfterMerge = true)
+        {
+            var bmcOther = other as BaseMetricsContext;
+            if (bmcOther == null)
+            {
+                return false;
+            }
+
+            return registry.Merge(bmcOther.registry, resetAfterMerge);
+        }
+
         public void CompletelyDisableMetrics()
         {
             if (this.isDisabled)
@@ -220,6 +231,5 @@ namespace Metrics.Core
                 action(context);
             }
         }
-
     }
 }

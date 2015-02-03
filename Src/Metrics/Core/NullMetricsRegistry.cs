@@ -70,5 +70,10 @@ namespace Metrics.Core
         {
             return NullMetric.Instance;
         }
+
+        public bool Merge(MetricsRegistry other, bool reset)
+        {
+            return true;
+        }
     }
 }

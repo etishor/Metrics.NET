@@ -54,6 +54,11 @@ namespace Metrics.MetricData
             return this.scalingFunction(this.valueProvider.GetValue(resetMetric));
         }
 
+        public MetricValueProvider<T> ValueProvider
+        {
+            get { return this.valueProvider; }
+        }
+
         public bool Merge(MetricValueProvider<T> other)
         {
             return valueProvider.Merge(other);
