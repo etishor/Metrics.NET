@@ -20,12 +20,6 @@ namespace Metrics.Core
         public Meter Meter(string name, Unit unit, TimeUnit rateUnit, MetricTags tags) { throw new ReadOnlyMetricsContextException(); }
         public Histogram Histogram(string name, Unit unit, SamplingType samplingType, MetricTags tags) { throw new ReadOnlyMetricsContextException(); }
         public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags) { throw new ReadOnlyMetricsContextException(); }
-
-        public bool MergeContext(MetricsContext other, bool resetAfterMerge = true)
-        {
-            // readonly foo
-            return false;
-        }
         
         public void Dispose()
         {

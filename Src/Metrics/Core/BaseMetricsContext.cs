@@ -172,7 +172,7 @@ namespace Metrics.Core
                 MetricsContext childContext;
                 if (childContexts.TryGetValue(child.Key, out childContext))
                 {
-                    childContext.MergeContext(child.Value, resetAfterMerge);
+                    childContext.Advanced.MergeContext(child.Value, resetAfterMerge);
                 }
                 else
                 {
