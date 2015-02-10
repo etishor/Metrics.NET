@@ -53,8 +53,12 @@ namespace Metrics.PerfCounters
         {
             var app = Process.GetCurrentProcess().ProcessName;
 
-            context.Register("Private MBytes ", Unit.MegaBytes, "Process", "Private Bytes", app, derivate: v => v / (1024 * 1024.0), tags: "memory");
-            context.Register("Working Set ", Unit.MegaBytes, "Process", "Working Set", app, derivate: v => v / (1024 * 1024.0), tags: "memory");
+            context.Register("Process CPU Usage", Unit.Custom("%"), "Process", "% Processor Time", app, tags: "cpu");
+            context.Register("Process User Time", Unit.Custom("%"), "Process", "% User Time", app, tags: "cpu");
+            context.Register("Process Privileged Time", Unit.Custom("%"), "Process", "% Privileged Time", app, tags: "cpu");
+
+            context.Register("Private MBytes", Unit.MegaBytes, "Process", "Private Bytes", app, derivate: v => v / (1024 * 1024.0), tags: "memory");
+            context.Register("Working Set", Unit.MegaBytes, "Process", "Working Set", app, derivate: v => v / (1024 * 1024.0), tags: "memory");
 
             context.Register("Mb in all Heaps", Unit.MegaBytes, Memory, "# Bytes in all Heaps", app, v => v / (1024 * 1024.0), tags: "memory");
             context.Register("Gen 0 heap size", Unit.MegaBytes, Memory, "Gen 0 heap size", app, v => v / (1024 * 1024.0), tags: "memory");
@@ -71,8 +75,7 @@ namespace Metrics.PerfCounters
             context.Register("Except Filters / Sec", Unit.Custom("Filters"), Exceptions, "# of Filters / Sec", app, tags: "exceptions");
             context.Register("Finallys / Sec", Unit.Custom("Finallys"), Exceptions, "# of Finallys / Sec", app, tags: "exceptions");
             context.Register("Throw to Catch Depth / Sec", Unit.Custom("Stack Frames"), Exceptions, "Throw to Catch Depth / Sec", app, tags: "exceptions");
-
-
+            
             context.Register("Logical Threads", Unit.Threads, LocksAndThreads, "# of current logical Threads", app, tags: "threads");
             context.Register("Physical Threads", Unit.Threads, LocksAndThreads, "# of current physical Threads", app, tags: "threads");
             context.Register("Contention Rate / Sec", Unit.Custom("Attempts"), LocksAndThreads, "Contention Rate / Sec", app, tags: "threads");
