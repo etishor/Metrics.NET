@@ -27,11 +27,11 @@ namespace Metrics
 
             if (!GlobalyDisabledMetrics)
             {
-                this.healthStatus = () => HealthChecks.GetStatus();
+                this.healthStatus = HealthChecks.GetStatus;
                 this.reports = new MetricsReports(this.context.DataProvider, this.healthStatus);
                 this.context.Advanced.ContextDisabled += (s, e) =>
                 {
-                    this.isDisabled |= true;
+                    this.isDisabled = true;
                     this.DisableAllReports();
                 };
             }

@@ -8,15 +8,15 @@ namespace Metrics.Graphite
     public sealed class PickleJar
     {
         private const char
-            MARK = '(',
-            STOP = '.',
-            LONG = 'L',
-            STRING = 'S',
-            APPEND = 'a',
-            LIST = 'l',
-            TUPLE = 't',
-            QUOTE = '\'',
-            LF = '\n';
+            Mark = '(',
+            Stop = '.',
+            Long = 'L',
+            String = 'S',
+            AppendChar = 'a',
+            List = 'l',
+            Tuple = 't',
+            Quote = '\'',
+            Lf = '\n';
 
         private class Pickle
         {
@@ -56,48 +56,48 @@ namespace Metrics.Graphite
             // this is copied from
             // https://github.com/dropwizard/metrics/blob/master/metrics-graphite/src/main/java/com/codahale/metrics/graphite/PickledGraphite.java#L300
 
-            StringBuilder buffer = new StringBuilder();
+            var buffer = new StringBuilder();
 
-            buffer.Append(MARK);
-            buffer.Append(LIST);
+            buffer.Append(Mark);
+            buffer.Append(List);
 
             foreach (var pickle in this.jar)
             {
                 // start the outer tuple
-                buffer.Append(MARK);
+                buffer.Append(Mark);
 
                 // the metric name is a string.
-                buffer.Append(STRING);
+                buffer.Append(String);
                 // the single quotes are to match python's repr("abcd")
-                buffer.Append(QUOTE);
+                buffer.Append(Quote);
                 buffer.Append(pickle.Name);
-                buffer.Append(QUOTE);
-                buffer.Append(LF);
+                buffer.Append(Quote);
+                buffer.Append(Lf);
 
                 // start the inner tuple
-                buffer.Append(MARK);
+                buffer.Append(Mark);
 
                 // timestamp is a long
-                buffer.Append(LONG);
+                buffer.Append(Long);
                 buffer.Append(pickle.Timestamp);
                 // the trailing L is to match python's repr(long(1234))
-                buffer.Append(LONG);
-                buffer.Append(LF);
+                buffer.Append(Long);
+                buffer.Append(Lf);
 
                 // and the value is a string.
-                buffer.Append(STRING);
-                buffer.Append(QUOTE);
+                buffer.Append(String);
+                buffer.Append(Quote);
                 buffer.Append(pickle.Value);
-                buffer.Append(QUOTE);
-                buffer.Append(LF);
+                buffer.Append(Quote);
+                buffer.Append(Lf);
 
-                buffer.Append(TUPLE); // inner close
-                buffer.Append(TUPLE); // outer close
+                buffer.Append(Tuple); // inner close
+                buffer.Append(Tuple); // outer close
 
-                buffer.Append(APPEND);
+                buffer.Append(AppendChar);
             }
 
-            buffer.Append(STOP);
+            buffer.Append(Stop);
 
             return buffer.ToString();
         }

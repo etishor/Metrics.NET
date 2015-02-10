@@ -8,8 +8,6 @@ namespace Metrics.Reporters
     public sealed class ScheduledReporter : IDisposable
     {
         private readonly Scheduler scheduler;
-        private readonly TimeSpan interval;
-
         private readonly MetricsReport report;
         private readonly MetricsDataProvider metricsDataProvider;
         private readonly Func<HealthStatus> healthStatus;
@@ -22,9 +20,8 @@ namespace Metrics.Reporters
             this.report = report;
             this.metricsDataProvider = metricsDataProvider;
             this.healthStatus = healthStatus;
-            this.interval = interval;
             this.scheduler = scheduler;
-            this.scheduler.Start(this.interval, t => RunReport(t));
+            this.scheduler.Start(interval, t => RunReport(t));
         }
 
         private void RunReport(CancellationToken token)

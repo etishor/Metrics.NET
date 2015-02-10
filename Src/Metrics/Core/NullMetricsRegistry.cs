@@ -28,7 +28,7 @@ namespace Metrics.Core
             public void Record(long time, TimeUnit unit, string userValue = null) { }
             public void Time(Action action, string userValue = null) { action(); }
             public T Time<T>(Func<T> action, string userValue = null) { return action(); }
-            public TimerContext NewContext(string userValue = null) { return NullMetric.Instance; ; }
+            public TimerContext NewContext(string userValue = null) { return NullMetric.Instance; }
             public TimerContext NewContext(Action<TimeSpan> finalAction, string userValue = null) { finalAction(TimeSpan.Zero); return NullMetric.Instance; }
 
             public TimeSpan Elapsed { get { return TimeSpan.Zero; } }

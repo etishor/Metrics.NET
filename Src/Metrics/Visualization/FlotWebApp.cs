@@ -18,7 +18,7 @@ namespace Metrics.Visualization
             }
         }
 
-        private static Lazy<string> htmlContent = new Lazy<string>(() => ReadFromEmbededResource());
+        private static readonly Lazy<string> htmlContent = new Lazy<string>(ReadFromEmbededResource);
 
         public static string GetFlotApp()
         {

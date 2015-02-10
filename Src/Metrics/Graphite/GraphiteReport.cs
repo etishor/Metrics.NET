@@ -133,7 +133,7 @@ namespace Metrics.Graphite
         protected override string FormatContextName(IEnumerable<string> contextStack, string contextName)
         {
             var parts = contextStack.Concat(new[] { contextName })
-                .Select(c => GraphiteName(c));
+                .Select(GraphiteName);
 
             return string.Join(".", parts);
         }
