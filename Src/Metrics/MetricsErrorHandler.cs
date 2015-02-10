@@ -41,9 +41,9 @@ namespace Metrics
 
         internal void ClearHandlers()
         {
-            Action<Exception, string> item;
             while (!this.handlers.IsEmpty)
             {
+                Action<Exception, string> item;
                 this.handlers.TryTake(out item);
             }
         }

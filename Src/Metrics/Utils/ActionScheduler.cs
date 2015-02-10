@@ -65,10 +65,10 @@ namespace Metrics.Utils
                 {
                     try
                     {
-                        await Task.Delay(interval, token.Token);
+                        await Task.Delay(interval, token.Token).ConfigureAwait(false);
                         try
                         {
-                            await action(token.Token);
+                            await action(token.Token).ConfigureAwait(false);
                         }
                         catch (Exception x)
                         {
@@ -96,7 +96,6 @@ namespace Metrics.Utils
                 this.token.Cancel();
                 this.token.Dispose();
             }
-            GC.SuppressFinalize(this);
         }
     }
 }

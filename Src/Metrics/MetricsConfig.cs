@@ -31,7 +31,7 @@ namespace Metrics
                 this.reports = new MetricsReports(this.context.DataProvider, this.healthStatus);
                 this.context.Advanced.ContextDisabled += (s, e) =>
                 {
-                    this.isDisabled |= true;
+                    this.isDisabled = true;
                     this.DisableAllReports();
                 };
             }

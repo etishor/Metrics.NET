@@ -88,7 +88,7 @@ namespace Metrics.PerfCounters
             ThreadPoolMetrics.RegisterThreadPoolGauges(context);
         }
 
-        private static MetricsContext Register(this MetricsContext context, string name, Unit unit,
+        private static void Register(this MetricsContext context, string name, Unit unit,
             string category, string counter, string instance = null,
             Func<double, double> derivate = null,
             MetricTags tags = default(MetricTags))
@@ -109,8 +109,6 @@ namespace Metrics.PerfCounters
                    ". Make sure the user has access to the performance counters. The user needs to be either Admin or belong to Performance Monitor user group.";
                 MetricsErrorHandler.Handle(x, message);
             }
-
-            return context;
         }
 
         private static string GetIdentity()
