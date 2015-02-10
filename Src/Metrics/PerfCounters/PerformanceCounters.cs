@@ -53,9 +53,9 @@ namespace Metrics.PerfCounters
         {
             var app = Process.GetCurrentProcess().ProcessName;
 
-            context.Register("Process CPU Usage", Unit.Percent, "Process", "% Processor Time", app, tags: "cpu");
-            context.Register("Process User Time", Unit.Percent, "Process", "% User Time", app, tags: "cpu");
-            context.Register("Process Privileged Time", Unit.Percent, "Process", "% Privileged Time", app, tags: "cpu");
+            context.Register("Process CPU Usage", Unit.Percent, "Process", "% Processor Time", app, derivate: v => v / Environment.ProcessorCount, tags: "cpu");
+            context.Register("Process User Time", Unit.Percent, "Process", "% User Time", app, derivate: v => v / Environment.ProcessorCount, tags: "cpu");
+            context.Register("Process Privileged Time", Unit.Percent, "Process", "% Privileged Time", app, derivate: v => v / Environment.ProcessorCount, tags: "cpu");
 
             context.Register("Private MBytes", Unit.MegaBytes, "Process", "Private Bytes", app, derivate: v => v / (1024 * 1024.0), tags: "memory");
             context.Register("Working Set", Unit.MegaBytes, "Process", "Working Set", app, derivate: v => v / (1024 * 1024.0), tags: "memory");
