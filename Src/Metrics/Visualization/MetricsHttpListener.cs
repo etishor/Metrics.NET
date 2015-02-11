@@ -269,11 +269,14 @@ namespace Metrics.Visualization
             response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         }
 
-        public void Stop()
+        private void Stop()
         {
             cts.Cancel();
-            this.httpListener.Stop();
-            this.httpListener.Prefixes.Clear();
+            if (this.httpListener.IsListening)
+            {
+                this.httpListener.Stop();
+                this.httpListener.Prefixes.Clear();
+            }
             if (processingTask != null && !processingTask.IsCompleted)
             {
                 processingTask.Wait();
