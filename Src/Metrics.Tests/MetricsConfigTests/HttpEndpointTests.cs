@@ -7,24 +7,12 @@ using Xunit;
 using Metrics;
 using System.Net.NetworkInformation;
 using System.Collections;
+using System.Net;
 
 namespace Metrics.Tests.MetricsConfigTests
 {
     public class HttpEndpointTests
     {
-        private int GetUsedPort()
-        {
-            IPGlobalProperties ipGlobalProperties = IPGlobalProperties.GetIPGlobalProperties();
-            TcpConnectionInformation[] tcpConnInfoArray = ipGlobalProperties.GetActiveTcpConnections();
-            IEnumerator myEnum = tcpConnInfoArray.GetEnumerator();
-
-            while (myEnum.MoveNext())
-            {
-                TcpConnectionInformation TCPInfo = (TcpConnectionInformation)myEnum.Current;
-                return TCPInfo.LocalEndPoint.Port;
-            }
-            throw new Exception("No used port found.");
-        }
 
         [Fact]
         public void HttpEndpointCanBeDisposed()
@@ -36,21 +24,31 @@ namespace Metrics.Tests.MetricsConfigTests
         [Fact]
         public void HttpEndpointDoesNotThrowIfPortIsOccupied()
         {
-            var usedPort = GetUsedPort();
-            Metric.Config.WithHttpEndpoint(String.Format("http://localhost:{0}/", usedPort));
+            using (var listener = new HttpListener())
+            {
+                listener.Prefixes.Add("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
+                listener.Start();
+
+                Metric.Config.WithHttpEndpoint("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
+            }
         }
 
         [Fact]
         public void HttpEndportLogsAnErrorIfPortIsOccupied()
         {
-            var loggedAnError = false;
-            var config = Metric.Config;
-            config.WithErrorHandler((exception, s) => { loggedAnError = true; }, true);
-            config.WithErrorHandler((exception) => { loggedAnError = true; }, true);
+            using (var listener = new HttpListener())
+            {
+                listener.Prefixes.Add("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
+                listener.Start();
 
-            var usedPort = GetUsedPort();
-            config.WithHttpEndpoint(String.Format("http://localhost:{0}/", usedPort));
-            Assert.True(loggedAnError);
+                var loggedAnError = false;
+                var config = Metric.Config;
+                config.WithErrorHandler((exception, s) => { loggedAnError = true; }, true);
+                config.WithErrorHandler((exception) => { loggedAnError = true; }, true);
+
+                config.WithHttpEndpoint("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
+                Assert.True(loggedAnError);
+            }
         }
 
         [Fact]
@@ -63,10 +61,14 @@ namespace Metrics.Tests.MetricsConfigTests
         [Fact]
         public void HttpEndpointDoesNotThrowOnDispose()
         {
-            var usedPort = GetUsedPort();
+            using (var listener = new HttpListener())
+            {
+                listener.Prefixes.Add("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
+                listener.Start();
 
-            var config = Metric.Config.WithHttpEndpoint(String.Format("http://localhost:{0}/", usedPort));
-            config.Dispose();
+                var config = Metric.Config.WithHttpEndpoint("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
+                config.Dispose();
+            }
         }
 
     }
