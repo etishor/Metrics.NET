@@ -25,7 +25,7 @@ namespace Metrics.Reporters
             return Path.Combine(directory, CleanFileName(name));
         }
 
-        public override void AppendLine(DateTime timestamp, string metricType, string metricName, IEnumerable<CSVReporter.Value> values)
+        public override void AppendLine(DateTime timestamp, string metricType, string metricName, IEnumerable<CSVReport.Value> values)
         {
             var fileName = FormatFileName(this.directory, metricName, metricType);
 

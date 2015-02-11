@@ -1,5 +1,4 @@
-﻿using Metrics.Utils;
-
+﻿
 namespace Metrics
 {
     /// <summary>
@@ -9,7 +8,7 @@ namespace Metrics
     /// divided by the number of seconds the process has been running), it doesn’t offer a sense of recency. 
     /// Luckily, meters also record three different exponentially-weighted moving average rates: the 1-, 5-, and 15-minute moving averages.
     /// </summary>
-    public interface Meter : Utils.IHideObjectMembers 
+    public interface Meter : ResetableMetric, Utils.IHideObjectMembers
     {
         /// <summary>
         /// Mark the occurrence of an event.
@@ -17,50 +16,26 @@ namespace Metrics
         void Mark();
 
         /// <summary>
+        /// Mark the occurrence of an event for an item in a set.
+        /// The total rate of the event is updated, but the meter will also keep track and update a specific rate for each <paramref name="item"/> registered.
+        /// The meter value will contain the total rate and for each registered item the specific rate and percentage of total count.
+        /// </summary>
+        /// <param name="item">Item from the set for which to record the event.</param>
+        void Mark(string item);
+
+        /// <summary>
         /// Mark the occurrence of <paramref name="count"/> events.
         /// </summary>
         /// <param name="count"></param>
         void Mark(long count);
-    }
 
-    /// <summary>
-    /// The value reported by a Meter Metric
-    /// </summary>
-    public struct MeterValue
-    {
-        public readonly long Count;
-        public readonly double MeanRate;
-        public readonly double OneMinuteRate;
-        public readonly double FiveMinuteRate;
-        public readonly double FifteenMinuteRate;
-
-        public MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate)
-        {
-            this.Count = count;
-            this.MeanRate = meanRate;
-            this.OneMinuteRate = oneMinuteRate;
-            this.FiveMinuteRate = fiveMinuteRate;
-            this.FifteenMinuteRate = fifteenMinuteRate;
-        }
-
-        public MeterValue Scale(TimeUnit unit)
-        {
-            var factor = unit.ToSeconds(1);
-            return new MeterValue(this.Count, this.MeanRate * factor, this.OneMinuteRate * factor, this.FiveMinuteRate * factor, this.FifteenMinuteRate * factor);
-        }
-    }
-
-    /// <summary>
-    /// Combines the value of the meter with the defined unit and the rate unit at which the value is reported.
-    /// </summary>
-    public sealed class MeterValueSource : MetricValueSource<MeterValue>
-    {
-        public MeterValueSource(string name, MetricValueProvider<MeterValue> value, Unit unit, TimeUnit rateUnit)
-            : base(name, value, unit)
-        {
-            this.RateUnit = rateUnit;
-        }
-
-        public TimeUnit RateUnit { get; private set; }
+        /// <summary>
+        /// Mark the occurrence of <paramref name="count"/> events for an item in a set.
+        /// The total rate of the event is updated, but the meter will also keep track and update a specific rate for each <paramref name="item"/> registered.
+        /// The meter value will contain the total rate and for each registered item the specific rate and percentage of total count.
+        /// </summary>
+        /// <param name="count"></param>
+        /// <param name="item">Item from the set for which to record the events.</param>
+        void Mark(string item, long count);
     }
 }

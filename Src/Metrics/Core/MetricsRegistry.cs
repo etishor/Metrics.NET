@@ -1,26 +1,37 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
-using Metrics.Core;
-
+using Metrics.MetricData;
 namespace Metrics.Core
 {
-    public interface MetricsRegistry
+    public interface RegistryDataProvider
     {
-        string Name { get; }
-
         IEnumerable<GaugeValueSource> Gauges { get; }
         IEnumerable<CounterValueSource> Counters { get; }
         IEnumerable<MeterValueSource> Meters { get; }
         IEnumerable<HistogramValueSource> Histograms { get; }
         IEnumerable<TimerValueSource> Timers { get; }
+    }
 
-        Gauge Gauge(string name, Func<double> valueProvider, Unit unit);
-        Gauge Gauge<T>(string name, Func<T> gauge, Unit unit) where T : GaugeMetric;
-        Counter Counter(string name, Unit unit);
-        Meter Meter(string name, Unit unit, TimeUnit rateUnit);
-        Histogram Histogram(string name, Unit unit, SamplingType samplingType);
-        Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit);
+    public interface MetricsRegistry
+    {
+        RegistryDataProvider DataProvider { get; }
+
+        void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit, MetricTags tags);
+
+        Counter Counter<T>(string name, Func<T> builder, Unit unit, MetricTags tags)
+            where T : CounterImplementation;
+
+        Meter Meter<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, MetricTags tags)
+            where T : MeterImplementation;
+
+        Histogram Histogram<T>(string name, Func<T> builder, Unit unit, MetricTags tags)
+            where T : HistogramImplementation;
+
+        Timer Timer<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
+            where T : TimerImplementation;
 
         void ClearAllMetrics();
+        void ResetMetricsValues();
     }
 }

@@ -1,10 +1,6 @@
-﻿
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Metrics.Core;
-using Metrics.Tests.TestUtils;
-using Metrics.Utils;
 using Nancy;
 using Nancy.Testing;
 using Xunit;
@@ -13,7 +9,6 @@ namespace Metrics.Tests.NancyAdapter
 {
     public class NancyAdapterGlobalMetrics
     {
-
         public class ActiveRequestsModule : NancyModule
         {
             public ActiveRequestsModule(Task trigger, TaskCompletionSource<int> request1, TaskCompletionSource<int> request2)
@@ -45,12 +40,9 @@ namespace Metrics.Tests.NancyAdapter
             }
         }
 
-        private readonly TestClock clock;
-        private readonly TestScheduler scheduler;
-        private readonly TimerMetric timer;
-        private readonly MeterMetric meter;
-        private readonly CounterMetric counter;
-        private readonly HistogramMetric size;
+        private readonly TestContext context = new TestContext();
+        private readonly MetricsConfig config;
+
         private readonly Browser browser;
 
         private readonly TaskCompletionSource<int> requestTrigger = new TaskCompletionSource<int>();
@@ -59,87 +51,81 @@ namespace Metrics.Tests.NancyAdapter
 
         public NancyAdapterGlobalMetrics()
         {
-            this.clock = new TestClock();
-            this.scheduler = new TestScheduler(clock);
-
-            this.timer = new TimerMetric(SamplingType.SlidingWindow, new MeterMetric(clock, scheduler), clock);
-            this.meter = new MeterMetric(clock, scheduler);
-            this.counter = new CounterMetric();
-            this.size = new HistogramMetric();
-
+            this.config = new MetricsConfig(this.context);
             this.browser = new Browser(with =>
             {
                 with.ApplicationStartup((c, p) =>
                 {
-                    Metric.Config.WithNancy(new TestRegistry
-                    {
-                        TimerInstance = timer,
-                        MeterInstance = meter,
-                        CounterInstance = counter,
-                        HistogramInstance = size
-                    }, nancy => nancy.WithGlobalMetrics(config => config.RegisterAllMetrics(p)));
+                    this.config.WithNancy(p);
                 });
-                with.Module(new TestModule(this.clock));
+
+                with.Module(new TestModule(this.context.Clock));
                 with.Module(new ActiveRequestsModule(this.requestTrigger.Task, result1, result2));
             });
         }
 
         [Fact]
-        public void NancyMetricsShouldBeAbleToRecordTimeForAllRequests()
+        public void NancyMetrics_ShouldBeAbleToRecordTimeForAllRequests()
         {
-            timer.Value.Rate.Count.Should().Be(0);
+            this.context.TimerValue("NancyFx", "Requests").Rate.Count.Should().Be(0);
 
             browser.Get("/test/action").StatusCode.Should().Be(HttpStatusCode.OK);
 
-            timer.Value.Rate.Count.Should().Be(1);
-            timer.Value.Histogram.Count.Should().Be(1);
-            timer.Value.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
-            timer.Value.Histogram.Min.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
+            var timer = this.context.TimerValue("NancyFx", "Requests");
+
+            timer.Rate.Count.Should().Be(1);
+            timer.Histogram.Count.Should().Be(1);
+
+            timer.Histogram.Max.Should().Be(100);
+            timer.Histogram.Min.Should().Be(100);
 
             browser.Post("/test/post").StatusCode.Should().Be(HttpStatusCode.OK);
 
-            timer.Value.Rate.Count.Should().Be(2);
-            timer.Value.Histogram.Count.Should().Be(2);
-            timer.Value.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(200));
-            timer.Value.Histogram.Min.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
+            timer = this.context.TimerValue("NancyFx", "Requests");
+
+            timer.Rate.Count.Should().Be(2);
+            timer.Histogram.Count.Should().Be(2);
+
+            timer.Histogram.Max.Should().Be(200);
+            timer.Histogram.Min.Should().Be(100);
         }
 
         [Fact]
-        public void NancyMetricsShouldBeAbleToCountErrors()
+        public void NancyMetrics_ShouldBeAbleToCountErrors()
         {
-            meter.Value.Count.Should().Be(0);
+            this.context.MeterValue("NancyFx", "Errors").Count.Should().Be(0);
             Assert.Throws<Exception>(() => browser.Get("/test/error"));
-            meter.Value.Count.Should().Be(1);
+            this.context.MeterValue("NancyFx", "Errors").Count.Should().Be(1);
             Assert.Throws<Exception>(() => browser.Get("/test/error"));
-            meter.Value.Count.Should().Be(2);
+            this.context.MeterValue("NancyFx", "Errors").Count.Should().Be(2);
         }
 
         [Fact]
-        public void NancyMetricsShouldBeAbleToCountActiveRequests()
+        public void NancyMetrics_ShouldBeAbleToCountActiveRequests()
         {
-            counter.Value.Should().Be(0);
+            this.context.CounterValue("NancyFx", "Active Requests").Count.Should().Be(0);
             var request1 = Task.Factory.StartNew(() => browser.Get("/concurrent/request1"));
 
             result1.Task.Wait();
-            counter.Value.Should().Be(1);
+            this.context.CounterValue("NancyFx", "Active Requests").Count.Should().Be(1);
 
             var request2 = Task.Factory.StartNew(() => browser.Get("/concurrent/request2"));
             result2.Task.Wait();
-            counter.Value.Should().Be(2);
+            this.context.CounterValue("NancyFx", "Active Requests").Count.Should().Be(2);
 
             requestTrigger.SetResult(0);
             Task.WaitAll(request1, request2);
-            counter.Value.Should().Be(0);
+            this.context.CounterValue("NancyFx", "Active Requests").Count.Should().Be(0);
         }
 
         [Fact]
-        public void NancyMetricsShoulBeAbleToRecordPostAndPutRequestSize()
+        public void NancyMetrics_ShoulBeAbleToRecordPostAndPutRequestSize()
         {
-            size.Value.Count.Should().Be(0);
+            this.context.HistogramValue("NancyFx", "Post & Put Request Size").Count.Should().Be(0);
 
             browser.Get("/test/action").StatusCode.Should().Be(HttpStatusCode.OK);
 
-            size.Value.Count.Should().Be(0);
+            this.context.HistogramValue("NancyFx", "Post & Put Request Size").Count.Should().Be(0);
 
             browser.Post("/test/post", ctx =>
             {
@@ -147,8 +133,28 @@ namespace Metrics.Tests.NancyAdapter
                 ctx.Body("content");
             }).StatusCode.Should().Be(HttpStatusCode.OK);
 
-            size.Value.Count.Should().Be(1);
-            size.Value.Min.Should().Be("content".Length);
+            this.context.HistogramValue("NancyFx", "Post & Put Request Size").Count.Should().Be(1);
+            this.context.HistogramValue("NancyFx", "Post & Put Request Size").Min.Should().Be("content".Length);
+        }
+
+        [Fact]
+        public void NancyMetrics_ShouldBeAbleToRecordTimeForEachRequests()
+        {
+            this.context.TimerValue("NancyFx", "Requests").Rate.Count.Should().Be(0);
+
+            browser.Get("/test/action").StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var timer = this.context.TimerValue("NancyFx", "GET /test/action");
+
+            timer.Rate.Count.Should().Be(1);
+            timer.Histogram.Count.Should().Be(1);
+
+            browser.Post("/test/post").StatusCode.Should().Be(HttpStatusCode.OK);
+
+            timer = this.context.TimerValue("NancyFx", "POST /test/post");
+
+            timer.Rate.Count.Should().Be(1);
+            timer.Histogram.Count.Should().Be(1);
         }
     }
 }

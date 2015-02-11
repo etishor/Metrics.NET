@@ -3,40 +3,50 @@ using System;
 using Metrics.Utils;
 namespace Metrics
 {
-    public class Unit : IHideObjectMembers
+    public struct Unit : IHideObjectMembers
     {
-        public static readonly Unit None = new Unit();
+        public static readonly Unit None = new Unit(string.Empty);
         public static readonly Unit Requests = new Unit("Requests");
+        public static readonly Unit Commands = new Unit("Commands");
+        public static readonly Unit Calls = new Unit("Calls");
+        public static readonly Unit Events = new Unit("Events");
         public static readonly Unit Errors = new Unit("Errors");
         public static readonly Unit Results = new Unit("Results");
-        public static readonly Unit Calls = new Unit("Calls");
         public static readonly Unit Items = new Unit("Items");
         public static readonly Unit MegaBytes = new Unit("Mb");
         public static readonly Unit KiloBytes = new Unit("Kb");
+        public static readonly Unit Bytes = new Unit("bytes");
+        public static readonly Unit Percent = new Unit("%");
+        public static readonly Unit Threads = new Unit("Threads");
 
         public static Unit Custom(string name)
         {
             return new Unit(name);
         }
 
-        private Unit()
+        public static implicit operator Unit(string name)
         {
-            this.Name = string.Empty;
+            return Unit.Custom(name);
         }
+
+        public readonly string Name;
 
         public Unit(string name)
         {
-            if (string.IsNullOrEmpty(name))
+            if (name == null)
             {
-                throw new ArgumentException("name must not be null", "name");
+                throw new ArgumentNullException("name");
             }
 
             this.Name = name;
         }
 
-        public string Name { get; private set; }
+        public override string ToString()
+        {
+            return this.Name;
+        }
 
-        public virtual string FormatCount(long value)
+        public string FormatCount(long value)
         {
             if (!string.IsNullOrEmpty(this.Name))
             {
@@ -45,7 +55,7 @@ namespace Metrics
             return value.ToString();
         }
 
-        public virtual string FormatValue(double value)
+        public string FormatValue(double value)
         {
             if (!string.IsNullOrEmpty(this.Name))
             {
@@ -54,21 +64,12 @@ namespace Metrics
             return value.ToString("F2");
         }
 
-        public virtual string FormatValue(string value)
-        {
-            if (!string.IsNullOrEmpty(this.Name))
-            {
-                return string.Format("{0} {1}", value, this.Name);
-            }
-            return value;
-        }
-
-        public virtual string FormatRate(double value, TimeUnit timeUnit)
+        public string FormatRate(double value, TimeUnit timeUnit)
         {
             return string.Format("{0:F2} {1}/{2}", value, this.Name, timeUnit.Unit());
         }
 
-        public virtual string FormatDuration(double value, TimeUnit? timeUnit)
+        public string FormatDuration(double value, TimeUnit? timeUnit)
         {
             return string.Format("{0:F2} {1}", value, timeUnit.HasValue ? timeUnit.Value.Unit() : this.Name);
         }

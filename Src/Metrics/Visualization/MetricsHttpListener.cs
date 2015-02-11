@@ -1,11 +1,17 @@
 ﻿
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Metrics.Core;
+using Metrics.Json;
+using Metrics.MetricData;
 using Metrics.Reporters;
+
+
 namespace Metrics.Visualization
 {
     public sealed class MetricsHttpListener : IDisposable
@@ -13,161 +19,265 @@ namespace Metrics.Visualization
         private const string NotFoundResponse = "<!doctype html><html><body>Resource not found</body></html>";
         private readonly HttpListener httpListener;
         private readonly CancellationTokenSource cts = new CancellationTokenSource();
-        private readonly MetricsRegistry registry;
+        private readonly MetricsDataProvider metricsDataProvider;
         private readonly Func<HealthStatus> healthStatus;
+        private readonly string prefixPath;
 
-        public MetricsHttpListener(string listenerUriPrefix, MetricsRegistry registry, Func<HealthStatus> healthStatus)
+        private Task processingTask;
+
+        private static readonly Timer timer = Metric.Internal.Timer("HTTP Request", Unit.Requests);
+        private static readonly Meter errors = Metric.Internal.Meter("HTTP Request Errors", Unit.Errors);
+        private static readonly Histogram jsonSize = Metric.Internal.Histogram("HTTP JSON Size", Unit.KiloBytes);
+
+        public MetricsHttpListener(string listenerUriPrefix, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
         {
+            this.prefixPath = ParsePrefixPath(listenerUriPrefix);
             this.httpListener = new HttpListener();
             this.httpListener.Prefixes.Add(listenerUriPrefix);
-            this.registry = registry;
+            this.metricsDataProvider = metricsDataProvider;
             this.healthStatus = healthStatus;
+        }
+
+        private static string ParsePrefixPath(string listenerUriPrefix)
+        {
+            var match = Regex.Match(listenerUriPrefix, @"http://(?:[^/]*)(?:\:\d+)?/(.*)");
+            if (match.Success)
+            {
+                return match.Groups[1].Value.ToLowerInvariant();
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         public void Start()
         {
             this.httpListener.Start();
-            Task.Factory.StartNew(ProcessRequests, TaskCreationOptions.LongRunning);
+            this.processingTask = Task.Factory.StartNew(async () => await ProcessRequests(), TaskCreationOptions.LongRunning);
         }
 
-        private void ProcessRequests()
+        private async Task ProcessRequests()
         {
             while (!this.cts.IsCancellationRequested)
             {
                 try
                 {
-                    ProcessRequest(this.httpListener.GetContext());
-                }
-                catch (HttpListenerException ex)
-                {
-                    if (ex.ErrorCode != 995) // IO operation aborted
+                    var context = await this.httpListener.GetContextAsync();
+                    try
                     {
-                        throw;
+                        using (timer.NewContext())
+                        {
+                            await ProcessRequest(context).ConfigureAwait(false);
+                            context.Response.Close();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.Mark();
+                        context.Response.StatusCode = 500;
+                        context.Response.StatusDescription = "Internal Server Error";
+                        context.Response.Close();
+                        MetricsErrorHandler.Handle(ex, "Error processing HTTP request");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    errors.Mark();
+                    HttpListenerException httpException = ex as HttpListenerException;
+                    if (httpException == null || httpException.ErrorCode != 995)// IO operation aborted
+                    {
+                        MetricsErrorHandler.Handle(ex, "Error processing HTTP request");
                     }
                 }
             }
         }
 
-        private void ProcessRequest(HttpListenerContext context)
+        private Task ProcessRequest(HttpListenerContext context)
         {
-            switch (context.Request.RawUrl)
+            if (context.Request.HttpMethod.ToUpperInvariant() != "GET")
+            {
+                return WriteNotFound(context);
+            }
+
+            var urlPath = context.Request.RawUrl.Substring(this.prefixPath.Length)
+                .ToLowerInvariant();
+
+            switch (urlPath)
             {
                 case "/":
-                    if (context.Request.Url.ToString().EndsWith("/"))
+                    if (!context.Request.Url.ToString().EndsWith("/"))
                     {
-                        WriteFlotApp(context);
+                        context.Response.Redirect(context.Request.Url + "/");
+                        context.Response.Close();
+                        return Task.FromResult(0);
                     }
                     else
                     {
-                        context.Response.Redirect(context.Request.Url.ToString() + "/");
-                        context.Response.Close();
+                        return WriteFlotApp(context);
                     }
-                    break;
+                case "/favicon.ico":
+                    return WriteFavIcon(context);
                 case "/json":
-                    WriteJsonMetrics(context, this.registry);
-                    break;
-                case "/text":
-                    WriteTextMetrics(context, this.registry, this.healthStatus);
-                    break;
-                case "/ping":
-                    WritePong(context);
-                    break;
+                    return WriteJsonMetrics(context, this.metricsDataProvider);
+                case "/v1/json":
+                    return WriteJsonMetricsV1(context, this.metricsDataProvider);
+                case "/v2/json":
+                    return WriteJsonMetricsV2(context, this.metricsDataProvider);
+
                 case "/health":
-                    WriteHealthStatus(context, this.healthStatus);
-                    break;
-                default:
-                    WriteNotFound(context);
-                    break;
+                    return WriteHealthStatus(context, this.healthStatus);
+                case "/v1/health":
+                    return WriteHealthStatus(context, this.healthStatus);
+
+                case "/text":
+                    return WriteTextMetrics(context, this.metricsDataProvider, this.healthStatus);
+                case "/ping":
+                    return WritePong(context);
             }
+            return WriteNotFound(context);
         }
 
-        private static void WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
+        private static Task WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
         {
             var status = healthStatus();
-            var json = HealthCheckSerializer.Serialize(status);
+            var json = JsonHealthChecks.BuildJson(status);
 
-            context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-            context.Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-            context.Response.ContentType = "application/json";
+            var httpStatus = status.IsHealthy ? 200 : 500;
+            var httpStatusDescription = status.IsHealthy ? "OK" : "Internal Server Error";
 
-            context.Response.StatusCode = status.IsHealty ? 200 : 500;
-            context.Response.StatusDescription = status.IsHealty ? "OK" : "Internal Server Error";
-
-            using (var writer = new StreamWriter(context.Response.OutputStream))
-            {
-                writer.Write(json);
-            }
-            context.Response.Close();
+            return WriteString(context, json, JsonHealthChecks.HealthChecksMimeType, httpStatus, httpStatusDescription);
         }
 
-        private static void WritePong(HttpListenerContext context)
+        private static Task WritePong(HttpListenerContext context)
         {
-            context.Response.ContentType = "text/plain";
+            return WriteString(context, "pong", "text/plain");
+        }
+
+        private static Task WriteNotFound(HttpListenerContext context)
+        {
+            return WriteString(context, NotFoundResponse, "text/plain", 404, "NOT FOUND");
+        }
+
+        private static Task WriteTextMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
+        {
+            var text = StringReport.RenderMetrics(metricsDataProvider.CurrentMetricsData, healthStatus);
+            return WriteString(context, text, "text/plain");
+        }
+
+        private static Task WriteJsonMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
+        {
+            var acceptHeader = context.Request.Headers["Accept"] ?? string.Empty;
+
+            if (acceptHeader.Contains(JsonBuilderV2.MetricsMimeType))
+            {
+                return WriteJsonMetricsV2(context, metricsDataProvider);
+            }
+
+            return WriteJsonMetricsV1(context, metricsDataProvider);
+        }
+
+        private static Task WriteJsonMetricsV1(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
+        {
+            var json = JsonBuilderV1.BuildJson(metricsDataProvider.CurrentMetricsData);
+            jsonSize.Update(json.Length / 1024);
+            return WriteString(context, json, JsonBuilderV1.MetricsMimeType);
+        }
+
+        private static Task WriteJsonMetricsV2(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
+        {
+            var json = JsonBuilderV2.BuildJson(metricsDataProvider.CurrentMetricsData);
+            jsonSize.Update(json.Length / 1024);
+            return WriteString(context, json, JsonBuilderV2.MetricsMimeType);
+        }
+
+        private static async Task WriteString(HttpListenerContext context, string data, string contentType,
+            int httpStatus = 200, string httpStatusDescription = "OK")
+        {
+            AddCORSHeaders(context.Response);
+            AddNoCacheHeaders(context.Response);
+
+            context.Response.ContentType = contentType;
+            context.Response.StatusCode = httpStatus;
+            context.Response.StatusDescription = httpStatusDescription;
+
+            var acceptsGzip = AcceptsGzip(context.Request);
+            if (!acceptsGzip)
+            {
+                using (var writer = new StreamWriter(context.Response.OutputStream, Encoding.UTF8, 4096, true))
+                {
+                    await writer.WriteAsync(data).ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                context.Response.AddHeader("Content-Encoding", "gzip");
+                using (GZipStream gzip = new GZipStream(context.Response.OutputStream, CompressionMode.Compress, true))
+                using (var writer = new StreamWriter(gzip, Encoding.UTF8, 4096, true))
+                {
+                    await writer.WriteAsync(data).ConfigureAwait(false);
+                }
+            }
+        }
+
+        private static Task WriteFavIcon(HttpListenerContext context)
+        {
+            context.Response.ContentType = FlotWebApp.FavIconMimeType;
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
-            using (var writer = new StreamWriter(context.Response.OutputStream))
-            {
-                writer.Write("pong");
-            }
-            context.Response.Close();
+
+            return FlotWebApp.WriteFavIcon(context.Response.OutputStream);
         }
 
-        private static void WriteNotFound(HttpListenerContext context)
+        private static Task WriteFlotApp(HttpListenerContext context)
         {
             context.Response.ContentType = "text/html";
-            context.Response.StatusCode = 404;
-            context.Response.StatusDescription = "NOT FOUND";
-            using (var writer = new StreamWriter(context.Response.OutputStream))
-            {
-                writer.Write(NotFoundResponse);
-            }
-            context.Response.Close();
-        }
-
-        private static void WriteTextMetrics(HttpListenerContext context, MetricsRegistry registry, Func<HealthStatus> healthStatus)
-        {
-            context.Response.ContentType = "text/plain";
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
-            using (var writer = new StreamWriter(context.Response.OutputStream))
+
+            bool acceptsGzip = AcceptsGzip(context.Request);
+
+            if (acceptsGzip)
             {
-                writer.Write(RegistrySerializer.GetAsHumanReadable(registry, healthStatus));
+                context.Response.AddHeader("Content-Encoding", "gzip");
             }
-            context.Response.Close();
+
+            return FlotWebApp.WriteFlotAppAsync(context.Response.OutputStream, !acceptsGzip);
         }
 
-        private static void WriteJsonMetrics(HttpListenerContext context, MetricsRegistry registry)
+        private static bool AcceptsGzip(HttpListenerRequest request)
         {
-            context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-            context.Response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = 200;
-            context.Response.StatusDescription = "OK";
-            var json = RegistrySerializer.GetAsJson(registry);
-            using (var writer = new StreamWriter(context.Response.OutputStream))
+            string encoding = request.Headers["Accept-Encoding"];
+            if (string.IsNullOrEmpty(encoding))
             {
-                writer.Write(json);
+                return false;
             }
-            context.Response.Close();
+
+            return encoding.Contains("gzip");
         }
 
-        private static void WriteFlotApp(HttpListenerContext context)
+        private static void AddNoCacheHeaders(HttpListenerResponse response)
         {
-            context.Response.ContentType = "text/html";
-            context.Response.StatusCode = 200;
-            context.Response.StatusDescription = "OK";
-            var app = FlotWebApp.GetFlotApp();
-            using (var writer = new StreamWriter(context.Response.OutputStream))
-            {
-                writer.Write(app);
-            }
-            context.Response.Close();
+            response.Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate");
+            response.Headers.Add("Pragma", "no-cache");
+            response.Headers.Add("Expires", "0");
+        }
+
+        private static void AddCORSHeaders(HttpListenerResponse response)
+        {
+            response.Headers.Add("Access-Control-Allow-Origin", "*");
+            response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         }
 
         public void Stop()
         {
             cts.Cancel();
             this.httpListener.Stop();
+            this.httpListener.Prefixes.Clear();
+            if (processingTask != null && !processingTask.IsCompleted)
+            {
+                processingTask.Wait();
+            }
         }
 
         public void Dispose()

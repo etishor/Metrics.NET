@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using Metrics.Core;
+using Metrics.MetricData;
 using Metrics.Utils;
 
 namespace Metrics.Reporters
@@ -8,42 +8,31 @@ namespace Metrics.Reporters
     public sealed class ScheduledReporter : IDisposable
     {
         private readonly Scheduler scheduler;
-        private readonly TimeSpan interval;
-
-        private readonly Func<Reporter> reporter;
-        private readonly MetricsRegistry registry;
+        private readonly MetricsReport report;
+        private readonly MetricsDataProvider metricsDataProvider;
         private readonly Func<HealthStatus> healthStatus;
 
-        public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, Func<HealthStatus> healthStatus, TimeSpan interval)
-            : this(name, reporter, registry, healthStatus, interval, new ActionScheduler()) { }
+        public ScheduledReporter(MetricsReport reporter, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus, TimeSpan interval)
+            : this(reporter, metricsDataProvider, healthStatus, interval, new ActionScheduler()) { }
 
-        public ScheduledReporter(string name, Func<Reporter> reporter, MetricsRegistry registry, Func<HealthStatus> healthStatus, TimeSpan interval, Scheduler scheduler)
+        public ScheduledReporter(MetricsReport report, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus, TimeSpan interval, Scheduler scheduler)
         {
-            this.reporter = reporter;
-            this.registry = registry;
+            this.report = report;
+            this.metricsDataProvider = metricsDataProvider;
             this.healthStatus = healthStatus;
-            this.interval = interval;
             this.scheduler = scheduler;
+            this.scheduler.Start(interval, t => RunReport(t));
         }
 
         private void RunReport(CancellationToken token)
         {
-            reporter().RunReport(this.registry, this.healthStatus, token);
-        }
-
-        public void Start()
-        {
-            this.scheduler.Start(this.interval, t => RunReport(t));
-        }
-
-        public void Stop()
-        {
-            this.scheduler.Stop();
+            report.RunReport(this.metricsDataProvider.CurrentMetricsData, this.healthStatus, token);
         }
 
         public void Dispose()
         {
-            this.scheduler.Dispose();
+            using (this.scheduler) { }
+            using (this.report as IDisposable) { }
         }
     }
 }

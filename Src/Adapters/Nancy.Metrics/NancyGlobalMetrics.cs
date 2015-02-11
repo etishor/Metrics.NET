@@ -1,7 +1,6 @@
 ﻿
 using System;
 using Metrics;
-using Metrics.Core;
 using Metrics.Utils;
 using Nancy.Bootstrapper;
 namespace Nancy.Metrics
@@ -11,15 +10,25 @@ namespace Nancy.Metrics
         private const string TimerItemsKey = "__Mertics.RequestTimer__";
         private const string RequestStartTimeKey = "__Metrics.RequestStartTime__";
 
-        private readonly MetricsRegistry registry;
+        private static MetricsContext nancyGlobalMetricsContext;
 
-        public NancyGlobalMetrics(MetricsRegistry repository)
+        public static MetricsContext NancyGlobalMetricsContext
         {
-            this.registry = repository;
-            this.MetricsPrefix = "NancyFx";
+            get
+            {
+                return nancyGlobalMetricsContext ?? Metric.Context("NancyFx");
+            }
         }
 
-        public string MetricsPrefix { get; set; }
+        private readonly MetricsContext context;
+        private readonly IPipelines nancyPipelines;
+
+        public NancyGlobalMetrics(MetricsContext context, IPipelines nancyPipelines)
+        {
+            this.nancyPipelines = nancyPipelines;
+            this.context = context;
+            nancyGlobalMetricsContext = context;
+        }
 
         /// <summary>
         /// Registers a Meter metric named "NancyFx.Errors" that records the rate at witch unhanded errors occurred while 
@@ -30,14 +39,13 @@ namespace Nancy.Metrics
         /// Registers a histogram for the size of the POST and PUT requests.
         /// Registers a timer metric for each non-error request.
         /// </summary>
-        /// <param name="nancyPipelines">Pipelines to hook on.</param>
-        public void RegisterAllMetrics(IPipelines nancyPipelines)
+        public NancyGlobalMetrics WithAllMetrics()
         {
-            RegisterRequestTimer(nancyPipelines);
-            RegisterErrorsMeter(nancyPipelines);
-            RegisterActiveRequestCounter(nancyPipelines);
-            RegisterPostAndPutRequestSizeHistogram(nancyPipelines);
-            RegisterTimerForEachRequest(nancyPipelines);
+            return this.WithRequestTimer()
+                .WithErrorsMeter()
+                .WithActiveRequestCounter()
+                .WithPostAndPutRequestSizeHistogram()
+                .WithTimerForEachRequest();
         }
 
         /// <summary>
@@ -45,10 +53,9 @@ namespace Nancy.Metrics
         /// keeps a histogram of the request duration.
         /// </summary>
         /// <param name="metricName">Name of the metric.</param>
-        /// <param name="nancyPipelines">Pipelines to hook on.</param>
-        public void RegisterRequestTimer(IPipelines nancyPipelines, string metricName = "Requests")
+        public NancyGlobalMetrics WithRequestTimer(string metricName = "Requests")
         {
-            var requestTimer = this.registry.Timer(Name(metricName), Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+            var requestTimer = this.context.Timer(metricName, Unit.Requests);
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
@@ -65,33 +72,35 @@ namespace Nancy.Metrics
                     ctx.Items.Remove(TimerItemsKey);
                 }
             });
+
+            return this;
         }
 
         /// <summary>
         /// Registers a Meter metric named "NancyFx.Errors" that records the rate at witch unhanded errors occurred while 
         /// processing Nancy requests.
         /// </summary>
-        /// <param name="nancyPipelines">Pipelines to hook on.</param>
         /// <param name="metricName">Name of the metric.</param>
-        public void RegisterErrorsMeter(IPipelines nancyPipelines, string metricName = "Errors")
+        public NancyGlobalMetrics WithErrorsMeter(string metricName = "Errors")
         {
-            var errorMeter = this.registry.Meter(Name(metricName), Unit.Errors, TimeUnit.Seconds);
+            var errorMeter = this.context.Meter(metricName, Unit.Errors, TimeUnit.Seconds);
 
             nancyPipelines.OnError.AddItemToStartOfPipeline((ctx, ex) =>
             {
                 errorMeter.Mark();
                 return null;
             });
+
+            return this;
         }
 
         /// <summary>
         /// Registers a Counter metric named "NancyFx.ActiveRequests" that shows the current number of active requests
         /// </summary>
-        /// <param name="nancyPipelines">Pipelines to hook on.</param>
         /// <param name="metricName">Name of the metric.</param>
-        public void RegisterActiveRequestCounter(IPipelines nancyPipelines, string metricName = "ActiveRequests")
+        public NancyGlobalMetrics WithActiveRequestCounter(string metricName = "Active Requests")
         {
-            var counter = this.registry.Counter(Name(metricName), Unit.Custom("ActiveRequests"));
+            var counter = this.context.Counter(metricName, Unit.Custom("ActiveRequests"));
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
@@ -103,16 +112,17 @@ namespace Nancy.Metrics
             {
                 counter.Decrement();
             });
+
+            return this;
         }
 
         /// <summary>
         /// Register a Histogram metric named "Nancy.PostAndPutRequestsSize" on the size of the POST and PUT requests
         /// </summary>
-        /// <param name="nancyPipelines">Pipelines to hook on.</param>
         /// <param name="metricName">Name of the metric.</param>
-        public void RegisterPostAndPutRequestSizeHistogram(IPipelines nancyPipelines, string metricName = "PostAndPutRequestsSize")
+        public NancyGlobalMetrics WithPostAndPutRequestSizeHistogram(string metricName = "Post & Put Request Size")
         {
-            var histogram = this.registry.Histogram(Name(metricName), Unit.Custom("bytes"), SamplingType.FavourRecent);
+            var histogram = this.context.Histogram(metricName, Unit.Bytes, SamplingType.FavourRecent);
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
@@ -123,15 +133,16 @@ namespace Nancy.Metrics
                 }
                 return null;
             });
+
+            return this;
         }
 
         /// <summary>
         /// Registers a timer for each request.
         /// Timer is created based on route and will be named:
-        /// NanyFx.{HTTP_METHOD_NAME} [{ROUTE_PATH}]
+        /// [NancyFx] {HTTP_METHOD_NAME} {ROUTE_PATH}
         /// </summary>
-        /// <param name="nancyPipelines">Pipelines to hook on.</param>
-        public void RegisterTimerForEachRequest(IPipelines nancyPipelines)
+        public NancyGlobalMetrics WithTimerForEachRequest()
         {
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
@@ -143,21 +154,15 @@ namespace Nancy.Metrics
             {
                 if (ctx.ResolvedRoute != null && !(ctx.ResolvedRoute is Routing.NotFoundRoute))
                 {
-                    string name = string.Format("{0}.{1} [{2}]", this.MetricsPrefix, ctx.ResolvedRoute.Description.Method, ctx.ResolvedRoute.Description.Path);
+                    string name = string.Format("{0} {1}", ctx.ResolvedRoute.Description.Method, ctx.ResolvedRoute.Description.Path);
                     var startTime = (long)ctx.Items["RequestStartTimeKey"];
                     var elapsed = Clock.Default.Nanoseconds - startTime;
-                    Metric.Timer(name, Unit.Requests).Record(elapsed, TimeUnit.Nanoseconds);
+                    this.context.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds)
+                        .Record(elapsed, TimeUnit.Nanoseconds);
                 }
             });
-        }
 
-        private string Name(string name)
-        {
-            if (!string.IsNullOrEmpty(this.MetricsPrefix))
-            {
-                return this.MetricsPrefix + "." + name;
-            }
-            return name;
+            return this;
         }
     }
 }

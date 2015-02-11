@@ -1,23 +1,21 @@
 ﻿using System;
 using Metrics;
-using Metrics.Core;
+using Nancy.Bootstrapper;
 
 namespace Nancy.Metrics
 {
     public class NancyMetricsConfig
     {
-        private readonly MetricsRegistry metricsRegistry;
+        private readonly MetricsContext metricsContext;
         private readonly Func<HealthStatus> healthStatus;
-        private NancyGlobalMetrics globalMetrics;
+        private readonly IPipelines nancyPipelines;
 
-        public NancyMetricsConfig(MetricsRegistry metricsRegistry, Func<HealthStatus> healthStatus)
+        public NancyMetricsConfig(MetricsContext metricsContext, Func<HealthStatus> healthStatus, IPipelines nancyPipelines)
         {
-            this.metricsRegistry = metricsRegistry;
+            this.metricsContext = metricsContext;
             this.healthStatus = healthStatus;
+            this.nancyPipelines = nancyPipelines;
         }
-
-        public MetricsRegistry Registry { get { return this.metricsRegistry; } }
-        //public HealthChecksRegistry HealthChecks { get { return this.healthChecksRegistry; } }
 
         /// <summary>
         /// Configure global NancyFx Metrics.
@@ -33,12 +31,13 @@ namespace Nancy.Metrics
         /// }
         /// </code>
         /// </summary>
-        /// <param name="config">Action to configure which global metrics to enable</param>
+        /// <param name="config">Action to configure which global metrics to enable.</param>
+        /// <param name="context">Name of the MetricsContext where to register the NancyFx metrics.</param>
         /// <returns>This instance to allow chaining of the configuration.</returns>
-        public NancyMetricsConfig WithGlobalMetrics(Action<NancyGlobalMetrics> config)
+        public NancyMetricsConfig WithNancyMetrics(Action<NancyGlobalMetrics> config, string context = "NancyFx")
         {
-            this.globalMetrics = new NancyGlobalMetrics(this.metricsRegistry);
-            config(this.globalMetrics);
+            var globalMetrics = new NancyGlobalMetrics(this.metricsContext.Context(context), this.nancyPipelines);
+            config(globalMetrics);
             return this;
         }
 
@@ -84,7 +83,17 @@ namespace Nancy.Metrics
         /// <returns>This instance to allow chaining of the configuration.</returns>
         public NancyMetricsConfig WithMetricsModule(Action<INancyModule> moduleConfig, string metricsPath = "/metrics")
         {
-            MetricsModule.Configure(this.metricsRegistry, this.healthStatus, moduleConfig, metricsPath);
+            MetricsModule.Configure(this.metricsContext.DataProvider, this.healthStatus, moduleConfig, metricsPath);
+            return this;
+        }
+
+        /// <summary>
+        /// Make the Health Checks endpoint return HTTP Status 200 even if checks fail.
+        /// </summary>
+        /// <returns>This instance to allow chaining of the configuration.</returns>
+        public NancyMetricsConfig WithHealthChecksThatAlwaysReturnHttpStatusOk()
+        {
+            MetricsModule.ConfigureHealthChecks(alwaysReturnOk: true);
             return this;
         }
     }

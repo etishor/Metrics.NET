@@ -71,7 +71,13 @@ namespace Metrics.Utils
 
         public double GetRate(TimeUnit rateUnit)
         {
-            return rate.Get() * (double)rateUnit.ToNanoseconds(1L);
+            return rate.Get() * rateUnit.ToNanoseconds(1L);
+        }
+
+        public void Reset()
+        {
+            uncounted.SetValue(0L);
+            rate.Set(0.0);
         }
     }
 }

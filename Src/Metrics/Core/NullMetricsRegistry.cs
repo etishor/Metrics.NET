@@ -1,80 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
+using Metrics.MetricData;
 
 namespace Metrics.Core
 {
     public sealed class NullMetricsRegistry : MetricsRegistry
     {
-        private class NullGauge : Gauge { public static readonly Gauge Instance = new NullGauge();  }
-        private class NullCounter : Counter
+        private struct NullMetric : Counter, Meter, Histogram, Timer, TimerContext, RegistryDataProvider
         {
-            public static readonly Counter Instance = new NullCounter();
+            public static readonly NullMetric Instance = new NullMetric();
+
             public void Increment() { }
             public void Increment(long value) { }
             public void Decrement() { }
             public void Decrement(long value) { }
-        }
-
-        private class NullMeter : Meter
-        {
-            public static readonly Meter Instance = new NullMeter();
+            public void Increment(string item) { }
+            public void Increment(string item, long value) { }
+            public void Decrement(string item) { }
+            public void Decrement(string item, long value) { }
             public void Mark() { }
             public void Mark(long count) { }
+            public void Mark(string item) { }
+            public void Mark(string item, long count) { }
+
+            public void Update(long value, string userValue) { }
+
+            public void Record(long time, TimeUnit unit, string userValue = null) { }
+            public void Time(Action action, string userValue = null) { action(); }
+            public T Time<T>(Func<T> action, string userValue = null) { return action(); }
+            public TimerContext NewContext(string userValue = null) { return NullMetric.Instance; }
+            public TimerContext NewContext(Action<TimeSpan> finalAction, string userValue = null) { finalAction(TimeSpan.Zero); return NullMetric.Instance; }
+
+            public TimeSpan Elapsed { get { return TimeSpan.Zero; } }
+            public void Dispose()
+            { }
+
+            public void Reset() { }
+
+            public IEnumerable<GaugeValueSource> Gauges { get { yield break; } }
+            public IEnumerable<CounterValueSource> Counters { get { yield break; } }
+            public IEnumerable<MeterValueSource> Meters { get { yield break; } }
+            public IEnumerable<HistogramValueSource> Histograms { get { yield break; } }
+            public IEnumerable<TimerValueSource> Timers { get { yield break; } }
         }
 
-        private class NullHistogram : Histogram
+        public RegistryDataProvider DataProvider { get { return NullMetric.Instance; } }
+
+        public void ClearAllMetrics() { }
+        public void ResetMetricsValues() { }
+
+        public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit, MetricTags tags) { }
+
+        public Counter Counter<T>(string name, Func<T> builder, Unit unit, MetricTags tags) where T : CounterImplementation
         {
-            public static readonly Histogram Instance = new NullHistogram();
-            public void Update(long value) { }
+            return NullMetric.Instance;
         }
 
-        private class NullTimer : Timer
+        public Meter Meter<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, MetricTags tags) where T : MeterImplementation
         {
-            public static readonly Timer Instance = new NullTimer();
-            public void Record(long time, TimeUnit unit) { }
-            public void Time(Action action) { action(); }
-            public T Time<T>(Func<T> action) { return action(); }
-            public IDisposable NewContext() { return null; }
+            return NullMetric.Instance;
         }
 
-        public string Name { get { return "NULL Registry"; } }
-        public IEnumerable<GaugeValueSource> Gauges { get { yield break; } }
-        public IEnumerable<CounterValueSource> Counters { get { yield break; } }
-        public IEnumerable<MeterValueSource> Meters { get { yield break; } }
-        public IEnumerable<HistogramValueSource> Histograms { get { yield break; } }
-        public IEnumerable<TimerValueSource> Timers { get { yield break; } }
-
-        public Gauge Gauge(string name, Func<double> valueProvider, Unit unit)
+        public Histogram Histogram<T>(string name, Func<T> builder, Unit unit, MetricTags tags) where T : HistogramImplementation
         {
-            return NullGauge.Instance;
+            return NullMetric.Instance;
         }
 
-        public Gauge Gauge<T>(string name, Func<T> gauge, Unit unit) where T : GaugeMetric
+        public Timer Timer<T>(string name, Func<T> builder, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags) where T : TimerImplementation
         {
-            return NullGauge.Instance;
+            return NullMetric.Instance;
         }
-
-        public Counter Counter(string name, Unit unit)
-        {
-            return NullCounter.Instance;
-        }
-
-        public Meter Meter(string name, Unit unit, TimeUnit rateUnit)
-        {
-            return NullMeter.Instance;
-        }
-
-        public Histogram Histogram(string name, Unit unit, SamplingType samplingType)
-        {
-            return NullHistogram.Instance;
-        }
-
-        public Timer Timer(string name, Unit unit, SamplingType samplingType, TimeUnit rateUnit, TimeUnit durationUnit)
-        {
-            return NullTimer.Instance;
-        }
-
-        public void ClearAllMetrics()
-        { }
     }
 }

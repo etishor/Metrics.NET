@@ -9,8 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Metrics</RootNamespace>
     <AssemblyName>Metrics</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -35,93 +38,122 @@
     <DocumentationFile>..\..\bin\Release\Metrics.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MonoDebug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <OutputPath>..\..\bin\MonoDebug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>
-    </NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'MonoRelease|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <OutputPath>..\..\bin\MonoRelease\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <DocumentationFile>..\..\bin\MonoRelease\Metrics.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Core\BaseRegistry.cs" />
-    <Compile Include="Core\ExponentiallyDecayingReservoir.cs" />
+    <Compile Include="AdvancedMetricsContext.cs" />
+    <Compile Include="App_Packages\LibLog.2.0\LibLog.cs" />
+    <Compile Include="Core\BaseMetricsContext.cs" />
+    <Compile Include="Core\DefaultMetricsBuilder.cs" />
+    <Compile Include="Core\DefaultMetricsRegistry.cs" />
+    <Compile Include="Core\DefaultDataProvider.cs" />
+    <Compile Include="Core\DefaultRegistryDataProvider.cs" />
+    <Compile Include="ElasticSearch\ElasticSearchConfigExtensions.cs" />
+    <Compile Include="ElasticSearch\ElasticSearchReport.cs" />
+    <Compile Include="Graphite\PickleGraphiteSender.cs" />
+    <Compile Include="Graphite\PickleJar.cs" />
+    <Compile Include="Graphite\TcpGraphiteSender.cs" />
+    <Compile Include="Graphite\GraphiteExtensions.cs" />
+    <Compile Include="Graphite\GraphiteReport.cs" />
+    <Compile Include="Graphite\GraphiteSender.cs" />
+    <Compile Include="Graphite\UdpGraphiteSender.cs" />
+    <Compile Include="Influxdb\InfluxdbConfigExtensions.cs" />
+    <Compile Include="Influxdb\InfluxdbReport.cs" />
+    <Compile Include="Json\JsonMetric.cs" />
+    <Compile Include="Json\JsonMetricsContext.cs" />
+    <Compile Include="Json\JsonTimer.cs" />
+    <Compile Include="Json\JsonHistogram.cs" />
+    <Compile Include="Json\JsonMeter.cs" />
+    <Compile Include="Json\JsonGauge.cs" />
+    <Compile Include="Json\JsonCounter.cs" />
+    <Compile Include="Core\ReadOnlyMetricsContext.cs" />
+    <Compile Include="Json\JsonHealthChecks.cs" />
+    <Compile Include="MetricData\ConstantValue.cs" />
+    <Compile Include="MetricData\CounterValue.cs" />
+    <Compile Include="MetricData\EnvironmentEntry.cs" />
+    <Compile Include="MetricData\GaugeValue.cs" />
+    <Compile Include="MetricData\HistogramValue.cs" />
+    <Compile Include="MetricData\MeterValue.cs" />
+    <Compile Include="MetricData\MetricsDataProvider.cs" />
+    <Compile Include="MetricData\TimerValue.cs" />
+    <Compile Include="MetricTags.cs" />
+    <Compile Include="RemoteMetrics\HttpRemoteMetrics.cs" />
+    <Compile Include="RemoteMetrics\RemoteMetricsExtensions.cs" />
+    <Compile Include="RemoteMetrics\RemoteMetricsContext.cs" />
+    <Compile Include="Reporters\MetricsReport.cs" />
+    <Compile Include="Sampling\ExponentiallyDecayingReservoir.cs" />
     <Compile Include="Core\HealthCheck.cs" />
+    <Compile Include="Core\MetricsBuilder.cs" />
     <Compile Include="Core\NullMetricsRegistry.cs" />
+    <Compile Include="Sampling\UserValueWrapper.cs" />
+    <Compile Include="Sampling\Snapshot.cs" />
+    <Compile Include="Sampling\WeightedSnapshot.cs" />
+    <Compile Include="MetricsErrorHandler.cs" />
+    <Compile Include="PerfCounters\ThreadPoolMetrics.cs" />
+    <Compile Include="ResetableMetric.cs" />
     <Compile Include="HealthCheckResult.cs" />
     <Compile Include="Counter.cs" />
-    <Compile Include="Gauge.cs" />
     <Compile Include="HealthChecks.cs" />
     <Compile Include="Histogram.cs" />
+    <Compile Include="MetricsContext.cs" />
+    <Compile Include="Json\JsonProperty.cs" />
+    <Compile Include="Json\JsonValue.cs" />
     <Compile Include="Meter.cs" />
     <Compile Include="Core\MetricsRegistry.cs" />
-    <Compile Include="Core\LocalRegistry.cs" />
+    <Compile Include="Core\DefaultMetricsContext.cs" />
+    <Compile Include="MetricData\MetricsFilter.cs" />
     <Compile Include="MetricsConfig.cs" />
+    <Compile Include="Json\JsonBuilderV2.cs" />
+    <Compile Include="MetricData\MetricsData.cs" />
     <Compile Include="Reporters\CSVAppender.cs" />
     <Compile Include="Reporters\MetricsReports.cs" />
-    <Compile Include="MetricValueSource.cs" />
+    <Compile Include="MetricData\MetricValueSource.cs" />
     <Compile Include="PerfCounters\PerformanceCounters.cs" />
     <Compile Include="PerfCounters\PerformanceCounterGauge.cs" />
     <Compile Include="PerfCounters\PerformanceCountersConfigExtensions.cs" />
-    <Compile Include="Reporters\ConsoleReporter.cs" />
+    <Compile Include="Reporters\ConsoleReport.cs" />
     <Compile Include="Reporters\CSVFileAppender.cs" />
-    <Compile Include="Reporters\CSVReporter.cs" />
-    <Compile Include="Reporters\HealthCheckSerializer.cs" />
-    <Compile Include="Reporters\JsonFormatter.cs" />
-    <Compile Include="Reporters\RegistrySerializer.cs" />
-    <Compile Include="Reporters\JsonObject.cs" />
-    <Compile Include="Reporters\StringReporter.cs" />
-    <Compile Include="Reporters\TextFileReporter.cs" />
-    <Compile Include="Reporters\Reporter.cs" />
-    <Compile Include="Reporters\HumanReadableReporter.cs" />
+    <Compile Include="Reporters\CSVReport.cs" />
+    <Compile Include="Json\JsonBuilderV1.cs" />
+    <Compile Include="Json\JsonObject.cs" />
+    <Compile Include="Reporters\StringReport.cs" />
+    <Compile Include="Reporters\TextFileReport.cs" />
+    <Compile Include="Reporters\BaseReport.cs" />
+    <Compile Include="Reporters\HumanReadableReport.cs" />
     <Compile Include="Reporters\ScheduledReporter.cs" />
     <Compile Include="SamplingType.cs" />
-    <Compile Include="Core\SlidingWindowReservoir.cs" />
+    <Compile Include="Sampling\SlidingWindowReservoir.cs" />
     <Compile Include="Core\TimerMetric.cs" />
-    <Compile Include="Core\UniformReservoir.cs" />
+    <Compile Include="Sampling\UniformReservoir.cs" />
     <Compile Include="Metric.cs" />
     <Compile Include="Timer.cs" />
     <Compile Include="Unit.cs" />
     <Compile Include="Utils\ActionScheduler.cs" />
+    <Compile Include="Utils\AppEnvironment.cs" />
+    <Compile Include="Utils\AtomicLongHolder.cs" />
     <Compile Include="Utils\Clock.cs" />
     <Compile Include="Core\CounterMetric.cs" />
     <Compile Include="Core\GaugeMetric.cs" />
     <Compile Include="Core\HistogramMetric.cs" />
     <Compile Include="Core\MeterMetric.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Core\Reservoir.cs" />
-    <Compile Include="Core\Snapshot.cs" />
-    <Compile Include="Utils\DisposableAction.cs" />
+    <Compile Include="Sampling\Reservoir.cs" />
+    <Compile Include="Sampling\UniformSnapshot.cs" />
     <Compile Include="Utils\EWMA.cs" />
     <Compile Include="Utils\AtomicLong.cs" />
     <Compile Include="TimeUnit.cs" />
+    <Compile Include="Utils\HostResolver.cs" />
     <Compile Include="Utils\IHideObjectMembers.cs" />
     <Compile Include="Utils\Scheduler.cs" />
     <Compile Include="Utils\ThreadLocalRandom.cs" />
+    <Compile Include="Utils\TimeMeasuringContext.cs" />
     <Compile Include="Utils\TimeUnitExtensions.cs" />
     <Compile Include="Utils\VolatileDouble.cs" />
     <Compile Include="Visualization\FlotWebApp.cs" />
@@ -130,7 +162,22 @@
   <ItemGroup>
     <EmbeddedResource Include="Visualization\index.full.html.gz" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\Publishing\metrics_32.png">
+      <Link>Visualization\metrics_32.png</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

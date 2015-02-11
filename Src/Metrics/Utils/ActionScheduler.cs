@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,16 +31,16 @@ namespace Metrics.Utils
             Start(interval, t =>
             {
                 action(t);
-                return Completed();
+                return Task.FromResult(true);
             });
         }
 
-        public void Start(TimeSpan interval, Func<Task> task)
+        public void Start(TimeSpan interval, Func<Task> action)
         {
-            Start(interval, t => t.IsCancellationRequested ? task() : Completed());
+            Start(interval, t => t.IsCancellationRequested ? action() : Task.FromResult(true));
         }
 
-        public void Start(TimeSpan interval, Func<CancellationToken, Task> task)
+        public void Start(TimeSpan interval, Func<CancellationToken, Task> action)
         {
             if (interval.TotalSeconds == 0)
             {
@@ -55,7 +54,7 @@ namespace Metrics.Utils
 
             this.token = new CancellationTokenSource();
 
-            RunScheduler(interval, task, this.token);
+            RunScheduler(interval, action, this.token);
         }
 
         private static void RunScheduler(TimeSpan interval, Func<CancellationToken, Task> action, CancellationTokenSource token)
@@ -64,35 +63,22 @@ namespace Metrics.Utils
             {
                 while (!token.IsCancellationRequested)
                 {
-                    await Task.Delay(interval, token.Token);
                     try
                     {
-                        await action(token.Token);
+                        await Task.Delay(interval, token.Token).ConfigureAwait(false);
+                        try
+                        {
+                            await action(token.Token).ConfigureAwait(false);
+                        }
+                        catch (Exception x)
+                        {
+                            MetricsErrorHandler.Handle(x, "Error while executing action scheduler.");
+                            token.Cancel();
+                        }
                     }
-                    catch (Exception x)
-                    {
-                        HandleException(x);
-                        token.Cancel();
-                    }
+                    catch (TaskCanceledException) { }
                 }
             }, token.Token);
-        }
-
-        private static Task Completed()
-        {
-            return Task.FromResult(true);
-        }
-
-        private static void HandleException(Exception x)
-        {
-            if (Metric.Config.ErrorHandler != null)
-            {
-                Metric.Config.ErrorHandler(x);
-            }
-            else
-            {
-                Trace.Fail("Got exception while executing scheduler. You can handle this exception by setting a handler on Metric.ErrorHandler", x.ToString());
-            }
         }
 
         public void Stop()
@@ -103,25 +89,6 @@ namespace Metrics.Utils
             }
         }
 
-        private void RunAction(Action<CancellationToken> action)
-        {
-            try
-            {
-                action(this.token.Token);
-            }
-            catch (Exception x)
-            {
-                if (Metric.Config.ErrorHandler != null)
-                {
-                    Metric.Config.ErrorHandler(x);
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
-
         public void Dispose()
         {
             if (this.token != null)
@@ -129,7 +96,6 @@ namespace Metrics.Utils
                 this.token.Cancel();
                 this.token.Dispose();
             }
-            GC.SuppressFinalize(this);
         }
     }
 }
