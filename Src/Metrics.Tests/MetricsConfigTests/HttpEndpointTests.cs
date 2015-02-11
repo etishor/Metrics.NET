@@ -17,7 +17,7 @@ namespace Metrics.Tests.MetricsConfigTests
         [Fact]
         public void HttpEndpointCanBeDisposed()
         {
-            var config = Metric.Config.WithHttpEndpoint("http://localhost/metricstest/HttpListenerTests/HttpEndpointCanBeDisposed/");
+            var config = Metric.Config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/HttpEndpointCanBeDisposed/");
             config.Dispose();
         }
 
@@ -26,10 +26,10 @@ namespace Metrics.Tests.MetricsConfigTests
         {
             using (var listener = new HttpListener())
             {
-                listener.Prefixes.Add("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
+                listener.Prefixes.Add("http://localhost:58888/metricstest/HttpListenerTests/OccupiedPort/");
                 listener.Start();
                 
-                Metric.Config.WithHttpEndpoint("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
+                Metric.Config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/OccupiedPort/");
                 listener.Close();
             }
         }
@@ -39,7 +39,7 @@ namespace Metrics.Tests.MetricsConfigTests
         {
             using (var listener = new HttpListener())
             {
-                listener.Prefixes.Add("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
+                listener.Prefixes.Add("http://localhost:58888/metricstest/HttpListenerTests/OccupiedPort/");
                 listener.Start();
 
                 var loggedAnError = false;
@@ -47,7 +47,7 @@ namespace Metrics.Tests.MetricsConfigTests
                 config.WithErrorHandler((exception, s) => { loggedAnError = true; }, true);
                 config.WithErrorHandler((exception) => { loggedAnError = true; }, true);
 
-                config.WithHttpEndpoint("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
+                config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/OccupiedPort/");
                 Assert.True(loggedAnError);
                 listener.Close();
             }
@@ -56,8 +56,8 @@ namespace Metrics.Tests.MetricsConfigTests
         [Fact]
         public void SecondCallToWithHttpEndportDoesNotThrow()
         {
-            var config = Metric.Config.WithHttpEndpoint("http://localhost/metricstest/HttpListenerTests/sameendpoint/");
-            config.WithHttpEndpoint("http://localhost/metricstest/HttpListenerTests/sameendpoint/");
+            var config = Metric.Config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/sameendpoint/");
+            config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/sameendpoint/");
         }
 
         [Fact]
@@ -65,10 +65,10 @@ namespace Metrics.Tests.MetricsConfigTests
         {
             using (var listener = new HttpListener())
             {
-                listener.Prefixes.Add("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
+                listener.Prefixes.Add("http://localhost:58888/metricstest/HttpListenerTests/OccupiedPort/");
                 listener.Start();
 
-                var config = Metric.Config.WithHttpEndpoint("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
+                var config = Metric.Config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/OccupiedPort/");
                 config.Dispose();
                 listener.Close();
             }
