@@ -28,8 +28,9 @@ namespace Metrics.Tests.MetricsConfigTests
             {
                 listener.Prefixes.Add("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
                 listener.Start();
-
+                
                 Metric.Config.WithHttpEndpoint("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
+                listener.Close();
             }
         }
 
@@ -48,6 +49,7 @@ namespace Metrics.Tests.MetricsConfigTests
 
                 config.WithHttpEndpoint("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
                 Assert.True(loggedAnError);
+                listener.Close();
             }
         }
 
@@ -68,6 +70,7 @@ namespace Metrics.Tests.MetricsConfigTests
 
                 var config = Metric.Config.WithHttpEndpoint("http://localhost/metricstest/HttpListenerTests/OccupiedPort/");
                 config.Dispose();
+                listener.Close();
             }
         }
 
