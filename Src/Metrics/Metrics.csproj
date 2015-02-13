@@ -192,7 +192,6 @@
       <LastGenOutput>TimerMetric.generated.cs</LastGenOutput>
     </None>
     <None Include="GenericTypes.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>GenericTypes.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
