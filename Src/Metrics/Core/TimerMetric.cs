@@ -7,7 +7,7 @@ namespace Metrics.Core
 {
     public interface TimerImplementation : Timer, MetricValueProvider<TimerValue> { }
 
-    public sealed class TimerMetric : TimerImplementation, IDisposable
+    public sealed partial class TimerMetric : TimerImplementation, IDisposable
     {
         private readonly Clock clock;
         private readonly MeterImplementation meter;

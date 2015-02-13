@@ -4,9 +4,9 @@ using Metrics.MetricData;
 
 namespace Metrics.Core
 {
-    public sealed class NullMetricsRegistry : MetricsRegistry
+    public sealed partial class NullMetricsRegistry : MetricsRegistry
     {
-        private struct NullMetric : Counter, Meter, Histogram, Timer, TimerContext, RegistryDataProvider
+        private partial struct NullMetric : Counter, Meter, Histogram, Timer, TimerContext, RegistryDataProvider
         {
             public static readonly NullMetric Instance = new NullMetric();
 
