@@ -29,13 +29,13 @@ for (var typeCount = 2; typeCount <= GenericTypeMax; typeCount++)
             /// <typeparam name="T<#= typeIndex #>">The type of the <#= ConvertToOrdinal(typeIndex) #> parameter to the <paramref name="action"/> delegate.</typeparam>
 <# } #>
             /// <typeparam name="TResult"></typeparam>
-			/// <param name="action">Action to run and record time for.</param>
+            /// <param name="action">Action to run and record time for.</param>
 <# for (var typeIndex = 1; typeIndex <= typeCount; typeIndex++) { #>
-			/// <param name="arg<#= typeIndex #>">The <#= ConvertToOrdinal(typeIndex) #> parameter of the <paramref name="action"/> delegate.</param>
+            /// <param name="arg<#= typeIndex #>">The <#= ConvertToOrdinal(typeIndex) #> parameter of the <paramref name="action"/> delegate.</param>
 <# } #>
-			/// <param name="userValue">A custom user value that will be associated to the results.
-			/// Useful for tracking (for example) for which id the max or min value was recorded.
-			/// </param>
+            /// <param name="userValue">A custom user value that will be associated to the results.
+            /// Useful for tracking (for example) for which id the max or min value was recorded.
+            /// </param>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1501:AvoidExcessiveInheritance"), SuppressMessage("Microsoft.StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "The classes are related by implementing multiple generic signatures.")]
             public TResult Time<<#= typeList #>, TResult>(Func<<#= typeList #>, TResult> action, <#= argList #>, string userValue = null) { return action(<#= paramList #>); }
 
@@ -54,13 +54,13 @@ for (var typeCount = 2; typeCount <= GenericTypeMax; typeCount++)
 <# for (var typeIndex = 1; typeIndex <= typeCount; typeIndex++) { #>
             /// <typeparam name="T<#= typeIndex #>">The type of the <#= ConvertToOrdinal(typeIndex) #> parameter to the <paramref name="action"/> delegate.</typeparam>
 <# } #>
-			/// <param name="action">Action to run and record time for.</param>
+            /// <param name="action">Action to run and record time for.</param>
 <# for (var typeIndex = 1; typeIndex <= typeCount; typeIndex++) { #>
-			/// <param name="arg<#= typeIndex #>">The <#= ConvertToOrdinal(typeIndex) #> parameter to the <paramref name="action"/> delegate.</param>
+            /// <param name="arg<#= typeIndex #>">The <#= ConvertToOrdinal(typeIndex) #> parameter to the <paramref name="action"/> delegate.</param>
 <# } #>
-			/// <param name="userValue">A custom user value that will be associated to the results.
-			/// Useful for tracking (for example) for which id the max or min value was recorded.
-			/// </param>
+            /// <param name="userValue">A custom user value that will be associated to the results.
+            /// Useful for tracking (for example) for which id the max or min value was recorded.
+            /// </param>
             [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1501:AvoidExcessiveInheritance"), SuppressMessage("Microsoft.StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "The classes are related by implementing multiple generic signatures.")]
             public void Time<<#= typeList #>>(Action<<#= typeList #>> action, <#= argList #>, string userValue = null) { action(<#= paramList #>); }
 

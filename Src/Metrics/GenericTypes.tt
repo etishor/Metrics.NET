@@ -13,16 +13,16 @@ private static readonly string[] wordNumbers = new[] { "one", "two", "three", "f
 
 public static string ConvertToWord(int number)
 {
-	return wordNumbers[number - 1];
+    return wordNumbers[number - 1];
 }
 
 public static string ConvertToOrdinal(int number)
 {
-	return ordinalNumbers[number - 1];
+    return ordinalNumbers[number - 1];
 }
 
 private static string GetGenericList(int typeCount, string format, string separator = ", ")
 {
-	return string.Join(separator, Enumerable.Range(1, typeCount).Select(n => string.Format(format, n)).ToArray());
+    return string.Join(separator, Enumerable.Range(1, typeCount).Select(n => string.Format(format, n)).ToArray());
 }
 #>
