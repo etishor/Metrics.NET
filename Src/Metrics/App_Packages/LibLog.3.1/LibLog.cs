@@ -32,10 +32,10 @@
 
 namespace Metrics.Logging
 {
-    using System.Collections.Generic;
-    using Metrics.Logging.LogProviders;
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using Metrics.Logging.LogProviders;
 
     /// <summary>
     /// Simple interface that represent a logger.
