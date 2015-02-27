@@ -43,21 +43,26 @@ namespace Metrics.Tests.MetricsConfigTests
                 listener.Start();
 
                 var loggedAnError = false;
-                var config = Metric.Config;
-                config.WithErrorHandler((exception, s) => { loggedAnError = true; }, true);
-                config.WithErrorHandler((exception) => { loggedAnError = true; }, true);
+                using (var config = Metric.Config)
+                {
+                    config.WithErrorHandler((exception, s) => { loggedAnError = true; }, true);
+                    config.WithErrorHandler((exception) => { loggedAnError = true; }, true);
 
-                config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/OccupiedPort/");
+                    config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/OccupiedPort/");
+                }
                 Assert.True(loggedAnError);
                 listener.Close();
             }
         }
 
+
         [Fact]
         public void SecondCallToWithHttpEndportDoesNotThrow()
         {
-            var config = Metric.Config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/sameendpoint/");
-            config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/sameendpoint/");
+            using (var config = Metric.Config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/sameendpoint/"))
+            {
+                config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/sameendpoint/");
+            }
         }
 
         [Fact]
@@ -71,6 +76,31 @@ namespace Metrics.Tests.MetricsConfigTests
                 var config = Metric.Config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/OccupiedPort/");
                 config.Dispose();
                 listener.Close();
+            }
+        }
+
+        [Fact]
+        public void NoErrorIsLoggedWhenHttpEndpointIsDisposed()
+        {
+            var loggedAnError = false;
+            using (var config = Metric.Config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/DisposeMeOnce/"))
+            {
+                config.WithErrorHandler((exception, s) => { loggedAnError = true; Console.WriteLine(exception.ToString()); }, true);
+                config.WithErrorHandler((exception) => { loggedAnError = true; Console.WriteLine(exception.ToString()); }, true);
+            }
+            
+            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(1));
+            
+            Assert.False(loggedAnError);
+        }
+
+        [Fact]
+        public void CanSurviveDoubleDisposal()
+        {
+            using (var config = Metric.Config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/DisposeMeTwice/"))
+            {
+                config.Dispose();
+                Assert.DoesNotThrow(() => config.Dispose());
             }
         }
 
