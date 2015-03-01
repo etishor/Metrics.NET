@@ -81,6 +81,14 @@ namespace Metrics.Visualization
                         MetricsErrorHandler.Handle(ex, "Error processing HTTP request");
                     }
                 }
+                catch (ObjectDisposedException ex)
+                {
+                    if ((ex.ObjectName == this.httpListener.GetType().FullName) && (this.httpListener.IsListening == false))
+                    {
+                        return; // listener is closed/disposed
+                    }
+                    MetricsErrorHandler.Handle(ex, "Error processing HTTP request");
+                }
                 catch (Exception ex)
                 {
                     errors.Mark();
@@ -272,14 +280,14 @@ namespace Metrics.Visualization
         private void Stop()
         {
             cts.Cancel();
+            if (processingTask != null && !processingTask.IsCompleted)
+            {
+                processingTask.Wait();
+            }
             if (this.httpListener.IsListening)
             {
                 this.httpListener.Stop();
                 this.httpListener.Prefixes.Clear();
-            }
-            if (processingTask != null && !processingTask.IsCompleted)
-            {
-                processingTask.Wait();
             }
         }
 
