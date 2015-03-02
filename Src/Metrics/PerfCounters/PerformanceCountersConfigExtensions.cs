@@ -1,5 +1,5 @@
-﻿
-using Metrics.PerfCounters;
+﻿using Metrics.PerfCounters;
+
 namespace Metrics
 {
     public static class PerformanceCountersConfigExtensions

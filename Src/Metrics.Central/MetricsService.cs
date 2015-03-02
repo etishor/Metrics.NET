@@ -15,7 +15,7 @@ namespace Metrics.Central
         public bool Start(HostControl hostControl)
         {
             Metric.Config
-                .WithJsonDeserialzier(s => JsonConvert.DeserializeObject<JsonMetricsContext>(s))
+                .WithJsonDeserialzier(JsonConvert.DeserializeObject<JsonMetricsContext>)
                 .WithAllCounters();
 
             var remotes = ReadRemotesFromConfig();

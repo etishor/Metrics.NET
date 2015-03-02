@@ -11,7 +11,7 @@ namespace Metrics.Reporters
 
         protected override void WriteLine(string line, params string[] args)
         {
-            Console.WriteLine(string.Format(line, args));
+            Console.WriteLine(line, args);
         }
     }
 }

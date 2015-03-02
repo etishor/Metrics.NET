@@ -10,7 +10,6 @@ namespace Metrics.Core
     {
         private readonly ConcurrentDictionary<string, MetricsContext> childContexts = new ConcurrentDictionary<string, MetricsContext>();
 
-        private readonly string context;
         private MetricsRegistry registry;
         private MetricsBuilder metricsBuilder;
 
@@ -18,10 +17,9 @@ namespace Metrics.Core
 
         protected BaseMetricsContext(string context, MetricsRegistry registry, MetricsBuilder metricsBuilder, Func<DateTime> timestampProvider)
         {
-            this.context = context;
             this.registry = registry;
             this.metricsBuilder = metricsBuilder;
-            this.DataProvider = new DefaultDataProvider(this.context, timestampProvider, this.registry.DataProvider, () => this.childContexts.Values.Select(c => c.DataProvider));
+            this.DataProvider = new DefaultDataProvider(context, timestampProvider, this.registry.DataProvider, () => this.childContexts.Values.Select(c => c.DataProvider));
         }
 
         protected abstract MetricsContext CreateChildContextInstance(string contextName);

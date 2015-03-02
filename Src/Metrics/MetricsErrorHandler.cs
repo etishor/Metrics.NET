@@ -12,7 +12,7 @@ namespace Metrics
 
         private static readonly MetricsErrorHandler handler = new MetricsErrorHandler();
 
-        private ConcurrentBag<Action<Exception, string>> handlers = new ConcurrentBag<Action<Exception, string>>();
+        private readonly ConcurrentBag<Action<Exception, string>> handlers = new ConcurrentBag<Action<Exception, string>>();
 
         private static readonly bool IsMono = Type.GetType("Mono.Runtime") != null;
 
@@ -41,9 +41,9 @@ namespace Metrics
 
         internal void ClearHandlers()
         {
-            Action<Exception, string> item;
             while (!this.handlers.IsEmpty)
             {
+                Action<Exception, string> item;
                 this.handlers.TryTake(out item);
             }
         }

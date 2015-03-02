@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Metrics.MetricData;
 using Metrics.Utils;
@@ -49,12 +48,12 @@ namespace Metrics.Json
                 Timestamp = contextData.Timestamp,
                 Environment = contextData.Environment.Union(environment).ToDictionary(e => e.Name, e => e.Value),
                 Context = contextData.Context,
-                Gauges = contextData.Gauges.Select(g => JsonGauge.FromGauge(g)).ToArray(),
-                Counters = contextData.Counters.Select(c => JsonCounter.FromCounter(c)).ToArray(),
-                Meters = contextData.Meters.Select(m => JsonMeter.FromMeter(m)).ToArray(),
-                Histograms = contextData.Histograms.Select(h => JsonHistogram.FromHistogram(h)).ToArray(),
-                Timers = contextData.Timers.Select(t => JsonTimer.FromTimer(t)).ToArray(),
-                ChildContexts = contextData.ChildMetrics.Select(c => JsonMetricsContext.FromContext(c)).ToArray()
+                Gauges = contextData.Gauges.Select(JsonGauge.FromGauge).ToArray(),
+                Counters = contextData.Counters.Select(JsonCounter.FromCounter).ToArray(),
+                Meters = contextData.Meters.Select(JsonMeter.FromMeter).ToArray(),
+                Histograms = contextData.Histograms.Select(JsonHistogram.FromHistogram).ToArray(),
+                Timers = contextData.Timers.Select(JsonTimer.FromTimer).ToArray(),
+                ChildContexts = contextData.ChildMetrics.Select(FromContext).ToArray()
             };
         }
 

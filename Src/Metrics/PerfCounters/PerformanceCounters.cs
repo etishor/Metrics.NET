@@ -53,8 +53,12 @@ namespace Metrics.PerfCounters
         {
             var app = Process.GetCurrentProcess().ProcessName;
 
-            context.Register("Private MBytes ", Unit.MegaBytes, "Process", "Private Bytes", app, derivate: v => v / (1024 * 1024.0), tags: "memory");
-            context.Register("Working Set ", Unit.MegaBytes, "Process", "Working Set", app, derivate: v => v / (1024 * 1024.0), tags: "memory");
+            context.Register("Process CPU Usage", Unit.Percent, "Process", "% Processor Time", app, derivate: v => v / Environment.ProcessorCount, tags: "cpu");
+            context.Register("Process User Time", Unit.Percent, "Process", "% User Time", app, derivate: v => v / Environment.ProcessorCount, tags: "cpu");
+            context.Register("Process Privileged Time", Unit.Percent, "Process", "% Privileged Time", app, derivate: v => v / Environment.ProcessorCount, tags: "cpu");
+
+            context.Register("Private MBytes", Unit.MegaBytes, "Process", "Private Bytes", app, derivate: v => v / (1024 * 1024.0), tags: "memory");
+            context.Register("Working Set", Unit.MegaBytes, "Process", "Working Set", app, derivate: v => v / (1024 * 1024.0), tags: "memory");
 
             context.Register("Mb in all Heaps", Unit.MegaBytes, Memory, "# Bytes in all Heaps", app, v => v / (1024 * 1024.0), tags: "memory");
             context.Register("Gen 0 heap size", Unit.MegaBytes, Memory, "Gen 0 heap size", app, v => v / (1024 * 1024.0), tags: "memory");
@@ -72,7 +76,6 @@ namespace Metrics.PerfCounters
             context.Register("Finallys / Sec", Unit.Custom("Finallys"), Exceptions, "# of Finallys / Sec", app, tags: "exceptions");
             context.Register("Throw to Catch Depth / Sec", Unit.Custom("Stack Frames"), Exceptions, "Throw to Catch Depth / Sec", app, tags: "exceptions");
 
-
             context.Register("Logical Threads", Unit.Threads, LocksAndThreads, "# of current logical Threads", app, tags: "threads");
             context.Register("Physical Threads", Unit.Threads, LocksAndThreads, "# of current physical Threads", app, tags: "threads");
             context.Register("Contention Rate / Sec", Unit.Custom("Attempts"), LocksAndThreads, "Contention Rate / Sec", app, tags: "threads");
@@ -85,7 +88,7 @@ namespace Metrics.PerfCounters
             ThreadPoolMetrics.RegisterThreadPoolGauges(context);
         }
 
-        private static MetricsContext Register(this MetricsContext context, string name, Unit unit,
+        private static void Register(this MetricsContext context, string name, Unit unit,
             string category, string counter, string instance = null,
             Func<double, double> derivate = null,
             MetricTags tags = default(MetricTags))
@@ -106,8 +109,6 @@ namespace Metrics.PerfCounters
                    ". Make sure the user has access to the performance counters. The user needs to be either Admin or belong to Performance Monitor user group.";
                 MetricsErrorHandler.Handle(x, message);
             }
-
-            return context;
         }
 
         private static string GetIdentity()
