@@ -239,7 +239,7 @@ namespace Metrics
         {
             try
             {
-                var isDisabled = ConfigurationManager.AppSettings["Metrics.CompetelyDisableMetrics"];
+                var isDisabled = ConfigurationManager.AppSettings["Metrics.CompletelyDisableMetrics"];
                 if (!string.IsNullOrEmpty(isDisabled) && isDisabled.ToUpperInvariant() == "TRUE")
                 {
                     return true;
@@ -249,7 +249,7 @@ namespace Metrics
             catch (Exception x)
             {
                 log.ErrorException("Metrics: Error disabling metrics library", x);
-                throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.CompetelyDisableMetrics must be set to true or false", x);
+                throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.CompletelyDisableMetrics must be set to true or false", x);
             }
         }
     }
