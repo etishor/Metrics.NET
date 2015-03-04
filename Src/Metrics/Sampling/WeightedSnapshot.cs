@@ -137,7 +137,7 @@ namespace Metrics.Sampling
             int posx = Array.BinarySearch(this.quantiles, quantile);
             if (posx < 0)
             {
-                posx = ((-posx) - 1) - 1;
+                posx = ~posx - 1;
             }
 
             if (posx < 1)
