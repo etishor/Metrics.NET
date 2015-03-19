@@ -1,7 +1,7 @@
 .nuget\NuGet.exe restore Metrics.sln
 
 set MSBUILD="C:\Program Files (x86)\MSBuild\12.0\Bin\MSBuild.exe"
-set XUNIT=".\packages\xunit.runners.1.9.2\tools\xunit.console.clr4.exe"
+set XUNIT=".\packages\xunit.runner.console.2.0.0\tools\xunit.console.exe"
 
 rd /S /Q .\bin\Debug
 rd /S /Q .\bin\Release

@@ -100,7 +100,7 @@ namespace Metrics.Tests.MetricsConfigTests
             using (var config = Metric.Config.WithHttpEndpoint("http://localhost:58888/metricstest/HttpListenerTests/DisposeMeTwice/"))
             {
                 config.Dispose();
-                Assert.DoesNotThrow(() => config.Dispose());
+                config.Dispose();
             }
         }
 
