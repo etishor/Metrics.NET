@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Configuration;
+using System.Threading;
 using Metrics.Logging;
 using Metrics.Reports;
 using Metrics.Visualization;
@@ -49,16 +50,40 @@ namespace Metrics
         {
             if (!isDisabled)
             {
-                try
+                const int MaxRetries = 3;
+                var retries = MaxRetries;
+
+                do
                 {
-                    using (this.listener) { }
-                    this.listener = new MetricsHttpListener(httpUriPrefix, this.context.DataProvider, this.healthStatus);
-                    this.listener.Start();
-                }
-                catch (Exception x)
-                {
-                    MetricsErrorHandler.Handle(x, "Unable to start HTTP Listener");
-                }
+                    try
+                    {
+                        using (this.listener)
+                        {
+                        }
+                        this.listener = new MetricsHttpListener(httpUriPrefix, this.context.DataProvider, this.healthStatus);
+                        this.listener.Start();
+                        if (retries != MaxRetries)
+                        {
+                            log.InfoFormat("HttpListener started successfully after {0} retries", MaxRetries - retries);
+                        }
+                        retries = 0;
+                    }
+                    catch (Exception x)
+                    {
+                        retries--;
+                        if (retries > 0)
+                        {
+                            log.WarnException("Unable to start HTTP Listener. Sleeping for {0} sec and retrying {1} more times", x, MaxRetries - retries, retries);
+                            Thread.Sleep(1000 * (MaxRetries - retries));
+                        }
+                        else
+                        {
+                            MetricsErrorHandler.Handle(x,
+                                string.Format("Unable to start HTTP Listener. Retried {0} times, giving up...", MaxRetries));
+                        }
+
+                    }
+                } while (retries > 0);
             }
             return this;
         }
