@@ -1,3 +1,12 @@
+###0.2.16 / 2015-03-19
+* retry starting httplistener on failure (better support for asp.net hosting where app pools are recycled)
+
+###0.2.15 / 2015-03-03
+* fix disposal of httplistener (@nkot)
+* Added Process CPU usage into app counters (@o-mdr)
+* resharper cleanup
+* update dependencies
+
 ###0.2.14 / 2014-12-15
 * fix possible issue when metrics are disabled and timer returns null TimerContext
 

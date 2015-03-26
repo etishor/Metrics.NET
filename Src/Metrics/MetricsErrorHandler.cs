@@ -18,12 +18,12 @@ namespace Metrics
 
         private MetricsErrorHandler()
         {
-            this.AddHandler((x, msg) => log.ErrorException("Metrics: Unhandled exception in Metrics.NET Library " + x.Message, x));
+            this.AddHandler((x, msg) => log.ErrorException("Metrics: Unhandled exception in Metrics.NET Library {0} {1}", x, msg, x.Message));
             this.AddHandler((x, msg) => Trace.TraceError("Metrics: Unhandled exception in Metrics.NET Library " + x.ToString()));
 
             if (Environment.UserInteractive || IsMono)
             {
-                this.AddHandler((x, msg) => Console.WriteLine("Metrics: Unhandled exception in Metrics.NET Library " + x.ToString()));
+                this.AddHandler((x, msg) => Console.WriteLine("Metrics: Unhandled exception in Metrics.NET Library {0} {1}", msg, x.ToString()));
             }
         }
 
@@ -41,9 +41,9 @@ namespace Metrics
 
         internal void ClearHandlers()
         {
-            Action<Exception, string> item;
             while (!this.handlers.IsEmpty)
             {
+                Action<Exception, string> item;
                 this.handlers.TryTake(out item);
             }
         }
