@@ -21,6 +21,13 @@ namespace Metrics.MetricData
         /// <param name="resetMetric">if set to true the metric will be reset.</param>
         /// <returns>The current value for the metric.</returns>
         T GetValue(bool resetMetric = false);
+        
+        /// <summary>
+        /// Merge the data already in the provided Value Source
+        /// </summary>
+        /// <param name="other">The other Value Source to merge in</param>
+        /// <returns>Whether or not the Source was merged in</returns>
+        bool Merge(MetricValueProvider<T> other);
     }
 
     public sealed class ScaledValueProvider<T> : MetricValueProvider<T>
@@ -45,6 +52,16 @@ namespace Metrics.MetricData
         public T GetValue(bool resetMetric = false)
         {
             return this.scalingFunction(this.valueProvider.GetValue(resetMetric));
+        }
+
+        public MetricValueProvider<T> ValueProvider
+        {
+            get { return this.valueProvider; }
+        }
+
+        public bool Merge(MetricValueProvider<T> other)
+        {
+            return valueProvider.Merge(other);
         }
     }
 

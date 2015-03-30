@@ -28,6 +28,16 @@ namespace Metrics.Core
             this.reservoir.Update(value, userValue);
         }
 
+        public bool Merge(MetricValueProvider<HistogramValue> other)
+        {
+            var hOther = other as HistogramMetric;
+            if (hOther != null)
+            {
+                return Merge(hOther);
+            }
+            return false;
+        }
+
         public HistogramValue GetValue(bool resetMetric = false)
         {
             var value = new HistogramValue(this.last.Value, this.last.UserValue, this.reservoir.GetSnapshot(resetMetric));
@@ -50,6 +60,11 @@ namespace Metrics.Core
         {
             this.last = new UserValueWrapper();
             this.reservoir.Reset();
+        }
+
+        private bool Merge(HistogramMetric other)
+        {
+            return reservoir.Merge(other.reservoir);
         }
 
         private static Reservoir SamplingTypeToReservoir(SamplingType samplingType)

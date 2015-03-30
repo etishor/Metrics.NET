@@ -16,7 +16,6 @@ namespace Metrics
         /// <param name="userValue">A custom user value that will be associated to the results.
         /// Useful for tracking (for example) for which id the max or min value was recorded.
         /// </param>
-
         void Record(long time, TimeUnit unit, string userValue = null);
 
         /// <summary>

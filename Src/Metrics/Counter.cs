@@ -1,4 +1,6 @@
 ﻿
+using Metrics.MetricData;
+
 namespace Metrics
 {
     /// <summary>

@@ -107,6 +107,23 @@ namespace Metrics.Sampling
             }
         }
 
+        public bool Merge(Reservoir other)
+        {
+            var exponOther = other as ExponentiallyDecayingReservoir;
+            if (exponOther == null)
+            {
+                return false;
+            }
+
+            foreach (var sample in exponOther.values)
+            {
+                var timestamp = exponOther.startTime.Value + (Math.Log(sample.Value.Weight)/exponOther.alpha);
+                Update(sample.Value.Value, sample.Value.UserValue, (long)timestamp);
+            }
+
+            return true;
+        }
+
         private void ResetReservoir()
         {
             this.values.Clear();

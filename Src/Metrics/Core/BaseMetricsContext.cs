@@ -154,6 +154,34 @@ namespace Metrics.Core
             return this.Timer(name, unit, () => this.metricsBuilder.BuildTimer(name, unit, rateUnit, durationUnit, builder()), rateUnit, durationUnit, tags);
         }
 
+        public bool MergeContext(MetricsContext other, bool resetAfterMerge = true)
+        {
+            var bmcOther = other as BaseMetricsContext;
+            if (bmcOther == null)
+            {
+                return false;
+            }
+
+            if (!registry.Merge(bmcOther.registry, resetAfterMerge))
+            {
+                return false;
+            }
+
+            foreach (var child in bmcOther.childContexts)
+            {
+                MetricsContext childContext;
+                if (childContexts.TryGetValue(child.Key, out childContext))
+                {
+                    childContext.Advanced.MergeContext(child.Value, resetAfterMerge);
+                }
+                else
+                {
+                    AttachContext(child.Key, child.Value);
+                }
+            }
+            return true;
+        }
+
         public void CompletelyDisableMetrics()
         {
             if (this.isDisabled)
@@ -220,6 +248,5 @@ namespace Metrics.Core
                 action(context);
             }
         }
-
     }
 }

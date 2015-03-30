@@ -34,6 +34,15 @@ namespace Metrics.Core
                 this.m15Rate.Update(count);
             }
 
+            public void Merge(MeterWrapper other)
+            {
+                count.Add(other.count.Value);
+
+                m1Rate.Merge(other.m1Rate);
+                m5Rate.Merge(other.m5Rate);
+                m15Rate.Merge(other.m15Rate);
+            }
+
             public void Reset()
             {
                 this.count.SetValue(0);
@@ -157,6 +166,23 @@ namespace Metrics.Core
             {
                 meter.Reset();
             }
+        }
+
+        public bool Merge(MetricValueProvider<MeterValue> other)
+        {
+            var mOther = other as MeterMetric;
+            if (mOther == null)
+            {
+                return false;
+            }
+
+            wrapper.Merge(mOther.wrapper);
+            foreach (var key in mOther.setMeters)
+            {
+                this.setMeters.GetOrAdd(key.Key, v => new MeterWrapper()).Merge(key.Value);
+            }
+
+            return true;
         }
     }
 }
