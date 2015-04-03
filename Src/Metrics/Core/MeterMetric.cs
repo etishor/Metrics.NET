@@ -17,7 +17,7 @@ namespace Metrics.Core
             private readonly EWMA m1Rate = EWMA.OneMinuteEWMA();
             private readonly EWMA m5Rate = EWMA.FiveMinuteEWMA();
             private readonly EWMA m15Rate = EWMA.FifteenMinuteEWMA();
-            private AtomicLong counter = new AtomicLong();
+            private readonly LongAdder counter = new LongAdder();
 
             public void Tick()
             {
