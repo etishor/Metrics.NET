@@ -16,9 +16,9 @@ namespace Metrics.Core
                 Comparer<double>.Default.Compare(x.Percent, y.Percent) :
                 Comparer<string>.Default.Compare(x.Item, y.Item));
 
-        private readonly ConcurrentDictionary<string, AtomicLongHolder> setCounters = new ConcurrentDictionary<string, AtomicLongHolder>();
+        private readonly ConcurrentDictionary<string, LongAdder> setCounters = new ConcurrentDictionary<string, LongAdder>();
 
-        private AtomicLong counter = new AtomicLong();
+        private readonly LongAdder counter = new LongAdder();
 
         public CounterValue Value
         {
@@ -108,9 +108,9 @@ namespace Metrics.Core
             return true;
         }
 
-        private AtomicLongHolder SetCounter(string item)
+        private LongAdder SetCounter(string item)
         {
-            return this.setCounters.GetOrAdd(item, v => new AtomicLongHolder());
+            return this.setCounters.GetOrAdd(item, v => new LongAdder());
         }
 
         private CounterValue GetValueWithSetItems()

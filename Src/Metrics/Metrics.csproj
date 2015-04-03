@@ -137,7 +137,6 @@
     <Compile Include="Unit.cs" />
     <Compile Include="Utils\ActionScheduler.cs" />
     <Compile Include="Utils\AppEnvironment.cs" />
-    <Compile Include="Utils\AtomicLongHolder.cs" />
     <Compile Include="Utils\Clock.cs" />
     <Compile Include="Core\CounterMetric.cs" />
     <Compile Include="Core\GaugeMetric.cs" />
