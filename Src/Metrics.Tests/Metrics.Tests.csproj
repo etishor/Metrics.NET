@@ -137,6 +137,7 @@
     <Compile Include="TestClock.cs" />
     <Compile Include="TestScheduler.cs" />
     <Compile Include="Metrics\TimerMetricTests.cs" />
+    <Compile Include="Utils\LongAdderTests.cs" />
     <Compile Include="Utils\MetricUnitTests.cs" />
     <Compile Include="Utils\TimeUnitTests.cs" />
     <Compile Include="Sampling\UniformReservoirTests.cs" />

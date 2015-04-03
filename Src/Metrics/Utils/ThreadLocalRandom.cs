@@ -7,6 +7,14 @@ namespace Metrics.Utils
     {
         private static readonly ThreadLocal<Random> random = new ThreadLocal<Random>(() => new Random());
 
+        internal static Random Random
+        {
+            get
+            {
+                return random.Value;
+            }
+        }
+
         public static double NextDouble()
         {
             return random.Value.NextDouble();
