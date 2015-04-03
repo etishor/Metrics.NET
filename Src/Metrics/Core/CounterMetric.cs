@@ -1,5 +1,6 @@
-﻿using System.Collections.Concurrent;
-using System.Linq;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using Metrics.MetricData;
 using Metrics.Utils;
 
@@ -9,6 +10,12 @@ namespace Metrics.Core
 
     public sealed class CounterMetric : CounterImplementation
     {
+        private static readonly CounterValue.SetItem[] noItems = new CounterValue.SetItem[0];
+
+        private static readonly IComparer<CounterValue.SetItem> setItemComparer = Comparer<CounterValue.SetItem>.Create((x, y) => x.Percent != y.Percent ?
+                Comparer<double>.Default.Compare(x.Percent, y.Percent) :
+                Comparer<string>.Default.Compare(x.Item, y.Item));
+
         private readonly ConcurrentDictionary<string, AtomicLongHolder> setCounters = new ConcurrentDictionary<string, AtomicLongHolder>();
 
         private AtomicLong counter = new AtomicLong();
@@ -17,12 +24,7 @@ namespace Metrics.Core
         {
             get
             {
-                var total = this.counter.Value;
-                var items = setCounters.Select(i => new CounterValue.SetItem(i.Key, i.Value.Value, total > 0 ? i.Value.Value / (double)total * 100 : 0.0))
-                    .OrderBy(i => i.Count)
-                    .ThenBy(i => i.Item)
-                    .ToArray();
-                return new CounterValue(total, items);
+                return setCounters.Count == 0 ? new CounterValue(this.counter.Value, noItems) : GetValueWithSetItems();
             }
         }
 
@@ -109,6 +111,31 @@ namespace Metrics.Core
         private AtomicLongHolder SetCounter(string item)
         {
             return this.setCounters.GetOrAdd(item, v => new AtomicLongHolder());
+        }
+
+        private CounterValue GetValueWithSetItems()
+        {
+            var total = this.counter.Value;
+
+            var items = new CounterValue.SetItem[setCounters.Count];
+            var index = 0;
+            foreach (var item in setCounters)
+            {
+                var itemValue = item.Value.Value;
+
+                var percent = total > 0 ? itemValue / (double)total * 100 : 0.0;
+                var setCounter = new CounterValue.SetItem(item.Key, itemValue, percent);
+                items[index] = setCounter;
+                index++;
+                if (index == items.Length)
+                {
+                    break;
+                }
+            }
+
+            Array.Sort(items, setItemComparer);
+
+            return new CounterValue(total, items);
         }
     }
 }
