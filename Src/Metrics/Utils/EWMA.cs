@@ -22,7 +22,7 @@ namespace Metrics.Utils
         private volatile bool initialized = false;
         private VolatileDouble rate = new VolatileDouble(0.0);
 
-        private AtomicLong uncounted = new AtomicLong();
+        private readonly LongAdder uncounted = new LongAdder();
         private readonly double alpha;
         private readonly double interval;
 
