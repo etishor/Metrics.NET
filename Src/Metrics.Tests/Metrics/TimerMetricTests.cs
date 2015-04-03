@@ -81,9 +81,9 @@ namespace Metrics.Tests.Metrics
         {
             var context = timer.NewContext();
             clock.Advance(TimeUnit.Milliseconds, 100);
-            using (context) { }
+            context.Dispose(); // passing the structure to using() creates a copy
             clock.Advance(TimeUnit.Milliseconds, 100);
-            using (context) { }
+            context.Dispose();
 
             timer.Value.Histogram.Count.Should().Be(1);
             timer.Value.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(100));
@@ -117,17 +117,6 @@ namespace Metrics.Tests.Metrics
         }
 
         [Fact]
-        public void TimerMetric_ContextCallsFinalAction()
-        {
-            TimeSpan result = TimeSpan.Zero;
-            var context = timer.NewContext(t => result = t);
-            clock.Advance(TimeUnit.Milliseconds, 100);
-            using (context) { }
-
-            result.Should().Be(TimeSpan.FromMilliseconds(100));
-        }
-
-        [Fact]
         public void TimerMetric_RecordsUserValue()
         {
             timer.Record(1L, TimeUnit.Milliseconds, "A");
@@ -145,7 +134,7 @@ namespace Metrics.Tests.Metrics
 
             timer.Record(0L, TimeUnit.Milliseconds, "A");
             timer.Record(10L, TimeUnit.Milliseconds, "B");
-            
+
             other.Record(30L, TimeUnit.Milliseconds, "C");
             other.Record(40L, TimeUnit.Milliseconds, "D");
 
@@ -153,6 +142,20 @@ namespace Metrics.Tests.Metrics
 
             timer.Value.Histogram.MinUserValue.Should().Be("A");
             timer.Value.Histogram.MaxUserValue.Should().Be("D");
+        }
+
+        [Fact]
+        public void TimerMetric_RecordsActiveSessions()
+        {
+            timer.Value.ActiveSessions.Should().Be(0);
+            var context1 = timer.NewContext();
+            timer.Value.ActiveSessions.Should().Be(1);
+            var context2 = timer.NewContext();
+            timer.Value.ActiveSessions.Should().Be(2);
+            context1.Dispose();
+            timer.Value.ActiveSessions.Should().Be(1);
+            context2.Dispose();
+            timer.Value.ActiveSessions.Should().Be(0);
         }
     }
 }

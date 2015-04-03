@@ -1,8 +1,8 @@
-﻿using Metrics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Metrics;
 
 namespace Owin.Metrics.Middleware
 {
@@ -10,7 +10,7 @@ namespace Owin.Metrics.Middleware
 
     public class RequestTimerMiddleware : MetricMiddleware
     {
-        private const string TimerItemsKey = "__Mertics.RequestTimer__";
+        private const string RequestStartTimeKey = "__Mertics.RequestStartTime__";
 
         private readonly Timer requestTimer;
         private AppFunc next;
@@ -30,15 +30,15 @@ namespace Owin.Metrics.Middleware
         {
             if (base.PerformMetric(environment))
             {
-                environment[TimerItemsKey] = this.requestTimer.NewContext();
+                environment[RequestStartTimeKey] = this.requestTimer.StartRecording();
 
                 await next(environment);
 
-                var timer = environment[TimerItemsKey];
-                using (timer as IDisposable)
-                {
-                }
-                environment.Remove(TimerItemsKey);
+                var endTime = this.requestTimer.EndRecording();
+                var startTime = (long)environment[RequestStartTimeKey];
+                this.requestTimer.Record(endTime - startTime, TimeUnit.Nanoseconds);
+
+                environment.Remove(RequestStartTimeKey);
             }
             else
             {
