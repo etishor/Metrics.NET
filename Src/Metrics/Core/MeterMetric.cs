@@ -10,14 +10,14 @@ namespace Metrics.Core
 
     public sealed class MeterMetric : MeterImplementation, IDisposable
     {
-        public static readonly TimeSpan TickInterval = TimeSpan.FromSeconds(5);
+        private static readonly TimeSpan tickInterval = TimeSpan.FromSeconds(5);
 
         private class MeterWrapper
         {
-            public readonly EWMA m1Rate = EWMA.OneMinuteEWMA();
-            public readonly EWMA m5Rate = EWMA.FiveMinuteEWMA();
-            public readonly EWMA m15Rate = EWMA.FifteenMinuteEWMA();
-            public AtomicLong count = new AtomicLong();
+            private readonly EWMA m1Rate = EWMA.OneMinuteEWMA();
+            private readonly EWMA m5Rate = EWMA.FiveMinuteEWMA();
+            private readonly EWMA m15Rate = EWMA.FifteenMinuteEWMA();
+            private AtomicLong counter = new AtomicLong();
 
             public void Tick()
             {
@@ -28,7 +28,7 @@ namespace Metrics.Core
 
             public void Mark(long count)
             {
-                this.count.Add(count);
+                this.counter.Add(count);
                 this.m1Rate.Update(count);
                 this.m5Rate.Update(count);
                 this.m15Rate.Update(count);
@@ -36,7 +36,7 @@ namespace Metrics.Core
 
             public void Merge(MeterWrapper other)
             {
-                count.Add(other.count.Value);
+                counter.Add(other.counter.Value);
 
                 m1Rate.Merge(other.m1Rate);
                 m5Rate.Merge(other.m5Rate);
@@ -45,7 +45,7 @@ namespace Metrics.Core
 
             public void Reset()
             {
-                this.count.SetValue(0);
+                this.counter.SetValue(0);
                 this.m1Rate.Reset();
                 this.m5Rate.Reset();
                 this.m15Rate.Reset();
@@ -53,17 +53,17 @@ namespace Metrics.Core
 
             public MeterValue GetValue(double elapsed)
             {
-                return new MeterValue(this.count.Value, this.GetMeanRate(elapsed), this.OneMinuteRate, this.FiveMinuteRate, this.FifteenMinuteRate, TimeUnit.Seconds);
+                return new MeterValue(this.counter.Value, this.GetMeanRate(elapsed), this.OneMinuteRate, this.FiveMinuteRate, this.FifteenMinuteRate, TimeUnit.Seconds);
             }
 
             private double GetMeanRate(double elapsed)
             {
-                if (this.count.Value == 0)
+                if (this.counter.Value == 0)
                 {
                     return 0.0;
                 }
 
-                return this.count.Value / elapsed * TimeUnit.Seconds.ToNanoseconds(1);
+                return this.counter.Value / elapsed * TimeUnit.Seconds.ToNanoseconds(1);
             }
 
             private double FifteenMinuteRate { get { return this.m15Rate.GetRate(TimeUnit.Seconds); } }
@@ -90,7 +90,7 @@ namespace Metrics.Core
             this.clock = clock;
             this.startTime = this.clock.Nanoseconds;
             this.tickScheduler = scheduler;
-            this.tickScheduler.Start(TickInterval, () => Tick());
+            this.tickScheduler.Start(tickInterval, () => Tick());
         }
 
         public void Mark()
