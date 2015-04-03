@@ -137,6 +137,7 @@
     <Compile Include="TestClock.cs" />
     <Compile Include="TestScheduler.cs" />
     <Compile Include="Metrics\TimerMetricTests.cs" />
+    <Compile Include="Utils\MetricUnitTests.cs" />
     <Compile Include="Utils\TimeUnitTests.cs" />
     <Compile Include="Sampling\UniformReservoirTests.cs" />
     <Compile Include="Visualization\FlotVisualizationTests.cs" />
@@ -159,6 +160,7 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
