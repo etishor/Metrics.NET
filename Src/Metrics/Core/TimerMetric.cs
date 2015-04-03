@@ -51,12 +51,12 @@ namespace Metrics.Core
             var start = this.clock.Nanoseconds;
             try
             {
-                activeSessionsCounter.Increment();
+                this.activeSessionsCounter.Increment();
                 action();
             }
             finally
             {
-                activeSessionsCounter.Decrement();
+                this.activeSessionsCounter.Decrement();
                 Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds, userValue);
             }
         }
@@ -66,19 +66,19 @@ namespace Metrics.Core
             var start = this.clock.Nanoseconds;
             try
             {
-                activeSessionsCounter.Increment();
+                this.activeSessionsCounter.Increment();
                 return action();
             }
             finally
             {
-                activeSessionsCounter.Decrement();
+                this.activeSessionsCounter.Decrement();
                 Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds, userValue);
             }
         }
 
         public long StartRecording()
         {
-            activeSessionsCounter.Increment();
+            this.activeSessionsCounter.Increment();
             return this.clock.Nanoseconds;
         }
 
@@ -89,7 +89,7 @@ namespace Metrics.Core
 
         public long EndRecording()
         {
-            activeSessionsCounter.Decrement();
+            this.activeSessionsCounter.Decrement();
             return this.clock.Nanoseconds;
         }
 

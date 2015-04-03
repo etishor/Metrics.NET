@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using CommandLine;
 using CommandLine.Text;
 using Metrics.Core;
-using Metrics.MetricData;
 using Metrics.Sampling;
 using Metrics.Utils;
 namespace Metrics.StupidBenchmarks
@@ -84,23 +83,10 @@ namespace Metrics.StupidBenchmarks
 
             CounterMetric counter = new CounterMetric();
             MeterMetric meter = new MeterMetric();
-
+            TimerMetric timer = new TimerMetric();
             CancellationTokenSource tcs = new CancellationTokenSource();
 
-            List<MeterValue> values = new List<MeterValue>();
-
-            var reader = Task.Factory.StartNew(async () =>
-            {
-                while (!tcs.IsCancellationRequested)
-                {
-                    values.Add(meter.Value);
-                    await Task.Delay(200);
-                    if (values.Count > 100)
-                    {
-                        values.Clear();
-                    }
-                }
-            });
+            var reader = ReaderTask(() => timer.Value, tcs.Token);
 
             switch (target)
             {
@@ -130,8 +116,25 @@ namespace Metrics.StupidBenchmarks
                     break;
             }
 
-            Console.WriteLine(values.Count);
             tcs.Cancel();
+        }
+
+        private static Task ReaderTask<T>(Func<T> reader, CancellationToken token)
+        {
+            List<T> values = new List<T>();
+
+            return Task.Factory.StartNew(async () =>
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    values.Add(reader());
+                    await Task.Delay(200);
+                    if (values.Count > 100)
+                    {
+                        values.Clear();
+                    }
+                }
+            });
         }
     }
 }
