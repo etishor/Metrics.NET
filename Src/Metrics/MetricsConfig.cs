@@ -12,7 +12,7 @@ namespace Metrics
     {
         private static readonly ILog log = LogProvider.GetCurrentClassLogger();
 
-        public static readonly bool GlobalyDisabledMetrics = ReadGlobalyDisableMetricsSetting();
+        public static readonly bool GlobalyDisabledMetrics = ReadGloballyDisableMetricsSetting();
 
         private readonly MetricsContext context;
         private readonly MetricsReports reports;
@@ -260,7 +260,7 @@ namespace Metrics
             }
         }
 
-        private static bool ReadGlobalyDisableMetricsSetting()
+        private static bool ReadGloballyDisableMetricsSetting()
         {
             try
             {
