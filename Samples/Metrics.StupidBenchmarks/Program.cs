@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using CommandLine;
 using CommandLine.Text;
 using Metrics.Core;
+using Metrics.MetricData;
 using Metrics.Sampling;
 using Metrics.Utils;
 namespace Metrics.StupidBenchmarks
@@ -78,14 +82,33 @@ namespace Metrics.StupidBenchmarks
 
             Console.WriteLine("{0} | Duration {1} seconds  | Start Threads {2} | Step {3}", target, targetOptions.Seconds, targetOptions.MaxThreads, targetOptions.Decrement);
 
+            CounterMetric counter = new CounterMetric();
+            MeterMetric meter = new MeterMetric();
+
+            CancellationTokenSource tcs = new CancellationTokenSource();
+
+            List<MeterValue> values = new List<MeterValue>();
+
+            var reader = Task.Factory.StartNew(async () =>
+            {
+                while (!tcs.IsCancellationRequested)
+                {
+                    values.Add(meter.Value);
+                    await Task.Delay(200);
+                    if (values.Count > 100)
+                    {
+                        values.Clear();
+                    }
+                }
+            });
 
             switch (target)
             {
                 case "counter":
-                    Run(() => new CounterMetric(), c => c.Increment());
+                    Run(() => counter, c => c.Increment());
                     break;
                 case "meter":
-                    Run(() => new MeterMetric(), m => m.Mark());
+                    Run(() => meter, m => m.Mark());
                     break;
                 case "histogram":
                     Run(() => new HistogramMetric(), h => h.Update(37));
@@ -106,6 +129,9 @@ namespace Metrics.StupidBenchmarks
                     Run(() => new SlidingWindowReservoir(), r => r.Update(100));
                     break;
             }
+
+            Console.WriteLine(values.Count);
+            tcs.Cancel();
         }
     }
 }
