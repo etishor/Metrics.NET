@@ -8,10 +8,6 @@ namespace Metrics.Utils
         private sealed class ValueHolder
         {
             public long value;
-
-            public ValueHolder() { }
-            public ValueHolder(long value) { this.value = value; }
-
             public long GetAndReset()
             {
                 return Interlocked.Exchange(ref this.value, 0L);

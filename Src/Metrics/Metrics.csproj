@@ -157,6 +157,7 @@
     <Compile Include="Utils\ThreadLocalRandom.cs" />
     <Compile Include="Utils\TimeUnitExtensions.cs" />
     <Compile Include="Utils\VolatileDouble.cs" />
+    <Compile Include="Utils\VolatileLong.cs" />
     <Compile Include="Visualization\FlotWebApp.cs" />
     <Compile Include="Visualization\MetricsHttpListener.cs" />
   </ItemGroup>
