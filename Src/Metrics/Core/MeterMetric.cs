@@ -161,7 +161,7 @@ namespace Metrics.Core
             Debug.Assert(this.setMeters != null);
 
             var items = new MeterValue.SetItem[this.setMeters.Count];
-            int index = 0;
+            var index = 0;
 
             foreach (var meter in this.setMeters)
             {

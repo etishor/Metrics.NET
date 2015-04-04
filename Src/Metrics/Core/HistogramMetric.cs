@@ -9,7 +9,7 @@ namespace Metrics.Core
     public sealed class HistogramMetric : HistogramImplementation
     {
         private readonly Reservoir reservoir;
-        private UserValueWrapper last = new UserValueWrapper();
+        private UserValueWrapper last;
 
         public HistogramMetric()
             : this(new ExponentiallyDecayingReservoir()) { }
@@ -64,7 +64,7 @@ namespace Metrics.Core
 
         private bool Merge(HistogramMetric other)
         {
-            return reservoir.Merge(other.reservoir);
+            return this.reservoir.Merge(other.reservoir);
         }
 
         private static Reservoir SamplingTypeToReservoir(SamplingType samplingType)
@@ -75,7 +75,7 @@ namespace Metrics.Core
                 case SamplingType.LongTerm: return new UniformReservoir();
                 case SamplingType.SlidingWindow: return new SlidingWindowReservoir();
             }
-            throw new InvalidOperationException("Sampling type not implemented " + samplingType.ToString());
+            throw new InvalidOperationException("Sampling type not implemented " + samplingType);
         }
     }
 }
