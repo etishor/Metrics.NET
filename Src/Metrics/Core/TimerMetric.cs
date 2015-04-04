@@ -12,7 +12,7 @@ namespace Metrics.Core
         private readonly Clock clock;
         private readonly MeterImplementation meter;
         private readonly HistogramImplementation histogram;
-        private readonly JavaLongAdder activeSessionsCounter = new JavaLongAdder();
+        private readonly ThreadLocalLongAdder activeSessionsCounter = new ThreadLocalLongAdder();
 
         public TimerMetric()
             : this(new HistogramMetric(), new MeterMetric(), Clock.Default) { }
@@ -131,8 +131,8 @@ namespace Metrics.Core
                 return false;
             }
 
-            meter.Merge(tOther.meter);
-            histogram.Merge(tOther.histogram);
+            this.meter.Merge(tOther.meter);
+            this.histogram.Merge(tOther.histogram);
             return true;
         }
     }
