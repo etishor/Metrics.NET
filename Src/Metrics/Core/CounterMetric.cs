@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Metrics.MetricData;
 using Metrics.Utils;
 
@@ -16,15 +17,19 @@ namespace Metrics.Core
                 Comparer<double>.Default.Compare(x.Percent, y.Percent) :
                 Comparer<string>.Default.Compare(x.Item, y.Item));
 
-        private readonly ConcurrentDictionary<string, LongAdder> setCounters = new ConcurrentDictionary<string, LongAdder>();
+        private ConcurrentDictionary<string, ThreadLocalLongAdder> setCounters = null;
 
-        private readonly LongAdder counter = new LongAdder();
+        private readonly ThreadLocalLongAdder counter = new ThreadLocalLongAdder();
 
         public CounterValue Value
         {
             get
             {
-                return setCounters.Count == 0 ? new CounterValue(this.counter.Value, noItems) : GetValueWithSetItems();
+                if (this.setCounters == null || this.setCounters.Count == 0)
+                {
+                    return new CounterValue(this.counter.Value, noItems);
+                }
+                return GetValueWithSetItems();
             }
         }
 
@@ -60,34 +65,37 @@ namespace Metrics.Core
 
         public void Reset()
         {
-            this.counter.SetValue(0L);
-            foreach (var item in this.setCounters)
+            this.counter.Reset();
+            if (this.setCounters != null)
             {
-                item.Value.SetValue(0L);
+                foreach (var item in this.setCounters)
+                {
+                    item.Value.Reset();
+                }
             }
         }
 
         public void Increment(string item)
         {
-            this.Increment();
+            Increment();
             SetCounter(item).Increment();
         }
 
         public void Increment(string item, long amount)
         {
-            this.Increment(amount);
+            Increment(amount);
             SetCounter(item).Add(amount);
         }
 
         public void Decrement(string item)
         {
-            this.Decrement();
+            Decrement();
             SetCounter(item).Decrement();
         }
 
         public void Decrement(string item, long amount)
         {
-            this.Decrement(amount);
+            Decrement(amount);
             SetCounter(item).Add(-amount);
         }
 
@@ -100,26 +108,31 @@ namespace Metrics.Core
             }
 
             Increment(cOther.counter.Value);
-            foreach (var setCounter in cOther.setCounters)
+
+            if (cOther.setCounters != null)
             {
-                SetCounter(setCounter.Key).Add(setCounter.Value.Value);
+                foreach (var setCounter in cOther.setCounters)
+                {
+                    SetCounter(setCounter.Key).Add(setCounter.Value.Value);
+                }
             }
 
             return true;
         }
 
-        private LongAdder SetCounter(string item)
+        private ThreadLocalLongAdder SetCounter(string item)
         {
-            return this.setCounters.GetOrAdd(item, v => new LongAdder());
+            return this.setCounters.GetOrAdd(item, v => new ThreadLocalLongAdder());
         }
 
         private CounterValue GetValueWithSetItems()
         {
+            Debug.Assert(this.setCounters != null);
             var total = this.counter.Value;
 
-            var items = new CounterValue.SetItem[setCounters.Count];
+            var items = new CounterValue.SetItem[this.setCounters.Count];
             var index = 0;
-            foreach (var item in setCounters)
+            foreach (var item in this.setCounters)
             {
                 var itemValue = item.Value.Value;
 
@@ -136,6 +149,15 @@ namespace Metrics.Core
             Array.Sort(items, setItemComparer);
 
             return new CounterValue(total, items);
+        }
+
+        private void EnsureSetCountersCreated()
+        {
+            if (this.setCounters == null)
+            {
+                this.setCounters = new ConcurrentDictionary<string, ThreadLocalLongAdder>();
+            }
+            Debug.Assert(this.setCounters != null);
         }
     }
 }

@@ -67,7 +67,7 @@ namespace Metrics.Utils
             return sum;
         }
 
-        private void Reset()
+        public void Reset()
         {
             foreach (var value in this.local.Values)
             {
