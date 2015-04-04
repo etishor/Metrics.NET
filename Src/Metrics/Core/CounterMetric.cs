@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using Metrics.MetricData;
 using Metrics.Utils;
 
@@ -11,12 +11,6 @@ namespace Metrics.Core
 
     public sealed class CounterMetric : CounterImplementation
     {
-        private static readonly CounterValue.SetItem[] noItems = new CounterValue.SetItem[0];
-
-        private static readonly IComparer<CounterValue.SetItem> setItemComparer = Comparer<CounterValue.SetItem>.Create((x, y) => x.Percent != y.Percent ?
-                Comparer<double>.Default.Compare(x.Percent, y.Percent) :
-                Comparer<string>.Default.Compare(x.Item, y.Item));
-
         private ConcurrentDictionary<string, ThreadLocalLongAdder> setCounters = null;
 
         private readonly ThreadLocalLongAdder counter = new ThreadLocalLongAdder();
@@ -27,7 +21,7 @@ namespace Metrics.Core
             {
                 if (this.setCounters == null || this.setCounters.Count == 0)
                 {
-                    return new CounterValue(this.counter.Value, noItems);
+                    return new CounterValue(this.counter.Value);
                 }
                 return GetValueWithSetItems();
             }
@@ -122,6 +116,11 @@ namespace Metrics.Core
 
         private ThreadLocalLongAdder SetCounter(string item)
         {
+            if (this.setCounters == null)
+            {
+                Interlocked.CompareExchange(ref this.setCounters, new ConcurrentDictionary<string, ThreadLocalLongAdder>(), null);
+            }
+            Debug.Assert(this.setCounters != null);
             return this.setCounters.GetOrAdd(item, v => new ThreadLocalLongAdder());
         }
 
@@ -138,26 +137,16 @@ namespace Metrics.Core
 
                 var percent = total > 0 ? itemValue / (double)total * 100 : 0.0;
                 var setCounter = new CounterValue.SetItem(item.Key, itemValue, percent);
-                items[index] = setCounter;
-                index++;
+                items[index++] = setCounter;
                 if (index == items.Length)
                 {
                     break;
                 }
             }
 
-            Array.Sort(items, setItemComparer);
+            Array.Sort(items, CounterValue.SetItemComparer);
 
             return new CounterValue(total, items);
-        }
-
-        private void EnsureSetCountersCreated()
-        {
-            if (this.setCounters == null)
-            {
-                this.setCounters = new ConcurrentDictionary<string, ThreadLocalLongAdder>();
-            }
-            Debug.Assert(this.setCounters != null);
         }
     }
 }
