@@ -6,8 +6,6 @@ namespace Metrics.Utils
 {
     /// <summary>
     /// Atomic long.
-    /// TBD: implement optimizations behind LongAdder from 
-    /// <a href="https://github.com/dropwizard/metrics/blob/master/metrics-core/src/main/java/com/codahale/metrics/LongAdder.java">metrics-core</a>
     /// </summary>
 #if PADDED_ATOMIC_LONG
     [StructLayout(LayoutKind.Explicit, Size = 64 * 2)]

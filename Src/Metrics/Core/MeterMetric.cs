@@ -17,7 +17,7 @@ namespace Metrics.Core
             private readonly EWMA m1Rate = EWMA.OneMinuteEWMA();
             private readonly EWMA m5Rate = EWMA.FiveMinuteEWMA();
             private readonly EWMA m15Rate = EWMA.FifteenMinuteEWMA();
-            private readonly LongAdder counter = new LongAdder();
+            private readonly JavaLongAdder counter = new JavaLongAdder();
 
             public void Tick()
             {
