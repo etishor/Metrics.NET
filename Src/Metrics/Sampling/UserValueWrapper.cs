@@ -4,6 +4,7 @@ namespace Metrics.Sampling
 {
     public struct UserValueWrapper
     {
+        public static readonly UserValueWrapper Empty = new UserValueWrapper();
         public static readonly IComparer<UserValueWrapper> Comparer = new UserValueComparer();
 
         public readonly long Value;

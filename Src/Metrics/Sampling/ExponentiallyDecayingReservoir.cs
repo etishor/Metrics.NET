@@ -65,7 +65,7 @@ namespace Metrics.Sampling
 
         public Snapshot GetSnapshot(bool resetReservoir = false)
         {
-            bool lockTaken = false;
+            var lockTaken = false;
             try
             {
                 this.@lock.Enter(ref lockTaken);
@@ -92,7 +92,7 @@ namespace Metrics.Sampling
 
         public void Reset()
         {
-            bool lockTaken = false;
+            var lockTaken = false;
             try
             {
                 this.@lock.Enter(ref lockTaken);
@@ -133,7 +133,7 @@ namespace Metrics.Sampling
 
         private void Update(long value, string userValue, long timestamp)
         {
-            bool lockTaken = false;
+            var lockTaken = false;
             try
             {
                 this.@lock.Enter(ref lockTaken);
@@ -202,21 +202,21 @@ namespace Metrics.Sampling
         // */
         private void Rescale()
         {
-            bool lockTaken = false;
+            var lockTaken = false;
             try
             {
                 this.@lock.Enter(ref lockTaken);
-                long oldStartTime = this.startTime.Get();
+                var oldStartTime = this.startTime.Get();
                 this.startTime.Set(this.clock.Seconds);
 
-                double scalingFactor = Math.Exp(-this.alpha * (this.startTime.Get() - oldStartTime));
+                var scalingFactor = Math.Exp(-this.alpha * (this.startTime.Get() - oldStartTime));
 
                 var keys = new List<double>(this.values.Keys);
                 foreach (var key in keys)
                 {
                     var sample = this.values[key];
                     this.values.Remove(key);
-                    double newKey = key * Math.Exp(-this.alpha * (this.startTime.Get() - oldStartTime));
+                    var newKey = key * Math.Exp(-this.alpha * (this.startTime.Get() - oldStartTime));
                     var newSample = new WeightedSample(sample.Value, sample.UserValue, sample.Weight * scalingFactor);
                     this.values[newKey] = newSample;
                 }

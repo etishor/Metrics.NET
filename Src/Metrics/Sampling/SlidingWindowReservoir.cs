@@ -21,14 +21,14 @@ namespace Metrics.Sampling
 
         public void Update(long value, string userValue = null)
         {
-            var count = this.count.Increment();
-            this.values[(int)((count - 1) % values.Length)] = new UserValueWrapper(value, userValue);
+            var newCount = this.count.Increment();
+            this.values[(int)((newCount - 1) % this.values.Length)] = new UserValueWrapper(value, userValue);
         }
 
         public void Reset()
         {
-            Array.Clear(this.values, 0, values.Length);
-            count.SetValue(0L);
+            Array.Clear(this.values, 0, this.values.Length);
+            this.count.SetValue(0L);
         }
 
         public bool Merge(Reservoir other)
@@ -43,29 +43,29 @@ namespace Metrics.Sampling
         }
 
         public long Count { get { return this.count.Value; } }
-        public int Size { get { return Math.Min((int)this.count.Value, values.Length); } }
+        public int Size { get { return Math.Min((int)this.count.Value, this.values.Length); } }
 
         public Snapshot GetSnapshot(bool resetReservoir = false)
         {
-            var size = this.Size;
+            var size = Size;
             if (size == 0)
             {
                 return new UniformSnapshot(0, Enumerable.Empty<Tuple<long, string>>());
             }
 
-            UserValueWrapper[] values = new UserValueWrapper[size];
-            Array.Copy(this.values, values, size);
+            var snapshotValues = new UserValueWrapper[size];
+            Array.Copy(this.values, snapshotValues, size);
 
             if (resetReservoir)
             {
-                Array.Clear(this.values, 0, values.Length);
-                count.SetValue(0L);
+                Array.Clear(this.values, 0, snapshotValues.Length);
+                this.count.SetValue(0L);
             }
 
-            Array.Sort(values, UserValueWrapper.Comparer);
-            var minValue = values[0].UserValue;
-            var maxValue = values[size - 1].UserValue;
-            return new UniformSnapshot(this.count.Value, values.Select(v => new Tuple<long, string>(v.Value, v.UserValue)), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
+            Array.Sort(snapshotValues, UserValueWrapper.Comparer);
+            var minValue = snapshotValues[0].UserValue;
+            var maxValue = snapshotValues[size - 1].UserValue;
+            return new UniformSnapshot(this.count.Value, snapshotValues.Select(v => new Tuple<long, string>(v.Value, v.UserValue)), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
         }
     }
 }

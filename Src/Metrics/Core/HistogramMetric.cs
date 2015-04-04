@@ -43,7 +43,7 @@ namespace Metrics.Core
             var value = new HistogramValue(this.last.Value, this.last.UserValue, this.reservoir.GetSnapshot(resetMetric));
             if (resetMetric)
             {
-                this.last = new UserValueWrapper();
+                this.last = UserValueWrapper.Empty;
             }
             return value;
         }
@@ -58,7 +58,7 @@ namespace Metrics.Core
 
         public void Reset()
         {
-            this.last = new UserValueWrapper();
+            this.last = UserValueWrapper.Empty;
             this.reservoir.Reset();
         }
 
