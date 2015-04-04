@@ -11,6 +11,11 @@ namespace Metrics.Utils
 
             public ValueHolder() { }
             public ValueHolder(long value) { this.value = value; }
+
+            public long GetAndReset()
+            {
+                return Interlocked.Exchange(ref this.value, 0L);
+            }
         }
 
         private readonly ThreadLocal<ValueHolder> local = new ThreadLocal<ValueHolder>(() => new ValueHolder(), true);
@@ -54,6 +59,16 @@ namespace Metrics.Utils
                 val.value = 0L;
             }
             this.local.Value.value = value;
+            return sum;
+        }
+
+        public long GetAndReset()
+        {
+            long sum = 0;
+            foreach (var val in this.local.Values)
+            {
+                sum += val.GetAndReset();
+            }
             return sum;
         }
 
