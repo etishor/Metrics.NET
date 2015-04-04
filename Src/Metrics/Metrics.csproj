@@ -150,9 +150,10 @@
     <Compile Include="TimeUnit.cs" />
     <Compile Include="Utils\HostResolver.cs" />
     <Compile Include="Utils\IHideObjectMembers.cs" />
-    <Compile Include="Utils\LongAdder.cs" />
+    <Compile Include="Utils\JavaLongAdder.cs" />
     <Compile Include="Utils\Scheduler.cs" />
-    <Compile Include="Utils\Stripe64.cs" />
+    <Compile Include="Utils\JavaStripe64.cs" />
+    <Compile Include="Utils\LongAdder.cs" />
     <Compile Include="Utils\ThreadLocalRandom.cs" />
     <Compile Include="Utils\TimeUnitExtensions.cs" />
     <Compile Include="Utils\VolatileDouble.cs" />

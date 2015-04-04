@@ -1,36 +1,36 @@
-﻿using FluentAssertions;
-using Metrics.Utils;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
+using FluentAssertions;
+using Metrics.Utils;
 using Xunit;
 
 namespace Metrics.Tests.Utils
 {
-    public class LongAdderTests
+    public class JavaLongAdderTests
     {
-        private LongAdder num = new LongAdder();
+        private JavaLongAdder num = new JavaLongAdder();
 
         [Fact]
-        public void LongAdder_DefaultsToZero()
+        public void JavaLocalAdder_DefaultsToZero()
         {
             num.Value.Should().Be(0L);
         }
 
         [Fact]
-        public void LongAdder_CanBeCreatedWithValue()
+        public void JavaLocalAdder_CanBeCreatedWithValue()
         {
             new AtomicLong(5L).Value.Should().Be(5L);
         }
 
         [Fact]
-        public void LongAdder_CanSetAndReadValue()
+        public void JavaLocalAdder_CanSetAndReadValue()
         {
             num.SetValue(32);
             num.Value.Should().Be(32);
         }
 
         [Fact]
-        public void LongAdder_CanGetAndSet()
+        public void JavaLocalAdder_CanGetAndSet()
         {
             num.SetValue(32);
             long val = num.GetAndSet(64);
@@ -39,14 +39,14 @@ namespace Metrics.Tests.Utils
         }
 
         [Fact]
-        public void LongAdder_CanBeIncremented()
+        public void JavaLocalAdder_CanBeIncremented()
         {
             num.Increment();
             num.Value.Should().Be(1L);
         }
 
         [Fact]
-        public void LongAdder_CanBeIncrementedMultipleTimes()
+        public void JavaLocalAdder_CanBeIncrementedMultipleTimes()
         {
             num.Increment();
             num.Increment();
@@ -55,25 +55,25 @@ namespace Metrics.Tests.Utils
         }
 
         [Fact]
-        public void LongAdder_CanAddValue()
+        public void JavaLocalAdder_CanAddValue()
         {
             num.Add(7L);
             num.Value.Should().Be(7L);
         }
 
         [Fact]
-        public void LongAdder_CanBeDecremented()
+        public void JavaLocalAdder_CanBeDecremented()
         {
-            num = new LongAdder(10L);
+            num = new JavaLongAdder(10L);
             num.Decrement();
             num.Value.Should().Be(9L);
         }
 
         [Fact]
-        public void LongAdder_CanBeAssigned()
+        public void JavaLocalAdder_CanBeAssigned()
         {
-            LongAdder x = new LongAdder(10L);
-            LongAdder y = x;
+            JavaLongAdder x = new JavaLongAdder(10L);
+            JavaLongAdder y = x;
             y.Value.Should().Be(10L);
         }
 
@@ -88,9 +88,9 @@ namespace Metrics.Tests.Utils
         InlineData(1000000, 2),
         InlineData(1000000, 1),
         ]
-        public void LongAdder_IsCorrectWithLotsOfThreads(long total, int threadCount)
+        public void JavaLocalAdder_IsCorrectWithConcurrency(long total, int threadCount)
         {
-            LongAdder value = new LongAdder();
+            JavaLongAdder value = new JavaLongAdder();
             List<Thread> thread = new List<Thread>();
 
             for (int i = 0; i < threadCount; i++)

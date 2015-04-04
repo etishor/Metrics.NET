@@ -22,7 +22,7 @@ namespace Metrics.Utils
         private volatile bool initialized = false;
         private VolatileDouble rate = new VolatileDouble(0.0);
 
-        private readonly LongAdder uncounted = new LongAdder();
+        private readonly JavaLongAdder uncounted = new JavaLongAdder();
         private readonly double alpha;
         private readonly double interval;
 

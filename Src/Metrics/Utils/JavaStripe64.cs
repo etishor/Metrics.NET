@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace Metrics.Utils
 {
-    public abstract class Stripe64
+    public abstract class JavaStripe64
     {
         [StructLayout(LayoutKind.Explicit, Size = 64 * 2)]
         protected class Cell

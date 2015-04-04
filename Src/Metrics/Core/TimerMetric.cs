@@ -12,7 +12,7 @@ namespace Metrics.Core
         private readonly Clock clock;
         private readonly MeterImplementation meter;
         private readonly HistogramImplementation histogram;
-        private readonly LongAdder activeSessionsCounter = new LongAdder();
+        private readonly JavaLongAdder activeSessionsCounter = new JavaLongAdder();
 
         public TimerMetric()
             : this(new HistogramMetric(), new MeterMetric(), Clock.Default) { }
