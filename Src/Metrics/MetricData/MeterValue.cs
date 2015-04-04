@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Metrics.Utils;
 
@@ -9,6 +10,11 @@ namespace Metrics.MetricData
     /// </summary>
     public sealed class MeterValue
     {
+        private static readonly SetItem[] NoItems = new SetItem[0];
+        public static readonly IComparer<MeterValue.SetItem> SetItemComparer = Comparer<MeterValue.SetItem>.Create((x, y) => x.Percent != y.Percent ?
+                Comparer<double>.Default.Compare(x.Percent, y.Percent) :
+                Comparer<string>.Default.Compare(x.Item, y.Item));
+
         public struct SetItem
         {
             public readonly string Item;
@@ -32,7 +38,7 @@ namespace Metrics.MetricData
         public readonly SetItem[] Items;
 
         internal MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate, TimeUnit rateUnit)
-            : this(count, meanRate, oneMinuteRate, fiveMinuteRate, fifteenMinuteRate, rateUnit, new SetItem[0]) { }
+            : this(count, meanRate, oneMinuteRate, fiveMinuteRate, fifteenMinuteRate, rateUnit, NoItems) { }
 
         public MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate, TimeUnit rateUnit, SetItem[] items)
         {

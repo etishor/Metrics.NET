@@ -1,7 +1,8 @@
 ﻿
 using System;
 using System.Collections.Concurrent;
-using System.Linq;
+using System.Diagnostics;
+using System.Threading;
 using Metrics.MetricData;
 using Metrics.Utils;
 namespace Metrics.Core
@@ -10,14 +11,22 @@ namespace Metrics.Core
 
     public sealed class MeterMetric : MeterImplementation, IDisposable
     {
-        private static readonly TimeSpan tickInterval = TimeSpan.FromSeconds(5);
+        private static readonly TimeSpan TickInterval = TimeSpan.FromSeconds(5);
 
-        private class MeterWrapper
+        private struct MeterWrapper
         {
-            private readonly EWMA m1Rate = EWMA.OneMinuteEWMA();
-            private readonly EWMA m5Rate = EWMA.FiveMinuteEWMA();
-            private readonly EWMA m15Rate = EWMA.FifteenMinuteEWMA();
-            private readonly JavaLongAdder counter = new JavaLongAdder();
+            private readonly ThreadLocalLongAdder counter;
+            private readonly EWMA m1Rate;
+            private readonly EWMA m5Rate;
+            private readonly EWMA m15Rate;
+
+            public MeterWrapper(ThreadLocalLongAdder counter)
+            {
+                this.counter = counter;
+                this.m1Rate = EWMA.OneMinuteEWMA();
+                this.m5Rate = EWMA.FiveMinuteEWMA();
+                this.m15Rate = EWMA.FifteenMinuteEWMA();
+            }
 
             public void Tick()
             {
@@ -36,16 +45,15 @@ namespace Metrics.Core
 
             public void Merge(MeterWrapper other)
             {
-                counter.Add(other.counter.Value);
-
-                m1Rate.Merge(other.m1Rate);
-                m5Rate.Merge(other.m5Rate);
-                m15Rate.Merge(other.m15Rate);
+                this.counter.Add(other.counter.Value);
+                this.m1Rate.Merge(other.m1Rate);
+                this.m5Rate.Merge(other.m5Rate);
+                this.m15Rate.Merge(other.m15Rate);
             }
 
             public void Reset()
             {
-                this.counter.SetValue(0);
+                this.counter.Reset();
                 this.m1Rate.Reset();
                 this.m5Rate.Reset();
                 this.m15Rate.Reset();
@@ -53,17 +61,19 @@ namespace Metrics.Core
 
             public MeterValue GetValue(double elapsed)
             {
-                return new MeterValue(this.counter.Value, this.GetMeanRate(elapsed), this.OneMinuteRate, this.FiveMinuteRate, this.FifteenMinuteRate, TimeUnit.Seconds);
+                return new MeterValue(this.counter.Value, GetMeanRate(elapsed), OneMinuteRate, FiveMinuteRate, FifteenMinuteRate, TimeUnit.Seconds);
             }
 
             private double GetMeanRate(double elapsed)
             {
-                if (this.counter.Value == 0)
+                var value = this.counter.Value;
+
+                if (value == 0)
                 {
                     return 0.0;
                 }
 
-                return this.counter.Value / elapsed * TimeUnit.Seconds.ToNanoseconds(1);
+                return value / elapsed * TimeUnit.Seconds.ToNanoseconds(1);
             }
 
             private double FifteenMinuteRate { get { return this.m15Rate.GetRate(TimeUnit.Seconds); } }
@@ -71,10 +81,9 @@ namespace Metrics.Core
             private double OneMinuteRate { get { return this.m1Rate.GetRate(TimeUnit.Seconds); } }
         }
 
+        private ConcurrentDictionary<string, MeterWrapper> setMeters = null;
 
-        private readonly ConcurrentDictionary<string, MeterWrapper> setMeters = new ConcurrentDictionary<string, MeterWrapper>();
-
-        private readonly MeterWrapper wrapper = new MeterWrapper();
+        private readonly MeterWrapper wrapper = new MeterWrapper(new ThreadLocalLongAdder());
 
         private readonly Clock clock;
         private readonly Scheduler tickScheduler;
@@ -90,8 +99,10 @@ namespace Metrics.Core
             this.clock = clock;
             this.startTime = this.clock.Nanoseconds;
             this.tickScheduler = scheduler;
-            this.tickScheduler.Start(tickInterval, () => Tick());
+            this.tickScheduler.Start(TickInterval, (Action)Tick);
         }
+
+        public MeterValue Value { get { return GetValue(); } }
 
         public void Mark()
         {
@@ -105,49 +116,82 @@ namespace Metrics.Core
 
         public void Mark(string item)
         {
-            this.Mark(item, 1L);
+            Mark(item, 1L);
         }
 
         public void Mark(string item, long count)
         {
-            this.Mark(count);
-            this.setMeters.GetOrAdd(item, v => new MeterWrapper()).Mark(count);
+            Mark(count);
+
+            if (item == null)
+            {
+                return;
+            }
+
+            if (this.setMeters == null)
+            {
+                Interlocked.CompareExchange(ref this.setMeters, new ConcurrentDictionary<string, MeterWrapper>(), null);
+            }
+
+            Debug.Assert(this.setMeters != null);
+            this.setMeters.GetOrAdd(item, v => new MeterWrapper(new ThreadLocalLongAdder())).Mark(count);
         }
 
         public MeterValue GetValue(bool resetMetric = false)
         {
-            var value = this.Value;
-            if (resetMetric)
+            if (this.setMeters == null || this.setMeters.Count == 0)
             {
-                this.Reset();
+                double elapsed = (this.clock.Nanoseconds - this.startTime);
+                var value = this.wrapper.GetValue(elapsed);
+                if (resetMetric)
+                {
+                    Reset();
+                }
+                return value;
             }
-            return value;
+
+            return GetValueWithSetItems(resetMetric);
         }
 
-        public MeterValue Value
+        private MeterValue GetValueWithSetItems(bool resetMetric)
         {
-            get
+            double elapsed = this.clock.Nanoseconds - this.startTime;
+            var value = this.wrapper.GetValue(elapsed);
+
+            Debug.Assert(this.setMeters != null);
+
+            var items = new MeterValue.SetItem[this.setMeters.Count];
+            int index = 0;
+
+            foreach (var meter in this.setMeters)
             {
-                double elapsed = (clock.Nanoseconds - startTime);
-                var value = this.wrapper.GetValue(elapsed);
-
-                var items = this.setMeters
-                    .Select(m => new { Item = m.Key, Value = m.Value.GetValue(elapsed) })
-                    .Select(m => new MeterValue.SetItem(m.Item, value.Count > 0 ? m.Value.Count / (double)value.Count * 100 : 0.0, m.Value))
-                    .OrderBy(m => m.Percent)
-                    .ThenBy(m => m.Item)
-                    .ToArray();
-
-                return new MeterValue(value.Count, value.MeanRate, value.OneMinuteRate, value.FiveMinuteRate, value.FifteenMinuteRate, TimeUnit.Seconds, items);
+                var itemValue = meter.Value.GetValue(elapsed);
+                var percent = value.Count > 0 ? itemValue.Count / (double)value.Count * 100 : 0.0;
+                items[index++] = new MeterValue.SetItem(meter.Key, percent, itemValue);
+                if (index == items.Length)
+                {
+                    break;
+                }
             }
+
+            Array.Sort(items, MeterValue.SetItemComparer);
+            var result = new MeterValue(value.Count, value.MeanRate, value.OneMinuteRate, value.FiveMinuteRate, value.FifteenMinuteRate, TimeUnit.Seconds, items);
+            if (resetMetric)
+            {
+                Reset();
+            }
+            return result;
         }
 
         private void Tick()
         {
             this.wrapper.Tick();
-            foreach (var value in setMeters.Values)
+            if (this.setMeters != null)
             {
-                value.Tick();
+                foreach (var value in this.setMeters.Values)
+                {
+                    value.Tick();
+                }
             }
         }
 
@@ -155,16 +199,24 @@ namespace Metrics.Core
         {
             this.tickScheduler.Stop();
             using (this.tickScheduler) { }
-            this.setMeters.Clear();
+
+            if (this.setMeters != null)
+            {
+                this.setMeters.Clear();
+                this.setMeters = null;
+            }
         }
 
         public void Reset()
         {
             this.startTime = this.clock.Nanoseconds;
             this.wrapper.Reset();
-            foreach (var meter in this.setMeters.Values)
+            if (this.setMeters != null)
             {
-                meter.Reset();
+                foreach (var meter in this.setMeters.Values)
+                {
+                    meter.Reset();
+                }
             }
         }
 
@@ -176,10 +228,13 @@ namespace Metrics.Core
                 return false;
             }
 
-            wrapper.Merge(mOther.wrapper);
-            foreach (var key in mOther.setMeters)
+            this.wrapper.Merge(mOther.wrapper);
+            if (this.setMeters != null && mOther.setMeters != null)
             {
-                this.setMeters.GetOrAdd(key.Key, v => new MeterWrapper()).Merge(key.Value);
+                foreach (var key in mOther.setMeters)
+                {
+                    this.setMeters.GetOrAdd(key.Key, v => new MeterWrapper(new ThreadLocalLongAdder())).Merge(key.Value);
+                }
             }
 
             return true;
