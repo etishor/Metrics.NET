@@ -173,18 +173,11 @@
     <Compile Include="Sampling\Reservoir.cs" />
     <Compile Include="Sampling\UniformSnapshot.cs" />
     <Compile Include="Utils\EWMA.cs" />
-    <Compile Include="Utils\AtomicLong.cs" />
     <Compile Include="TimeUnit.cs" />
     <Compile Include="Utils\HostResolver.cs" />
     <Compile Include="Utils\IHideObjectMembers.cs" />
-    <Compile Include="Utils\JavaLongAdder.cs" />
     <Compile Include="Utils\Scheduler.cs" />
-    <Compile Include="Utils\JavaStripe64.cs" />
-    <Compile Include="Utils\ThreadLocalLongAdder.cs" />
-    <Compile Include="Utils\ThreadLocalRandom.cs" />
     <Compile Include="Utils\TimeUnitExtensions.cs" />
-    <Compile Include="Utils\VolatileDouble.cs" />
-    <Compile Include="Utils\VolatileLong.cs" />
     <Compile Include="Visualization\FlotWebApp.cs" />
     <Compile Include="Visualization\MetricsHttpListener.cs" />
   </ItemGroup>

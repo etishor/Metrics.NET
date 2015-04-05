@@ -1,4 +1,5 @@
 ﻿using System;
+using ConcurrencyUtilities;
 using Metrics.MetricData;
 using Metrics.Sampling;
 using Metrics.Utils;
@@ -108,7 +109,7 @@ namespace Metrics.Core
 
         public TimerValue GetValue(bool resetMetric = false)
         {
-            return new TimerValue(this.meter.GetValue(resetMetric), this.histogram.GetValue(resetMetric), this.activeSessionsCounter.Value, TimeUnit.Nanoseconds);
+            return new TimerValue(this.meter.GetValue(resetMetric), this.histogram.GetValue(resetMetric), this.activeSessionsCounter.GetValue(), TimeUnit.Nanoseconds);
         }
 
         public void Reset()

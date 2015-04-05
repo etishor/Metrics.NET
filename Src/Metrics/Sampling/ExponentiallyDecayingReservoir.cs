@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using ConcurrencyUtilities;
 using Metrics.Utils;
 
 namespace Metrics.Sampling
@@ -60,8 +61,8 @@ namespace Metrics.Sampling
             this.startTime = new VolatileLong(clock.Seconds);
         }
 
-        public long Count { get { return this.count.Get(); } }
-        public int Size { get { return Math.Min(this.size, (int)this.count.Get()); } }
+        public long Count { get { return this.count.GetValue(); } }
+        public int Size { get { return Math.Min(this.size, (int)this.count.GetValue()); } }
 
         public Snapshot GetSnapshot(bool resetReservoir = false)
         {
@@ -69,7 +70,7 @@ namespace Metrics.Sampling
             try
             {
                 this.@lock.Enter(ref lockTaken);
-                var snapshot = new WeightedSnapshot(this.count.Get(), this.values.Values);
+                var snapshot = new WeightedSnapshot(this.count.GetValue(), this.values.Values);
                 if (resetReservoir)
                 {
                     ResetReservoir();
@@ -117,7 +118,7 @@ namespace Metrics.Sampling
 
             foreach (var sample in exponOther.values)
             {
-                var timestamp = exponOther.startTime.Get() + (Math.Log(sample.Value.Weight) / exponOther.alpha);
+                var timestamp = exponOther.startTime.GetValue() + (Math.Log(sample.Value.Weight) / exponOther.alpha);
                 Update(sample.Value.Value, sample.Value.UserValue, (long)timestamp);
             }
 
@@ -127,8 +128,8 @@ namespace Metrics.Sampling
         private void ResetReservoir()
         {
             this.values.Clear();
-            this.count.Set(0L);
-            this.startTime.Set(this.clock.Seconds);
+            this.count.SetValue(0L);
+            this.startTime.SetValue(this.clock.Seconds);
         }
 
         private void Update(long value, string userValue, long timestamp)
@@ -138,7 +139,7 @@ namespace Metrics.Sampling
             {
                 this.@lock.Enter(ref lockTaken);
 
-                var itemWeight = Math.Exp(this.alpha * (timestamp - this.startTime.Get()));
+                var itemWeight = Math.Exp(this.alpha * (timestamp - this.startTime.GetValue()));
                 var sample = new WeightedSample(value, userValue, itemWeight);
 
                 var random = 0.0;
@@ -150,9 +151,9 @@ namespace Metrics.Sampling
 
                 var priority = itemWeight / random;
 
-                var newCount = this.count.Get();
+                var newCount = this.count.GetValue();
                 newCount++;
-                this.count.Set(newCount);
+                this.count.SetValue(newCount);
 
                 if (newCount <= this.size)
                 {
@@ -206,22 +207,22 @@ namespace Metrics.Sampling
             try
             {
                 this.@lock.Enter(ref lockTaken);
-                var oldStartTime = this.startTime.Get();
-                this.startTime.Set(this.clock.Seconds);
+                var oldStartTime = this.startTime.GetValue();
+                this.startTime.SetValue(this.clock.Seconds);
 
-                var scalingFactor = Math.Exp(-this.alpha * (this.startTime.Get() - oldStartTime));
+                var scalingFactor = Math.Exp(-this.alpha * (this.startTime.GetValue() - oldStartTime));
 
                 var keys = new List<double>(this.values.Keys);
                 foreach (var key in keys)
                 {
                     var sample = this.values[key];
                     this.values.Remove(key);
-                    var newKey = key * Math.Exp(-this.alpha * (this.startTime.Get() - oldStartTime));
+                    var newKey = key * Math.Exp(-this.alpha * (this.startTime.GetValue() - oldStartTime));
                     var newSample = new WeightedSample(sample.Value, sample.UserValue, sample.Weight * scalingFactor);
                     this.values[newKey] = newSample;
                 }
                 // make sure the counter is in sync with the number of stored samples.
-                this.count.Set(this.values.Count);
+                this.count.SetValue(this.values.Count);
             }
             finally
             {

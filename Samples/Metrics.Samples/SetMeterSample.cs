@@ -1,6 +1,5 @@
 ﻿
-using System;
-using Metrics.Utils;
+using ConcurrencyUtilities;
 namespace Metrics.Samples
 {
     public class SetMeterSample

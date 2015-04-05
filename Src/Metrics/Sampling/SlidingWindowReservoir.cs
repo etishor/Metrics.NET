@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Metrics.Utils;
+using ConcurrencyUtilities;
 
 namespace Metrics.Sampling
 {
@@ -42,8 +42,8 @@ namespace Metrics.Sampling
             return true;
         }
 
-        public long Count { get { return this.count.Value; } }
-        public int Size { get { return Math.Min((int)this.count.Value, this.values.Length); } }
+        public long Count { get { return this.count.GetValue(); } }
+        public int Size { get { return Math.Min((int)this.count.GetValue(), this.values.Length); } }
 
         public Snapshot GetSnapshot(bool resetReservoir = false)
         {
@@ -65,7 +65,7 @@ namespace Metrics.Sampling
             Array.Sort(snapshotValues, UserValueWrapper.Comparer);
             var minValue = snapshotValues[0].UserValue;
             var maxValue = snapshotValues[size - 1].UserValue;
-            return new UniformSnapshot(this.count.Value, snapshotValues.Select(v => new Tuple<long, string>(v.Value, v.UserValue)), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
+            return new UniformSnapshot(this.count.GetValue(), snapshotValues.Select(v => new Tuple<long, string>(v.Value, v.UserValue)), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
         }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
+using ConcurrencyUtilities;
 using Metrics.MetricData;
 using Metrics.Utils;
 namespace Metrics.Core
@@ -45,7 +46,7 @@ namespace Metrics.Core
 
             public void Merge(MeterWrapper other)
             {
-                this.counter.Add(other.counter.Value);
+                this.counter.Add(other.counter.GetValue());
                 this.m1Rate.Merge(other.m1Rate);
                 this.m5Rate.Merge(other.m5Rate);
                 this.m15Rate.Merge(other.m15Rate);
@@ -61,13 +62,12 @@ namespace Metrics.Core
 
             public MeterValue GetValue(double elapsed)
             {
-                return new MeterValue(this.counter.Value, GetMeanRate(elapsed), OneMinuteRate, FiveMinuteRate, FifteenMinuteRate, TimeUnit.Seconds);
+                var count = this.counter.GetValue();
+                return new MeterValue(count, GetMeanRate(count, elapsed), OneMinuteRate, FiveMinuteRate, FifteenMinuteRate, TimeUnit.Seconds);
             }
 
-            private double GetMeanRate(double elapsed)
+            private static double GetMeanRate(long value, double elapsed)
             {
-                var value = this.counter.Value;
-
                 if (value == 0)
                 {
                     return 0.0;

@@ -1,7 +1,7 @@
 ﻿
 using System;
 using System.Threading;
-using Metrics.Utils;
+using ConcurrencyUtilities;
 namespace Metrics.Samples
 {
     public class UserValueTimerSample

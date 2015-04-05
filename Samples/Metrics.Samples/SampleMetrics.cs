@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Metrics.Utils;
+using ConcurrencyUtilities;
 
 namespace Metrics.Samples
 {

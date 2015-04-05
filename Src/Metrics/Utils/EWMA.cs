@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Diagnostics;
+using ConcurrencyUtilities;
 
 namespace Metrics.Utils
 {
@@ -62,25 +63,25 @@ namespace Metrics.Utils
             var instantRate = count / this.interval;
             if (this.initialized)
             {
-                var doubleRate = this.rate.Get();
-                this.rate.Set(doubleRate + this.alpha * (instantRate - doubleRate));
+                var doubleRate = this.rate.GetValue();
+                this.rate.SetValue(doubleRate + this.alpha * (instantRate - doubleRate));
             }
             else
             {
-                this.rate.Set(instantRate);
+                this.rate.SetValue(instantRate);
                 this.initialized = true;
             }
         }
 
         public double GetRate(TimeUnit rateUnit)
         {
-            return this.rate.Get() * rateUnit.ToNanoseconds(1L);
+            return this.rate.GetValue() * rateUnit.ToNanoseconds(1L);
         }
 
         public void Reset()
         {
             this.uncounted.Reset();
-            this.rate.Set(0.0);
+            this.rate.SetValue(0.0);
         }
 
         public void Merge(EWMA other)
@@ -89,18 +90,19 @@ namespace Metrics.Utils
             {
                 while (true)
                 {
-                    var workingUc = this.uncounted.Value;
-                    var newUncounted = workingUc + other.uncounted.Value;
+                    var workingUc = this.uncounted.GetValue();
+                    var newUncounted = workingUc + other.uncounted.GetValue();
 
                     if (other.initialized)
                     {
-                        var workingRate = this.rate.Get();
+                        var workingRate = this.rate.GetValue();
                         // We're adding two weighted averages... they should just be added
-                        var newRate = workingRate + other.rate.Get();
+                        var newRate = workingRate + other.rate.GetValue();
 
                         // FIXME:  should use CAS, but merging mihgt not be necessary. see commented code below
-                        this.uncounted.SetValue(workingUc + newUncounted);
-                        this.rate.Set(newRate);
+                        this.uncounted.Reset();
+                        this.uncounted.Add(workingUc + newUncounted);
+                        this.rate.SetValue(newRate);
                         break;
                         //if (uncounted.CompareAndSet(workingUc, newUncounted))
                         //{
@@ -116,7 +118,8 @@ namespace Metrics.Utils
                     else
                     {
                         // FIXME:  should use CAS, but merging mihgt not be necessary. see commented code below
-                        this.uncounted.SetValue(workingUc + newUncounted);
+                        this.uncounted.Reset();
+                        this.uncounted.Add(workingUc + newUncounted);
                         break;
                         //if (uncounted.CompareAndSet(workingUc, newUncounted))
                         //{
@@ -127,10 +130,10 @@ namespace Metrics.Utils
             }
             else
             {
-                this.uncounted.Add(other.uncounted.Value);
+                this.uncounted.Add(other.uncounted.GetValue());
                 if (other.initialized)
                 {
-                    this.rate.Set(other.rate.Get());
+                    this.rate.SetValue(other.rate.GetValue());
                 }
             }
         }

@@ -2,8 +2,8 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
+using ConcurrencyUtilities;
 using Metrics.MetricData;
-using Metrics.Utils;
 
 namespace Metrics.Core
 {
@@ -21,7 +21,7 @@ namespace Metrics.Core
             {
                 if (this.setCounters == null || this.setCounters.Count == 0)
                 {
-                    return new CounterValue(this.counter.Value);
+                    return new CounterValue(this.counter.GetValue());
                 }
                 return GetValueWithSetItems();
             }
@@ -101,13 +101,13 @@ namespace Metrics.Core
                 return false;
             }
 
-            Increment(cOther.counter.Value);
+            Increment(cOther.counter.GetValue());
 
             if (cOther.setCounters != null)
             {
                 foreach (var setCounter in cOther.setCounters)
                 {
-                    SetCounter(setCounter.Key).Add(setCounter.Value.Value);
+                    SetCounter(setCounter.Key).Add(setCounter.Value.GetValue());
                 }
             }
 
@@ -127,13 +127,13 @@ namespace Metrics.Core
         private CounterValue GetValueWithSetItems()
         {
             Debug.Assert(this.setCounters != null);
-            var total = this.counter.Value;
+            var total = this.counter.GetValue();
 
             var items = new CounterValue.SetItem[this.setCounters.Count];
             var index = 0;
             foreach (var item in this.setCounters)
             {
-                var itemValue = item.Value.Value;
+                var itemValue = item.Value.GetValue();
 
                 var percent = total > 0 ? itemValue / (double)total * 100 : 0.0;
                 var setCounter = new CounterValue.SetItem(item.Key, itemValue, percent);
