@@ -18,7 +18,7 @@ namespace HdrHistogram.NET.Iteration
      */
     public class LogarithmicIterator : AbstractHistogramIterator
     {
-        int valueUnitsInFirstBucket;
+        //int valueUnitsInFirstBucket;
         double logBase;
         long nextValueReportingLevel;
         long nextValueReportingLevelLowestEquivalent;
@@ -37,7 +37,7 @@ namespace HdrHistogram.NET.Iteration
         {
             base.resetIterator(histogram);
             this.logBase = logBase;
-            this.valueUnitsInFirstBucket = valueUnitsInFirstBucket;
+            //this.valueUnitsInFirstBucket = valueUnitsInFirstBucket;
             this.nextValueReportingLevel = valueUnitsInFirstBucket;
             this.nextValueReportingLevelLowestEquivalent = histogram.lowestEquivalentValue(this.nextValueReportingLevel);
         }
