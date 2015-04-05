@@ -7,14 +7,14 @@ env:
  global:
   - EnableNuGetPackageRestore=true
  matrix:
-  - MONO_VERSION="3.10.0.20"
+  - MONO_VERSION="3.12.1"
 before_install:
- - wget "http://download.mono-project.com/archive/3.10.0/macos-10-x86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
+ - wget "http://download.mono-project.com/archive/3.12.1/macos-10-x86/MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg"
  - sudo installer -pkg "MonoFramework-MDK-${MONO_VERSION}.macos10.xamarin.x86.pkg" -target /
 
 script:
+ - mono .nuget/NuGet.exe restore Metrics.sln 
  - xbuild Metrics.Sln /p:Configuration="Debug"
  - xbuild Metrics.Sln /p:Configuration="Release"
- - mono .nuget/NuGet.exe restore Metrics.sln 
- - mono ./packages/xunit.runner.console.2.0.0\tools\xunit.console.exe ./bin/Debug/Tests/Metrics.Tests.dll
- - mono ./packages/xunit.runner.console.2.0.0\tools\xunit.console.exe ./bin/Release/Tests/Metrics.Tests.dll
+ - mono ./packages/xunit.runner.console.2.0.0/tools/xunit.console.exe ./bin/Debug/Tests/Metrics.Tests.dll
+ - mono ./packages/xunit.runner.console.2.0.0/tools/xunit.console.exe ./bin/Release/Tests/Metrics.Tests.dll
