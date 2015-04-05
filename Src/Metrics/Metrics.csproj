@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>..\..\bin\Release\Metrics.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
+    <NoWarn>1591 1570</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -76,6 +76,26 @@
       <Link>App_Packages\ConcurrencyUtils\VolatileLong.cs</Link>
     </Compile>
     <Compile Include="AdvancedMetricsContext.cs" />
+    <Compile Include="App_Packages\HdrHistogram\AbstractHistogram.cs" />
+    <Compile Include="App_Packages\HdrHistogram\AbstractHistogramBase.cs" />
+    <Compile Include="App_Packages\HdrHistogram\AtomicHistogram.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Histogram.cs" />
+    <Compile Include="App_Packages\HdrHistogram\IntHistogram.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Iteration\AbstractHistogramIterator.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Iteration\AllValuesIterator.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Iteration\HistogramIterationValue.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Iteration\LinearIterator.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Iteration\LogarithmicIterator.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Iteration\PercentileIterator.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Iteration\RecordedValuesIterator.cs" />
+    <Compile Include="App_Packages\HdrHistogram\ShortHistogram.cs" />
+    <Compile Include="App_Packages\HdrHistogram\SynchronizedHistogram.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Utilities\AtomicLong.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Utilities\AtomicLongArray.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Utilities\ByteBuffer.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Utilities\CountingMemoryStream.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Utilities\MiscUtilities.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Utilities\WrappedBuffer.cs" />
     <Compile Include="App_Packages\LibLog.3.1\LibLog.cs" />
     <Compile Include="Core\BaseMetricsContext.cs" />
     <Compile Include="Core\DefaultMetricsBuilder.cs" />
