@@ -787,18 +787,17 @@ namespace HdrHistogram.NET
             double requestedPercentile = Math.Min(percentile, 100.0); // Truncate down to 100%
             long countAtPercentile = (long)(((requestedPercentile / 100.0) * getTotalCount()) + 0.5); // round to nearest
             countAtPercentile = Math.Max(countAtPercentile, 1); // Make sure we at least reach the first recorded entry
-            long totalToCurrentIJ = 0;
-            for (int i = 0; i < bucketCount; i++) {
-                int j = (i == 0) ? 0 : (subBucketCount / 2);
-                for (; j < subBucketCount; j++) {
-                    totalToCurrentIJ += getCountAt(i, j);
-                    if (totalToCurrentIJ >= countAtPercentile) {
-                        long valueAtIndex = valueFromIndex(i, j);
-                        return highestEquivalentValue(valueAtIndex);
-                    }
+            long totalToCurrentIndex = 0;
+            for (int i = 0; i < countsArrayLength; i++) {
+                totalToCurrentIndex += getCountAtIndex(i);
+                if (totalToCurrentIndex >= countAtPercentile) {
+                    long valueAtIndex = valueFromIndex(i);
+                    return (percentile == 0.0) ?
+                            lowestEquivalentValue(valueAtIndex) :
+                            highestEquivalentValue(valueAtIndex);
                 }
             }
-            throw new ArgumentOutOfRangeException("percentile value not found in range"); // should not reach here.
+            return 0;
         }
 
         /**
