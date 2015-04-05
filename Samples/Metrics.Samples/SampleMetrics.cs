@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Metrics.Utils;
+using ConcurrencyUtilities;
 
 namespace Metrics.Samples
 {
@@ -42,7 +42,7 @@ namespace Metrics.Samples
         public SampleMetrics()
         {
             // define a simple gauge that will provide the instant value of this.someValue when requested
-            Metric.Gauge("SampleMetrics.DataValue", () => this.someValue, new Unit("$"));
+            Metric.Gauge("SampleMetrics.DataValue", () => this.someValue, Unit.Custom("$"));
         }
 
         public void Request(int i)

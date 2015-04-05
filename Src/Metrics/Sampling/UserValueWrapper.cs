@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 namespace Metrics.Sampling
 {
-    public sealed class UserValueWrapper
+    public struct UserValueWrapper
     {
+        public static readonly UserValueWrapper Empty = new UserValueWrapper();
         public static readonly IComparer<UserValueWrapper> Comparer = new UserValueComparer();
 
         public readonly long Value;
         public readonly string UserValue;
-
-        public UserValueWrapper()
-            : this(0, null)
-        { }
 
         public UserValueWrapper(long value, string userValue = null)
         {

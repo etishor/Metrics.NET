@@ -1,8 +1,11 @@
 ﻿
 using System;
+using System.Diagnostics;
+using System.Globalization;
 using Metrics.Utils;
 namespace Metrics
 {
+    [DebuggerDisplay("{Name}")]
     public struct Unit : IHideObjectMembers
     {
         public static readonly Unit None = new Unit(string.Empty);
@@ -31,7 +34,7 @@ namespace Metrics
 
         public readonly string Name;
 
-        public Unit(string name)
+        private Unit(string name)
         {
             if (name == null)
             {
@@ -50,7 +53,7 @@ namespace Metrics
         {
             if (!string.IsNullOrEmpty(this.Name))
             {
-                return string.Format("{0} {1}", value, this.Name);
+                return string.Format("{0} {1}", value.ToString(CultureInfo.InvariantCulture), this.Name);
             }
             return value.ToString();
         }
@@ -59,19 +62,19 @@ namespace Metrics
         {
             if (!string.IsNullOrEmpty(this.Name))
             {
-                return string.Format("{0:F2} {1}", value, this.Name);
+                return string.Format("{0} {1}", value.ToString("F2", CultureInfo.InvariantCulture), this.Name);
             }
-            return value.ToString("F2");
+            return value.ToString("F2", CultureInfo.InvariantCulture);
         }
 
         public string FormatRate(double value, TimeUnit timeUnit)
         {
-            return string.Format("{0:F2} {1}/{2}", value, this.Name, timeUnit.Unit());
+            return string.Format("{0} {1}/{2}", value.ToString("F2", CultureInfo.InvariantCulture), this.Name, timeUnit.Unit());
         }
 
         public string FormatDuration(double value, TimeUnit? timeUnit)
         {
-            return string.Format("{0:F2} {1}", value, timeUnit.HasValue ? timeUnit.Value.Unit() : this.Name);
+            return string.Format("{0} {1}", value.ToString("F2", CultureInfo.InvariantCulture), timeUnit.HasValue ? timeUnit.Value.Unit() : this.Name);
         }
     }
 }

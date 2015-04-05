@@ -1,10 +1,16 @@
 ﻿
 using System;
+using System.Collections.Generic;
+
 namespace Metrics.MetricData
 {
-
     public struct CounterValue
     {
+        private static readonly SetItem[] NoItems = new SetItem[0];
+        public static readonly IComparer<CounterValue.SetItem> SetItemComparer = Comparer<CounterValue.SetItem>.Create((x, y) => x.Percent != y.Percent ?
+                Comparer<double>.Default.Compare(x.Percent, y.Percent) :
+                Comparer<string>.Default.Compare(x.Item, y.Item));
+
         public struct SetItem
         {
             /// <summary>
@@ -39,6 +45,8 @@ namespace Metrics.MetricData
         /// Separate counters for each registered set item.
         /// </summary>
         public readonly SetItem[] Items;
+
+        internal CounterValue(long count) : this(count, NoItems) { }
 
         public CounterValue(long count, SetItem[] items)
         {

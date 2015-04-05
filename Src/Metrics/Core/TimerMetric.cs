@@ -1,4 +1,5 @@
 ﻿using System;
+using ConcurrencyUtilities;
 using Metrics.MetricData;
 using Metrics.Sampling;
 using Metrics.Utils;
@@ -12,7 +13,7 @@ namespace Metrics.Core
         private readonly Clock clock;
         private readonly MeterImplementation meter;
         private readonly HistogramImplementation histogram;
-        private AtomicLong counter = new AtomicLong();
+        private readonly ThreadLocalLongAdder activeSessionsCounter = new ThreadLocalLongAdder();
 
         public TimerMetric()
             : this(new HistogramMetric(), new MeterMetric(), Clock.Default) { }
@@ -51,12 +52,12 @@ namespace Metrics.Core
             var start = this.clock.Nanoseconds;
             try
             {
-                counter.Increment();
+                this.activeSessionsCounter.Increment();
                 action();
             }
             finally
             {
-                counter.Decrement();
+                this.activeSessionsCounter.Decrement();
                 Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds, userValue);
             }
         }
@@ -66,35 +67,36 @@ namespace Metrics.Core
             var start = this.clock.Nanoseconds;
             try
             {
-                counter.Increment();
+                this.activeSessionsCounter.Increment();
                 return action();
             }
             finally
             {
-                counter.Decrement();
+                this.activeSessionsCounter.Decrement();
                 Record(this.clock.Nanoseconds - start, TimeUnit.Nanoseconds, userValue);
             }
         }
 
-        public TimerContext NewContext(string userValue = null)
+        public long StartRecording()
         {
-            counter.Increment();
-            return new TimeMeasuringContext(this.clock, (t) =>
-            {
-                counter.Decrement();
-                Record(t, TimeUnit.Nanoseconds, userValue);
-            });
+            this.activeSessionsCounter.Increment();
+            return this.clock.Nanoseconds;
         }
 
-        public TimerContext NewContext(Action<TimeSpan> finalAction, string userValue = null)
+        public long CurrentTime()
         {
-            counter.Increment();
-            return new TimeMeasuringContext(this.clock, t =>
-            {
-                counter.Decrement();
-                Record(t, TimeUnit.Nanoseconds, userValue);
-                finalAction(TimeSpan.FromMilliseconds(TimeUnit.Nanoseconds.ToMilliseconds(t)));
-            });
+            return this.clock.Nanoseconds;
+        }
+
+        public long EndRecording()
+        {
+            this.activeSessionsCounter.Decrement();
+            return this.clock.Nanoseconds;
+        }
+
+        public TimerContext NewContext(string userValue = null)
+        {
+            return new TimerContext(this, userValue);
         }
 
         public TimerValue Value
@@ -107,7 +109,7 @@ namespace Metrics.Core
 
         public TimerValue GetValue(bool resetMetric = false)
         {
-            return new TimerValue(this.meter.GetValue(resetMetric), this.histogram.GetValue(resetMetric), this.counter.Value, TimeUnit.Nanoseconds);
+            return new TimerValue(this.meter.GetValue(resetMetric), this.histogram.GetValue(resetMetric), this.activeSessionsCounter.GetValue(), TimeUnit.Nanoseconds);
         }
 
         public void Reset()
@@ -130,8 +132,8 @@ namespace Metrics.Core
                 return false;
             }
 
-            meter.Merge(tOther.meter);
-            histogram.Merge(tOther.histogram);
+            this.meter.Merge(tOther.meter);
+            this.histogram.Merge(tOther.histogram);
             return true;
         }
     }

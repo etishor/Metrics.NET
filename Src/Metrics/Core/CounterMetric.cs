@@ -1,7 +1,9 @@
-﻿using System.Collections.Concurrent;
-using System.Linq;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Threading;
+using ConcurrencyUtilities;
 using Metrics.MetricData;
-using Metrics.Utils;
 
 namespace Metrics.Core
 {
@@ -9,20 +11,19 @@ namespace Metrics.Core
 
     public sealed class CounterMetric : CounterImplementation
     {
-        private readonly ConcurrentDictionary<string, AtomicLongHolder> setCounters = new ConcurrentDictionary<string, AtomicLongHolder>();
+        private ConcurrentDictionary<string, ThreadLocalLongAdder> setCounters = null;
 
-        private AtomicLong counter = new AtomicLong();
+        private readonly ThreadLocalLongAdder counter = new ThreadLocalLongAdder();
 
         public CounterValue Value
         {
             get
             {
-                var total = this.counter.Value;
-                var items = setCounters.Select(i => new CounterValue.SetItem(i.Key, i.Value.Value, total > 0 ? i.Value.Value / (double)total * 100 : 0.0))
-                    .OrderBy(i => i.Count)
-                    .ThenBy(i => i.Item)
-                    .ToArray();
-                return new CounterValue(total, items);
+                if (this.setCounters == null || this.setCounters.Count == 0)
+                {
+                    return new CounterValue(this.counter.GetValue());
+                }
+                return GetValueWithSetItems();
             }
         }
 
@@ -58,34 +59,37 @@ namespace Metrics.Core
 
         public void Reset()
         {
-            this.counter.SetValue(0L);
-            foreach (var item in this.setCounters)
+            this.counter.Reset();
+            if (this.setCounters != null)
             {
-                item.Value.SetValue(0L);
+                foreach (var item in this.setCounters)
+                {
+                    item.Value.Reset();
+                }
             }
         }
 
         public void Increment(string item)
         {
-            this.Increment();
+            Increment();
             SetCounter(item).Increment();
         }
 
         public void Increment(string item, long amount)
         {
-            this.Increment(amount);
+            Increment(amount);
             SetCounter(item).Add(amount);
         }
 
         public void Decrement(string item)
         {
-            this.Decrement();
+            Decrement();
             SetCounter(item).Decrement();
         }
 
         public void Decrement(string item, long amount)
         {
-            this.Decrement(amount);
+            Decrement(amount);
             SetCounter(item).Add(-amount);
         }
 
@@ -97,18 +101,52 @@ namespace Metrics.Core
                 return false;
             }
 
-            Increment(cOther.counter.Value);
-            foreach (var setCounter in cOther.setCounters)
+            Increment(cOther.counter.GetValue());
+
+            if (cOther.setCounters != null)
             {
-                SetCounter(setCounter.Key).Add(setCounter.Value.Value);
+                foreach (var setCounter in cOther.setCounters)
+                {
+                    SetCounter(setCounter.Key).Add(setCounter.Value.GetValue());
+                }
             }
 
             return true;
         }
 
-        private AtomicLongHolder SetCounter(string item)
+        private ThreadLocalLongAdder SetCounter(string item)
         {
-            return this.setCounters.GetOrAdd(item, v => new AtomicLongHolder());
+            if (this.setCounters == null)
+            {
+                Interlocked.CompareExchange(ref this.setCounters, new ConcurrentDictionary<string, ThreadLocalLongAdder>(), null);
+            }
+            Debug.Assert(this.setCounters != null);
+            return this.setCounters.GetOrAdd(item, v => new ThreadLocalLongAdder());
+        }
+
+        private CounterValue GetValueWithSetItems()
+        {
+            Debug.Assert(this.setCounters != null);
+            var total = this.counter.GetValue();
+
+            var items = new CounterValue.SetItem[this.setCounters.Count];
+            var index = 0;
+            foreach (var item in this.setCounters)
+            {
+                var itemValue = item.Value.GetValue();
+
+                var percent = total > 0 ? itemValue / (double)total * 100 : 0.0;
+                var setCounter = new CounterValue.SetItem(item.Key, itemValue, percent);
+                items[index++] = setCounter;
+                if (index == items.Length)
+                {
+                    break;
+                }
+            }
+
+            Array.Sort(items, CounterValue.SetItemComparer);
+
+            return new CounterValue(total, items);
         }
     }
 }

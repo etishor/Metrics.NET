@@ -1,5 +1,8 @@
 ﻿
 using System;
+using System.Diagnostics;
+using ConcurrencyUtilities;
+
 namespace Metrics.Utils
 {
     /// <summary>
@@ -8,7 +11,7 @@ namespace Metrics.Utils
     /// <a href="http://www.teamquest.com/pdfs/whitepaper/ldavg2.pdf">UNIX Load Average Part 2: Not Your Average Average</a>
     /// <a href="http://en.wikipedia.org/wiki/Moving_average#Exponential_moving_average">EMA</a>
     /// </summary>
-    public class EWMA
+    public sealed class EWMA
     {
         private const int Interval = 5;
         private const double SecondsPerMinute = 60.0;
@@ -22,7 +25,7 @@ namespace Metrics.Utils
         private volatile bool initialized = false;
         private VolatileDouble rate = new VolatileDouble(0.0);
 
-        private AtomicLong uncounted = new AtomicLong();
+        private readonly ThreadLocalLongAdder uncounted = new ThreadLocalLongAdder();
         private readonly double alpha;
         private readonly double interval;
 
@@ -43,84 +46,94 @@ namespace Metrics.Utils
 
         public EWMA(double alpha, long interval, TimeUnit intervalUnit)
         {
+            Debug.Assert(interval > 0);
             this.interval = intervalUnit.ToNanoseconds(interval);
             this.alpha = alpha;
         }
 
         public void Update(long value)
         {
-            uncounted.Add(value);
+            this.uncounted.Add(value);
         }
 
         public void Tick()
         {
-            long count = uncounted.GetAndReset();
+            var count = this.uncounted.GetAndReset();
 
-            double instantRate = count / interval;
-            if (initialized)
+            var instantRate = count / this.interval;
+            if (this.initialized)
             {
-                double doubleRate = rate.Get();
-                rate.Set(doubleRate + alpha * (instantRate - doubleRate));
+                var doubleRate = this.rate.GetValue();
+                this.rate.SetValue(doubleRate + this.alpha * (instantRate - doubleRate));
             }
             else
             {
-                rate.Set(instantRate);
-                initialized = true;
+                this.rate.SetValue(instantRate);
+                this.initialized = true;
             }
         }
 
         public double GetRate(TimeUnit rateUnit)
         {
-            return rate.Get() * rateUnit.ToNanoseconds(1L);
+            return this.rate.GetValue() * rateUnit.ToNanoseconds(1L);
         }
 
         public void Reset()
         {
-            uncounted.SetValue(0L);
-            rate.Set(0.0);
+            this.uncounted.Reset();
+            this.rate.SetValue(0.0);
         }
 
         public void Merge(EWMA other)
         {
-            if (initialized)
+            if (this.initialized)
             {
                 while (true)
                 {
-                    var workingUc = uncounted.Value;
-                    var newUncounted = workingUc + other.uncounted.Value;
+                    var workingUc = this.uncounted.GetValue();
+                    var newUncounted = workingUc + other.uncounted.GetValue();
 
                     if (other.initialized)
                     {
-                        var workingRate = rate.Get();
+                        var workingRate = this.rate.GetValue();
                         // We're adding two weighted averages... they should just be added
-                        var newRate = workingRate + other.rate.Get();
+                        var newRate = workingRate + other.rate.GetValue();
 
-                        if (uncounted.CompareAndSet(workingUc, newUncounted))
-                        {
-                            // very slight potential for a 
-                            // race condition if another thread gets
-                            // through Tick(), start to finish, in between
-                            // the execution of the line above and the
-                            // line below
-                            rate.Set(newRate);
-                            break;
-                        }
+                        // FIXME:  should use CAS, but merging mihgt not be necessary. see commented code below
+                        this.uncounted.Reset();
+                        this.uncounted.Add(workingUc + newUncounted);
+                        this.rate.SetValue(newRate);
+                        break;
+                        //if (uncounted.CompareAndSet(workingUc, newUncounted))
+                        //{
+                        //    // very slight potential for a 
+                        //    // race condition if another thread gets
+                        //    // through Tick(), start to finish, in between
+                        //    // the execution of the line above and the
+                        //    // line below
+                        //    rate.Set(newRate);
+                        //    break;
+                        //}
                     }
                     else
                     {
-                        if (uncounted.CompareAndSet(workingUc, newUncounted))
-                        {
-                            break;
-                        }
+                        // FIXME:  should use CAS, but merging mihgt not be necessary. see commented code below
+                        this.uncounted.Reset();
+                        this.uncounted.Add(workingUc + newUncounted);
+                        break;
+                        //if (uncounted.CompareAndSet(workingUc, newUncounted))
+                        //{
+                        //    break;
+                        //}
                     }
                 }
             }
             else
             {
-                uncounted.Add(other.uncounted.Value);
+                this.uncounted.Add(other.uncounted.GetValue());
                 if (other.initialized)
                 {
-                    rate.Set(other.rate.Get());
+                    this.rate.SetValue(other.rate.GetValue());
                 }
             }
         }

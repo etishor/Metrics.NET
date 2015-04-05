@@ -1,5 +1,4 @@
 ﻿
-using System;
 using Metrics;
 using Metrics.Utils;
 using Nancy.Bootstrapper;
@@ -7,7 +6,6 @@ namespace Nancy.Metrics
 {
     public class NancyGlobalMetrics : IHideObjectMembers
     {
-        private const string TimerItemsKey = "__Mertics.RequestTimer__";
         private const string RequestStartTimeKey = "__Metrics.RequestStartTime__";
 
         private static MetricsContext nancyGlobalMetricsContext;
@@ -59,17 +57,22 @@ namespace Nancy.Metrics
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
-                ctx.Items[TimerItemsKey] = requestTimer.NewContext();
+                ctx.Items[RequestStartTimeKey] = requestTimer.StartRecording();
                 return null;
             });
 
             nancyPipelines.AfterRequest.AddItemToEndOfPipeline(ctx =>
             {
                 object timer;
-                if (ctx.Items.TryGetValue(TimerItemsKey, out timer))
+                if (ctx.Items.TryGetValue(RequestStartTimeKey, out timer))
                 {
-                    using (timer as IDisposable) { }
-                    ctx.Items.Remove(TimerItemsKey);
+                    if (timer is long)
+                    {
+                        var startTime = (long)timer;
+                        var endTime = requestTimer.EndRecording();
+                        requestTimer.Record(endTime - startTime, TimeUnit.Nanoseconds);
+                    }
+                    ctx.Items.Remove(RequestStartTimeKey);
                 }
             });
 
