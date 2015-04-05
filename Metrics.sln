@@ -54,6 +54,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NancyFx.Sample", "Samples\N
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Sample", "Samples\Owin.Sample\Owin.Sample.csproj", "{828188F9-26C2-4C93-A156-D9EA13D7E2FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Owin.Metrics", "Src\Adapters\Owin.Metrics\Owin.Metrics.csproj", "{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -108,6 +110,10 @@ Global
 		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{828188F9-26C2-4C93-A156-D9EA13D7E2FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -122,5 +128,6 @@ Global
 		{A9074D3E-3421-483D-AF98-4AAEEED11ECA} = {DEC3A50A-7243-45C0-9995-F829BFF99453}
 		{B7C6EF21-0797-4B53-A917-1CFF8267CD67} = {DEC3A50A-7243-45C0-9995-F829BFF99453}
 		{828188F9-26C2-4C93-A156-D9EA13D7E2FA} = {DEC3A50A-7243-45C0-9995-F829BFF99453}
+		{025CD6D0-1A1E-4B14-A7DB-AF5DFF887210} = {443860DA-6378-47D0-A4AE-4E79975C5E1C}
 	EndGlobalSection
 EndGlobal
