@@ -14,12 +14,11 @@ namespace Metrics.TestConsole
             var maxValue = TimeUnit.Hours.Convert(TimeUnit.Nanoseconds, 1);
             var histogram = new HdrHistogram.NET.Histogram(maxValue, 3);
 
-            var p5 = histogram.getValueAtPercentile(50);
-
             Reservoir reservoir = new SyncronizedHdrReservoir(histogram);
 
             var hdr = Metric.Advanced.Histogram("hdr", Unit.Calls, () => reservoir);
 
+            hdr.Update(1);
 
 
             Console.WriteLine("press any key to exit");
