@@ -16,6 +16,6 @@ script:
  - mono .nuget/NuGet.exe restore Metrics.sln 
  - xbuild Metrics.Sln /p:Configuration="Debug"
  - xbuild Metrics.Sln /p:Configuration="Release"
- - cp /bin/Release/Tests/xunit.execution.desktop.dll ./xunit.execution.desktop.dll
+ - cp ./bin/Release/Tests/xunit.execution.desktop.dll ./xunit.execution.desktop.dll
  - mono ./packages/xunit.runner.console.2.0.0/tools/xunit.console.exe ./bin/Debug/Tests/Metrics.Tests.dll
  - mono ./packages/xunit.runner.console.2.0.0/tools/xunit.console.exe ./bin/Release/Tests/Metrics.Tests.dll
