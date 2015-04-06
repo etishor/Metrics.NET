@@ -2,8 +2,8 @@
 
 |Branch|Appveyor|Travis|
 |------|:--------:|:------:|
-|master|[![Master Build status](https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2/branch/master?svg=true)](https://ci.appveyor.com/project/etishor/metrics-net/branch/master)|[![Mono Build Status](https://img.shields.io/travis/etishor/Metrics.NET/master.svg)](https://travis-ci.org/etishor/Metrics.NET.svg?branch=master)|
-|dev   |[![Dev Build status](https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2/branch/dev?svg=true)](https://ci.appveyor.com/project/etishor/metrics-net/branch/dev)|[![Mono Build Status](https://img.shields.io/travis/etishor/Metrics.NET/dev.svg)](https://travis-ci.org/etishor/Metrics.NET.svg?branch=dev)|
+|master|[![Master Build status](https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2/branch/master?svg=true)](https://ci.appveyor.com/project/etishor/metrics-net/branch/master)|[![Mono Build Status](https://img.shields.io/travis/etishor/Metrics.NET/master.svg)](https://travis-ci.org/etishor/Metrics.NET)|
+|dev   |[![Dev Build status](https://ci.appveyor.com/api/projects/status/m6ng7uml4wqm3ni2/branch/dev?svg=true)](https://ci.appveyor.com/project/etishor/metrics-net/branch/dev)|[![Mono Build Status](https://img.shields.io/travis/etishor/Metrics.NET/dev.svg)](https://travis-ci.org/etishor/Metrics.NET)|
 
 [![NuGet Status](http://img.shields.io/nuget/v/Metrics.NET.svg)](https://www.nuget.org/packages/Metrics.NET/) 
 [![Issue Stats](http://www.issuestats.com/github/etishor/Metrics.NET/badge/pr)](http://www.issuestats.com/github/etishor/Metrics.NET)
