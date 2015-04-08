@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
-using ConcurrencyUtilities;
 using Metrics.MetricData;
 
 namespace Metrics.Core

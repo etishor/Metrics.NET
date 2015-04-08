@@ -1,5 +1,4 @@
 ﻿using System;
-using ConcurrencyUtilities;
 using Metrics.MetricData;
 using Metrics.Sampling;
 using Metrics.Utils;

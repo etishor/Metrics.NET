@@ -1,7 +1,6 @@
 ﻿
 using System;
 using System.Linq;
-using ConcurrencyUtilities;
 namespace Metrics.Sampling
 {
     public sealed class UniformReservoir : Reservoir

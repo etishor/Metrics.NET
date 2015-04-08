@@ -1,5 +1,4 @@
 ﻿
-using ConcurrencyUtilities;
 namespace Metrics.Samples
 {
     public class SetCounterSample

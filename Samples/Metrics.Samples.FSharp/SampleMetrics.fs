@@ -2,7 +2,6 @@
 
 open Metrics
 open Metrics.Core
-open ConcurrencyUtilities
 open System
 open System.Collections.Generic
 open System.Threading
