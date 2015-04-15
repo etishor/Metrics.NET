@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Metrics.Logging;
 
 namespace Metrics
@@ -187,15 +188,25 @@ namespace Metrics
             try
             {
                 var configName = ConfigurationManager.AppSettings["Metrics.GlobalContextName"];
-                var name = string.IsNullOrEmpty(configName) ? Process.GetCurrentProcess().ProcessName : configName;
+                var name = string.IsNullOrEmpty(configName) ? GetDefaultGlobalContextName() : ParseGlobalContextName(configName);
                 log.Debug(() => "Metrics: GlobalContext Name set to " + name);
                 return name;
             }
             catch (Exception x)
             {
-                log.ErrorException("Metrics: Error reading config value for Metrics.GlobalContetName", x);
+                log.ErrorException("Metrics: Error reading config value for Metrics.GlobalContextName", x);
                 throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.GlobalContextName must be non empty string", x);
             }
+        }
+
+        private static string ParseGlobalContextName(string configName)
+        {
+            return Regex.Replace(configName, @"\$Env\.MachineName\$", Environment.MachineName, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+        }
+
+        private static string GetDefaultGlobalContextName()
+        {
+            return string.Format(@"{0}.{1}", Environment.MachineName, Process.GetCurrentProcess().ProcessName);
         }
     }
 }
