@@ -42,6 +42,7 @@ namespace Metrics.Json
 
         public long Count { get; set; }
         public long ActiveSessions { get; set; }
+        public long TotalTime { get; set; }
         public RateData Rate { get; set; }
         public HistogramData Histogram { get; set; }
         public string RateUnit { get; set; }
@@ -54,6 +55,7 @@ namespace Metrics.Json
                 Name = timer.Name,
                 Count = timer.Value.Rate.Count,
                 ActiveSessions = timer.Value.ActiveSessions,
+                TotalTime = timer.Value.TotalTime,
                 Rate = ToRate(timer.Value.Rate),
                 Histogram = ToHistogram(timer.Value.Histogram),
                 Unit = timer.Unit.Name,
@@ -112,6 +114,7 @@ namespace Metrics.Json
             yield return new JsonProperty("Name", this.Name);
             yield return new JsonProperty("Count", this.Count);
             yield return new JsonProperty("ActiveSessions", this.ActiveSessions);
+            yield return new JsonProperty("TotalTime", this.TotalTime);
 
             yield return new JsonProperty("Rate", ToJsonProperties(this.Rate));
             yield return new JsonProperty("Histogram", ToJsonProperties(this.Histogram));
@@ -178,7 +181,7 @@ namespace Metrics.Json
                 this.Histogram.Percentile75, this.Histogram.Percentile95, this.Histogram.Percentile98,
                 this.Histogram.Percentile99, this.Histogram.Percentile999, this.Histogram.SampleSize);
 
-            var timerValue = new TimerValue(rateValue, histogramValue, this.ActiveSessions, durationUnit);
+            var timerValue = new TimerValue(rateValue, histogramValue, this.ActiveSessions, this.TotalTime, durationUnit);
 
             return new TimerValueSource(this.Name, ConstantValue.Provider(timerValue), this.Unit, rateUnit, durationUnit, this.Tags);
         }
