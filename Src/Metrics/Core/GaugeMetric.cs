@@ -89,4 +89,112 @@ namespace Metrics.Core
             return gauge.Merge(other);
         }
     }
+
+    public abstract class RatioGauge : GaugeImplementation
+    {
+
+        /// <summary>
+        /// A ratio of one quantity to another.
+        /// </summary>
+        public sealed class Ratio 
+        {
+            /// <summary>
+            /// Creates a new ratio with the given numerator and denominator.
+            /// </summary>
+            /// <param name="numerator">the numerator of the ratio</param>
+            /// <param name="denominator">the denominator of the ratio</param>
+            /// <returns>numerator:denominator</returns>
+            public static Ratio Of(double numerator, double denominator) 
+            {
+                return new Ratio(numerator, denominator);
+            }
+
+            private readonly double _numerator;
+            private readonly double _denominator;
+
+            private Ratio(double numerator, double denominator) 
+            {
+                _numerator = numerator;
+                _denominator = denominator;
+            }
+
+            /// <summary>
+            /// Returns the ratio, which is either a {@code double} between 0 and 1 (inclusive) or Double.NaN.
+            /// </summary>
+            public double Value {
+                get
+                {
+                    // ReSharper disable once CompareOfFloatsByEqualityOperator
+                    if (double.IsNaN(_denominator) || double.IsInfinity(_denominator) || _denominator == 0)
+                    {
+                        return Double.NaN;
+                    }
+                    return _numerator / _denominator;
+                }
+            }
+
+            public override string ToString()
+            {
+                return _numerator + ":" + _denominator;
+            }
+
+        }
+
+        /// <summary>
+        /// Returns the {@link Ratio} which is the gauge's current value.
+        /// </summary>
+        /// <returns>the {@link Ratio} which is the gauge's current value</returns>
+        protected abstract Ratio GetRatio();
+
+        public double Value
+        {
+            get { return GetRatio().Value; }
+        }
+
+        public double GetValue(bool resetMetric = false)
+        {
+            return Value;
+        }
+    }
+
+    public sealed class MeterRatioGauge : RatioGauge
+    {
+
+        private readonly Func<double> _hitValueFunc;
+        private readonly Func<double> _totalValueFunc;
+ 
+        /// <summary>
+        /// Creates a new MeterRatioGauge with externally tracked Meters, and uses the OneMinuteRate from the MeterValue of the meters.
+        /// </summary>
+        /// <param name="hitMeter"></param>
+        /// <param name="totalMeter"></param>
+        public MeterRatioGauge(MetricValueSource<MeterValue> hitMeter, MetricValueSource<MeterValue> totalMeter)
+            : this(hitMeter, totalMeter, value => value.OneMinuteRate)
+        {
+            
+        }
+
+        public MeterRatioGauge(MetricValueSource<MeterValue> hitMeter, MetricValueSource<MeterValue> totalMeter, Func<MeterValue, double> meterRateFunc)
+        {
+            _hitValueFunc = () => meterRateFunc(hitMeter.Value);
+            _totalValueFunc = () => meterRateFunc(totalMeter.Value);
+        }
+
+        public MeterRatioGauge(MetricValueSource<MeterValue> hitMeter, TimerValueSource totalTimer)
+            : this(hitMeter, totalTimer, value => value.OneMinuteRate)
+        {
+        }
+
+        public MeterRatioGauge(MetricValueSource<MeterValue> hitMeter, TimerValueSource totalTimer, Func<MeterValue, double> meterRateFunc)
+        {
+            _hitValueFunc = () => meterRateFunc(hitMeter.Value);
+            _totalValueFunc = () => meterRateFunc(totalTimer.Value.Rate);
+        }
+
+        protected override Ratio GetRatio()
+        {
+            return Ratio.Of(_hitValueFunc(),_totalValueFunc());
+        }
+
+    }
 }
