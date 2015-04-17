@@ -50,16 +50,18 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AdvancedMetricsContext.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.1\AtomicInteger.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.1\AtomicLong.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.1\Interfaces.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.1\PaddedAtomicLong.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.1\Striped64.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.1\StripedLongAdder.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.1\ThreadLocalLongAdder.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.1\ThreadLocalRandom.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.1\VolatileDouble.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.1\VolatileLong.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\AtomicIntArray.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\AtomicInteger.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\AtomicLong.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\AtomicLongArray.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\Interfaces.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\PaddedAtomicLong.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\Striped64.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\StripedLongAdder.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\ThreadLocalLongAdder.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\ThreadLocalRandom.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\VolatileDouble.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\VolatileLong.cs" />
     <Compile Include="App_Packages\HdrHistogram\AbstractHistogram.cs" />
     <Compile Include="App_Packages\HdrHistogram\AbstractHistogramBase.cs" />
     <Compile Include="App_Packages\HdrHistogram\AtomicHistogram.cs" />
@@ -80,7 +82,7 @@
     <Compile Include="App_Packages\HdrHistogram\Utilities\CountingMemoryStream.cs" />
     <Compile Include="App_Packages\HdrHistogram\Utilities\MiscUtilities.cs" />
     <Compile Include="App_Packages\HdrHistogram\Utilities\WrappedBuffer.cs" />
-    <Compile Include="App_Packages\LibLog.3.1\LibLog.cs" />
+    <Compile Include="App_Packages\LibLog.4.2\LibLog.cs" />
     <Compile Include="Core\BaseMetricsContext.cs" />
     <Compile Include="Core\DefaultMetricsBuilder.cs" />
     <Compile Include="Core\DefaultMetricsRegistry.cs" />

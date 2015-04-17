@@ -11,7 +11,7 @@ namespace Metrics
     /// </remarks>
     public struct VolatileLong
 #if INTERNAL_INTERFACES
-        : VolatileValue<long>
+ : VolatileValue<long>
 #endif
     {
         private long value;
@@ -34,7 +34,7 @@ namespace Metrics
         /// <param name="newValue">New value for this instance</param>
         public void SetValue(long newValue)
         {
-            Thread.VolatileWrite(ref this.value, newValue);
+            Volatile.Write(ref this.value, newValue);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Metrics
         /// <returns>The current value of the instance</returns>
         public long GetValue()
         {
-            return Thread.VolatileRead(ref this.value);
+            return Volatile.Read(ref this.value);
         }
     }
 }

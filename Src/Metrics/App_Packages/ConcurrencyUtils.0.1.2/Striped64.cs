@@ -38,8 +38,8 @@ namespace Metrics
 
             public long Value
             {
-                get { return Thread.VolatileRead(ref this.value); }
-                set { Thread.VolatileWrite(ref this.value, value); }
+                get { return Volatile.Read(ref this.value); }
+                set { Volatile.Write(ref this.value, value); }
             }
 
             public bool Cas(long cmp, long val)
@@ -61,8 +61,8 @@ namespace Metrics
 
         protected long Base
         {
-            get { return Thread.VolatileRead(ref this.volatileBase); }
-            set { Thread.VolatileWrite(ref this.volatileBase, value); }
+            get { return Volatile.Read(ref this.volatileBase); }
+            set { Volatile.Write(ref this.volatileBase, value); }
         }
 
         protected bool CompareAndSwapBase(long cmp, long val)

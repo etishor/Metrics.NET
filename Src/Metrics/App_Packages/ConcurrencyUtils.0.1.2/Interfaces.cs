@@ -50,5 +50,25 @@ namespace Metrics
         T GetAndSet(T newValue);
         bool CompareAndSwap(T expected, T updated);
     }
+
+    internal interface AtomicArray<T>
+    {
+        int Length { get; }
+        T GetValue(int index);
+        void SetValue(int index, T value);
+        T Add(int index, T value);
+        T GetAndAdd(int index, T value);
+        T GetAndIncrement(int index);
+        T GetAndIncrement(int index, T value);
+        T GetAndDecrement(int index);
+        T GetAndDecrement(int index, T value);
+        T Increment(int index);
+        T Increment(int index, T value);
+        T Decrement(int index);
+        T Decrement(int index, T value);
+        T GetAndReset(int index);
+        T GetAndSet(int index, T newValue);
+        bool CompareAndSwap(int index, T expected, T updated);
+    }
 #endif
 }
