@@ -1,56 +1,50 @@
 ﻿using System;
 using HdrHistogram;
-using Metrics.Utils;
 
 namespace Metrics.Sampling
 {
-    public sealed class SyncronizedHdrReservoir : Reservoir
+    public class HdrHistogramReservoir : Reservoir
     {
-        private readonly AbstractHistogram histogram;
-        private readonly object padlock = new object();
+        private readonly Recorder recorder;
 
-        public SyncronizedHdrReservoir(AbstractHistogram histogram)
-        {
-            this.histogram = histogram;
-        }
+        private readonly HdrHistogram.Histogram runningTotals;
+        private HdrHistogram.Histogram intervalHistogram;
 
-        public SyncronizedHdrReservoir(int numberOfSignificantValueDigits)
-            : this(new HdrHistogram.Histogram(numberOfSignificantValueDigits))
+        public HdrHistogramReservoir()
+            : this(new Recorder(2))
         { }
 
-        public SyncronizedHdrReservoir()
-            : this(2)
-        { }
-
-
-        public long Count
+        public HdrHistogramReservoir(Recorder recorder)
         {
-            get { lock (this.padlock) return this.histogram.getTotalCount(); }
-        }
+            this.recorder = recorder;
 
-        public int Size
-        {
-            get { lock (this.padlock) return this.histogram._getEstimatedFootprintInBytes(); }
+            this.intervalHistogram = recorder.getIntervalHistogram();
+            this.runningTotals = new HdrHistogram.Histogram(this.intervalHistogram.NumberOfSignificantValueDigits);
         }
 
         public void Update(long value, string userValue = null)
         {
-            lock (this.padlock) this.histogram.recordValue(value);
+            this.recorder.recordValue(value);
         }
 
         public Snapshot GetSnapshot(bool resetReservoir = false)
         {
-            lock (this.padlock) return new HdrSnapshot(this.histogram);
+            return new HdrSnapshot(UpdateTotals());
         }
 
         public void Reset()
         {
-            lock (this.padlock) this.histogram.reset();
+            throw new NotImplementedException();
         }
 
-        public bool Merge(Reservoir reservoir)
+        private HdrHistogram.Histogram UpdateTotals()
         {
-            throw new NotSupportedException("Merging is not supported for hdr histogram");
+            lock (this.runningTotals)
+            {
+                this.intervalHistogram = recorder.getIntervalHistogram(this.intervalHistogram);
+                this.runningTotals.add(intervalHistogram);
+                return this.runningTotals.copy() as HdrHistogram.Histogram;
+            }
         }
 
         private class HdrSnapshot : Snapshot
@@ -106,6 +100,21 @@ namespace Metrics.Sampling
                     throw new NotSupportedException("Getting individual values is not supported");
                 }
             }
+        }
+
+        public long Count
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public int Size
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public bool Merge(Reservoir reservoir)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Metrics.TestConsole
             Metric.Config.WithHttpEndpoint(@"http://localhost:1234/");
 
             var maxValue = TimeUnit.Hours.Convert(TimeUnit.Nanoseconds, 1);
-            var histogram = new HdrHistogram.NET.Histogram(maxValue, 3);
+            var histogram = new HdrHistogram.Histogram(maxValue, 3);
 
             Reservoir reservoir = new SyncronizedHdrReservoir(histogram);
 
