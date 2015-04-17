@@ -1,3 +1,6 @@
+###0.3.1-pre / 2015-04-17
+* update packages & fix nuget package dependencies versions
+
 ###0.3.0-pre / 2015-04-17
 * use ConcurrentUtils StripedLongAdder for better performance with concurrent counter
 * provide macros for config value for Metrics.GlobalContextName
