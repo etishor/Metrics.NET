@@ -48,11 +48,11 @@ type SampleMetrics () =
         totalRequestsCounter.Increment() // increment total requests counter 
 
         meter.Mark() // signal a new request to the meter
-
-        histogramOfData.Update(ThreadLocalRandom.NextLong() % (int64)5000) // update the histogram with the input data
+        let random = System.Random()
+        histogramOfData.Update( (int64(random.Next()))) // update the histogram with the input data
 
         // simulate doing some work
-        let ms = Math.Abs((int)(ThreadLocalRandom.NextLong() % 3000L))
+        let ms = Math.Abs(random.Next())
         Thread.Sleep ms
 
         concurrentRequestsCounter.Decrement() // decrement number of concurrent requests

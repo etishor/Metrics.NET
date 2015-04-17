@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace Metrics.Samples
 {
     public class SetMeterSample
@@ -33,7 +35,7 @@ namespace Metrics.Samples
         {
             for (int i = 0; i < 30; i++)
             {
-                var commandIndex = ThreadLocalRandom.NextLong() % 5;
+                var commandIndex = new Random().Next() % 5;
                 if (commandIndex == 0) new SetMeterSample().Process(new SendEmail());
                 if (commandIndex == 1) new SetMeterSample().Process(new ShipProduct());
                 if (commandIndex == 2) new SetMeterSample().Process(new BillCustomer());

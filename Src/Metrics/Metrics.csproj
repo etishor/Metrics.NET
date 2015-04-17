@@ -50,18 +50,16 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AdvancedMetricsContext.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\AtomicIntArray.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\AtomicInteger.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\AtomicLong.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\AtomicLongArray.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\Interfaces.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\PaddedAtomicLong.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\Striped64.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\StripedLongAdder.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\ThreadLocalLongAdder.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\ThreadLocalRandom.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\VolatileDouble.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.2\VolatileLong.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\AtomicIntArray.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\AtomicInteger.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\AtomicLong.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\AtomicLongArray.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\PaddedAtomicLong.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\Striped64.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\StripedLongAdder.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\ThreadLocalLongAdder.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\ThreadLocalRandom.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\VolatileDouble.cs" />
     <Compile Include="App_Packages\HdrHistogram\AbstractHistogram.cs" />
     <Compile Include="App_Packages\HdrHistogram\AbstractHistogramBase.cs" />
     <Compile Include="App_Packages\HdrHistogram\AtomicHistogram.cs" />

@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Threading;
+
 namespace Metrics.Samples
 {
     public class UserValueTimerSample
@@ -24,14 +25,14 @@ namespace Metrics.Samples
 
         private void ActualProcessingOfTheRequest(string documentId)
         {
-            Thread.Sleep((int)ThreadLocalRandom.NextLong() % 1000);
+            Thread.Sleep(new Random().Next(1000));
         }
 
         public static void RunSomeRequests()
         {
             for (int i = 0; i < 30; i++)
             {
-                var documentId = ThreadLocalRandom.NextLong() % 10;
+                var documentId = new Random().Next(10);
                 new UserValueTimerSample().Process("document-" + documentId.ToString());
             }
         }

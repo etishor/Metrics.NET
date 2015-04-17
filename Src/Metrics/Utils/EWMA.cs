@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Diagnostics;
+using Metrics.ConcurrencyUtilities;
 
 namespace Metrics.Utils
 {

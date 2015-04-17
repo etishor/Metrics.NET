@@ -59,15 +59,15 @@ namespace Metrics.Samples
 
                 this.meter.Mark(); // signal a new request to the meter
 
-                this.histogramOfData.Update(ThreadLocalRandom.NextLong() % 5000, i.ToString()); // update the histogram with the input data
+                this.histogramOfData.Update(new Random().Next(5000), i.ToString()); // update the histogram with the input data
 
-                var item = "Item " + ThreadLocalRandom.NextLong() % 5;
+                var item = "Item " + new Random().Next(5);
                 this.setCounter.Increment(item);
 
                 this.setMeter.Mark(item);
 
                 // simulate doing some work
-                int ms = Math.Abs((int)(ThreadLocalRandom.NextLong() % 3000L));
+                int ms = Math.Abs((int)(new Random().Next(3000)));
                 Thread.Sleep(ms);
 
                 this.concurrentRequestsCounter.Decrement(); // decrement number of concurrent requests
