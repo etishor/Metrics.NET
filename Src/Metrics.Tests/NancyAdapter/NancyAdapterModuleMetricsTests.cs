@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Metrics.Utils;
 using Nancy;
 using Nancy.Metrics;
 using Nancy.Testing;
@@ -51,7 +50,6 @@ namespace Metrics.Tests.NancyAdapter
             });
         }
 
-
         [Fact]
         public void NancyMetrics_ShouldBeAbleToMonitorTimeForModuleRequest()
         {
@@ -65,7 +63,7 @@ namespace Metrics.Tests.NancyAdapter
             timer.Histogram.Max.Should().Be(100);
         }
 
-        [Fact(Skip = "Investigate intermittent failures")]
+        [Fact]
         public void NancyMetrics_ShouldBeAbleToMonitorSizeForRouteReponse()
         {
             browser.Get("/test/action").StatusCode.Should().Be(HttpStatusCode.OK);
