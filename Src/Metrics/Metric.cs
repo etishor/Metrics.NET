@@ -206,7 +206,7 @@ namespace Metrics
 
         private static string GetDefaultGlobalContextName()
         {
-            return string.Format(@"{0}.{1}", Environment.MachineName, Process.GetCurrentProcess().ProcessName);
+            return string.Format(@"{0}.{1}", Environment.MachineName.Replace('.', '_'), Process.GetCurrentProcess().ProcessName.Replace('.', '_'));
         }
     }
 }
