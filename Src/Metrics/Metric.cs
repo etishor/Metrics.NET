@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Metrics.Logging;
+using Metrics.Utils;
 
 namespace Metrics
 {
@@ -201,50 +202,26 @@ namespace Metrics
 
         private static string ParseGlobalContextName(string configName)
         {
-            configName = Regex.Replace(configName, @"\$Env\.MachineName\$", Environment.MachineName, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
-            
-            configName = Regex.Replace(configName, @"\$Env\.ProcessName\$", Process.GetCurrentProcess().ProcessName, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            configName = Regex.Replace(configName, @"\$Env\.MachineName\$", CleanName(Environment.MachineName), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            configName = Regex.Replace(configName, @"\$Env\.ProcessName\$", CleanName(Process.GetCurrentProcess().ProcessName), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
             const string aspMacro = @"\$Env\.AppDomainAppVirtualPath\$";
             if (Regex.IsMatch(configName, aspMacro, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase))
-                configName = Regex.Replace(configName, aspMacro, ResolveAspSiteName(), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            {
+                configName = Regex.Replace(configName, aspMacro, CleanName(AppEnvironment.ResolveAspSiteName()), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            }
 
             return configName;
         }
 
-        /// <summary>
-        /// Try to resolve Asp site name without compile-time linking System.Web assembly.
-        /// </summary>
-        /// <returns>Site name or throw ConfigurationErrorsException if resolution failed</returns>
-        private static string ResolveAspSiteName()
+        private static string CleanName(string name)
         {
-            const string error = "Could not resolve $Env.AppDomainAppVirtualPath$ macro";
-            try
-            {
-                var runtimeType = Type.GetType("System.Web.HttpRuntime, System.Web, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", false, true);
-                var result = runtimeType.GetProperty("AppDomainAppVirtualPath").GetValue(null);
-                if (result != null)
-                {
-                    var resultStr = (string)result;
-                    resultStr = resultStr.Trim('/');
-                    if(resultStr != "")
-                        return resultStr;
-
-                    result = runtimeType.GetProperty("AppDomainAppId").GetValue(null);
-                    return ((string)result).Trim('/');
-                }
-
-                throw new ConfigurationErrorsException(error);
-            } 
-            catch(Exception e)
-            {
-                throw new ConfigurationErrorsException(error, e);
-            }
+            return name.Replace('.', '_');
         }
 
         private static string GetDefaultGlobalContextName()
         {
-            return string.Format(@"{0}.{1}", Environment.MachineName.Replace('.', '_'), Process.GetCurrentProcess().ProcessName.Replace('.', '_'));
+            return string.Format(@"{0}.{1}", CleanName(Environment.MachineName), CleanName(Process.GetCurrentProcess().ProcessName));
         }
     }
 }

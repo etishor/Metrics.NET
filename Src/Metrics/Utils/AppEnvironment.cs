@@ -4,14 +4,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using Metrics.MetricData;
 using Metrics.Logging;
+using Metrics.MetricData;
 
 namespace Metrics.Utils
 {
     public static class AppEnvironment
     {
-		private static readonly ILog log = LogProvider.GetCurrentClassLogger();
+        private static readonly ILog log = LogProvider.GetCurrentClassLogger();
 
         public static IEnumerable<EnvironmentEntry> Current
         {
@@ -32,28 +32,28 @@ namespace Metrics.Utils
 
         private static string GetIpAddress()
         {
-			string hostName = SafeGetString(Dns.GetHostName);
-			try
-			{
-				var ipAddress = Dns.GetHostEntry(hostName)
-	                .AddressList
-	                .FirstOrDefault (ip => ip.AddressFamily == AddressFamily.InterNetwork);
+            string hostName = SafeGetString(Dns.GetHostName);
+            try
+            {
+                var ipAddress = Dns.GetHostEntry(hostName)
+                    .AddressList
+                    .FirstOrDefault(ip => ip.AddressFamily == AddressFamily.InterNetwork);
 
-				if (ipAddress != null) 
-				{
-					return ipAddress.ToString();
-				}
-				return string.Empty;
-			}
-			catch (SocketException x) 
-			{
-				if (x.SocketErrorCode == SocketError.HostNotFound) 
-				{
-					log.Warn ( () => "Unable to resolve hostname " + hostName);
-					return string.Empty;
-				}
-				throw;
-			}
+                if (ipAddress != null)
+                {
+                    return ipAddress.ToString();
+                }
+                return String.Empty;
+            }
+            catch (SocketException x)
+            {
+                if (x.SocketErrorCode == SocketError.HostNotFound)
+                {
+                    log.Warn(() => "Unable to resolve hostname " + hostName);
+                    return String.Empty;
+                }
+                throw;
+            }
         }
 
         private static string SafeGetString(Func<string> action)
@@ -65,8 +65,65 @@ namespace Metrics.Utils
             catch (Exception x)
             {
                 MetricsErrorHandler.Handle(x, "Error retrieving environment value");
-                return string.Empty;
+                return String.Empty;
             }
+        }
+
+        /// <summary>
+        /// Try to resolve Asp site name without compile-time linking System.Web assembly.
+        /// </summary>
+        /// <returns>Site name if able to identify</returns>
+        public static string ResolveAspSiteName()
+        {
+            const string UnknownName = "UnknownSiteName";
+            try
+            {
+                var runtimeType = Type.GetType("System.Web.HttpRuntime, System.Web, Version=0.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", false, true);
+                if (runtimeType != null)
+                {
+                    var result = runtimeType.GetProperty("AppDomainAppVirtualPath").GetValue(null) as string;
+                    if (result != null)
+                    {
+                        result = result.Trim('/');
+                        if (result != String.Empty)
+                        {
+                            return result;
+                        }
+
+                        log.Debug("HttpRuntime.AppDomainAppVirtualPath is empty, trying AppDomainAppId");
+
+                        result = runtimeType.GetProperty("AppDomainAppId").GetValue(null) as string;
+                        if (result != null)
+                        {
+                            result = result.Trim('/');
+                            if (result != String.Empty)
+                            {
+                                return result;
+                            }
+                        }
+                        else
+                        {
+                            log.Warn("Unable to find property System.Web.HttpRuntime.AppDomainAppId to resolve AspSiteName");
+                        }
+
+                        log.Debug("HttpRuntime.AppDomainAppId is also empty, giving up trying to find site name");
+                    }
+                    else
+                    {
+                        log.Warn("Unable to find property System.Web.HttpRuntime.AppDomainAppVirtualPath to resolve AspSiteName");
+                    }
+                }
+                else
+                {
+                    log.Warn("Unable to find type System.Web.HttpRuntime to resolve $Env.AppDomainAppVirtualPath$ macro");
+                }
+            }
+            catch (Exception e)
+            {
+                log.WarnException("Unable to find type System.Web.HttpRuntime to resolve AspSiteName $Env.AppDomainAppVirtualPath$ macro", e);
+            }
+
+            return UnknownName;
         }
     }
 }
