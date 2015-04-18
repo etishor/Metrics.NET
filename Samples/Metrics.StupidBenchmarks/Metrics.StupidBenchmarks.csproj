@@ -48,8 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FixedIterationsBenchmark.cs" />
-    <Compile Include="FixedTimeBenchmark.cs" />
+    <Compile Include="ActionBenchmark.cs" />
+    <Compile Include="BenchmarkResult.cs" />
+    <Compile Include="BenchmarkRunner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
