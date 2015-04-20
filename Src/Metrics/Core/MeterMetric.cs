@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
+using Metrics.ConcurrencyUtilities;
 using Metrics.MetricData;
 using Metrics.Utils;
 namespace Metrics.Core
@@ -15,12 +16,12 @@ namespace Metrics.Core
 
         private struct MeterWrapper
         {
-            private readonly ThreadLocalLongAdder counter;
+            private readonly StripedLongAdder counter;
             private readonly EWMA m1Rate;
             private readonly EWMA m5Rate;
             private readonly EWMA m15Rate;
 
-            public MeterWrapper(ThreadLocalLongAdder counter)
+            public MeterWrapper(StripedLongAdder counter)
             {
                 this.counter = counter;
                 this.m1Rate = EWMA.OneMinuteEWMA();
@@ -82,7 +83,7 @@ namespace Metrics.Core
 
         private ConcurrentDictionary<string, MeterWrapper> setMeters = null;
 
-        private readonly MeterWrapper wrapper = new MeterWrapper(new ThreadLocalLongAdder());
+        private readonly MeterWrapper wrapper = new MeterWrapper(new StripedLongAdder());
 
         private readonly Clock clock;
         private readonly Scheduler tickScheduler;
@@ -133,7 +134,7 @@ namespace Metrics.Core
             }
 
             Debug.Assert(this.setMeters != null);
-            this.setMeters.GetOrAdd(item, v => new MeterWrapper(new ThreadLocalLongAdder())).Mark(count);
+            this.setMeters.GetOrAdd(item, v => new MeterWrapper(new StripedLongAdder())).Mark(count);
         }
 
         public MeterValue GetValue(bool resetMetric = false)
@@ -232,7 +233,7 @@ namespace Metrics.Core
             {
                 foreach (var key in mOther.setMeters)
                 {
-                    this.setMeters.GetOrAdd(key.Key, v => new MeterWrapper(new ThreadLocalLongAdder())).Merge(key.Value);
+                    this.setMeters.GetOrAdd(key.Key, v => new MeterWrapper(new StripedLongAdder())).Merge(key.Value);
                 }
             }
 

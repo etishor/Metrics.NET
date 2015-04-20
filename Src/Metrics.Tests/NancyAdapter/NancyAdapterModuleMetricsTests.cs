@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Metrics.Utils;
 using Nancy;
 using Nancy.Metrics;
 using Nancy.Testing;
@@ -50,7 +49,6 @@ namespace Metrics.Tests.NancyAdapter
                 });
             });
         }
-
 
         [Fact]
         public void NancyMetrics_ShouldBeAbleToMonitorTimeForModuleRequest()

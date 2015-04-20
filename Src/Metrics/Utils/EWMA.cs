@@ -1,6 +1,7 @@
 ﻿
 using System;
 using System.Diagnostics;
+using Metrics.ConcurrencyUtilities;
 
 namespace Metrics.Utils
 {
@@ -24,7 +25,7 @@ namespace Metrics.Utils
         private volatile bool initialized = false;
         private VolatileDouble rate = new VolatileDouble(0.0);
 
-        private readonly ThreadLocalLongAdder uncounted = new ThreadLocalLongAdder();
+        private readonly StripedLongAdder uncounted = new StripedLongAdder();
         private readonly double alpha;
         private readonly double interval;
 

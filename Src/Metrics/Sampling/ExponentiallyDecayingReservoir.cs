@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Metrics.ConcurrencyUtilities;
 using Metrics.Utils;
 
 namespace Metrics.Sampling
@@ -27,8 +28,8 @@ namespace Metrics.Sampling
 
         private readonly double alpha;
         private readonly int size;
-        private VolatileLong count = new VolatileLong();
-        private VolatileLong startTime;
+        private AtomicLong count = new AtomicLong();
+        private AtomicLong startTime;
 
         private readonly Clock clock;
 
@@ -57,7 +58,7 @@ namespace Metrics.Sampling
             this.rescaleScheduler = scheduler;
             this.rescaleScheduler.Start(RescaleInterval, () => Rescale());
 
-            this.startTime = new VolatileLong(clock.Seconds);
+            this.startTime = new AtomicLong(clock.Seconds);
         }
 
         public long Count { get { return this.count.GetValue(); } }

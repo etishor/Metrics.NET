@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Metrics.Logging;
+using Metrics.Utils;
 
 namespace Metrics
 {
@@ -201,12 +202,26 @@ namespace Metrics
 
         private static string ParseGlobalContextName(string configName)
         {
-            return Regex.Replace(configName, @"\$Env\.MachineName\$", Environment.MachineName, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            configName = Regex.Replace(configName, @"\$Env\.MachineName\$", CleanName(Environment.MachineName), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            configName = Regex.Replace(configName, @"\$Env\.ProcessName\$", CleanName(Process.GetCurrentProcess().ProcessName), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+
+            const string aspMacro = @"\$Env\.AppDomainAppVirtualPath\$";
+            if (Regex.IsMatch(configName, aspMacro, RegexOptions.CultureInvariant | RegexOptions.IgnoreCase))
+            {
+                configName = Regex.Replace(configName, aspMacro, CleanName(AppEnvironment.ResolveAspSiteName()), RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+            }
+
+            return configName;
+        }
+
+        private static string CleanName(string name)
+        {
+            return name.Replace('.', '_');
         }
 
         private static string GetDefaultGlobalContextName()
         {
-            return string.Format(@"{0}.{1}", Environment.MachineName, Process.GetCurrentProcess().ProcessName);
+            return string.Format(@"{0}.{1}", CleanName(Environment.MachineName), CleanName(Process.GetCurrentProcess().ProcessName));
         }
     }
 }

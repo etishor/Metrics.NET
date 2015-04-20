@@ -1,27 +1,50 @@
+// This is a collection of .NET concurrency utilities, inspired by the classes
+// available in java. This utilities are written by Iulian Margarintescu as described here
+// https://github.com/etishor/ConcurrencyUtilities
+// 
+//
+// Striped64 & LongAdder classes were ported from Java and had this copyright:
+// 
+// Written by Doug Lea with assistance from members of JCP JSR-166
+// Expert Group and released to the public domain, as explained at
+// http://creativecommons.org/publicdomain/zero/1.0/
+// 
+// Source: http://gee.cs.oswego.edu/cgi-bin/viewcvs.cgi/jsr166/src/jsr166e/Striped64.java?revision=1.8
 
-using System.Runtime.InteropServices;
+//
+// By default all added classes are internal to your assembly. 
+// To make them public define you have to define the conditional compilation symbol CONCURRENCY_UTILS_PUBLIC in your project properties.
+//
+
+#pragma warning disable 1591
+
+// ReSharper disable All
+
 using System.Threading;
 
-namespace Metrics
+namespace Metrics.ConcurrencyUtilities
 {
     /// <summary>
-    /// Padded version of the AtomicLong to avoid false CPU cache sharing. Recommended for cases where instances of 
-    /// AtomicLong end up close to each other in memory - when stored in an array for ex. 
+    /// Atomic long value. Operations exposed on this class are performed using System.Threading.Interlocked class and are thread safe.
+    /// For AtomicLong values that are stored in arrays PaddedAtomicLong is recommended.
     /// </summary>
-    [StructLayout(LayoutKind.Explicit, Size = 64 * 2)]
-    public struct PaddedAtomicLong
-#if INTERNAL_INTERFACES
-        : AtomicValue<long>, ValueAdder<long>
+    /// <remarks>
+    /// The AtomicLong is a struct not a class and members of this type should *not* be declared readonly or changes will not be reflected in the member instance. 
+    /// </remarks>
+#if CONCURRENCY_UTILS_PUBLIC
+public
+#else
+internal
 #endif
+    struct AtomicLong
     {
-        [FieldOffset(64)]
         private long value;
 
         /// <summary>
         /// Initializes a new instance with the specified <paramref name="value"/>.
         /// </summary>
         /// <param name="value">Initial value of the instance.</param>
-        public PaddedAtomicLong(long value)
+        public AtomicLong(long value)
         {
             this.value = value;
         }
@@ -32,7 +55,7 @@ namespace Metrics
         /// <returns>The latest written value of this instance.</returns>
         public long GetValue()
         {
-            return Thread.VolatileRead(ref this.value);
+            return Volatile.Read(ref this.value);
         }
 
         /// <summary>
@@ -41,7 +64,7 @@ namespace Metrics
         /// <param name="value">The new value for this instance.</param>
         public void SetValue(long value)
         {
-            Thread.VolatileWrite(ref this.value, value);
+            Volatile.Write(ref this.value, value);
         }
 
         /// <summary>
@@ -164,16 +187,5 @@ namespace Metrics
         {
             return Interlocked.CompareExchange(ref this.value, updated, expected) == expected;
         }
-
-#if INTERNAL_INTERFACES
-        long ValueAdder<long>.GetAndReset() { return this.GetAndReset(); }
-        void ValueAdder<long>.Add(long value) { this.Add(value); }
-        void ValueAdder<long>.Increment() { this.Increment(); }
-        void ValueAdder<long>.Increment(long value) { this.Increment(value); }
-        void ValueAdder<long>.Decrement() { this.Decrement(); }
-        void ValueAdder<long>.Decrement(long value) { this.Decrement(value); }
-        void ValueAdder<long>.Reset() { this.SetValue(0L); }
-        long ValueReader<long>.GetValue() { return this.GetValue(); }
-#endif
     }
 }

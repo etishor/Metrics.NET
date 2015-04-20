@@ -1,3 +1,14 @@
+###0.3.1-pre / 2015-04-17
+* update packages & fix nuget package dependencies versions
+
+###0.3.0-pre / 2015-04-17
+* use ConcurrentUtils StripedLongAdder for better performance with concurrent counter
+* provide macros for config value for Metrics.GlobalContextName
+* performance improvements - reduce memory allocations
+* initial support for hdrhistogram (fully synchronized version)
+* context merging functionality (will probably be removed after switching to hdr histogram)
+* pre-release for now until the hdr histogram port is complete and integrated
+
 ###0.2.16 / 2015-03-19
 * retry starting httplistener on failure (better support for asp.net hosting where app pools are recycled)
 

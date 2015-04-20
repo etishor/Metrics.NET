@@ -1,26 +1,50 @@
+// This is a collection of .NET concurrency utilities, inspired by the classes
+// available in java. This utilities are written by Iulian Margarintescu as described here
+// https://github.com/etishor/ConcurrencyUtilities
+// 
+//
+// Striped64 & LongAdder classes were ported from Java and had this copyright:
+// 
+// Written by Doug Lea with assistance from members of JCP JSR-166
+// Expert Group and released to the public domain, as explained at
+// http://creativecommons.org/publicdomain/zero/1.0/
+// 
+// Source: http://gee.cs.oswego.edu/cgi-bin/viewcvs.cgi/jsr166/src/jsr166e/Striped64.java?revision=1.8
+
+//
+// By default all added classes are internal to your assembly. 
+// To make them public define you have to define the conditional compilation symbol CONCURRENCY_UTILS_PUBLIC in your project properties.
+//
+
+#pragma warning disable 1591
+
+// ReSharper disable All
+
 using System.Threading;
 
-namespace Metrics
+namespace Metrics.ConcurrencyUtilities
 {
     /// <summary>
-    /// Atomic long value. Operations exposed on this class are performed using System.Threading.Interlocked class and are thread safe.
-    /// For AtomicLong values that are stored in arrays PaddedAtomicLong is recommended.
+    /// Atomic int value. Operations exposed on this class are performed using System.Threading.Interlocked class and are thread safe.
+    /// For AtomicInt values that are stored in arrays PaddedAtomicInt is recommended.
     /// </summary>
     /// <remarks>
-    /// The AtomicLong is a struct not a class and members of this type should *not* be declared readonly or changes will not be reflected in the member instance. 
+    /// The AtomicInteger is a struct not a class and members of this type should *not* be declared readonly or changes will not be reflected in the member instance. 
     /// </remarks>
-    public struct AtomicLong
-#if INTERNAL_INTERFACES
-        : AtomicValue<long>, ValueAdder<long>
+#if CONCURRENCY_UTILS_PUBLIC
+public
+#else
+internal
 #endif
+    struct AtomicInteger
     {
-        private long value;
+        private int value;
 
         /// <summary>
         /// Initializes a new instance with the specified <paramref name="value"/>.
         /// </summary>
         /// <param name="value">Initial value of the instance.</param>
-        public AtomicLong(long value)
+        public AtomicInteger(int value)
         {
             this.value = value;
         }
@@ -29,18 +53,18 @@ namespace Metrics
         /// Returns the latest value of this instance written by any processor.
         /// </summary>
         /// <returns>The latest written value of this instance.</returns>
-        public long GetValue()
+        public int GetValue()
         {
-            return Thread.VolatileRead(ref this.value);
+            return Volatile.Read(ref this.value);
         }
 
         /// <summary>
         /// Write a new value to this instance. The value is immediately seen by all processors.
         /// </summary>
         /// <param name="value">The new value for this instance.</param>
-        public void SetValue(long value)
+        public void SetValue(int value)
         {
-            Thread.VolatileWrite(ref this.value, value);
+            Volatile.Write(ref this.value, value);
         }
 
         /// <summary>
@@ -48,7 +72,7 @@ namespace Metrics
         /// </summary>
         /// <param name="value">The amount to add.</param>
         /// <returns>The value of this instance + the amount added.</returns>
-        public long Add(long value)
+        public int Add(int value)
         {
             return Interlocked.Add(ref this.value, value);
         }
@@ -58,7 +82,7 @@ namespace Metrics
         /// </summary>
         /// <param name="value">The amount to add.</param>
         /// <returns>The value of this instance before the amount was added.</returns>
-        public long GetAndAdd(long value)
+        public int GetAndAdd(int value)
         {
             return Add(value) - value;
         }
@@ -67,7 +91,7 @@ namespace Metrics
         /// Increment this instance and return the value the instance had before the increment.
         /// </summary>
         /// <returns>The value of the instance *before* the increment.</returns>
-        public long GetAndIncrement()
+        public int GetAndIncrement()
         {
             return Increment() - 1;
         }
@@ -76,7 +100,7 @@ namespace Metrics
         /// Increment this instance with <paramref name="value"/> and return the value the instance had before the increment.
         /// </summary>
         /// <returns>The value of the instance *before* the increment.</returns>
-        public long GetAndIncrement(long value)
+        public int GetAndIncrement(int value)
         {
             return Increment(value) - value;
         }
@@ -85,7 +109,7 @@ namespace Metrics
         /// Decrement this instance and return the value the instance had before the decrement.
         /// </summary>
         /// <returns>The value of the instance *before* the decrement.</returns>
-        public long GetAndDecrement()
+        public int GetAndDecrement()
         {
             return Decrement() + 1;
         }
@@ -94,7 +118,7 @@ namespace Metrics
         /// Decrement this instance with <paramref name="value"/> and return the value the instance had before the decrement.
         /// </summary>
         /// <returns>The value of the instance *before* the decrement.</returns>
-        public long GetAndDecrement(long value)
+        public int GetAndDecrement(int value)
         {
             return Decrement(value) + value;
         }
@@ -103,7 +127,7 @@ namespace Metrics
         /// Increment this instance and return the value after the increment.
         /// </summary>
         /// <returns>The value of the instance *after* the increment.</returns>
-        public long Increment()
+        public int Increment()
         {
             return Interlocked.Increment(ref this.value);
         }
@@ -112,7 +136,7 @@ namespace Metrics
         /// Increment this instance with <paramref name="value"/> and return the value after the increment.
         /// </summary>
         /// <returns>The value of the instance *after* the increment.</returns>
-        public long Increment(long value)
+        public int Increment(int value)
         {
             return Add(value);
         }
@@ -121,7 +145,7 @@ namespace Metrics
         /// Decrement this instance and return the value after the decrement.
         /// </summary>
         /// <returns>The value of the instance *after* the decrement.</returns>
-        public long Decrement()
+        public int Decrement()
         {
             return Interlocked.Decrement(ref this.value);
         }
@@ -130,7 +154,7 @@ namespace Metrics
         /// Decrement this instance with <paramref name="value"/> and return the value after the decrement.
         /// </summary>
         /// <returns>The value of the instance *after* the decrement.</returns>
-        public long Decrement(long value)
+        public int Decrement(int value)
         {
             return Add(-value);
         }
@@ -139,16 +163,16 @@ namespace Metrics
         /// Returns the current value of the instance and sets it to zero as an atomic operation.
         /// </summary>
         /// <returns>The current value of the instance.</returns>
-        public long GetAndReset()
+        public int GetAndReset()
         {
-            return GetAndSet(0L);
+            return GetAndSet(0);
         }
 
         /// <summary>
         /// Returns the current value of the instance and sets it to <paramref name="newValue"/> as an atomic operation.
         /// </summary>
         /// <returns>The current value of the instance.</returns>
-        public long GetAndSet(long newValue)
+        public int GetAndSet(int newValue)
         {
             return Interlocked.Exchange(ref this.value, newValue);
         }
@@ -159,20 +183,9 @@ namespace Metrics
         /// <param name="expected">Value this instance is expected to be equal with.</param>
         /// <param name="updated">Value to set this instance to, if the current value is equal to the expected value</param>
         /// <returns>True if the update was made, false otherwise.</returns>
-        public bool CompareAndSwap(long expected, long updated)
+        public bool CompareAndSwap(int expected, int updated)
         {
             return Interlocked.CompareExchange(ref this.value, updated, expected) == expected;
         }
-
-#if INTERNAL_INTERFACES
-        long ValueAdder<long>.GetAndReset() { return this.GetAndReset(); }
-        void ValueAdder<long>.Add(long value) { this.Add(value); }
-        void ValueAdder<long>.Increment() { this.Increment(); }
-        void ValueAdder<long>.Increment(long value) { this.Increment(value); }
-        void ValueAdder<long>.Decrement() { this.Decrement(); }
-        void ValueAdder<long>.Decrement(long value) { this.Decrement(value); }
-        void ValueAdder<long>.Reset() { this.SetValue(0L); }
-        long ValueReader<long>.GetValue() { return this.GetValue(); }
-#endif
     }
 }

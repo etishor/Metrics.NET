@@ -83,7 +83,10 @@ namespace Metrics.StupidBenchmarks
 
             CounterMetric counter = new CounterMetric();
             MeterMetric meter = new MeterMetric();
+            HistogramMetric histogram = new HistogramMetric();
             TimerMetric timer = new TimerMetric();
+            ExponentiallyDecayingReservoir edr = new ExponentiallyDecayingReservoir();
+
             CancellationTokenSource tcs = new CancellationTokenSource();
 
             var reader = ReaderTask(() => timer.Value, tcs.Token);
@@ -97,16 +100,16 @@ namespace Metrics.StupidBenchmarks
                     Run(() => meter, m => m.Mark());
                     break;
                 case "histogram":
-                    Run(() => new HistogramMetric(), h => h.Update(37));
+                    Run(() => histogram, h => h.Update(37));
                     break;
                 case "timer":
-                    Run(() => new TimerMetric(SamplingType.FavourRecent), t => t.Record(10, TimeUnit.Milliseconds));
+                    Run(() => timer, t => t.Record(10, TimeUnit.Milliseconds));
                     break;
                 case "ewma":
                     Run(() => EWMA.OneMinuteEWMA(), m => m.Update(1));
                     break;
                 case "edr":
-                    Run(() => new ExponentiallyDecayingReservoir(), r => r.Update(100));
+                    Run(() => edr, r => r.Update(100));
                     break;
                 case "uniform":
                     Run(() => new UniformReservoir(), r => r.Update(100));

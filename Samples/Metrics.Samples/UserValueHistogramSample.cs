@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace Metrics.Samples
 {
     public class UserValueHistogramSample
@@ -14,14 +16,14 @@ namespace Metrics.Samples
 
         private int[] GetResultsForDocument(string documentId)
         {
-            return new int[ThreadLocalRandom.NextLong() % 100];
+            return new int[new Random().Next() % 100];
         }
 
         public static void RunSomeRequests()
         {
             for (int i = 0; i < 30; i++)
             {
-                var documentId = ThreadLocalRandom.NextLong() % 10;
+                var documentId = new Random().Next() % 10;
                 new UserValueHistogramSample().Process("document-" + documentId.ToString());
             }
         }

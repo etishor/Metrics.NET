@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
+using Metrics.ConcurrencyUtilities;
 using Metrics.MetricData;
 
 namespace Metrics.Core
@@ -10,9 +11,9 @@ namespace Metrics.Core
 
     public sealed class CounterMetric : CounterImplementation
     {
-        private ConcurrentDictionary<string, ThreadLocalLongAdder> setCounters = null;
+        private ConcurrentDictionary<string, StripedLongAdder> setCounters = null;
 
-        private readonly ThreadLocalLongAdder counter = new ThreadLocalLongAdder();
+        private readonly StripedLongAdder counter = new StripedLongAdder();
 
         public CounterValue Value
         {
@@ -113,14 +114,14 @@ namespace Metrics.Core
             return true;
         }
 
-        private ThreadLocalLongAdder SetCounter(string item)
+        private StripedLongAdder SetCounter(string item)
         {
             if (this.setCounters == null)
             {
-                Interlocked.CompareExchange(ref this.setCounters, new ConcurrentDictionary<string, ThreadLocalLongAdder>(), null);
+                Interlocked.CompareExchange(ref this.setCounters, new ConcurrentDictionary<string, StripedLongAdder>(), null);
             }
             Debug.Assert(this.setCounters != null);
-            return this.setCounters.GetOrAdd(item, v => new ThreadLocalLongAdder());
+            return this.setCounters.GetOrAdd(item, v => new StripedLongAdder());
         }
 
         private CounterValue GetValueWithSetItems()
