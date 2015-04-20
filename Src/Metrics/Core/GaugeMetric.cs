@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Metrics.MetricData;
@@ -155,13 +156,18 @@ namespace Metrics.Core
         {
             return Value;
         }
+
+        public abstract bool Merge(MetricValueProvider<double> other);
+    //{
+    //    throw new NotImplementedException();
+    //}
     }
 
     public sealed class MeterRatioGauge : RatioGauge
     {
 
-        private readonly Func<double> _hitValueFunc;
-        private readonly Func<double> _totalValueFunc;
+        private readonly ConcurrentBag<Func<double>> _hitValueFuncs = new ConcurrentBag<Func<double>>();
+        private readonly ConcurrentBag<Func<double>> _totalValueFuncs = new ConcurrentBag<Func<double>>();
  
         /// <summary>
         /// Creates a new MeterRatioGauge with externally tracked Meters, and uses the OneMinuteRate from the MeterValue of the meters.
@@ -176,8 +182,8 @@ namespace Metrics.Core
 
         public MeterRatioGauge(MetricValueSource<MeterValue> hitMeter, MetricValueSource<MeterValue> totalMeter, Func<MeterValue, double> meterRateFunc)
         {
-            _hitValueFunc = () => meterRateFunc(hitMeter.Value);
-            _totalValueFunc = () => meterRateFunc(totalMeter.Value);
+            _hitValueFuncs.Add(() => meterRateFunc(hitMeter.Value));
+            _totalValueFuncs.Add(() => meterRateFunc(totalMeter.Value));
         }
 
         public MeterRatioGauge(MetricValueSource<MeterValue> hitMeter, TimerValueSource totalTimer)
@@ -187,14 +193,28 @@ namespace Metrics.Core
 
         public MeterRatioGauge(MetricValueSource<MeterValue> hitMeter, TimerValueSource totalTimer, Func<MeterValue, double> meterRateFunc)
         {
-            _hitValueFunc = () => meterRateFunc(hitMeter.Value);
-            _totalValueFunc = () => meterRateFunc(totalTimer.Value.Rate);
+            _hitValueFuncs.Add(() => meterRateFunc(hitMeter.Value));
+            _totalValueFuncs.Add(() => meterRateFunc(totalTimer.Value.Rate));
         }
 
         protected override Ratio GetRatio()
         {
-            return Ratio.Of(_hitValueFunc(),_totalValueFunc());
+            return Ratio.Of(_hitValueFuncs.Sum(f =>f()),_totalValueFuncs.Sum(f=>f()));
         }
 
+        public override bool Merge(MetricValueProvider<double> other)
+        {
+            var otherMeterGauge = other as MeterRatioGauge;
+            if (otherMeterGauge == null)
+                return false;
+
+            foreach (var f in otherMeterGauge._hitValueFuncs)
+                _hitValueFuncs.Add(f);
+
+            foreach (var f in _totalValueFuncs)
+                _totalValueFuncs.Add(f);
+
+            return true;
+        }
     }
 }
