@@ -50,16 +50,16 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AdvancedMetricsContext.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\AtomicIntArray.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\AtomicInteger.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\AtomicLong.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\AtomicLongArray.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\PaddedAtomicLong.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\Striped64.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\StripedLongAdder.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\ThreadLocalLongAdder.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\ThreadLocalRandom.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\VolatileDouble.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\AtomicIntArray.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\AtomicInteger.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\AtomicLong.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\AtomicLongArray.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\PaddedAtomicLong.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\Striped64.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\StripedLongAdder.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\ThreadLocalLongAdder.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\ThreadLocalRandom.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\VolatileDouble.cs" />
     <Compile Include="App_Packages\HdrHistogram\AbstractHistogram.cs">
       <SubType>Code</SubType>
     </Compile>

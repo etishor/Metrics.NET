@@ -20,32 +20,31 @@
 
 // ReSharper disable All
 
-
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace Metrics.ConcurrencyUtilities
 {
     /// <summary>
-    /// Padded version of the AtomicLong to avoid false CPU cache sharing. Recommended for cases where instances of 
-    /// AtomicLong end up close to each other in memory - when stored in an array for ex. 
+    /// Atomic int value. Operations exposed on this class are performed using System.Threading.Interlocked class and are thread safe.
+    /// For AtomicInt values that are stored in arrays PaddedAtomicInt is recommended.
     /// </summary>
-    [StructLayout(LayoutKind.Explicit, Size = 64 * 2)]
+    /// <remarks>
+    /// The AtomicInteger is a struct not a class and members of this type should *not* be declared readonly or changes will not be reflected in the member instance. 
+    /// </remarks>
 #if CONCURRENCY_UTILS_PUBLIC
 public
 #else
 internal
 #endif
-    struct PaddedAtomicLong
+    struct AtomicInteger
     {
-        [FieldOffset(64)]
-        private long value;
+        private int value;
 
         /// <summary>
         /// Initializes a new instance with the specified <paramref name="value"/>.
         /// </summary>
         /// <param name="value">Initial value of the instance.</param>
-        public PaddedAtomicLong(long value)
+        public AtomicInteger(int value)
         {
             this.value = value;
         }
@@ -54,18 +53,53 @@ internal
         /// Returns the latest value of this instance written by any processor.
         /// </summary>
         /// <returns>The latest written value of this instance.</returns>
-        public long GetValue()
+        public int GetValue()
         {
             return Volatile.Read(ref this.value);
+        }
+
+        /// <summary>
+        /// Returns the current value of the instance without using Volatile.Read fence and ordering.  
+        /// </summary>
+        /// <returns>The current value of the instance in a non-volatile way (might not observe changes on other threads).</returns>
+        public int NonVolatileGetValue()
+        {
+            return this.value;
         }
 
         /// <summary>
         /// Write a new value to this instance. The value is immediately seen by all processors.
         /// </summary>
         /// <param name="value">The new value for this instance.</param>
-        public void SetValue(long value)
+        public void SetValue(int value)
         {
             Volatile.Write(ref this.value, value);
+        }
+
+        /// <summary>
+        /// From the Java Version:
+        /// Eventually sets to the given value.
+        /// The semantics are that the write is guaranteed not to be re-ordered with any previous write, 
+        /// but may be reordered with subsequent operations (or equivalently, might not be visible to other threads) 
+        /// until some other volatile write or synchronizing action occurs).
+        /// </summary>
+        /// <remarks>
+        /// Currently implemented by calling Volatile.Write which is different from the java version. 
+        /// Not sure if it is possible on CLR to implement this.
+        /// </remarks>
+        /// <param name="value">The new value for this instance.</param>
+        public void LazySetValue(int value)
+        {
+            Volatile.Write(ref this.value, value);
+        }
+
+        /// <summary>
+        /// Set the value without using Volatile.Write fence and ordering.
+        /// </summary>
+        /// <param name="value">The new value for this instance.</param>
+        public void NonVolatileSetValue(int value)
+        {
+            this.value = value;
         }
 
         /// <summary>
@@ -73,7 +107,7 @@ internal
         /// </summary>
         /// <param name="value">The amount to add.</param>
         /// <returns>The value of this instance + the amount added.</returns>
-        public long Add(long value)
+        public int Add(int value)
         {
             return Interlocked.Add(ref this.value, value);
         }
@@ -83,7 +117,7 @@ internal
         /// </summary>
         /// <param name="value">The amount to add.</param>
         /// <returns>The value of this instance before the amount was added.</returns>
-        public long GetAndAdd(long value)
+        public int GetAndAdd(int value)
         {
             return Add(value) - value;
         }
@@ -92,7 +126,7 @@ internal
         /// Increment this instance and return the value the instance had before the increment.
         /// </summary>
         /// <returns>The value of the instance *before* the increment.</returns>
-        public long GetAndIncrement()
+        public int GetAndIncrement()
         {
             return Increment() - 1;
         }
@@ -101,7 +135,7 @@ internal
         /// Increment this instance with <paramref name="value"/> and return the value the instance had before the increment.
         /// </summary>
         /// <returns>The value of the instance *before* the increment.</returns>
-        public long GetAndIncrement(long value)
+        public int GetAndIncrement(int value)
         {
             return Increment(value) - value;
         }
@@ -110,7 +144,7 @@ internal
         /// Decrement this instance and return the value the instance had before the decrement.
         /// </summary>
         /// <returns>The value of the instance *before* the decrement.</returns>
-        public long GetAndDecrement()
+        public int GetAndDecrement()
         {
             return Decrement() + 1;
         }
@@ -119,7 +153,7 @@ internal
         /// Decrement this instance with <paramref name="value"/> and return the value the instance had before the decrement.
         /// </summary>
         /// <returns>The value of the instance *before* the decrement.</returns>
-        public long GetAndDecrement(long value)
+        public int GetAndDecrement(int value)
         {
             return Decrement(value) + value;
         }
@@ -128,7 +162,7 @@ internal
         /// Increment this instance and return the value after the increment.
         /// </summary>
         /// <returns>The value of the instance *after* the increment.</returns>
-        public long Increment()
+        public int Increment()
         {
             return Interlocked.Increment(ref this.value);
         }
@@ -137,7 +171,7 @@ internal
         /// Increment this instance with <paramref name="value"/> and return the value after the increment.
         /// </summary>
         /// <returns>The value of the instance *after* the increment.</returns>
-        public long Increment(long value)
+        public int Increment(int value)
         {
             return Add(value);
         }
@@ -146,7 +180,7 @@ internal
         /// Decrement this instance and return the value after the decrement.
         /// </summary>
         /// <returns>The value of the instance *after* the decrement.</returns>
-        public long Decrement()
+        public int Decrement()
         {
             return Interlocked.Decrement(ref this.value);
         }
@@ -155,7 +189,7 @@ internal
         /// Decrement this instance with <paramref name="value"/> and return the value after the decrement.
         /// </summary>
         /// <returns>The value of the instance *after* the decrement.</returns>
-        public long Decrement(long value)
+        public int Decrement(int value)
         {
             return Add(-value);
         }
@@ -164,16 +198,16 @@ internal
         /// Returns the current value of the instance and sets it to zero as an atomic operation.
         /// </summary>
         /// <returns>The current value of the instance.</returns>
-        public long GetAndReset()
+        public int GetAndReset()
         {
-            return GetAndSet(0L);
+            return GetAndSet(0);
         }
 
         /// <summary>
         /// Returns the current value of the instance and sets it to <paramref name="newValue"/> as an atomic operation.
         /// </summary>
         /// <returns>The current value of the instance.</returns>
-        public long GetAndSet(long newValue)
+        public int GetAndSet(int newValue)
         {
             return Interlocked.Exchange(ref this.value, newValue);
         }
@@ -184,7 +218,7 @@ internal
         /// <param name="expected">Value this instance is expected to be equal with.</param>
         /// <param name="updated">Value to set this instance to, if the current value is equal to the expected value</param>
         /// <returns>True if the update was made, false otherwise.</returns>
-        public bool CompareAndSwap(long expected, long updated)
+        public bool CompareAndSwap(int expected, int updated)
         {
             return Interlocked.CompareExchange(ref this.value, updated, expected) == expected;
         }

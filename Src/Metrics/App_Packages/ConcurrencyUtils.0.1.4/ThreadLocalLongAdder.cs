@@ -77,6 +77,20 @@ internal
             long sum = 0;
             foreach (var value in this.local.Values)
             {
+                sum += Volatile.Read(ref value.Value);
+            }
+            return sum;
+        }
+
+        /// <summary>
+        /// Returns the current value of the instance without using Volatile.Read fence and ordering.  
+        /// </summary>
+        /// <returns>The current value of the instance in a non-volatile way (might not observe changes on other threads).</returns>
+        public long NonVolatileGetValue()
+        {
+            long sum = 0;
+            foreach (var value in this.local.Values)
+            {
                 sum += value.Value;
             }
             return sum;
@@ -107,7 +121,7 @@ internal
         {
             foreach (var value in this.local.Values)
             {
-                value.Value = 0L;
+                Volatile.Write(ref value.Value, 0L);
             }
         }
 
