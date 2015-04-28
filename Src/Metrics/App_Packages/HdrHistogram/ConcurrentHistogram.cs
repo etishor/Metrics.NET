@@ -37,7 +37,7 @@ namespace HdrHistogram
     /// </summary>
     public class ConcurrentHistogram : Histogram
     {
-        private new AtomicLong totalCount = new AtomicLong();
+        private new readonly StripedLongAdder totalCount = new StripedLongAdder();
 
         private int activeCountsNormalizingIndexOffset;
         private AtomicLongArray activeCounts;
@@ -405,7 +405,7 @@ namespace HdrHistogram
                     activeCounts.SetValue(i, 0);
                     inactiveCounts.SetValue(i, 0);
                 }
-                totalCount.SetValue(0);
+                totalCount.Reset();
             }
             finally
             {
@@ -434,7 +434,8 @@ namespace HdrHistogram
 
         protected override void setTotalCount(long totalCount)
         {
-            this.totalCount.SetValue(totalCount);
+            this.totalCount.Reset();
+            this.totalCount.Add(totalCount);
         }
 
         protected override void incrementTotalCount()

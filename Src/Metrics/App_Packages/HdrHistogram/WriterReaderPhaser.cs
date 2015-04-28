@@ -47,9 +47,9 @@ namespace HdrHistogram
      */
     public class WriterReaderPhaser
     {
-        private AtomicLong startEpoch = new AtomicLong(0);
-        private AtomicLong evenEndEpoch = new AtomicLong(0);
-        private AtomicLong oddEndEpoch = new AtomicLong(long.MinValue);
+        private PaddedAtomicLong startEpoch = new PaddedAtomicLong(0);
+        private PaddedAtomicLong evenEndEpoch = new PaddedAtomicLong(0);
+        private PaddedAtomicLong oddEndEpoch = new PaddedAtomicLong(long.MinValue);
 
         private readonly object readerLockObject = new object();
 
