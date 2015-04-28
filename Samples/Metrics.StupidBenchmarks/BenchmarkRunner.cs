@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,14 +11,20 @@ namespace Metrics.StupidBenchmarks
         public static int DefaultMaxThreads { get; set; }
         public static int DefaultTotalSeconds { get; set; }
 
+        static BenchmarkRunner()
+        {
+            DefaultMaxThreads = threads.Max();
+            DefaultTotalSeconds = 5;
+        }
+
         private static readonly int[] threads = new[] { 1, 2, 4, 6, 8, 16, 32 };
 
-        public static IEnumerable<BenchmarkResult> Run<T>(string name, Action<T> action, Func<T> builder, int maxThreads = -1, int totalSeconds = -1, int iterationsChunk = 1000)
+        public static IEnumerable<BenchmarkResult> Run(string name, Action action, int maxThreads = -1, int totalSeconds = -1, int iterationsChunk = 1000)
         {
             var results = new List<BenchmarkResult>(); ;
             foreach (var threadCount in threads.Where(t => t <= (maxThreads == -1 ? DefaultMaxThreads : maxThreads)))
             {
-                var runner = new ActionBenchmark<T>(name, threadCount, (totalSeconds == -1 ? DefaultTotalSeconds : totalSeconds), action, builder, iterationsChunk);
+                var runner = new ActionBenchmark(name, threadCount, (totalSeconds == -1 ? DefaultTotalSeconds : totalSeconds), action, iterationsChunk);
                 var result = runner.Run();
                 results.Add(result);
                 Display(result);

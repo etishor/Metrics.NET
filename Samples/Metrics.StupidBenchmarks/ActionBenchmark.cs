@@ -1,17 +1,14 @@
-﻿
-
-using System;
+﻿using System;
 using System.Threading;
 
 namespace Metrics.StupidBenchmarks
 {
-    public class ActionBenchmark<T>
+    public class ActionBenchmark
     {
         private readonly string name;
         private readonly int threadCount;
         private readonly int totalSeconds;
-        private readonly Action<T> action;
-        private readonly Func<T> builder;
+        private readonly Action action;
 
         private readonly EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
         private readonly long totalTimeNanoseconds;
@@ -21,21 +18,18 @@ namespace Metrics.StupidBenchmarks
 
         private readonly int iterationsChunk;
 
-        private readonly T testInstance;
         private readonly Thread[] threads;
 
-        public ActionBenchmark(string name, int threadCount, int totalSeconds, Action<T> action, Func<T> builder, int iterationsChunk = 100000)
+        public ActionBenchmark(string name, int threadCount, int totalSeconds, Action action, int iterationsChunk = 100000)
         {
             this.name = name;
             this.threadCount = threadCount;
             this.totalSeconds = totalSeconds;
             this.action = action;
-            this.builder = builder;
             this.iterationsChunk = iterationsChunk;
 
             this.totalTimeNanoseconds = BenchmarkRunner.SecondsToNano(totalSeconds);
 
-            this.testInstance = this.builder();
             this.threads = new Thread[threadCount];
             this.threadHandles = new EventWaitHandle[threadCount];
             this.threadTimes = new long[threadCount];
@@ -60,19 +54,19 @@ namespace Metrics.StupidBenchmarks
             var end = BenchmarkRunner.TimeInNanoseconds();
 
             var recordedTime = end - start;
-            foreach (var thread in threads)
+            foreach (var thread in this.threads)
             {
                 thread.Join();
             }
 
-            var result = new BenchmarkResult(this.name, typeof(T).Name, this.threadCount, this.totalSeconds, recordedTime, this.threadCounts, this.threadTimes);
+            var result = new BenchmarkResult(this.name, this.name, this.threadCount, this.totalSeconds, recordedTime, this.threadCounts, this.threadTimes);
             PerformCollection();
             return result;
         }
 
         private void RunAction(int threadNumber)
         {
-            this.action(this.testInstance);
+            this.action();
             this.waitHandle.WaitOne();
             var start = BenchmarkRunner.TimeInNanoseconds();
             var end = start;
@@ -82,7 +76,7 @@ namespace Metrics.StupidBenchmarks
             {
                 for (int i = 0; i < this.iterationsChunk; i++)
                 {
-                    this.action(this.testInstance);
+                    this.action();
                 }
                 count += this.iterationsChunk;
                 end = BenchmarkRunner.TimeInNanoseconds();
@@ -94,12 +88,11 @@ namespace Metrics.StupidBenchmarks
 
         private void WarmUp()
         {
-            var instance = this.builder();
-            action(instance);
-            action(instance);
-            action(instance);
-            action(instance);
-            action(instance);
+            this.action();
+            this.action();
+            this.action();
+            this.action();
+            this.action();
             PerformCollection();
         }
 

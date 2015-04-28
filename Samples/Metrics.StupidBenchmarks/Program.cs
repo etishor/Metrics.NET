@@ -65,6 +65,9 @@ namespace Metrics.StupidBenchmarks
         [VerbOption("Sliding")]
         public CommonOptions Sliding { get; set; }
 
+        [VerbOption("NoOp")]
+        public CommonOptions NoOp { get; set; }
+
         [HelpVerbOption]
         public string GetUsage(string verb)
         {
@@ -95,41 +98,56 @@ namespace Metrics.StupidBenchmarks
 
             switch (target)
             {
+                case "noop":
+                    BenchmarkRunner.Run("Counter", () => { });
+                    break;
                 case "counter":
-                    BenchmarkRunner.Run("Counter", c => c.Increment(), () => new CounterMetric());
+                    var counter = new CounterMetric();
+                    BenchmarkRunner.Run("Counter", () => counter.Increment());
                     break;
                 case "meter":
-                    BenchmarkRunner.Run("Meter", c => c.Mark(), () => new MeterMetric());
+                    var meter = new MeterMetric();
+                    BenchmarkRunner.Run("Meter", () => meter.Mark());
                     break;
                 case "histogram":
-                    BenchmarkRunner.Run("Histogram", c => c.Update(137), () => new HistogramMetric());
+                    var histogram = new HistogramMetric();
+                    BenchmarkRunner.Run("Histogram", () => histogram.Update(137));
                     break;
                 case "timer":
-                    BenchmarkRunner.Run("Timer", c => c.Record(137, TimeUnit.Milliseconds), () => new TimerMetric());
-                    break;
-                case "ewma":
-                    BenchmarkRunner.Run("EWMA", c => c.Update(1), () => EWMA.OneMinuteEWMA());
-                    break;
-                case "edr":
-                    BenchmarkRunner.Run("EDR", c => c.Update(137), () => new ExponentiallyDecayingReservoir());
-                    break;
-                case "hdr":
-                    BenchmarkRunner.Run("HDR Recorder", c => c.Update(137), () => new HdrHistogramReservoir());
-                    break;
-                case "hdrsync":
-                    BenchmarkRunner.Run("HDR Sync", c => c.Update(137), () => new SyncronizedHdrReservoir());
+                    var timer = new TimerMetric();
+                    BenchmarkRunner.Run("Timer", () => timer.Record(137, TimeUnit.Milliseconds));
                     break;
                 case "hdrtimer":
-                    BenchmarkRunner.Run("HDR Timer", c => c.Record(137, TimeUnit.Milliseconds), () => new TimerMetric(new HdrHistogramReservoir()));
+                    var hdrTimer = new TimerMetric(new HdrHistogramReservoir());
+                    BenchmarkRunner.Run("HDR Timer", () => hdrTimer.Record(137, TimeUnit.Milliseconds));
+                    break;
+                case "ewma":
+                    var ewma = EWMA.OneMinuteEWMA();
+                    BenchmarkRunner.Run("EWMA", () => ewma.Update(1));
+                    break;
+                case "edr":
+                    var edr = new ExponentiallyDecayingReservoir();
+                    BenchmarkRunner.Run("EDR", () => edr.Update(137));
+                    break;
+                case "hdr":
+                    var hdrReservoir = new HdrHistogramReservoir();
+                    BenchmarkRunner.Run("HDR Recorder", () => hdrReservoir.Update(137));
+                    break;
+                case "hdrsync":
+                    var hdrSyncReservoir = new SyncronizedHdrReservoir();
+                    BenchmarkRunner.Run("HDR Sync", () => hdrSyncReservoir.Update(137));
                     break;
                 case "hdrsynctimer":
-                    BenchmarkRunner.Run("HDR Sync Timer", c => c.Record(137, TimeUnit.Milliseconds), () => new TimerMetric(new SyncronizedHdrReservoir()));
+                    var hdrSyncTimer = new TimerMetric(new SyncronizedHdrReservoir());
+                    BenchmarkRunner.Run("HDR Sync Timer", () => hdrSyncTimer.Record(137, TimeUnit.Milliseconds));
                     break;
                 case "uniform":
-                    BenchmarkRunner.Run("Uniform", c => c.Update(137), () => new UniformReservoir());
+                    var uniform = new UniformReservoir();
+                    BenchmarkRunner.Run("Uniform", () => uniform.Update(137));
                     break;
                 case "sliding":
-                    BenchmarkRunner.Run("Sliding", c => c.Update(137), () => new SlidingWindowReservoir());
+                    var sliding = new SlidingWindowReservoir();
+                    BenchmarkRunner.Run("Sliding", () => sliding.Update(137));
                     break;
             }
         }
