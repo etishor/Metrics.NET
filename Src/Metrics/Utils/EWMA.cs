@@ -56,9 +56,9 @@ namespace Metrics.Utils
             this.uncounted.Add(value);
         }
 
-        public void Tick()
+        public void Tick(long externallyCounted = 0L)
         {
-            var count = this.uncounted.GetAndReset();
+            var count = this.uncounted.GetAndReset() + externallyCounted;
 
             var instantRate = count / this.interval;
             if (this.initialized)

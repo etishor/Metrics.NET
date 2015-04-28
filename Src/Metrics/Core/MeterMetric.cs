@@ -16,14 +16,16 @@ namespace Metrics.Core
 
         private struct MeterWrapper
         {
-            private readonly StripedLongAdder counter;
+            private readonly StripedLongAdder total;
+            private readonly StripedLongAdder uncounted;
             private readonly EWMA m1Rate;
             private readonly EWMA m5Rate;
             private readonly EWMA m15Rate;
 
-            public MeterWrapper(StripedLongAdder counter)
+            public MeterWrapper(StripedLongAdder total)
             {
-                this.counter = counter;
+                this.total = total;
+                this.uncounted = new StripedLongAdder();
                 this.m1Rate = EWMA.OneMinuteEWMA();
                 this.m5Rate = EWMA.FiveMinuteEWMA();
                 this.m15Rate = EWMA.FifteenMinuteEWMA();
@@ -31,22 +33,26 @@ namespace Metrics.Core
 
             public void Tick()
             {
-                this.m1Rate.Tick();
-                this.m5Rate.Tick();
-                this.m15Rate.Tick();
+                var count = uncounted.GetAndReset();
+
+                this.total.Add(count);
+                this.m1Rate.Tick(count);
+                this.m5Rate.Tick(count);
+                this.m15Rate.Tick(count);
             }
 
             public void Mark(long count)
             {
-                this.counter.Add(count);
-                this.m1Rate.Update(count);
-                this.m5Rate.Update(count);
-                this.m15Rate.Update(count);
+                this.uncounted.Add(count);
+                //this.m1Rate.Update(count);
+                //this.m5Rate.Update(count);
+                //this.m15Rate.Update(count);
             }
 
             public void Merge(MeterWrapper other)
             {
-                this.counter.Add(other.counter.GetValue());
+                this.uncounted.Add(other.uncounted.GetValue());
+                this.total.Add(other.total.GetValue());
                 this.m1Rate.Merge(other.m1Rate);
                 this.m5Rate.Merge(other.m5Rate);
                 this.m15Rate.Merge(other.m15Rate);
@@ -54,7 +60,8 @@ namespace Metrics.Core
 
             public void Reset()
             {
-                this.counter.Reset();
+                this.uncounted.Reset();
+                this.total.Reset();
                 this.m1Rate.Reset();
                 this.m5Rate.Reset();
                 this.m15Rate.Reset();
@@ -62,7 +69,7 @@ namespace Metrics.Core
 
             public MeterValue GetValue(double elapsed)
             {
-                var count = this.counter.GetValue();
+                var count = this.total.GetValue() + this.uncounted.GetValue();
                 return new MeterValue(count, GetMeanRate(count, elapsed), OneMinuteRate, FiveMinuteRate, FifteenMinuteRate, TimeUnit.Seconds);
             }
 
