@@ -7,7 +7,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using HdrHistogram.ConcurrencyUtilities;
+using Metrics.ConcurrencyUtilities;
 
 namespace HdrHistogram
 {

@@ -6,7 +6,7 @@
 // Latest ported version is available in the Java submodule in the root of the repo
 using System;
 using System.Runtime.CompilerServices;
-using HdrHistogram.ConcurrencyUtilities;
+using Metrics.ConcurrencyUtilities;
 
 namespace HdrHistogram
 {

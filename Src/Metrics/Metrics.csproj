@@ -70,36 +70,6 @@
     <Compile Include="App_Packages\HdrHistogram\AbstractHistogramIterator.cs" />
     <Compile Include="App_Packages\HdrHistogram\AbstractHistogramOutputExtensions.cs" />
     <Compile Include="App_Packages\HdrHistogram\AllValuesIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\App_Packages\ConcurrencyUtils.0.1.3\AtomicIntArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\App_Packages\ConcurrencyUtils.0.1.3\AtomicInteger.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\App_Packages\ConcurrencyUtils.0.1.3\AtomicLong.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\App_Packages\ConcurrencyUtils.0.1.3\AtomicLongArray.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\App_Packages\ConcurrencyUtils.0.1.3\PaddedAtomicLong.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\App_Packages\ConcurrencyUtils.0.1.3\Striped64.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\App_Packages\ConcurrencyUtils.0.1.3\StripedLongAdder.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\App_Packages\ConcurrencyUtils.0.1.3\ThreadLocalLongAdder.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\App_Packages\ConcurrencyUtils.0.1.3\ThreadLocalRandom.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\App_Packages\ConcurrencyUtils.0.1.3\VolatileDouble.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="App_Packages\HdrHistogram\AtomicHistogram.cs">
       <SubType>Code</SubType>
     </Compile>

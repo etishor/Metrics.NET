@@ -9,34 +9,32 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
-using HdrHistogram.ConcurrencyUtilities;
+using Metrics.ConcurrencyUtilities;
 
 namespace HdrHistogram
 {
+    /// <summary>
+    /// <h3>An integer values High Dynamic Range (HDR) Histogram that supports safe concurrent recording operations.</h3>
+    /// A ConcurrentHistogram guarantees lossless recording of values into the histogram even when the
+    /// histogram is updated by multiple threads, and supports auto-resize and shift operations that may
+    /// result from or occur concurrently with other recording operations.
 
-    /**
-     * <h3>An integer values High Dynamic Range (HDR) Histogram that supports safe concurrent recording operations.</h3>
-     * A ConcurrentHistogram guarantees lossless recording of values into the histogram even when the
-     * histogram is updated by multiple threads, and supports auto-resize and shift operations that may
-     * result from or occur concurrently with other recording operations.
-     * <p>
-     * It is important to note that concurrent recording, auto-sizing, and value shifting are the only thread-safe
-     * behaviors provided by {@link ConcurrentHistogram}, and that it is not otherwise synchronized. Specifically, {@link
-     * ConcurrentHistogram} provides no implicit synchronization that would prevent the contents of the histogram
-     * from changing during queries, iterations, copies, or addition operations on the histogram. Callers wishing to make
-     * potentially concurrent, multi-threaded updates that would safely work in the presence of queries, copies, or
-     * additions of histogram objects should either take care to externally synchronize and/or order their access,
-     * use the {@link SynchronizedHistogram} variant, or (recommended) use {@link Recorder} or
-     * {@link SingleWriterRecorder} which are intended for this purpose.
-     * <p>
-     * Auto-resizing: When constructed with no specified value range range (or when auto-resize is turned on with {@link
-     * Histogram#setAutoResize}) a {@link Histogram} will auto-resize its dynamic range to include recorded values as
-     * they are encountered. Note that recording calls that cause auto-resizing may take longer to execute, as resizing
-     * incurs allocation and copying of internal data structures.
-     * <p>
-     * See package description for {@link org.HdrHistogram} for details.
-     */
-
+    /// It is important to note that concurrent recording, auto-sizing, and value shifting are the only thread-safe
+    /// behaviors provided by {@link ConcurrentHistogram}, and that it is not otherwise synchronized. Specifically, {@link
+    /// ConcurrentHistogram} provides no implicit synchronization that would prevent the contents of the histogram
+    /// from changing during queries, iterations, copies, or addition operations on the histogram. Callers wishing to make
+    /// potentially concurrent, multi-threaded updates that would safely work in the presence of queries, copies, or
+    /// additions of histogram objects should either take care to externally synchronize and/or order their access,
+    /// use the {@link SynchronizedHistogram} variant, or (recommended) use {@link Recorder} or
+    /// {@link SingleWriterRecorder} which are intended for this purpose.
+    /// 
+    /// Auto-resizing: When constructed with no specified value range range (or when auto-resize is turned on with {@link
+    /// Histogram#setAutoResize}) a {@link Histogram} will auto-resize its dynamic range to include recorded values as
+    /// they are encountered. Note that recording calls that cause auto-resizing may take longer to execute, as resizing
+    /// incurs allocation and copying of internal data structures.
+    /// 
+    /// See package description for {@link org.HdrHistogram} for details.
+    /// </summary>
     public class ConcurrentHistogram : Histogram
     {
         private new AtomicLong totalCount = new AtomicLong();
@@ -56,7 +54,7 @@ namespace HdrHistogram
                 wrp.readerLock();
                 Debug.Assert(countsArrayLength == activeCounts.Length);
                 Debug.Assert(countsArrayLength == inactiveCounts.Length);
-                ;
+
                 long activeCount = activeCounts.GetValue(normalizeIndex(index, activeCountsNormalizingIndexOffset, activeCounts.Length));
                 long inactiveCount = inactiveCounts.GetValue(normalizeIndex(index, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length));
                 return activeCount + inactiveCount;
