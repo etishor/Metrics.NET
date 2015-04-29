@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using CommandLine;
 using CommandLine.Text;
 using Metrics.Core;
@@ -65,6 +62,9 @@ namespace Metrics.StupidBenchmarks
         [VerbOption("Sliding")]
         public CommonOptions Sliding { get; set; }
 
+        [VerbOption("TimerImpact")]
+        public CommonOptions TimerImpact { get; set; }
+
         [VerbOption("NoOp")]
         public CommonOptions NoOp { get; set; }
 
@@ -89,17 +89,15 @@ namespace Metrics.StupidBenchmarks
                 Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
             }
 
-            //Console.WriteLine("{0} | Duration {1} seconds  | Start Threads {2} | Step {3}", target, targetOptions.Seconds, targetOptions.MaxThreads, targetOptions.Decrement);
-
             BenchmarkRunner.DefaultTotalSeconds = targetOptions.Seconds;
             BenchmarkRunner.DefaultMaxThreads = targetOptions.MaxThreads;
 
-            //BenchmarkRunner.Run("HDR", c => c.recordValue(137), () => new HdrHistogram.Histogram(1, BenchmarkRunner.SecondsToNano(200), 2));
+            //Metric.Config.WithHttpEndpoint("http://localhost:1234/");
 
             switch (target)
             {
                 case "noop":
-                    BenchmarkRunner.Run("Counter", () => { });
+                    BenchmarkRunner.Run("Noop", () => { });
                     break;
                 case "counter":
                     var counter = new CounterMetric();
@@ -149,25 +147,12 @@ namespace Metrics.StupidBenchmarks
                     var sliding = new SlidingWindowReservoir();
                     BenchmarkRunner.Run("Sliding", () => sliding.Update(1));
                     break;
+                case "timerimpact":
+                    WorkLoad load = new WorkLoad();
+                    BenchmarkRunner.Run("WorkWithoutTimer", () => load.DoSomeWork(), iterationsChunk: 10);
+                    BenchmarkRunner.Run("WorkWithTimer", () => load.DoSomeWorkWithATimer(), iterationsChunk: 10);
+                    break;
             }
-        }
-
-        private static Task ReaderTask<T>(Func<T> reader, CancellationToken token)
-        {
-            List<T> values = new List<T>();
-
-            return Task.Factory.StartNew(async () =>
-            {
-                while (!token.IsCancellationRequested)
-                {
-                    values.Add(reader());
-                    await Task.Delay(200);
-                    if (values.Count > 100)
-                    {
-                        values.Clear();
-                    }
-                }
-            });
         }
     }
 }
