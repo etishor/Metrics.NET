@@ -39,7 +39,6 @@ namespace Metrics.Core
 
         private void Tick(long count)
         {
-            var t = EWMA.OneMinuteEWMA();
             this.total.Add(count);
             var instantRate = count / Interval;
             if (this.initialized)
