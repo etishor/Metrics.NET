@@ -37,6 +37,8 @@ namespace HdrHistogram
         // "Hot" accessed fields (used in the the value recording code path) are bunched here, such
         // that they will have a good chance of ending up in the same cache line as the totalCounts and
         // counts array reference fields that subclass implementations will typically add.
+        // Sub-classes will typically add a totalCount field and a counts array field, which will likely be laid out
+        // right around here due to the subclass layout rules in most practical JVM implementations.
         private int leadingZeroCountBase;
         internal protected int subBucketHalfCountMagnitude;
         internal int unitMagnitude;
@@ -44,9 +46,84 @@ namespace HdrHistogram
         private long subBucketMask;
         private AtomicLong maxValue = new AtomicLong(0);
         private AtomicLong minNonZeroValue = new AtomicLong(long.MaxValue);
+        
+        /// <summary>
+        /// Construct an auto-resizing histogram with a lowest discernible value of 1 and an auto-adjusting
+        /// highestTrackableValue. Can auto-resize up to track values up to (long.MaxValue / 2).
+        /// </summary>
+        /// <param name="numberOfSignificantValueDigits">The number of significant decimal digits to which the histogram will maintain value resolution and separation. Must be a non-negative integer between 0 and 5.</param>
+        /// <param name="wordSizeInBytes"></param>
+        /// <param name="autoResize"></param>
+        protected AbstractHistogram(int numberOfSignificantValueDigits, int wordSizeInBytes, bool autoResize)
+            : this(1, 2, numberOfSignificantValueDigits, wordSizeInBytes, autoResize)
+        { }
 
-        // Sub-classes will typically add a totalCount field and a counts array field, which will likely be laid out
-        // right around here due to the subclass layout rules in most practical JVM implementations.
+        /// <summary>
+        /// Construct a Histogram given the Lowest and Highest values to be tracked and a number of significant
+        /// decimal digits. Providing a lowestDiscernibleValue is useful is situations where the units used
+        /// for the histogram's values are much smaller that the minimal accuracy required. E.g. when tracking
+        /// time values stated in nanosecond units, where the minimal accuracy required is a microsecond, the
+        /// proper value for lowestDiscernibleValue would be 1000.
+        /// </summary>
+        /// <param name="lowestDiscernibleValue">The lowest value that can be discerned (distinguished from 0) by the histogram. Must be a positive integer that is {@literal >=} 1. May be internally rounded down to nearest power of 2.</param>
+        /// <param name="highestTrackableValue">The highest value to be tracked by the histogram. Must be a positive integer that is {@literal >=} (2 * lowestDiscernibleValue).</param>
+        /// <param name="numberOfSignificantValueDigits">Specifies the precision to use. This is the number of significant decimal digits to which the histogram will maintain value resolution and separation. Must be a non-negative integer between 0 and 5.</param>
+        /// <param name="wordSizeInBytes"></param>
+        /// <param name="autoResize"></param>
+        protected AbstractHistogram(long lowestDiscernibleValue, long highestTrackableValue, int numberOfSignificantValueDigits, int wordSizeInBytes, bool autoResize)
+            : base(lowestDiscernibleValue, numberOfSignificantValueDigits, wordSizeInBytes, autoResize)
+        {
+
+            if (highestTrackableValue < 2L * lowestDiscernibleValue)
+            {
+                throw new ArgumentException("highestTrackableValue must be >= 2 * lowestDiscernibleValue");
+            }
+
+            Init(highestTrackableValue, 1.0, 0);
+        }
+
+        /// <summary> 
+        /// Construct a histogram with the same range settings as a given source histogram,
+        /// duplicating the source's start/end timestamps (but NOT its contents).
+        /// </summary>
+        /// <param name="source">The source histogram to duplicate/</param>
+        protected AbstractHistogram(AbstractHistogram source)
+            : this(source.getLowestDiscernibleValue(), source.getHighestTrackableValue(), source.getNumberOfSignificantValueDigits(), source.WordSizeInBytes, source.AutoResize)
+        {
+            setStartTimeStamp(source.getStartTimeStamp());
+            setEndTimeStamp(source.getEndTimeStamp());
+        }
+
+        private void Init(long highestTrackableValue, double integerToDoubleValueConversionRatio, int normalizingIndexOffset)
+        {
+            this.HighestTrackableValue = highestTrackableValue;
+            this.integerToDoubleValueConversionRatio = integerToDoubleValueConversionRatio;
+            if (normalizingIndexOffset != 0)
+            {
+                setNormalizingIndexOffset(normalizingIndexOffset);
+            }
+
+            long largestValueWithSingleUnitResolution = 2 * (long)Math.Pow(10, NumberOfSignificantValueDigits);
+
+            unitMagnitude = (int)Math.Floor(Math.Log(LowestDiscernibleValue) / Math.Log(2));
+
+            // We need to maintain power-of-two subBucketCount (for clean direct indexing) that is large enough to
+            // provide unit resolution to at least largestValueWithSingleUnitResolution. So figure out
+            // largestValueWithSingleUnitResolution's nearest power-of-two (rounded up), and use that:
+            int subBucketCountMagnitude = (int)Math.Ceiling(Math.Log(largestValueWithSingleUnitResolution) / Math.Log(2));
+            subBucketHalfCountMagnitude = ((subBucketCountMagnitude > 1) ? subBucketCountMagnitude : 1) - 1;
+            subBucketCount = (int)Math.Pow(2, (subBucketHalfCountMagnitude + 1));
+            subBucketHalfCount = subBucketCount / 2;
+            subBucketMask = ((long)subBucketCount - 1) << unitMagnitude;
+
+
+            // determine exponent range needed to support the trackable value with no overflow:
+            establishSize(highestTrackableValue);
+
+            // Establish leadingZeroCountBase, used in getBucketIndex() fast path:
+            leadingZeroCountBase = 64 - unitMagnitude - subBucketHalfCountMagnitude - 1;
+        }
+
 
         //
         //
@@ -131,98 +208,6 @@ namespace HdrHistogram
             this.minNonZeroValue.SetValue(minNonZeroValue);
         }
 
-        //
-        //
-        //
-        // Construction:
-        //
-        //
-        //
-
-        /**
-         * Construct an auto-resizing histogram with a lowest discernible value of 1 and an auto-adjusting
-         * highestTrackableValue. Can auto-resize up to track values up to (Long.MAX_VALUE / 2).
-         *
-         * @param numberOfSignificantValueDigits The number of significant decimal digits to which the histogram will
-         *                                       maintain value resolution and separation. Must be a non-negative
-         *                                       integer between 0 and 5.
-         */
-        protected AbstractHistogram(int numberOfSignificantValueDigits, int wordSizeInBytes, bool autoResize)
-            : this(1, 2, numberOfSignificantValueDigits, wordSizeInBytes, autoResize)
-        { }
-
-        /**
-         * Construct a histogram given the Lowest and Highest values to be tracked and a number of significant
-         * decimal digits. Providing a lowestDiscernibleValue is useful is situations where the units used
-         * for the histogram's values are much smaller that the minimal accuracy required. E.g. when tracking
-         * time values stated in nanosecond units, where the minimal accuracy required is a microsecond, the
-         * proper value for lowestDiscernibleValue would be 1000.
-         *
-         * @param lowestDiscernibleValue The lowest value that can be discerned (distinguished from 0) by the histogram.
-         *                               Must be a positive integer that is {@literal >=} 1. May be internally rounded
-         *                               down to nearest power of 2.
-         * @param highestTrackableValue The highest value to be tracked by the histogram. Must be a positive
-         *                              integer that is {@literal >=} (2 * lowestDiscernibleValue).
-         * @param numberOfSignificantValueDigits The number of significant decimal digits to which the histogram will
-         *                                       maintain value resolution and separation. Must be a non-negative
-         *                                       integer between 0 and 5.
-         */
-        protected AbstractHistogram(long lowestDiscernibleValue, long highestTrackableValue, int numberOfSignificantValueDigits, int wordSizeInBytes, bool autoResize)
-            : base(lowestDiscernibleValue, numberOfSignificantValueDigits, wordSizeInBytes, autoResize)
-        {
-
-            if (highestTrackableValue < 2L * lowestDiscernibleValue)
-            {
-                throw new ArgumentException("highestTrackableValue must be >= 2 * lowestDiscernibleValue");
-            }
-
-            init(highestTrackableValue, 1.0, 0);
-        }
-
-        /**
-         * Construct a histogram with the same range settings as a given source histogram,
-         * duplicating the source's start/end timestamps (but NOT it's contents)
-         * @param source The source histogram to duplicate
-         */
-        protected AbstractHistogram(AbstractHistogram source)
-            : this(source.getLowestDiscernibleValue(), source.getHighestTrackableValue(), source.getNumberOfSignificantValueDigits(), source.WordSizeInBytes, source.AutoResize)
-        {
-            this.setStartTimeStamp(source.getStartTimeStamp());
-            this.setEndTimeStamp(source.getEndTimeStamp());
-        }
-
-        private void init(long highestTrackableValue,
-                          double integerToDoubleValueConversionRatio,
-                          int normalizingIndexOffset)
-        {
-            this.highestTrackableValue = highestTrackableValue;
-            this.integerToDoubleValueConversionRatio = integerToDoubleValueConversionRatio;
-            if (normalizingIndexOffset != 0)
-            {
-                setNormalizingIndexOffset(normalizingIndexOffset);
-            }
-
-            long largestValueWithSingleUnitResolution = 2 * (long)Math.Pow(10, NumberOfSignificantValueDigits);
-
-            unitMagnitude = (int)Math.Floor(Math.Log(LowestDiscernibleValue) / Math.Log(2));
-
-            // We need to maintain power-of-two subBucketCount (for clean direct indexing) that is large enough to
-            // provide unit resolution to at least largestValueWithSingleUnitResolution. So figure out
-            // largestValueWithSingleUnitResolution's nearest power-of-two (rounded up), and use that:
-            int subBucketCountMagnitude = (int)Math.Ceiling(Math.Log(largestValueWithSingleUnitResolution) / Math.Log(2));
-            subBucketHalfCountMagnitude = ((subBucketCountMagnitude > 1) ? subBucketCountMagnitude : 1) - 1;
-            subBucketCount = (int)Math.Pow(2, (subBucketHalfCountMagnitude + 1));
-            subBucketHalfCount = subBucketCount / 2;
-            subBucketMask = ((long)subBucketCount - 1) << unitMagnitude;
-
-
-            // determine exponent range needed to support the trackable value with no overflow:
-            establishSize(highestTrackableValue);
-
-            // Establish leadingZeroCountBase, used in getBucketIndex() fast path:
-            leadingZeroCountBase = 64 - unitMagnitude - subBucketHalfCountMagnitude - 1;
-        }
-
         protected void establishSize(long newHighestTrackableValue)
         {
             // establish counts array length:
@@ -230,7 +215,7 @@ namespace HdrHistogram
             // establish exponent range needed to support the trackable value with no overflow:
             bucketCount = getBucketsNeededToCoverValue(newHighestTrackableValue);
             // establish the new highest trackable value:
-            highestTrackableValue = newHighestTrackableValue;
+            HighestTrackableValue = newHighestTrackableValue;
         }
 
         protected int determineArrayLengthNeeded(long highestTrackableValue)
@@ -244,20 +229,10 @@ namespace HdrHistogram
             return countsArrayLength;
         }
 
-        //
-        //
-        //
-        // Value recording support:
-        //
-        //
-        //
-
-        /**
-         * Record a value in the histogram
-         *
-         * @param value The value to be recorded
-         * @throws ArrayIndexOutOfBoundsException (may throw) if value is exceeds highestTrackableValue
-         */
+        /// <summary>
+        /// Record a value in the histogram.
+        /// </summary>
+        /// <param name="value">value The value to be recorded.</param>
         public void recordValue(long value)
         {
             recordSingleValue(value);
@@ -371,7 +346,7 @@ namespace HdrHistogram
             resize(value);
             int countsIndex = countsArrayIndex(value);
             addToCountAtIndex(countsIndex, count);
-            this.highestTrackableValue = highestEquivalentValue(valueFromIndex(countsArrayLength - 1));
+            this.HighestTrackableValue = highestEquivalentValue(valueFromIndex(countsArrayLength - 1));
         }
 
         private void recordValueWithCountAndExpectedInterval(long value, long count, long expectedIntervalBetweenValueSamples)
@@ -859,7 +834,7 @@ namespace HdrHistogram
             }
 
             if ((LowestDiscernibleValue != other.LowestDiscernibleValue) ||
-                (highestTrackableValue != other.highestTrackableValue) ||
+                (HighestTrackableValue != other.HighestTrackableValue) ||
                 (NumberOfSignificantValueDigits != other.NumberOfSignificantValueDigits) ||
                 (integerToDoubleValueConversionRatio != other.integerToDoubleValueConversionRatio))
             {
@@ -921,7 +896,7 @@ namespace HdrHistogram
          */
         public long getHighestTrackableValue()
         {
-            return highestTrackableValue;
+            return HighestTrackableValue;
         }
 
         /**
@@ -1289,7 +1264,7 @@ namespace HdrHistogram
         internal protected void writeObject(BinaryWriter o)
         {
             o.Write(LowestDiscernibleValue);
-            o.Write(highestTrackableValue);
+            o.Write(HighestTrackableValue);
             o.Write(NumberOfSignificantValueDigits);
             o.Write(getNormalizingIndexOffset());
             o.Write(integerToDoubleValueConversionRatio);
@@ -1419,7 +1394,7 @@ namespace HdrHistogram
             buffer.putInt(getNormalizingIndexOffset());
             buffer.putInt(NumberOfSignificantValueDigits);
             buffer.putLong(LowestDiscernibleValue);
-            buffer.putLong(highestTrackableValue);
+            buffer.putLong(HighestTrackableValue);
             buffer.putDouble(integerToDoubleValueConversionRatio);
 
             fillBufferFromCountsArray(buffer, relevantLength);

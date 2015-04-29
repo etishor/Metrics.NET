@@ -47,6 +47,67 @@ namespace HdrHistogram
         protected long[] counts;
         protected int normalizingIndexOffset;
 
+        /// <summary>
+        /// Construct an auto-resizing histogram with a lowest discernible value of 1 and an auto-adjusting
+        /// highestTrackableValue. Can auto-resize up to track values up to (long.MaxValue / 2).
+        /// </summary>
+        /// <param name="numberOfSignificantValueDigits">Specifies the precision to use. This is the number of significant decimal digits to which the histogram will maintain value resolution and separation. Must be a non-negative integer between 0 and 5.</param>
+        public Histogram(int numberOfSignificantValueDigits)
+            : this(1, 2, numberOfSignificantValueDigits, sizeof(long), allocateCountsArray: true, autoResize: true)
+        { }
+
+        /// <summary>
+        /// Construct a Histogram given the Highest value to be tracked and a number of significant decimal digits. The
+        /// histogram will be constructed to implicitly track (distinguish from 0) values as low as 1.
+        /// </summary>
+        /// <param name="highestTrackableValue">The highest value to be tracked by the histogram. Must be a positiveinteger that is {@literal >=} 2.</param>
+        /// <param name="numberOfSignificantValueDigits">Specifies the precision to use. This is the number of significant decimal digits to which the histogram will maintain value resolution and separation. Must be a non-negative integer between 0 and 5.</param>
+        public Histogram(long highestTrackableValue, int numberOfSignificantValueDigits)
+            : this(1, highestTrackableValue, numberOfSignificantValueDigits)
+        { }
+
+        /// <summary>
+        /// Construct a Histogram given the Lowest and Highest values to be tracked and a number of significant
+        /// decimal digits. Providing a lowestDiscernibleValue is useful is situations where the units used
+        /// for the histogram's values are much smaller that the minimal accuracy required. E.g. when tracking
+        /// time values stated in nanosecond units, where the minimal accuracy required is a microsecond, the
+        /// proper value for lowestDiscernibleValue would be 1000.
+        /// </summary>
+        /// <param name="lowestDiscernibleValue">The lowest value that can be discerned (distinguished from 0) by the histogram. Must be a positive integer that is {@literal >=} 1. May be internally rounded down to nearest power of 2.</param>
+        /// <param name="highestTrackableValue">The highest value to be tracked by the histogram. Must be a positive integer that is {@literal >=} (2 * lowestDiscernibleValue).</param>
+        /// <param name="numberOfSignificantValueDigits">Specifies the precision to use. This is the number of significant decimal digits to which the histogram will maintain value resolution and separation. Must be a non-negative integer between 0 and 5.</param>
+        public Histogram(long lowestDiscernibleValue, long highestTrackableValue, int numberOfSignificantValueDigits)
+            : this(lowestDiscernibleValue, highestTrackableValue, numberOfSignificantValueDigits, sizeof(long), allocateCountsArray: true, autoResize: false)
+        { }
+
+        /// <summary> 
+        /// Construct a histogram with the same range settings as a given source histogram,
+        /// duplicating the source's start/end timestamps (but NOT its contents).
+        /// </summary>
+        /// <param name="source">The source histogram to duplicate/</param>
+        public Histogram(AbstractHistogram source)
+            : this(source, true)
+        {
+        }
+
+        protected Histogram(AbstractHistogram source, bool allocateCountsArray)
+            : base(source)
+        {
+            if (allocateCountsArray)
+            {
+                counts = new long[countsArrayLength];
+            }
+        }
+
+        protected Histogram(long lowestDiscernibleValue, long highestTrackableValue, int numberOfSignificantValueDigits, int wordSizeInBytes, bool allocateCountsArray, bool autoResize)
+            : base(lowestDiscernibleValue, highestTrackableValue, numberOfSignificantValueDigits, wordSizeInBytes, autoResize)
+        {
+            if (allocateCountsArray)
+            {
+                counts = new long[countsArrayLength];
+            }
+        }
+
         internal override long getCountAtIndex(int index)
         {
             return counts[normalizeIndex(index, normalizingIndexOffset, countsArrayLength)];
@@ -153,81 +214,6 @@ namespace HdrHistogram
                 int newNormalizedZeroIndex = oldNormalizedZeroIndex + countsDelta;
                 int lengthToCopy = (countsArrayLength - countsDelta) - oldNormalizedZeroIndex;
                 Array.Copy(counts, oldNormalizedZeroIndex, counts, newNormalizedZeroIndex, lengthToCopy);
-            }
-        }
-
-        /**
-         * Construct an auto-resizing histogram with a lowest discernible value of 1 and an auto-adjusting
-         * highestTrackableValue. Can auto-resize up to track values up to (Long.MAX_VALUE / 2).
-         *
-         * @param numberOfSignificantValueDigits Specifies the precision to use. This is the number of significant
-         *                                       decimal digits to which the histogram will maintain value resolution
-         *                                       and separation. Must be a non-negative integer between 0 and 5.
-         */
-        public Histogram(int numberOfSignificantValueDigits)
-            : this(1, 2, numberOfSignificantValueDigits, sizeof(long), allocateCountsArray: true, autoResize: true)
-        { }
-
-        /**
-         * Construct a Histogram given the Highest value to be tracked and a number of significant decimal digits. The
-         * histogram will be constructed to implicitly track (distinguish from 0) values as low as 1.
-         *
-         * @param highestTrackableValue          The highest value to be tracked by the histogram. Must be a positive
-         *                                       integer that is {@literal >=} 2.
-         * @param numberOfSignificantValueDigits Specifies the precision to use. This is the number of significant
-         *                                       decimal digits to which the histogram will maintain value resolution
-         *                                       and separation. Must be a non-negative integer between 0 and 5.
-         */
-        public Histogram(long highestTrackableValue, int numberOfSignificantValueDigits)
-            : this(1, highestTrackableValue, numberOfSignificantValueDigits)
-        {
-        }
-
-        /**
-         * Construct a Histogram given the Lowest and Highest values to be tracked and a number of significant
-         * decimal digits. Providing a lowestDiscernibleValue is useful is situations where the units used
-         * for the histogram's values are much smaller that the minimal accuracy required. E.g. when tracking
-         * time values stated in nanosecond units, where the minimal accuracy required is a microsecond, the
-         * proper value for lowestDiscernibleValue would be 1000.
-         *
-         * @param lowestDiscernibleValue         The lowest value that can be discerned (distinguished from 0) by the
-         *                                       histogram. Must be a positive integer that is {@literal >=} 1. May be
-         *                                       internally rounded down to nearest power of 2.
-         * @param highestTrackableValue          The highest value to be tracked by the histogram. Must be a positive
-         *                                       integer that is {@literal >=} (2 * lowestDiscernibleValue).
-         * @param numberOfSignificantValueDigits Specifies the precision to use. This is the number of significant
-         *                                       decimal digits to which the histogram will maintain value resolution
-         *                                       and separation. Must be a non-negative integer between 0 and 5.
-         */
-        public Histogram(long lowestDiscernibleValue, long highestTrackableValue, int numberOfSignificantValueDigits)
-            : this(lowestDiscernibleValue, highestTrackableValue, numberOfSignificantValueDigits, sizeof(long), allocateCountsArray: true, autoResize: false)
-        { }
-
-        /**
-         * Construct a histogram with the same range settings as a given source histogram,
-         * duplicating the source's start/end timestamps (but NOT its contents)
-         * @param source The source histogram to duplicate
-         */
-        public Histogram(AbstractHistogram source)
-            : this(source, true)
-        {
-        }
-
-        protected Histogram(AbstractHistogram source, bool allocateCountsArray)
-            : base(source)
-        {
-            if (allocateCountsArray)
-            {
-                counts = new long[countsArrayLength];
-            }
-        }
-
-        protected Histogram(long lowestDiscernibleValue, long highestTrackableValue, int numberOfSignificantValueDigits, int wordSizeInBytes, bool allocateCountsArray, bool autoResize)
-            : base(lowestDiscernibleValue, highestTrackableValue, numberOfSignificantValueDigits, wordSizeInBytes, autoResize)
-        {
-            if (allocateCountsArray)
-            {
-                counts = new long[countsArrayLength];
             }
         }
 

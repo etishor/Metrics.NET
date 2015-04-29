@@ -21,8 +21,7 @@ namespace HdrHistogram
     {
         private static AtomicLong constructionIdentityCount = new AtomicLong(0);
 
-        protected AbstractHistogramBase(long lowestDiscernibleValue, int numberOfSignificantValueDigits,
-            int wordSizeInBytes, bool autoResize)
+        protected AbstractHistogramBase(long lowestDiscernibleValue, int numberOfSignificantValueDigits, int wordSizeInBytes, bool autoResize)
         {
             // Verify argument validity
             if (lowestDiscernibleValue < 1)
@@ -50,13 +49,13 @@ namespace HdrHistogram
 
         protected readonly bool AutoResize;
         protected readonly int WordSizeInBytes;
+
         protected readonly long LowestDiscernibleValue;
+        internal protected long HighestTrackableValue;
 
-        internal protected long highestTrackableValue;
 
-
-        protected internal int bucketCount;
-        protected internal int subBucketCount;
+        internal protected int bucketCount;
+        internal protected int subBucketCount;
         internal int countsArrayLength;
 
 

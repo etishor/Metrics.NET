@@ -568,7 +568,7 @@ namespace HdrHistogram
                     "Caused by:" + ex);
             }
             integerValuesHistogram.resize(newHighestTrackableValue);
-            integerValuesHistogram.highestTrackableValue = newHighestTrackableValue;
+            integerValuesHistogram.HighestTrackableValue = newHighestTrackableValue;
             configuredHighestToLowestValueRatio <<= numberOfBinaryOrdersOfMagnitude;
         }
 
