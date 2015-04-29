@@ -1,3 +1,8 @@
+###0.3.2-pre / 2015-04-29
+* better meter performance (on recording path meter has same performance as a counter)
+* default to using HdrHistogram port reservoir for histogram and timer metrics ( greatly reduces contention and increases performance )
+* remove context Merging as the latest changes remove most of the contention on the recording path
+
 ###0.3.1-pre / 2015-04-17
 * update packages & fix nuget package dependencies versions
 
