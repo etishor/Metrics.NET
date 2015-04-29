@@ -18,13 +18,13 @@ namespace Metrics.Sampling
         {
             this.recorder = recorder;
 
-            this.intervalHistogram = recorder.getIntervalHistogram();
+            this.intervalHistogram = recorder.GetIntervalHistogram();
             this.runningTotals = new HdrHistogram.Histogram(this.intervalHistogram.NumberOfSignificantValueDigits);
         }
 
         public void Update(long value, string userValue = null)
         {
-            this.recorder.recordValue(value);
+            this.recorder.RecordValue(value);
         }
 
         public Snapshot GetSnapshot(bool resetReservoir = false)
@@ -41,7 +41,7 @@ namespace Metrics.Sampling
         {
             lock (this.runningTotals)
             {
-                this.intervalHistogram = recorder.getIntervalHistogram(this.intervalHistogram);
+                this.intervalHistogram = recorder.GetIntervalHistogram(this.intervalHistogram);
                 this.runningTotals.add(intervalHistogram);
                 return this.runningTotals.copy() as HdrHistogram.Histogram;
             }

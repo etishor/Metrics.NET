@@ -51,7 +51,7 @@ namespace HdrHistogram
         {
             try
             {
-                wrp.readerLock();
+                wrp.ReaderLock();
                 Debug.Assert(countsArrayLength == activeCounts.Length);
                 Debug.Assert(countsArrayLength == inactiveCounts.Length);
 
@@ -61,7 +61,7 @@ namespace HdrHistogram
             }
             finally
             {
-                wrp.readerUnlock();
+                wrp.ReaderUnlock();
             }
         }
 
@@ -69,7 +69,7 @@ namespace HdrHistogram
         {
             try
             {
-                wrp.readerLock();
+                wrp.ReaderLock();
                 Debug.Assert(countsArrayLength == activeCounts.Length);
                 Debug.Assert(countsArrayLength == inactiveCounts.Length);
                 long activeCount = activeCounts.GetValue(index);
@@ -78,33 +78,33 @@ namespace HdrHistogram
             }
             finally
             {
-                wrp.readerUnlock();
+                wrp.ReaderUnlock();
             }
         }
 
         protected override void incrementCountAtIndex(int index)
         {
-            long criticalValue = wrp.writerCriticalSectionEnter();
+            long criticalValue = wrp.WriterCriticalSectionEnter();
             try
             {
                 activeCounts.Increment(normalizeIndex(index, activeCountsNormalizingIndexOffset, activeCounts.Length));
             }
             finally
             {
-                wrp.writerCriticalSectionExit(criticalValue);
+                wrp.WriterCriticalSectionExit(criticalValue);
             }
         }
 
         protected override void addToCountAtIndex(int index, long value)
         {
-            long criticalValue = wrp.writerCriticalSectionEnter();
+            long criticalValue = wrp.WriterCriticalSectionEnter();
             try
             {
                 activeCounts.Add(normalizeIndex(index, activeCountsNormalizingIndexOffset, activeCounts.Length), value);
             }
             finally
             {
-                wrp.writerCriticalSectionExit(criticalValue);
+                wrp.WriterCriticalSectionExit(criticalValue);
             }
         }
 
@@ -112,7 +112,7 @@ namespace HdrHistogram
         {
             try
             {
-                wrp.readerLock();
+                wrp.ReaderLock();
                 Debug.Assert(countsArrayLength == activeCounts.Length);
                 Debug.Assert(countsArrayLength == inactiveCounts.Length);
                 activeCounts.SetValue(normalizeIndex(index, activeCountsNormalizingIndexOffset, activeCounts.Length), value);
@@ -120,7 +120,7 @@ namespace HdrHistogram
             }
             finally
             {
-                wrp.readerUnlock();
+                wrp.ReaderUnlock();
             }
         }
 
@@ -128,7 +128,7 @@ namespace HdrHistogram
         {
             try
             {
-                wrp.readerLock();
+                wrp.ReaderLock();
                 Debug.Assert(countsArrayLength == activeCounts.Length);
                 Debug.Assert(countsArrayLength == inactiveCounts.Length);
                 inactiveCounts.SetValue(index, value);
@@ -136,7 +136,7 @@ namespace HdrHistogram
             }
             finally
             {
-                wrp.readerUnlock();
+                wrp.ReaderUnlock();
             }
         }
 
@@ -157,7 +157,7 @@ namespace HdrHistogram
         {
             try
             {
-                wrp.readerLock();
+                wrp.ReaderLock();
 
                 Debug.Assert(countsArrayLength == activeCounts.Length);
                 Debug.Assert(countsArrayLength == inactiveCounts.Length);
@@ -196,7 +196,7 @@ namespace HdrHistogram
                 inactiveCounts = tmp;
                 inactiveCountsNormalizingIndexOffset = tmpOffset;
 
-                wrp.flipPhase();
+                wrp.FlipPhase();
 
                 // Save and clear the newly inactive 0 value count:
                 zeroIndex = normalizeIndex(0, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length);
@@ -227,14 +227,14 @@ namespace HdrHistogram
                 inactiveCounts = tmp;
                 inactiveCountsNormalizingIndexOffset = tmpOffset;
 
-                wrp.flipPhase();
+                wrp.FlipPhase();
 
                 // At this point, both active and inactive have normalizingIndexOffset safely set,
                 // and the switch in each was done without any writers using the wrong value in flight.
             }
             finally
             {
-                wrp.readerUnlock();
+                wrp.ReaderUnlock();
             }
         }
 
@@ -278,7 +278,7 @@ namespace HdrHistogram
         {
             try
             {
-                wrp.readerLock();
+                wrp.ReaderLock();
                 Debug.Assert(countsArrayLength == activeCounts.Length);
                 Debug.Assert(countsArrayLength == inactiveCounts.Length);
                 int newNormalizingIndexOffset = getNormalizingIndexOffset() + offsetToAdd;
@@ -286,7 +286,7 @@ namespace HdrHistogram
             }
             finally
             {
-                wrp.readerUnlock();
+                wrp.ReaderUnlock();
             }
         }
 
@@ -294,7 +294,7 @@ namespace HdrHistogram
         {
             try
             {
-                wrp.readerLock();
+                wrp.ReaderLock();
 
                 Debug.Assert(countsArrayLength == activeCounts.Length);
                 Debug.Assert(countsArrayLength == inactiveCounts.Length);
@@ -345,7 +345,7 @@ namespace HdrHistogram
                 inactiveCounts = tmp;
                 inactiveCountsNormalizingIndexOffset = tmpOffset;
 
-                wrp.flipPhase();
+                wrp.FlipPhase();
 
                 // Resize the newly inactiveCounts:
                 oldInactiveCounts = inactiveCounts;
@@ -375,7 +375,7 @@ namespace HdrHistogram
                 activeCounts = inactiveCounts;
                 inactiveCounts = tmp;
 
-                wrp.flipPhase();
+                wrp.FlipPhase();
 
                 // At this point, both active and inactive have been safely resized,
                 // and the switch in each was done without any writers modifying it in flight.
@@ -389,7 +389,7 @@ namespace HdrHistogram
             }
             finally
             {
-                wrp.readerUnlock();
+                wrp.ReaderUnlock();
             }
         }
 
@@ -397,7 +397,7 @@ namespace HdrHistogram
         {
             try
             {
-                wrp.readerLock();
+                wrp.ReaderLock();
                 Debug.Assert(countsArrayLength == activeCounts.Length);
                 Debug.Assert(countsArrayLength == inactiveCounts.Length);
                 for (int i = 0; i < activeCounts.Length; i++)
@@ -409,7 +409,7 @@ namespace HdrHistogram
             }
             finally
             {
-                wrp.readerUnlock();
+                wrp.ReaderUnlock();
             }
         }
 
@@ -585,7 +585,7 @@ namespace HdrHistogram
             cachedDstLongBuffer.rewind();
             try
             {
-                wrp.readerLock();
+                wrp.ReaderLock();
                 Debug.Assert(countsArrayLength == activeCounts.Length);
                 Debug.Assert(countsArrayLength == inactiveCounts.Length);
                 int zeroIndex = normalizeIndex(0, getNormalizingIndexOffset(), countsArrayLength);
@@ -602,7 +602,7 @@ namespace HdrHistogram
             }
             finally
             {
-                wrp.readerUnlock();
+                wrp.ReaderUnlock();
             }
         }
 

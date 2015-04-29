@@ -333,7 +333,7 @@ namespace HdrHistogram
             }
 
             long integerValue = (long)(value * doubleToIntegerValueConversionRatio.GetValue());
-            integerValuesHistogram.recordValueWithCount(integerValue, count);
+            integerValuesHistogram.RecordValueWithCount(integerValue, count);
         }
 
         private void recordSingleValue(double value)
@@ -346,7 +346,7 @@ namespace HdrHistogram
             }
 
             long integerValue = (long)(value * doubleToIntegerValueConversionRatio.GetValue());
-            integerValuesHistogram.recordValue(integerValue);
+            integerValuesHistogram.RecordValue(integerValue);
         }
 
         private void recordValueWithCountAndExpectedInterval(double value, long count, double expectedIntervalBetweenValueSamples)
@@ -621,7 +621,7 @@ namespace HdrHistogram
      * in the current histogram that is larger than the expectedIntervalBetweenValueSamples.
      *
      * Note: This is a post-correction method, as opposed to the at-recording correction method provided
-     * by {@link #recordValueWithExpectedInterval(double, double) recordValueWithExpectedInterval}. The two
+     * by {@link #RecordValueWithExpectedInterval(double, double) RecordValueWithExpectedInterval}. The two
      * methods are mutually exclusive, and only one of the two should be be used on a given data set to correct
      * for the same coordinated omission issue.
      * by
@@ -719,7 +719,7 @@ namespace HdrHistogram
      * in the current histogram that is larger than the expectedIntervalBetweenValueSamples.
      *
      * Note: This is a post-recording correction method, as opposed to the at-recording correction method provided
-     * by {@link #recordValueWithExpectedInterval(double, double) recordValueWithExpectedInterval}. The two
+     * by {@link #RecordValueWithExpectedInterval(double, double) RecordValueWithExpectedInterval}. The two
      * methods are mutually exclusive, and only one of the two should be be used on a given data set to correct
      * for the same coordinated omission issue.
      * by

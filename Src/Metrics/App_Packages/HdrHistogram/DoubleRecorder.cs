@@ -20,8 +20,8 @@ namespace HdrHistogram
      * This pattern is commonly used in logging interval histogram information while recording is ongoing.
      * <p>
      * {@link DoubleRecorder} supports concurrent
-     * {@link DoubleRecorder#recordValue} or
-     * {@link DoubleRecorder#recordValueWithExpectedInterval} calls.
+     * {@link DoubleRecorder#RecordValue} or
+     * {@link DoubleRecorder#RecordValueWithExpectedInterval} calls.
      * Recording calls are wait-free on architectures that support atomic increment operations, and
      * are lock-free on architectures that do not.
      *
@@ -78,14 +78,14 @@ namespace HdrHistogram
          */
         public void recordValue(double value)
         {
-            long criticalValueAtEnter = recordingPhaser.writerCriticalSectionEnter();
+            long criticalValueAtEnter = recordingPhaser.WriterCriticalSectionEnter();
             try
             {
                 activeHistogram.recordValue(value);
             }
             finally
             {
-                recordingPhaser.writerCriticalSectionExit(criticalValueAtEnter);
+                recordingPhaser.WriterCriticalSectionExit(criticalValueAtEnter);
             }
         }
 
@@ -96,7 +96,7 @@ namespace HdrHistogram
          * interval between value samples, Histogram will auto-generate an additional series of decreasingly-smaller
          * (down to the expectedIntervalBetweenValueSamples) value records.
          * <p>
-         * See related notes {@link org.HdrHistogram.DoubleHistogram#recordValueWithExpectedInterval(double, double)}
+         * See related notes {@link org.HdrHistogram.DoubleHistogram#RecordValueWithExpectedInterval(double, double)}
          * for more explanations about coordinated omission and expected interval correction.
          *      *
          * @param value The value to record
@@ -107,14 +107,14 @@ namespace HdrHistogram
          */
         public void recordValueWithExpectedInterval(double value, double expectedIntervalBetweenValueSamples)
         {
-            long criticalValueAtEnter = recordingPhaser.writerCriticalSectionEnter();
+            long criticalValueAtEnter = recordingPhaser.WriterCriticalSectionEnter();
             try
             {
                 activeHistogram.recordValueWithExpectedInterval(value, expectedIntervalBetweenValueSamples);
             }
             finally
             {
-                recordingPhaser.writerCriticalSectionExit(criticalValueAtEnter);
+                recordingPhaser.WriterCriticalSectionExit(criticalValueAtEnter);
             }
         }
 
@@ -122,7 +122,7 @@ namespace HdrHistogram
          * Get a new instance of an interval histogram, which will include a stable, consistent view of all value
          * counts accumulated since the last interval histogram was taken.
          * <p>
-         * Calling {@link DoubleRecorder#getIntervalHistogram()} will reset
+         * Calling {@link DoubleRecorder#GetIntervalHistogram()} will reset
          * the value counts, and start accumulating value counts for the next interval.
          *
          * @return a histogram containing the value counts accumulated since the last interval histogram was taken.
@@ -137,23 +137,23 @@ namespace HdrHistogram
          * Get an interval histogram, which will include a stable, consistent view of all value counts
          * accumulated since the last interval histogram was taken.
          * <p>
-         * {@link DoubleRecorder#getIntervalHistogram(DoubleHistogram histogramToRecycle)
-         * getIntervalHistogram(histogramToRecycle)}
+         * {@link DoubleRecorder#GetIntervalHistogram(DoubleHistogram histogramToRecycle)
+         * GetIntervalHistogram(histogramToRecycle)}
          * accepts a previously returned interval histogram that can be recycled internally to avoid allocation
          * and content copying operations, and is therefore significantly more efficient for repeated use than
-         * {@link DoubleRecorder#getIntervalHistogram()} and
+         * {@link DoubleRecorder#GetIntervalHistogram()} and
          * {@link DoubleRecorder#getIntervalHistogramInto getIntervalHistogramInto()}. The provided
          * {@code histogramToRecycle} must
          * be either be null or an interval histogram returned by a previous call to
-         * {@link DoubleRecorder#getIntervalHistogram(DoubleHistogram histogramToRecycle)
-         * getIntervalHistogram(histogramToRecycle)} or
-         * {@link DoubleRecorder#getIntervalHistogram()}.
+         * {@link DoubleRecorder#GetIntervalHistogram(DoubleHistogram histogramToRecycle)
+         * GetIntervalHistogram(histogramToRecycle)} or
+         * {@link DoubleRecorder#GetIntervalHistogram()}.
          * <p>
          * NOTE: The caller is responsible for not recycling the same returned interval histogram more than once. If
          * the same interval histogram instance is recycled more than once, behavior is undefined.
          * <p>
-         * Calling {@link DoubleRecorder#getIntervalHistogram(DoubleHistogram histogramToRecycle)
-         * getIntervalHistogram(histogramToRecycle)} will reset the value counts, and start accumulating value
+         * Calling {@link DoubleRecorder#GetIntervalHistogram(DoubleHistogram histogramToRecycle)
+         * GetIntervalHistogram(histogramToRecycle)} will reset the value counts, and start accumulating value
          * counts for the next interval
          *
          * @param histogramToRecycle a previously returned interval histogram that may be recycled to avoid allocation and
@@ -171,14 +171,14 @@ namespace HdrHistogram
             validateFitAsReplacementHistogram(histogramToRecycle);
             try
             {
-                recordingPhaser.readerLock();
+                recordingPhaser.ReaderLock();
                 inactiveHistogram = (InternalConcurrentDoubleHistogram)histogramToRecycle;
                 performIntervalSample();
                 return inactiveHistogram;
             }
             finally
             {
-                recordingPhaser.readerUnlock();
+                recordingPhaser.ReaderUnlock();
             }
         }
 
@@ -214,7 +214,7 @@ namespace HdrHistogram
             inactiveHistogram.reset();
             try
             {
-                recordingPhaser.readerLock();
+                recordingPhaser.ReaderLock();
 
                 // Swap active and inactive histograms:
                 InternalConcurrentDoubleHistogram tempHistogram = inactiveHistogram;
@@ -229,11 +229,11 @@ namespace HdrHistogram
                 // Make sure we are not in the middle of recording a value on the previously active histogram:
 
                 // Flip phase to make sure no recordings that were in flight pre-flip are still active:
-                recordingPhaser.flipPhase(500000L /* yield in 0.5 msec units if needed */);
+                recordingPhaser.FlipPhase(500000L /* yield in 0.5 msec units if needed */);
             }
             finally
             {
-                recordingPhaser.readerUnlock();
+                recordingPhaser.ReaderUnlock();
             }
         }
 
@@ -268,7 +268,7 @@ namespace HdrHistogram
             if (internalHistogram == null || internalHistogram.containingInstanceId != activeHistogram.containingInstanceId)
             {
                 throw new ArgumentException("replacement histogram must have been obtained via a previous" +
-                        "getIntervalHistogram() call from this " + this.GetType().Name + " instance");
+                        "GetIntervalHistogram() call from this " + this.GetType().Name + " instance");
             }
         }
     }

@@ -35,7 +35,7 @@ namespace Metrics.Sampling
 
         public void Update(long value, string userValue = null)
         {
-            lock (this.padlock) this.histogram.recordValue(value);
+            lock (this.padlock) this.histogram.RecordValue(value);
         }
 
         public Snapshot GetSnapshot(bool resetReservoir = false)

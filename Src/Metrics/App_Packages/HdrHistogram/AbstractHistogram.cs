@@ -46,7 +46,7 @@ namespace HdrHistogram
         private long subBucketMask;
         private AtomicLong maxValue = new AtomicLong(0);
         private AtomicLong minNonZeroValue = new AtomicLong(long.MaxValue);
-        
+
         /// <summary>
         /// Construct an auto-resizing histogram with a lowest discernible value of 1 and an auto-adjusting
         /// highestTrackableValue. Can auto-resize up to track values up to (long.MaxValue / 2).
@@ -124,7 +124,47 @@ namespace HdrHistogram
             leadingZeroCountBase = 64 - unitMagnitude - subBucketHalfCountMagnitude - 1;
         }
 
+        /// <summary>
+        /// Record a value in the histogram.
+        /// </summary>
+        /// <param name="value">value The value to be recorded.</param>
+        public void RecordValue(long value)
+        {
+            recordSingleValue(value);
+        }
 
+        /// <summary>
+        /// Record a value in the histogram (adding to the value's current count) 
+        /// </summary>
+        /// <param name="value">The value to be recorded.</param>
+        /// <param name="count">The number of occurrences of this value to record</param>
+        public void RecordValueWithCount(long value, long count)
+        {
+            recordCountAtValue(count, value);
+        }
+
+        /// <summary>
+        /// Record a value in the histogram.
+        /// 
+        /// To compensate for the loss of sampled values when a recorded value is larger than the expected
+        /// interval between value samples, Histogram will auto-generate an additional series of decreasingly-smaller
+        /// (down to the expectedIntervalBetweenValueSamples) value records.
+        /// 
+        /// Note: This is a at-recording correction method, as opposed to the post-recording correction method provided
+        /// by {@link #copyCorrectedForCoordinatedOmission(long)}.
+        /// The two methods are mutually exclusive, and only one of the two should be be used on a given data set to correct
+        /// for the same coordinated omission issue.
+        /// 
+        /// See notes in the description of the Histogram calls for an illustration of why this corrective behavior is
+        /// important.
+        /// </summary>
+        /// <param name="value">The value to record</param>
+        /// <param name="expectedIntervalBetweenValueSamples">If expectedIntervalBetweenValueSamples is larger than 0, add auto-generated value records as appropriate if value is larger than expectedIntervalBetweenValueSamples</param>
+        public void RecordValueWithExpectedInterval(long value, long expectedIntervalBetweenValueSamples)
+        {
+            recordSingleValueWithExpectedInterval(value, expectedIntervalBetweenValueSamples);
+        }
+        
         //
         //
         //
@@ -225,72 +265,7 @@ namespace HdrHistogram
                 throw new ArgumentException("highestTrackableValue (" + highestTrackableValue + ") cannot be < (2 * lowestDiscernibleValue)");
             }
             //determine counts array length needed:
-            int countsArrayLength = getLengthForNumberOfBuckets(getBucketsNeededToCoverValue(highestTrackableValue));
-            return countsArrayLength;
-        }
-
-        /// <summary>
-        /// Record a value in the histogram.
-        /// </summary>
-        /// <param name="value">value The value to be recorded.</param>
-        public void recordValue(long value)
-        {
-            recordSingleValue(value);
-        }
-
-        /**
-         * Record a value in the histogram (adding to the value's current count)
-         *
-         * @param value The value to be recorded
-         * @param count The number of occurrences of this value to record
-         * @throws ArrayIndexOutOfBoundsException (may throw) if value is exceeds highestTrackableValue
-         */
-        public void recordValueWithCount(long value, long count)
-        {
-            recordCountAtValue(count, value);
-        }
-
-        /**
-         * Record a value in the histogram.
-         * <p>
-         * To compensate for the loss of sampled values when a recorded value is larger than the expected
-         * interval between value samples, Histogram will auto-generate an additional series of decreasingly-smaller
-         * (down to the expectedIntervalBetweenValueSamples) value records.
-         * <p>
-         * Note: This is a at-recording correction method, as opposed to the post-recording correction method provided
-         * by {@link #copyCorrectedForCoordinatedOmission(long)}.
-         * The two methods are mutually exclusive, and only one of the two should be be used on a given data set to correct
-         * for the same coordinated omission issue.
-         * <p>
-         * See notes in the description of the Histogram calls for an illustration of why this corrective behavior is
-         * important.
-         *
-         * @param value The value to record
-         * @param expectedIntervalBetweenValueSamples If expectedIntervalBetweenValueSamples is larger than 0, add
-         *                                           auto-generated value records as appropriate if value is larger
-         *                                           than expectedIntervalBetweenValueSamples
-         * @throws ArrayIndexOutOfBoundsException (may throw) if value is exceeds highestTrackableValue
-         */
-        public void recordValueWithExpectedInterval(long value, long expectedIntervalBetweenValueSamples)
-        {
-            recordSingleValueWithExpectedInterval(value, expectedIntervalBetweenValueSamples);
-        }
-
-        /**
-         * @deprecated
-         *
-         * Record a value in the histogram. This deprecated method has identical behavior to
-         * <b><code>recordValueWithExpectedInterval()</code></b>. It was renamed to avoid ambiguity.
-         *
-         * @param value The value to record
-         * @param expectedIntervalBetweenValueSamples If expectedIntervalBetweenValueSamples is larger than 0, add
-         *                                           auto-generated value records as appropriate if value is larger
-         *                                           than expectedIntervalBetweenValueSamples
-         * @throws ArrayIndexOutOfBoundsException (may throw) if value is exceeds highestTrackableValue
-         */
-        public void recordValue(long value, long expectedIntervalBetweenValueSamples)
-        {
-            recordValueWithExpectedInterval(value, expectedIntervalBetweenValueSamples);
+            return getLengthForNumberOfBuckets(getBucketsNeededToCoverValue(highestTrackableValue));
         }
 
         private void updateMinAndMax(long value)
@@ -418,7 +393,7 @@ namespace HdrHistogram
          * in the current histogram that is larger than the expectedIntervalBetweenValueSamples.
          *
          * Note: This is a post-correction method, as opposed to the at-recording correction method provided
-         * by {@link #recordValueWithExpectedInterval(long, long) recordValueWithExpectedInterval}. The two
+         * by {@link #RecordValueWithExpectedInterval(long, long) RecordValueWithExpectedInterval}. The two
          * methods are mutually exclusive, and only one of the two should be be used on a given data set to correct
          * for the same coordinated omission issue.
          * by
@@ -522,7 +497,7 @@ namespace HdrHistogram
                     long otherCount = otherHistogram.getCountAtIndex(i);
                     if (otherCount > 0)
                     {
-                        recordValueWithCount(otherHistogram.valueFromIndex(i), otherCount);
+                        RecordValueWithCount(otherHistogram.valueFromIndex(i), otherCount);
                     }
                 }
             }
@@ -591,7 +566,7 @@ namespace HdrHistogram
                             throw new ArgumentException("otherHistogram count (" + otherCount + ") at value " +
                                                         otherValue + " is larger than this one's (" + getCountAtValue(otherValue) + ")");
                         }
-                        recordValueWithCount(otherValue, -otherCount);
+                        RecordValueWithCount(otherValue, -otherCount);
                     }
                 }
             }
@@ -611,7 +586,7 @@ namespace HdrHistogram
          * in the current histogram that is larger than the expectedIntervalBetweenValueSamples.
          *
          * Note: This is a post-recording correction method, as opposed to the at-recording correction method provided
-         * by {@link #recordValueWithExpectedInterval(long, long) recordValueWithExpectedInterval}. The two
+         * by {@link #RecordValueWithExpectedInterval(long, long) RecordValueWithExpectedInterval}. The two
          * methods are mutually exclusive, and only one of the two should be be used on a given data set to correct
          * for the same coordinated omission issue.
          * by
@@ -1025,7 +1000,7 @@ namespace HdrHistogram
          * Set the start time stamp value associated with this histogram to a given value.
          * @param timeStampMsec the value to set the time stamp to, [by convention] in msec since the epoch.
          */
-        public override void setStartTimeStamp(long timeStampMsec)
+        public override sealed void setStartTimeStamp(long timeStampMsec)
         {
             this.startTimeStampMsec = timeStampMsec;
         }
@@ -1043,7 +1018,7 @@ namespace HdrHistogram
          * Set the end time stamp value associated with this histogram to a given value.
          * @param timeStampMsec the value to set the time stamp to, [by convention] in msec since the epoch.
          */
-        public override void setEndTimeStamp(long timeStampMsec)
+        public override sealed void setEndTimeStamp(long timeStampMsec)
         {
             this.endTimeStampMsec = timeStampMsec;
         }
