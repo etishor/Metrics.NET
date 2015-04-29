@@ -68,58 +68,17 @@
     </Compile>
     <Compile Include="App_Packages\HdrHistogram\AbstractHistogramEnumerableExtensions.cs" />
     <Compile Include="App_Packages\HdrHistogram\AbstractHistogramIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\AbstractHistogramOutputExtensions.cs" />
-    <Compile Include="App_Packages\HdrHistogram\AllValuesIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\AtomicHistogram.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\ConcurrentDoubleHistogram.cs" />
     <Compile Include="App_Packages\HdrHistogram\ConcurrentHistogram.cs" />
-    <Compile Include="App_Packages\HdrHistogram\DoubleAllValuesIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\DoubleHistogram.cs" />
-    <Compile Include="App_Packages\HdrHistogram\DoubleHistogramIterationValue.cs" />
-    <Compile Include="App_Packages\HdrHistogram\DoubleLinearIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\DoubleLogarithmicIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\DoublePercentileIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\DoubleRecordedValuesIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\DoubleRecorder.cs" />
-    <Compile Include="App_Packages\HdrHistogram\EncodableHistogram.cs" />
     <Compile Include="App_Packages\HdrHistogram\Histogram.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="App_Packages\HdrHistogram\HistogramIterationValue.cs" />
-    <Compile Include="App_Packages\HdrHistogram\IntCountsHistogram.cs" />
     <Compile Include="App_Packages\HdrHistogram\Iterable.cs" />
     <Compile Include="App_Packages\HdrHistogram\Iterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\LinearIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\LogarithmicIterator.cs" />
     <Compile Include="App_Packages\HdrHistogram\MathUtils.cs" />
-    <Compile Include="App_Packages\HdrHistogram\PercentileIterator.cs" />
     <Compile Include="App_Packages\HdrHistogram\RecordedValuesIterator.cs" />
     <Compile Include="App_Packages\HdrHistogram\Recorder.cs" />
-    <Compile Include="App_Packages\HdrHistogram\ShortCountsHistogram.cs" />
-    <Compile Include="App_Packages\HdrHistogram\SingleWriterDoubleRecorder.cs" />
-    <Compile Include="App_Packages\HdrHistogram\SingleWriterRecorder.cs" />
-    <Compile Include="App_Packages\HdrHistogram\SynchronizedDoubleHistogram.cs" />
     <Compile Include="App_Packages\HdrHistogram\SynchronizedHistogram.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\TODO\ByteBuffer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\TODO\Deflater.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\TODO\Inflater.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\TODO\IntBuffer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\TODO\LongBuffer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="App_Packages\HdrHistogram\TODO\ShortBuffer.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="App_Packages\HdrHistogram\WriterReaderPhaser.cs" />

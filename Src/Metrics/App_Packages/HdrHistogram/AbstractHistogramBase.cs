@@ -17,7 +17,7 @@ namespace HdrHistogram
     /// Subclass boundaries tend to be strongly control memory layout decisions in most practical
     /// JVM implementations, making this an effective method for control filed grouping layout.
     /// </summary>
-    public abstract class AbstractHistogramBase : EncodableHistogram
+    internal abstract class AbstractHistogramBase
     {
         private static AtomicLong constructionIdentityCount = new AtomicLong(0);
 
@@ -65,6 +65,5 @@ namespace HdrHistogram
         internal protected double integerToDoubleValueConversionRatio = 1.0;
 
         protected readonly RecordedValuesIterator recordedValuesIterator;
-        protected ByteBuffer intermediateUncompressedByteBuffer = null;
     }
 }

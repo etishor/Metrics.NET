@@ -25,7 +25,7 @@ namespace HdrHistogram
     /// Recording calls are wait-free on architectures that support atomic increment operations, and
     /// are lock-free on architectures that do not.
     /// </summary>
-    public class Recorder
+    internal class Recorder
     {
         private static readonly long factor = 1000L / Stopwatch.Frequency;
         public static long CurentTimeInMilis()
@@ -54,34 +54,6 @@ namespace HdrHistogram
         }
 
         /// <summary>
-        /// Construct a Recorder given the highest value to be tracked and a number of significant
-        /// decimal digits. The histogram will be constructed to implicitly track (distinguish from 0) values as low as 1.
-        /// </summary>
-        /// <param name="highestTrackableValue">The highest value to be tracked by the histogram. Must be a positive integer that is >= 2.</param>
-        /// <param name="numberOfSignificantValueDigits">Specifies the precision to use. This is the number of significant decimal digits to which the histogram will maintain value resolution and separation. Must be a non-negative integer between 0 and 5.</param>
-        public Recorder(long highestTrackableValue, int numberOfSignificantValueDigits)
-            : this(1, highestTrackableValue, numberOfSignificantValueDigits)
-        {
-        }
-
-        /// <summary>
-        /// Construct a Recorder given the Lowest and highest values to be tracked and a number
-        /// of significant decimal digits. Providing a lowestDiscernibleValue is useful is situations where the units used
-        /// for the histogram's values are much smaller that the minimal accuracy required. E.g. when tracking
-        /// time values stated in nanosecond units, where the minimal accuracy required is a microsecond, the
-        /// proper value for lowestDiscernibleValue would be 1000.
-        /// </summary>
-        /// <param name="lowestDiscernibleValue">The lowest value that can be tracked (distinguished from 0) by the histogram. Must be a positive integer that is {@literal >=} 1. May be internally rounded down to nearest power of 2.</param>
-        /// <param name="highestTrackableValue">The highest value to be tracked by the histogram. Must be a positive integer that is {@literal >=} (2 * lowestDiscernibleValue).</param>
-        /// <param name="numberOfSignificantValueDigits">Specifies the precision to use. This is the number of significant decimal digits to which the histogram will maintain value resolution and separation. Must be a non-negative integer between 0 and 5.</param>
-        public Recorder(long lowestDiscernibleValue, long highestTrackableValue, int numberOfSignificantValueDigits)
-        {
-            activeHistogram = new InternalAtomicHistogram(instanceId, lowestDiscernibleValue, highestTrackableValue, numberOfSignificantValueDigits);
-            inactiveHistogram = new InternalAtomicHistogram(instanceId, lowestDiscernibleValue, highestTrackableValue, numberOfSignificantValueDigits);
-            activeHistogram.setStartTimeStamp(CurentTimeInMilis());
-        }
-
-        /// <summary>
         /// Record a value.
         /// </summary>
         /// <param name="value">The value to record.</param>
@@ -91,31 +63,6 @@ namespace HdrHistogram
             try
             {
                 activeHistogram.RecordValue(value);
-            }
-            finally
-            {
-                recordingPhaser.WriterCriticalSectionExit(criticalValueAtEnter);
-            }
-        }
-
-        /// <summary>
-        /// Record a value
-        /// 
-        /// To compensate for the loss of sampled values when a recorded value is larger than the expected
-        /// interval between value samples, Histogram will auto-generate an additional series of decreasingly-smaller
-        /// (down to the expectedIntervalBetweenValueSamples) value records.
-        /// 
-        /// See related notes {@link AbstractHistogram#RecordValueWithExpectedInterval(long, long)}
-        /// for more explanations about coordinated omission and expected interval correction.
-        /// </summary>
-        /// <param name="value">The value to record</param>
-        /// <param name="expectedIntervalBetweenValueSamples">If expectedIntervalBetweenValueSamples is larger than 0, add auto-generated value records as appropriate if value is larger than expectedIntervalBetweenValueSamples.</param>
-        public void RecordValueWithExpectedInterval(long value, long expectedIntervalBetweenValueSamples)
-        {
-            long criticalValueAtEnter = recordingPhaser.WriterCriticalSectionEnter();
-            try
-            {
-                activeHistogram.RecordValueWithExpectedInterval(value, expectedIntervalBetweenValueSamples);
             }
             finally
             {
@@ -167,20 +114,9 @@ namespace HdrHistogram
         {
             if (histogramToRecycle == null)
             {
-                if (inactiveHistogram is InternalAtomicHistogram)
-                {
-                    histogramToRecycle = new InternalAtomicHistogram(
-                        instanceId,
-                        inactiveHistogram.getLowestDiscernibleValue(),
-                        inactiveHistogram.getHighestTrackableValue(),
-                        inactiveHistogram.getNumberOfSignificantValueDigits());
-                }
-                else
-                {
-                    histogramToRecycle = new InternalConcurrentHistogram(
+                histogramToRecycle = new InternalConcurrentHistogram(
                         instanceId,
                         inactiveHistogram.getNumberOfSignificantValueDigits());
-                }
             }
             // Verify that replacement histogram can validly be used as an inactive histogram replacement:
             ValidateFitAsReplacementHistogram(histogramToRecycle);
@@ -195,21 +131,6 @@ namespace HdrHistogram
             {
                 recordingPhaser.ReaderUnlock();
             }
-        }
-
-        /// <summary>
-        /// Place a copy of the value counts accumulated since accumulated (since the last interval histogram
-        /// was taken) into {@code targetHistogram}.
-        /// 
-        /// Calling {@link Recorder#getIntervalHistogramInto getIntervalHistogramInto()} will reset
-        /// the value counts, and start accumulating value counts for the next interval. 
-        /// </summary>
-        /// <param name="targetHistogram">the histogram into which the interval histogram's data should be copied</param>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public void GetIntervalHistogramInto(Histogram targetHistogram)
-        {
-            PerformIntervalSample();
-            inactiveHistogram.copyInto(targetHistogram);
         }
 
         /// <summary>
@@ -250,19 +171,6 @@ namespace HdrHistogram
                 recordingPhaser.ReaderUnlock();
             }
         }
-
-        private class InternalAtomicHistogram : AtomicHistogram
-        {
-            public readonly long ContainingInstanceId;
-
-            public InternalAtomicHistogram(long id, long lowestDiscernibleValue, long highestTrackableValue, int numberOfSignificantValueDigits)
-                : base(lowestDiscernibleValue, highestTrackableValue, numberOfSignificantValueDigits)
-            {
-
-                this.ContainingInstanceId = id;
-            }
-        }
-
         private class InternalConcurrentHistogram : ConcurrentHistogram
         {
             public readonly long ContainingInstanceId;
@@ -276,36 +184,19 @@ namespace HdrHistogram
 
         private void ValidateFitAsReplacementHistogram(Histogram replacementHistogram)
         {
-            var bad = true;
-            var replacementAtomicHistogram = replacementHistogram as InternalAtomicHistogram;
-            if (replacementAtomicHistogram != null)
+            var replacementConcurrentHistogram = replacementHistogram as InternalConcurrentHistogram;
+            if (replacementConcurrentHistogram != null)
             {
-                var activeAtomicHistogram = activeHistogram as InternalAtomicHistogram;
-                if (activeAtomicHistogram != null &&
-                    replacementAtomicHistogram.ContainingInstanceId == activeAtomicHistogram.ContainingInstanceId)
+                var activeConcurrentHistogram = activeHistogram as InternalConcurrentHistogram;
+                if (activeConcurrentHistogram != null &&
+                    replacementConcurrentHistogram.ContainingInstanceId ==
+                    activeConcurrentHistogram.ContainingInstanceId)
                 {
-                    bad = false;
+                    return;
                 }
             }
-            else
-            {
-                var replacementConcurrentHistogram = replacementHistogram as InternalConcurrentHistogram;
-                if (replacementConcurrentHistogram != null)
-                {
-                    var activeConcurrentHistogram = activeHistogram as InternalConcurrentHistogram;
-                    if (activeConcurrentHistogram != null &&
-                        replacementConcurrentHistogram.ContainingInstanceId ==
-                        activeConcurrentHistogram.ContainingInstanceId)
-                    {
-                        bad = false;
-                    }
-                }
-            }
-            if (bad)
-            {
-                throw new ArgumentException("replacement histogram must have been obtained via a previous" +
-                                            "GetIntervalHistogram() call from this " + GetType().Name + " instance");
-            }
+            throw new ArgumentException("replacement histogram must have been obtained via a previous" +
+                                      "GetIntervalHistogram() call from this " + GetType().Name + " instance");
         }
     }
 

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace HdrHistogram
 {
-    public abstract class Iterator<E> : IEnumerator<E>
+    internal abstract class Iterator<E> : IEnumerator<E>
     {
         /**
          * Returns {@code true} if the iteration has more elements.

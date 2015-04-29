@@ -22,7 +22,7 @@ namespace Metrics.Sampling
             : this(new Recorder(2))
         { }
 
-        public HdrHistogramReservoir(Recorder recorder)
+        internal HdrHistogramReservoir(Recorder recorder)
         {
             this.recorder = recorder;
 

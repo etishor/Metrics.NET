@@ -5,10 +5,7 @@
 // Java Version repo: https://github.com/HdrHistogram/HdrHistogram
 // Latest ported version is available in the Java submodule in the root of the repo
 
-using System;
 using System.Diagnostics;
-using System.IO;
-using System.Runtime.CompilerServices;
 using Metrics.ConcurrencyUtilities;
 
 namespace HdrHistogram
@@ -35,7 +32,7 @@ namespace HdrHistogram
     /// 
     /// See package description for {@link org.HdrHistogram} for details.
     /// </summary>
-    public class ConcurrentHistogram : Histogram
+    internal class ConcurrentHistogram : Histogram
     {
         private new readonly StripedLongAdder totalCount = new StripedLongAdder();
 
@@ -468,22 +465,6 @@ namespace HdrHistogram
         }
 
         /**
-         * Construct a ConcurrentHistogram given the Highest value to be tracked and a number of significant decimal digits. The
-         * histogram will be constructed to implicitly track (distinguish from 0) values as low as 1.
-         *
-         * @param highestTrackableValue The highest value to be tracked by the histogram. Must be a positive
-         *                              integer that is {@literal >=} 2.
-         * @param numberOfSignificantValueDigits Specifies the precision to use. This is the number of significant
-         *                                       decimal digits to which the histogram will maintain value resolution
-         *                                       and separation. Must be a non-negative integer between 0 and 5.
-         */
-
-        public ConcurrentHistogram(long highestTrackableValue, int numberOfSignificantValueDigits)
-            : this(1, highestTrackableValue, numberOfSignificantValueDigits)
-        {
-        }
-
-        /**
          * Construct a ConcurrentHistogram given the Lowest and Highest values to be tracked and a number of significant
          * decimal digits. Providing a lowestDiscernibleValue is useful is situations where the units used
          * for the histogram's values are much smaller that the minimal accuracy required. E.g. when tracking
@@ -523,106 +504,5 @@ namespace HdrHistogram
             inactiveCounts = new AtomicLongArray(countsArrayLength); ;
             inactiveCountsNormalizingIndexOffset = 0;
         }
-
-        /**
-         * Construct a new histogram by decoding it from a ByteBuffer.
-         * @param buffer The buffer to decode from
-         * @param minBarForHighestTrackableValue Force highestTrackableValue to be set at least this high
-         * @return The newly constructed histogram
-         */
-
-        public new static ConcurrentHistogram decodeFromByteBuffer(ByteBuffer buffer, long minBarForHighestTrackableValue)
-        {
-            return (ConcurrentHistogram)decodeFromByteBuffer(buffer, typeof(ConcurrentHistogram), minBarForHighestTrackableValue);
-        }
-
-        /**
-         * Construct a new histogram by decoding it from a compressed form in a ByteBuffer.
-         * @param buffer The buffer to decode from
-         * @param minBarForHighestTrackableValue Force highestTrackableValue to be set at least this high
-         * @return The newly constructed histogram
-         * @throws java.util.zip.DataFormatException on error parsing/decompressing the buffer
-         */
-        public new static ConcurrentHistogram decodeFromCompressedByteBuffer(ByteBuffer buffer, long minBarForHighestTrackableValue)
-        {
-            return (ConcurrentHistogram)decodeFromCompressedByteBuffer(buffer, typeof(ConcurrentHistogram), minBarForHighestTrackableValue);
-        }
-
-        private void readObject(Stream o)
-        {
-            // TODO: ??
-            //o.defaultReadObject();
-        }
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        protected internal override void fillCountsArrayFromBuffer(ByteBuffer buffer, int length)
-        {
-            LongBuffer logbuffer = buffer.asLongBuffer();
-            for (int i = 0; i < length; i++)
-            {
-                inactiveCounts.SetValue(i, logbuffer.get());
-                activeCounts.SetValue(i, 0);
-            }
-        }
-
-        // We try to cache the LongBuffer used in output cases, as repeated
-        // output form the same histogram using the same buffer is likely:
-        private LongBuffer cachedDstLongBuffer = null;
-        private ByteBuffer cachedDstByteBuffer = null;
-        private int cachedDstByteBufferPosition = 0;
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        protected internal override void fillBufferFromCountsArray(ByteBuffer buffer, int length)
-        {
-            if ((cachedDstLongBuffer == null) ||
-                    (buffer != cachedDstByteBuffer) ||
-                    (buffer.position() != cachedDstByteBufferPosition))
-            {
-                cachedDstByteBuffer = buffer;
-                cachedDstByteBufferPosition = buffer.position();
-                cachedDstLongBuffer = buffer.asLongBuffer();
-            }
-            cachedDstLongBuffer.rewind();
-            try
-            {
-                wrp.ReaderLock();
-                Debug.Assert(countsArrayLength == activeCounts.Length);
-                Debug.Assert(countsArrayLength == inactiveCounts.Length);
-                int zeroIndex = NormalizeIndex(0, getNormalizingIndexOffset(), countsArrayLength);
-                int lengthFromZeroIndexToEnd = Math.Min(length, (countsArrayLength - zeroIndex));
-                int remainingLengthFromNormalizedZeroIndex = length - lengthFromZeroIndexToEnd;
-                for (int i = 0; i < lengthFromZeroIndexToEnd; i++)
-                {
-                    cachedDstLongBuffer.put(activeCounts.GetValue(zeroIndex + i) + inactiveCounts.GetValue(zeroIndex + i));
-                }
-                for (int i = 0; i < remainingLengthFromNormalizedZeroIndex; i++)
-                {
-                    cachedDstLongBuffer.put(activeCounts.GetValue(i) + inactiveCounts.GetValue(i));
-                }
-            }
-            finally
-            {
-                wrp.ReaderUnlock();
-            }
-        }
-
-        //static class AtomicLongArrayWithNormalizingOffset extends AtomicLongArray {
-
-        //    private int normalizingIndexOffset;
-
-        //    AtomicLongArrayWithNormalizingOffset(int length, int normalizingIndexOffset) {
-        //        super(length);
-        //        this.normalizingIndexOffset = normalizingIndexOffset;
-        //    }
-
-        //    public int getNormalizingIndexOffset() {
-        //        return normalizingIndexOffset;
-        //    }
-
-        //    public void setNormalizingIndexOffset(int normalizingIndexOffset) {
-        //        this.normalizingIndexOffset = normalizingIndexOffset;
-        //    }
-        //}
     }
-
 }

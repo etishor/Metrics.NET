@@ -9,7 +9,7 @@ using System;
 
 namespace HdrHistogram
 {
-    public static class MathUtils
+    internal static class MathUtils
     {
         public static int NumberOfLeadingZeros(long i)
         {

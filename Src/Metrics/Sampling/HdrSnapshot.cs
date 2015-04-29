@@ -4,7 +4,7 @@ using HdrHistogram;
 
 namespace Metrics.Sampling
 {
-    public sealed class HdrSnapshot : Snapshot
+    internal sealed class HdrSnapshot : Snapshot
     {
         private readonly AbstractHistogram histogram;
         private readonly string minUserValue;

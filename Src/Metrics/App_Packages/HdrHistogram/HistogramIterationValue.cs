@@ -35,7 +35,7 @@ namespace HdrHistogram
      * </ul>
      */
 
-    public class HistogramIterationValue
+    internal class HistogramIterationValue
     {
         private long valueIteratedTo;
         private long valueIteratedFrom;
@@ -78,37 +78,15 @@ namespace HdrHistogram
         internal HistogramIterationValue()
         {
         }
-
-        public String toString()
-        {
-            return "valueIteratedTo:" + valueIteratedTo +
-                   ", prevValueIteratedTo:" + valueIteratedFrom +
-                   ", countAtValueIteratedTo:" + countAtValueIteratedTo +
-                   ", countAddedInThisIterationStep:" + countAddedInThisIterationStep +
-                   ", totalCountToThisValue:" + totalCountToThisValue +
-                   ", totalValueToThisValue:" + totalValueToThisValue +
-                   ", percentile:" + percentile +
-                   ", percentileLevelIteratedTo:" + percentileLevelIteratedTo;
-        }
-
+       
         public long getValueIteratedTo()
         {
             return valueIteratedTo;
         }
 
-        public double getDoubleValueIteratedTo()
-        {
-            return valueIteratedTo * integerToDoubleValueConversionRatio;
-        }
-
         public long getValueIteratedFrom()
         {
             return valueIteratedFrom;
-        }
-
-        public double getDoubleValueIteratedFrom()
-        {
-            return valueIteratedFrom * integerToDoubleValueConversionRatio;
         }
 
         public long getCountAtValueIteratedTo()

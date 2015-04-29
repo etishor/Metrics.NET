@@ -41,7 +41,7 @@ namespace HdrHistogram
     /// being modified by any writers while being read while under readerLock() protection after a flipPhase()
     /// operation. 
     /// </summary>
-    public class WriterReaderPhaser
+    internal class WriterReaderPhaser
     {
         private PaddedAtomicLong startEpoch = new PaddedAtomicLong(0);
         private PaddedAtomicLong evenEndEpoch = new PaddedAtomicLong(0);

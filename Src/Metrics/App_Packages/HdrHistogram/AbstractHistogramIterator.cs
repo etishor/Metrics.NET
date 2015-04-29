@@ -11,7 +11,7 @@ namespace HdrHistogram
     /// <summary>
     /// Used for iterating through histogram values.
     /// </summary>
-    public abstract class AbstractHistogramIterator : Iterator<HistogramIterationValue>
+    internal abstract class AbstractHistogramIterator : Iterator<HistogramIterationValue>
     {
         protected AbstractHistogram histogram;
         protected long savedHistogramTotalRawCount;

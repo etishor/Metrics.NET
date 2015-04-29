@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace HdrHistogram
 {
-    public abstract class Iterable<T> : IEnumerable<T>
+    internal abstract class Iterable<T> : IEnumerable<T>
     {
 
         /**

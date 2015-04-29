@@ -20,7 +20,7 @@ namespace HdrHistogram
      * all recorded histogram values are exhausted.
      */
 
-    public class RecordedValuesIterator : AbstractHistogramIterator
+    internal class RecordedValuesIterator : AbstractHistogramIterator
     {
         int visitedIndex;
 

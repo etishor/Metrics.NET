@@ -6,7 +6,6 @@
 // Latest ported version is available in the Java submodule in the root of the repo
 
 using System;
-using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace HdrHistogram
@@ -28,7 +27,7 @@ namespace HdrHistogram
  */
 
 
-    public class SynchronizedHistogram : Histogram
+    internal class SynchronizedHistogram : Histogram
     {
         [MethodImpl(MethodImplOptions.Synchronized)]
         internal override long getCountAtIndex(int index)
@@ -277,68 +276,6 @@ namespace HdrHistogram
         public SynchronizedHistogram(AbstractHistogram source)
             : base(source)
         {
-        }
-
-        /**
-     * Construct a new histogram by decoding it from a ByteBuffer.
-     * @param buffer The buffer to decode from
-     * @param minBarForHighestTrackableValue Force highestTrackableValue to be set at least this high
-     * @return The newly constructed histogram
-     */
-
-        public new static SynchronizedHistogram decodeFromByteBuffer(ByteBuffer buffer, long minBarForHighestTrackableValue)
-        {
-            return (SynchronizedHistogram)decodeFromByteBuffer(buffer, typeof(SynchronizedHistogram), minBarForHighestTrackableValue);
-        }
-
-        /**
-     * Construct a new histogram by decoding it from a compressed form in a ByteBuffer.
-     * @param buffer The buffer to decode from
-     * @param minBarForHighestTrackableValue Force highestTrackableValue to be set at least this high
-     * @return The newly constructed histogram
-     * @throws DataFormatException on error parsing/decompressing the buffer
-     */
-
-        public new static SynchronizedHistogram decodeFromCompressedByteBuffer(ByteBuffer buffer, long minBarForHighestTrackableValue)
-        {
-            return (SynchronizedHistogram)decodeFromCompressedByteBuffer(buffer, typeof(SynchronizedHistogram), minBarForHighestTrackableValue);
-        }
-
-        private void readObject(Stream o)
-        {
-            // TODO: ??
-            //o.defaultReadObject();
-        }
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        protected internal override void fillCountsArrayFromBuffer(ByteBuffer buffer, int length)
-        {
-            buffer.asLongBuffer().get(counts, 0, length);
-        }
-
-        // We try to cache the LongBuffer used in output cases, as repeated
-        // output form the same histogram using the same buffer is likely:
-        private LongBuffer cachedDstLongBuffer = null;
-        private ByteBuffer cachedDstByteBuffer = null;
-        private int cachedDstByteBufferPosition = 0;
-
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        protected internal override void fillBufferFromCountsArray(ByteBuffer buffer, int length)
-        {
-            if ((cachedDstLongBuffer == null) ||
-                (buffer != cachedDstByteBuffer) ||
-                (buffer.position() != cachedDstByteBufferPosition))
-            {
-                cachedDstByteBuffer = buffer;
-                cachedDstByteBufferPosition = buffer.position();
-                cachedDstLongBuffer = buffer.asLongBuffer();
-            }
-            cachedDstLongBuffer.rewind();
-            int zeroIndex = NormalizeIndex(0, getNormalizingIndexOffset(), countsArrayLength);
-            int lengthFromZeroIndexToEnd = Math.Min(length, (countsArrayLength - zeroIndex));
-            int remainingLengthFromNormalizedZeroIndex = length - lengthFromZeroIndexToEnd;
-            cachedDstLongBuffer.put(counts, zeroIndex, lengthFromZeroIndexToEnd);
-            cachedDstLongBuffer.put(counts, 0, remainingLengthFromNormalizedZeroIndex);
         }
     }
 }

@@ -6,8 +6,6 @@
 // Latest ported version is available in the Java submodule in the root of the repo
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Runtime.CompilerServices;
 using Metrics.ConcurrencyUtilities;
 
 namespace HdrHistogram
@@ -32,7 +30,7 @@ namespace HdrHistogram
     /// 
     /// See package description for {@link org.HdrHistogram} for details.
     /// </summary>
-    public abstract class AbstractHistogram : AbstractHistogramBase, IEquatable<AbstractHistogram>
+    internal abstract class AbstractHistogram : AbstractHistogramBase, IEquatable<AbstractHistogram>
     {
         // "Hot" accessed fields (used in the the value recording code path) are bunched here, such
         // that they will have a good chance of ending up in the same cache line as the totalCounts and
@@ -46,17 +44,6 @@ namespace HdrHistogram
         private long subBucketMask;
         private AtomicLong maxValue = new AtomicLong(0);
         private AtomicLong minNonZeroValue = new AtomicLong(long.MaxValue);
-
-        /// <summary>
-        /// Construct an auto-resizing histogram with a lowest discernible value of 1 and an auto-adjusting
-        /// highestTrackableValue. Can auto-resize up to track values up to (long.MaxValue / 2).
-        /// </summary>
-        /// <param name="numberOfSignificantValueDigits">The number of significant decimal digits to which the histogram will maintain value resolution and separation. Must be a non-negative integer between 0 and 5.</param>
-        /// <param name="wordSizeInBytes"></param>
-        /// <param name="autoResize"></param>
-        protected AbstractHistogram(int numberOfSignificantValueDigits, int wordSizeInBytes, bool autoResize)
-            : this(1, 2, numberOfSignificantValueDigits, wordSizeInBytes, autoResize)
-        { }
 
         /// <summary>
         /// Construct a Histogram given the Lowest and Highest values to be tracked and a number of significant
@@ -991,7 +978,7 @@ namespace HdrHistogram
          * get the start time stamp [optionally] stored with this histogram
          * @return the start time stamp [optionally] stored with this histogram
          */
-        public override long getStartTimeStamp()
+        public long getStartTimeStamp()
         {
             return startTimeStampMsec;
         }
@@ -1000,7 +987,7 @@ namespace HdrHistogram
          * Set the start time stamp value associated with this histogram to a given value.
          * @param timeStampMsec the value to set the time stamp to, [by convention] in msec since the epoch.
          */
-        public override sealed void setStartTimeStamp(long timeStampMsec)
+        public void setStartTimeStamp(long timeStampMsec)
         {
             this.startTimeStampMsec = timeStampMsec;
         }
@@ -1009,7 +996,7 @@ namespace HdrHistogram
          * get the end time stamp [optionally] stored with this histogram
          * @return the end time stamp [optionally] stored with this histogram
          */
-        public override long getEndTimeStamp()
+        public long getEndTimeStamp()
         {
             return this.endTimeStampMsec;
         }
@@ -1018,7 +1005,7 @@ namespace HdrHistogram
          * Set the end time stamp value associated with this histogram to a given value.
          * @param timeStampMsec the value to set the time stamp to, [by convention] in msec since the epoch.
          */
-        public override sealed void setEndTimeStamp(long timeStampMsec)
+        public void setEndTimeStamp(long timeStampMsec)
         {
             this.endTimeStampMsec = timeStampMsec;
         }
@@ -1074,7 +1061,7 @@ namespace HdrHistogram
          *
          * @return the Max value recorded in the histogram
          */
-        public override double getMaxValueAsDouble()
+        public double getMaxValueAsDouble()
         {
             return getMaxValue();
         }
@@ -1227,406 +1214,6 @@ namespace HdrHistogram
             int index = Math.Min(Math.Max(0, CountsArrayIndex(value)), (countsArrayLength - 1));
             return getCountAtIndex(index);
         }
-
-        //
-        //
-        //
-        // Serialization support:
-        //
-        //
-        //
-
-        internal protected void writeObject(BinaryWriter o)
-        {
-            o.Write(LowestDiscernibleValue);
-            o.Write(HighestTrackableValue);
-            o.Write(NumberOfSignificantValueDigits);
-            o.Write(getNormalizingIndexOffset());
-            o.Write(integerToDoubleValueConversionRatio);
-            o.Write(getTotalCount());
-            // Max Value is added to the serialized form because establishing max via scanning is "harder" during
-            // deserialization, as the counts array is not available at the subclass deserializing level, and we don't
-            // really want to have each subclass establish max on it's own...
-            o.Write(maxValue.GetValue());
-            o.Write(minNonZeroValue.GetValue());
-            o.Write(startTimeStampMsec);
-            o.Write(endTimeStampMsec);
-            o.Write(AutoResize);
-        }
-
-        private void readObject(BinaryReader o)
-        {
-            long lowestDiscernibleValue = o.ReadInt64();
-            long highestTrackableValue = o.ReadInt64();
-            int numberOfSignificantValueDigits = o.ReadInt32();
-            int normalizingIndexOffset = o.ReadInt32();
-            double integerToDoubleValueConversionRatio = o.ReadDouble();
-            long indicatedTotalCount = o.ReadInt64();
-            long indicatedMaxValue = o.ReadInt64();
-            long indicatedMinNonZeroValue = o.ReadInt64();
-            long indicatedStartTimeStampMsec = o.ReadInt64();
-            long indicatedEndTimeStampMsec = o.ReadInt64();
-            bool indicatedAutoResize = o.ReadBoolean();
-
-            // TODO: serialization - numberOfSignificantValueDigits is readonly
-            //init(lowestDiscernibleValue, highestTrackableValue, numberOfSignificantValueDigits,
-            //        integerToDoubleValueConversionRatio, normalizingIndexOffset);
-            // Set internalTrackingValues (can't establish them from array yet, because it's not yet read...)
-            setTotalCount(indicatedTotalCount);
-            maxValue.SetValue(indicatedMaxValue);
-            minNonZeroValue.SetValue(indicatedMinNonZeroValue);
-            startTimeStampMsec = indicatedStartTimeStampMsec;
-            endTimeStampMsec = indicatedEndTimeStampMsec;
-
-            // TODO: serialization - autoResize is readonly
-            //autoResize = indicatedAutoResize;
-        }
-
-        //
-        //
-        //
-        // Encoding/Decoding support:
-        //
-        //
-        //
-
-        /**
-         * Get the capacity needed to encode this histogram into a ByteBuffer
-         * @return the capacity needed to encode this histogram into a ByteBuffer
-         */
-        //@Override
-        public override int getNeededByteBufferCapacity()
-        {
-            return getNeededByteBufferCapacity(countsArrayLength);
-        }
-
-        private static int ENCODING_HEADER_SIZE = 40;
-        private static int V0_ENCODING_HEADER_SIZE = 32;
-
-        internal int getNeededByteBufferCapacity(int relevantLength)
-        {
-            return getNeededPayloadByteBufferCapacity(relevantLength) + ENCODING_HEADER_SIZE;
-        }
-
-        int getNeededPayloadByteBufferCapacity(int relevantLength)
-        {
-            return (relevantLength * WordSizeInBytes);
-        }
-
-        internal protected abstract void fillCountsArrayFromBuffer(ByteBuffer buffer, int length);
-
-        internal protected abstract void fillBufferFromCountsArray(ByteBuffer buffer, int length);
-
-        private static int V0EncodingCookieBase = 0x1c849308;
-        private static int V0EcompressedEncodingCookieBase = 0x1c849309;
-
-        private static int encodingCookieBase = 0x1c849301;
-        private static int compressedEncodingCookieBase = 0x1c849302;
-
-        private int getV0EncodingCookie()
-        {
-            return V0EncodingCookieBase + (WordSizeInBytes << 4);
-        }
-
-        private int getEncodingCookie()
-        {
-            return encodingCookieBase + (WordSizeInBytes << 4);
-        }
-
-        private int getCompressedEncodingCookie()
-        {
-            return compressedEncodingCookieBase + (WordSizeInBytes << 4);
-        }
-
-        private static int getCookieBase(int cookie)
-        {
-            return (cookie & ~0xf0);
-        }
-
-        private static int getWordSizeInBytesFromCookie(int cookie)
-        {
-            return (cookie & 0xf0) >> 4;
-        }
-
-        /**
-         * Encode this histogram into a ByteBuffer
-         * @param buffer The buffer to encode into
-         * @return The number of bytes written to the buffer
-         */
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public int encodeIntoByteBuffer(ByteBuffer buffer)
-        {
-            long maxValue = getMaxValue();
-            int relevantLength = CountsArrayIndex(maxValue) + 1;
-            if (buffer.capacity() < getNeededByteBufferCapacity(relevantLength))
-            {
-                throw new IndexOutOfRangeException("buffer does not have capacity for" +
-                        getNeededByteBufferCapacity(relevantLength) + " bytes");
-            }
-            int initialPosition = buffer.position();
-            buffer.putInt(getEncodingCookie());
-            buffer.putInt(relevantLength * WordSizeInBytes);
-            buffer.putInt(getNormalizingIndexOffset());
-            buffer.putInt(NumberOfSignificantValueDigits);
-            buffer.putLong(LowestDiscernibleValue);
-            buffer.putLong(HighestTrackableValue);
-            buffer.putDouble(integerToDoubleValueConversionRatio);
-
-            fillBufferFromCountsArray(buffer, relevantLength);
-
-            int bytesWritten = getNeededByteBufferCapacity(relevantLength);
-            buffer.position(initialPosition + bytesWritten);
-            return bytesWritten;
-        }
-
-        /**
-         * Encode this histogram in compressed form into a byte array
-         * @param targetBuffer The buffer to encode into
-         * @param compressionLevel Compression level (for java.util.zip.Deflater).
-         * @return The number of bytes written to the buffer
-         */
-        //@Override
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        public override int encodeIntoCompressedByteBuffer(ByteBuffer targetBuffer, int compressionLevel)
-        {
-            int neededCapacity = getNeededByteBufferCapacity(countsArrayLength);
-            if (intermediateUncompressedByteBuffer == null || intermediateUncompressedByteBuffer.capacity() < neededCapacity)
-            {
-                intermediateUncompressedByteBuffer = ByteBuffer.allocate(neededCapacity);
-            }
-            intermediateUncompressedByteBuffer.clear();
-            int uncompressedLength = encodeIntoByteBuffer(intermediateUncompressedByteBuffer);
-
-            int initialTargetPosition = targetBuffer.position();
-            targetBuffer.putInt(getCompressedEncodingCookie());
-            targetBuffer.putInt(0); // Placeholder for compressed contents length
-
-            Deflater compressor = new Deflater(compressionLevel);
-            compressor.setInput(intermediateUncompressedByteBuffer.array(), 0, uncompressedLength);
-            compressor.finish();
-
-            byte[] targetArray = targetBuffer.array();
-            int compressedTargetOffset = initialTargetPosition + 8;
-            int compressedDataLength =
-                    compressor.deflate(
-                            targetArray,
-                            compressedTargetOffset,
-                            targetArray.Length - compressedTargetOffset
-                    );
-            compressor.end();
-
-            targetBuffer.putInt(initialTargetPosition + 4, compressedDataLength); // Record the compressed length
-            int bytesWritten = compressedDataLength + 8;
-            targetBuffer.position(initialTargetPosition + bytesWritten);
-            return bytesWritten;
-        }
-
-        /**
-         * Encode this histogram in compressed form into a byte array
-         * @param targetBuffer The buffer to encode into
-         * @return The number of bytes written to the array
-         */
-        //public int encodeIntoCompressedByteBuffer(ByteBuffer targetBuffer)
-        //{
-        //    return encodeIntoCompressedByteBuffer(targetBuffer, Deflater.DEFAULT_COMPRESSION);
-        //}
-
-        private static Type[] constructorArgsTypes = { typeof(long), typeof(long), typeof(int) };
-
-        internal static AbstractHistogram decodeFromByteBuffer(ByteBuffer buffer, Type histogramClass, long minBarForHighestTrackableValue)
-        {
-            return decodeFromByteBuffer(buffer, histogramClass, minBarForHighestTrackableValue, null, null);
-        }
-
-        internal static AbstractHistogram decodeFromByteBuffer(
-                ByteBuffer buffer,
-                Type histogramClass,
-                long minBarForHighestTrackableValue,
-                Inflater decompressor,
-                ByteBuffer intermediateUncompressedByteBuffer)
-        {
-
-            int cookie = buffer.getInt();
-            int payloadLength;
-            int normalizingIndexOffset;
-            int numberOfSignificantValueDigits;
-            long lowestTrackableUnitValue;
-            long highestTrackableValue;
-            double integerToDoubleValueConversionRatio;
-
-            if (getCookieBase(cookie) == encodingCookieBase)
-            {
-                payloadLength = buffer.getInt();
-                normalizingIndexOffset = buffer.getInt();
-                numberOfSignificantValueDigits = buffer.getInt();
-                lowestTrackableUnitValue = buffer.getLong();
-                highestTrackableValue = buffer.getLong();
-                integerToDoubleValueConversionRatio = buffer.getDouble();
-            }
-            else if (getCookieBase(cookie) == V0EncodingCookieBase)
-            {
-                numberOfSignificantValueDigits = buffer.getInt();
-                lowestTrackableUnitValue = buffer.getLong();
-                highestTrackableValue = buffer.getLong();
-                buffer.getLong(); // Discard totalCount field in V0 header.
-                payloadLength = int.MaxValue;
-                integerToDoubleValueConversionRatio = 1.0;
-                normalizingIndexOffset = 0;
-            }
-            else
-            {
-                throw new ArgumentException("The buffer does not contain a Histogram");
-            }
-            highestTrackableValue = Math.Max(highestTrackableValue, minBarForHighestTrackableValue);
-
-            ;
-
-            // Construct histogram:
-            //@SuppressWarnings("unchecked")
-            var constructor = histogramClass.GetConstructor(constructorArgsTypes);
-            AbstractHistogram histogram = constructor.Invoke(new object[] { lowestTrackableUnitValue, highestTrackableValue, numberOfSignificantValueDigits })
-                as AbstractHistogram;
-            //    Constructor<AbstractHistogram> constructor = histogramClass.getConstructor(constructorArgsTypes);
-            //histogram = constructor.newInstance(lowestTrackableUnitValue, highestTrackableValue,
-            //        numberOfSignificantValueDigits);
-
-            histogram.integerToDoubleValueConversionRatio = integerToDoubleValueConversionRatio;
-            histogram.setNormalizingIndexOffset(normalizingIndexOffset);
-            if ((cookie != histogram.getEncodingCookie()) &&
-                    (cookie != histogram.getV0EncodingCookie()))
-            {
-                throw new ArgumentException(
-                        "The buffer's encoded value byte size (" +
-                                getWordSizeInBytesFromCookie(cookie) +
-                                ") does not match the Histogram's (" +
-                                histogram.WordSizeInBytes + ")");
-            }
-
-
-            ByteBuffer payLoadSourceBuffer;
-
-            int expectedCapacity =
-                    Math.Min(
-                            histogram.getNeededPayloadByteBufferCapacity(histogram.countsArrayLength),
-                            payloadLength
-                    );
-
-            if (decompressor == null)
-            {
-                // No compressed source buffer. Payload is in buffer, after header.
-                if (expectedCapacity > buffer.remaining())
-                {
-                    throw new ArgumentException("The buffer does not contain the full Histogram payload");
-                }
-                payLoadSourceBuffer = buffer;
-            }
-            else
-            {
-                // Compressed source buffer. Payload needs to be decoded from there.
-                payLoadSourceBuffer = intermediateUncompressedByteBuffer;
-                if (payLoadSourceBuffer == null)
-                {
-                    payLoadSourceBuffer = ByteBuffer.allocate(expectedCapacity);
-                }
-                else
-                {
-                    payLoadSourceBuffer.reset();
-                    if (payLoadSourceBuffer.remaining() < expectedCapacity)
-                    {
-                        throw new ArgumentException("Supplied intermediate not large enough (capacity = " +
-                                payLoadSourceBuffer.capacity() + ", expected = " + expectedCapacity);
-                    }
-                    payLoadSourceBuffer.limit(expectedCapacity);
-                }
-                int decompressedByteCount = decompressor.inflate(payLoadSourceBuffer.array());
-                if ((payloadLength < int.MaxValue) && (decompressedByteCount < payloadLength))
-                {
-                    throw new ArgumentException("The buffer does not contain the indicated payload amount");
-                }
-            }
-
-            histogram.fillCountsArrayFromSourceBuffer(
-                    payLoadSourceBuffer,
-                    expectedCapacity / getWordSizeInBytesFromCookie(cookie),
-                    getWordSizeInBytesFromCookie(cookie));
-
-            histogram.establishInternalTackingValues();
-
-            return histogram;
-        }
-
-        private void fillCountsArrayFromSourceBuffer(ByteBuffer sourceBuffer, int lengthInWords, int wordSizeInBytes)
-        {
-            switch (wordSizeInBytes)
-            {
-                case 2:
-                    {
-                        ShortBuffer source = sourceBuffer.asShortBuffer();
-                        for (int i = 0; i < lengthInWords; i++)
-                        {
-                            setCountAtIndex(i, source.get());
-                        }
-                        break;
-                    }
-                case 4:
-                    {
-                        IntBuffer source = sourceBuffer.asIntBuffer();
-                        for (int i = 0; i < lengthInWords; i++)
-                        {
-                            setCountAtIndex(i, source.get());
-                        }
-                        break;
-                    }
-                case 8:
-                    {
-                        LongBuffer source = sourceBuffer.asLongBuffer();
-                        for (int i = 0; i < lengthInWords; i++)
-                        {
-                            setCountAtIndex(i, source.get());
-                        }
-                        break;
-                    }
-                default:
-                    throw new ArgumentException("word size must be 2, 4, or 8 bytes");
-            }
-        }
-
-        internal static AbstractHistogram decodeFromCompressedByteBuffer(ByteBuffer buffer, Type histogramClass, long minBarForHighestTrackableValue)
-        {
-            int initialTargetPosition = buffer.position();
-            int cookie = buffer.getInt();
-            int headerSize;
-            if (getCookieBase(cookie) == compressedEncodingCookieBase)
-            {
-                headerSize = ENCODING_HEADER_SIZE;
-            }
-            else if (getCookieBase(cookie) == V0EcompressedEncodingCookieBase)
-            {
-                headerSize = V0_ENCODING_HEADER_SIZE;
-            }
-            else
-            {
-                throw new ArgumentException("The buffer does not contain a compressed Histogram");
-            }
-
-            int lengthOfCompressedContents = buffer.getInt();
-            Inflater decompressor = new Inflater();
-            decompressor.setInput(buffer.array(), initialTargetPosition + 8, lengthOfCompressedContents);
-
-            ByteBuffer headerBuffer = ByteBuffer.allocate(headerSize);
-            decompressor.inflate(headerBuffer.array());
-            AbstractHistogram histogram = decodeFromByteBuffer(
-                    headerBuffer, histogramClass, minBarForHighestTrackableValue, decompressor, null);
-            return histogram;
-        }
-
-        //
-        //
-        //
-        // Internal helper methods:
-        //
-        //
-        //
 
         private void establishInternalTackingValues()
         {

@@ -7,7 +7,7 @@ namespace Metrics.Sampling
         private readonly AbstractHistogram histogram;
         private readonly object padlock = new object();
 
-        public SyncronizedHdrReservoir(AbstractHistogram histogram)
+        internal SyncronizedHdrReservoir(AbstractHistogram histogram)
         {
             this.histogram = histogram;
         }
