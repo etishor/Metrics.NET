@@ -67,29 +67,7 @@ namespace Metrics.Tests.Metrics
             value.FiveMinuteRate.Should().BeApproximately(0.1966, 0.001);
             value.FifteenMinuteRate.Should().BeApproximately(0.1988, 0.001);
         }
-
-        [Fact(Skip = "Merging will probably be removed")]
-        public void MeterMetric_CanMergeComputedRates()
-        {
-            var otherScheduler = new TestScheduler(this.clock);
-            var other = new MeterMetric(clock, otherScheduler);
-
-            meter.Mark();
-
-            clock.Advance(TimeUnit.Seconds, 10);
-            meter.Mark(1);
-            other.Mark(1);
-
-            meter.Merge(other);
-
-            var value = meter.Value;
-
-            value.MeanRate.Should().BeApproximately(0.3, 0.001);
-            value.OneMinuteRate.Should().BeApproximately(0.1840, 0.001);
-            value.FiveMinuteRate.Should().BeApproximately(0.1966, 0.001);
-            value.FifteenMinuteRate.Should().BeApproximately(0.1988, 0.001);
-        }
-
+        
         [Fact]
         public void MeterMetric_CanReset()
         {
@@ -133,40 +111,6 @@ namespace Metrics.Tests.Metrics
             meter.Value.Items[1].Item.Should().Be("B");
             meter.Value.Items[1].Value.Count.Should().Be(1);
             meter.Value.Items[1].Percent.Should().Be(50);
-        }
-
-        [Fact(Skip = "Merging will probably be removed")]
-        public void MeterMetric_CanMergeWithMultipleSetItem()
-        {
-            var otherScheduler = new TestScheduler(this.clock);
-            var other = new MeterMetric(clock, otherScheduler);
-
-            meter.Mark("A");
-            meter.Mark("B");
-
-            other.Mark("C");
-            other.Mark("D");
-
-            meter.Merge(other);
-
-            meter.Value.Count.Should().Be(4L);
-            meter.Value.Items.Should().HaveCount(4);
-
-            meter.Value.Items[0].Item.Should().Be("A");
-            meter.Value.Items[0].Value.Count.Should().Be(1);
-            meter.Value.Items[0].Percent.Should().Be(25);
-
-            meter.Value.Items[1].Item.Should().Be("B");
-            meter.Value.Items[1].Value.Count.Should().Be(1);
-            meter.Value.Items[1].Percent.Should().Be(25);
-
-            meter.Value.Items[2].Item.Should().Be("C");
-            meter.Value.Items[2].Value.Count.Should().Be(1);
-            meter.Value.Items[2].Percent.Should().Be(25);
-
-            meter.Value.Items[3].Item.Should().Be("D");
-            meter.Value.Items[3].Value.Count.Should().Be(1);
-            meter.Value.Items[3].Percent.Should().Be(25);
         }
 
         [Fact]

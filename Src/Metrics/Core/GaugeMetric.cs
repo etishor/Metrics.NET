@@ -44,12 +44,6 @@ namespace Metrics.Core
                 }
             }
         }
-
-        public bool Merge(MetricValueProvider<double> other)
-        {
-            valueProviders.Add(() => other.Value);
-            return true;
-        }
     }
 
     public sealed class DerivedGauge : GaugeImplementation
@@ -65,7 +59,7 @@ namespace Metrics.Core
 
         public double GetValue(bool resetMetric = false)
         {
-            return this.Value;
+            return Value;
         }
 
         public double Value
@@ -82,11 +76,6 @@ namespace Metrics.Core
                     return double.NaN;
                 }
             }
-        }
-        
-        public bool Merge(MetricValueProvider<double> other)
-        {
-            return gauge.Merge(other);
         }
     }
 }

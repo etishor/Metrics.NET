@@ -149,10 +149,5 @@ namespace Metrics.Core
                 }
             }
         }
-
-        public bool Merge(MetricValueProvider<MeterValue> other)
-        {
-            return false;
-        }
     }
 }

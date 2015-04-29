@@ -132,38 +132,6 @@ namespace Metrics.Tests.Metrics
         }
 
         [Fact]
-        public void CounterMetric_CanHandleMergedMultipleSetItem()
-        {
-            var other = new CounterMetric();
-
-            counter.Increment("A");
-            counter.Increment("B");
-            other.Increment("C");
-            other.Increment("D");
-
-            counter.Merge(other);
-
-            counter.Value.Count.Should().Be(4L);
-            counter.Value.Items.Should().HaveCount(4);
-
-            counter.Value.Items[0].Item.Should().Be("A");
-            counter.Value.Items[0].Count.Should().Be(1);
-            counter.Value.Items[0].Percent.Should().Be(25);
-
-            counter.Value.Items[1].Item.Should().Be("B");
-            counter.Value.Items[1].Count.Should().Be(1);
-            counter.Value.Items[1].Percent.Should().Be(25);
-
-            counter.Value.Items[2].Item.Should().Be("C");
-            counter.Value.Items[2].Count.Should().Be(1);
-            counter.Value.Items[2].Percent.Should().Be(25);
-
-            counter.Value.Items[3].Item.Should().Be("D");
-            counter.Value.Items[3].Count.Should().Be(1);
-            counter.Value.Items[3].Percent.Should().Be(25);
-        }
-
-        [Fact]
         public void CounterMetric_CanResetSetItem()
         {
             counter.Increment("A");

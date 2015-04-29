@@ -123,18 +123,5 @@ namespace Metrics.Core
             using (this.histogram as IDisposable) { }
             using (this.meter as IDisposable) { }
         }
-
-        public bool Merge(MetricValueProvider<TimerValue> other)
-        {
-            var tOther = other as TimerMetric;
-            if (tOther == null)
-            {
-                return false;
-            }
-
-            this.meter.Merge(tOther.meter);
-            this.histogram.Merge(tOther.histogram);
-            return true;
-        }
     }
 }

@@ -132,12 +132,5 @@ namespace Metrics
         /// </summary>
         /// <param name="metricsBuilder">The custom metrics builder.</param>
         void WithCustomMetricsBuilder(MetricsBuilder metricsBuilder);
-
-        /// <summary>
-        /// Merge all of the collected metrics from another context into the context
-        /// </summary>
-        /// <param name="other">the other context to merge from</param>
-        /// <param name="resetAfterMerge">whether or not the other context should be reset once it is merged</param>
-        bool MergeContext(MetricsContext other, bool resetAfterMerge = true);
     }
 }

@@ -74,7 +74,7 @@ namespace Metrics.Tests.Sampling
         [Fact]
         public void WeightedSnapshot_HasValues()
         {
-            snapshot.Values.Select(val => val.Item1).Should().Equal(new long[] { 1, 2, 3, 4, 5 });
+            snapshot.Values.Should().Equal(new long[] { 1, 2, 3, 4, 5 });
         }
 
         [Fact]

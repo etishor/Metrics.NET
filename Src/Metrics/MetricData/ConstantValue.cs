@@ -21,11 +21,6 @@ namespace Metrics.MetricData
             {
                 return this.Value;
             }
-
-            public bool Merge(MetricValueProvider<T> other)
-            {
-                return false;
-            }
         }
     }
 }
