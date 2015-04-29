@@ -3,6 +3,10 @@ using Metrics.ConcurrencyUtilities;
 
 namespace Metrics.Sampling
 {
+    /// <summary>
+    /// Sampling reservoir based on HdrHistogram.
+    /// Based on the java version from Marshall Pierce https://bitbucket.org/marshallpierce/hdrhistogram-metrics-reservoir/src/83a8ec568a1e?at=master
+    /// </summary>
     public sealed class HdrHistogramReservoir : Reservoir
     {
         private readonly Recorder recorder;
