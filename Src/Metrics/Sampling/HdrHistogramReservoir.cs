@@ -1,14 +1,23 @@
 ﻿using System;
 using HdrHistogram;
+using Metrics.ConcurrencyUtilities;
 
 namespace Metrics.Sampling
 {
-    public class HdrHistogramReservoir : Reservoir
+    public sealed class HdrHistogramReservoir : Reservoir
     {
         private readonly Recorder recorder;
 
         private readonly HdrHistogram.Histogram runningTotals;
         private HdrHistogram.Histogram intervalHistogram;
+
+        private AtomicLong maxValue = new AtomicLong(0);
+        private string maxUserValue = null;
+        private readonly object maxValueLock = new object();
+
+        private AtomicLong minValue = new AtomicLong(long.MaxValue);
+        private string minUserValue = null;
+        private readonly object minValueLock = new object();
 
         public HdrHistogramReservoir()
             : this(new Recorder(2))
@@ -25,37 +34,98 @@ namespace Metrics.Sampling
         public void Update(long value, string userValue = null)
         {
             this.recorder.RecordValue(value);
+            if (userValue != null)
+            {
+                TrackMinMaxUserValue(value, userValue);
+            }
         }
 
         public Snapshot GetSnapshot(bool resetReservoir = false)
         {
-            return new HdrSnapshot(UpdateTotals());
+            return new HdrSnapshot(UpdateTotals(), this.minUserValue, this.maxUserValue);
         }
 
         public void Reset()
         {
-            throw new NotImplementedException();
+            this.recorder.Reset();
+            this.runningTotals.reset();
+            this.intervalHistogram.reset();
         }
 
         private HdrHistogram.Histogram UpdateTotals()
         {
             lock (this.runningTotals)
             {
-                this.intervalHistogram = recorder.GetIntervalHistogram(this.intervalHistogram);
-                this.runningTotals.add(intervalHistogram);
+                this.intervalHistogram = this.recorder.GetIntervalHistogram(this.intervalHistogram);
+                this.runningTotals.add(this.intervalHistogram);
                 return this.runningTotals.copy() as HdrHistogram.Histogram;
+            }
+        }
+
+        private void TrackMinMaxUserValue(long value, string userValue)
+        {
+            if (value > this.maxValue.NonVolatileGetValue())
+            {
+                SetMaxValue(value, userValue);
+            }
+
+            if (value < this.minValue.NonVolatileGetValue())
+            {
+                SetMinValue(value, userValue);
+            }
+        }
+
+        private void SetMaxValue(long value, string userValue)
+        {
+            long current;
+            while (value > (current = this.maxValue.GetValue()))
+            {
+                this.maxValue.CompareAndSwap(current, value);
+            }
+
+            if (value == current)
+            {
+                lock (this.maxValueLock)
+                {
+                    if (value == this.maxValue.GetValue())
+                    {
+                        this.maxUserValue = userValue;
+                    }
+                }
+            }
+        }
+
+        private void SetMinValue(long value, string userValue)
+        {
+            long current;
+            while (value < (current = this.minValue.GetValue()))
+            {
+                this.minValue.CompareAndSwap(current, value);
+            }
+
+            if (value == current)
+            {
+                lock (this.minValueLock)
+                {
+                    if (value == this.minValue.GetValue())
+                    {
+                        this.minUserValue = userValue;
+                    }
+                }
             }
         }
 
         private class HdrSnapshot : Snapshot
         {
-            public HdrSnapshot(AbstractHistogram histogram)
+            public HdrSnapshot(AbstractHistogram histogram, string minUserValue, string maxUserValue)
             {
                 Count = histogram.getTotalCount();
                 Max = histogram.getMaxValue();
+                MaxUserValue = maxUserValue;
                 Mean = histogram.getMean();
                 Median = Percentile(histogram, 0.5);
                 Min = histogram.getMinValue();
+                MinUserValue = minUserValue;
 
                 Percentile75 = Percentile(histogram, 0.75);
                 Percentile95 = Percentile(histogram, 0.95);
