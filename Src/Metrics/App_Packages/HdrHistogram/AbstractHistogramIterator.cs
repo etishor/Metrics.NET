@@ -139,9 +139,9 @@ namespace HdrHistogram
             freshSubBucket = true;
             // Take on the next index:
             currentIndex++;
-            currentValueAtIndex = histogram.valueFromIndex(currentIndex);
+            currentValueAtIndex = histogram.ValueFromIndex(currentIndex);
             // Figure out the value at the next index (used by some iterators):
-            nextValueAtIndex = histogram.valueFromIndex(currentIndex + 1);
+            nextValueAtIndex = histogram.ValueFromIndex(currentIndex + 1);
         }
 
     }

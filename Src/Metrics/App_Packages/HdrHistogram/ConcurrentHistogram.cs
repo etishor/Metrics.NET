@@ -55,8 +55,8 @@ namespace HdrHistogram
                 Debug.Assert(countsArrayLength == activeCounts.Length);
                 Debug.Assert(countsArrayLength == inactiveCounts.Length);
 
-                long activeCount = activeCounts.GetValue(normalizeIndex(index, activeCountsNormalizingIndexOffset, activeCounts.Length));
-                long inactiveCount = inactiveCounts.GetValue(normalizeIndex(index, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length));
+                long activeCount = activeCounts.GetValue(NormalizeIndex(index, activeCountsNormalizingIndexOffset, activeCounts.Length));
+                long inactiveCount = inactiveCounts.GetValue(NormalizeIndex(index, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length));
                 return activeCount + inactiveCount;
             }
             finally
@@ -87,7 +87,7 @@ namespace HdrHistogram
             long criticalValue = wrp.WriterCriticalSectionEnter();
             try
             {
-                activeCounts.Increment(normalizeIndex(index, activeCountsNormalizingIndexOffset, activeCounts.Length));
+                activeCounts.Increment(NormalizeIndex(index, activeCountsNormalizingIndexOffset, activeCounts.Length));
             }
             finally
             {
@@ -100,7 +100,7 @@ namespace HdrHistogram
             long criticalValue = wrp.WriterCriticalSectionEnter();
             try
             {
-                activeCounts.Add(normalizeIndex(index, activeCountsNormalizingIndexOffset, activeCounts.Length), value);
+                activeCounts.Add(NormalizeIndex(index, activeCountsNormalizingIndexOffset, activeCounts.Length), value);
             }
             finally
             {
@@ -115,8 +115,8 @@ namespace HdrHistogram
                 wrp.ReaderLock();
                 Debug.Assert(countsArrayLength == activeCounts.Length);
                 Debug.Assert(countsArrayLength == inactiveCounts.Length);
-                activeCounts.SetValue(normalizeIndex(index, activeCountsNormalizingIndexOffset, activeCounts.Length), value);
-                inactiveCounts.SetValue(normalizeIndex(index, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length), 0);
+                activeCounts.SetValue(NormalizeIndex(index, activeCountsNormalizingIndexOffset, activeCounts.Length), value);
+                inactiveCounts.SetValue(NormalizeIndex(index, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length), 0);
             }
             finally
             {
@@ -168,7 +168,7 @@ namespace HdrHistogram
                 }
 
                 // Save and clear the inactive 0 value count:
-                int zeroIndex = normalizeIndex(0, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length);
+                int zeroIndex = NormalizeIndex(0, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length);
                 long inactiveZeroValueCount = inactiveCounts.GetValue(zeroIndex);
                 inactiveCounts.SetValue(zeroIndex, 0);
 
@@ -183,7 +183,7 @@ namespace HdrHistogram
                 }
 
                 // Restore the inactive 0 value count:
-                zeroIndex = normalizeIndex(0, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length);
+                zeroIndex = NormalizeIndex(0, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length);
                 inactiveCounts.SetValue(zeroIndex, inactiveZeroValueCount);
 
                 // switch active and inactive:
@@ -199,7 +199,7 @@ namespace HdrHistogram
                 wrp.FlipPhase();
 
                 // Save and clear the newly inactive 0 value count:
-                zeroIndex = normalizeIndex(0, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length);
+                zeroIndex = NormalizeIndex(0, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length);
                 inactiveZeroValueCount = inactiveCounts.GetValue(zeroIndex);
                 inactiveCounts.SetValue(zeroIndex, 0);
 
@@ -214,7 +214,7 @@ namespace HdrHistogram
                 }
 
                 // Restore the newly inactive 0 value count:
-                zeroIndex = normalizeIndex(0, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length);
+                zeroIndex = NormalizeIndex(0, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length);
                 inactiveCounts.SetValue(zeroIndex, inactiveZeroValueCount);
 
                 // switch active and inactive again:
@@ -259,10 +259,10 @@ namespace HdrHistogram
 
             for (int fromIndex = 1; fromIndex < subBucketHalfCount; fromIndex++)
             {
-                long toValue = valueFromIndex(fromIndex) << numberOfBinaryOrdersOfMagnitude;
-                int toIndex = countsArrayIndex(toValue);
+                long toValue = ValueFromIndex(fromIndex) << numberOfBinaryOrdersOfMagnitude;
+                int toIndex = CountsArrayIndex(toValue);
                 int normalizedToIndex =
-                    normalizeIndex(toIndex, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length);
+                    NormalizeIndex(toIndex, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length);
                 long countAtFromIndex = inactiveCounts.GetValue(fromIndex);
                 inactiveCounts.SetValue(normalizedToIndex, countAtFromIndex);
                 inactiveCounts.SetValue(fromIndex, 0);
@@ -309,7 +309,7 @@ namespace HdrHistogram
                 }
 
                 int oldNormalizedZeroIndex =
-                    normalizeIndex(0, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length);
+                    NormalizeIndex(0, inactiveCountsNormalizingIndexOffset, inactiveCounts.Length);
 
                 // Resize the current inactiveCounts:
                 AtomicLongArray oldInactiveCounts = inactiveCounts;
@@ -588,7 +588,7 @@ namespace HdrHistogram
                 wrp.ReaderLock();
                 Debug.Assert(countsArrayLength == activeCounts.Length);
                 Debug.Assert(countsArrayLength == inactiveCounts.Length);
-                int zeroIndex = normalizeIndex(0, getNormalizingIndexOffset(), countsArrayLength);
+                int zeroIndex = NormalizeIndex(0, getNormalizingIndexOffset(), countsArrayLength);
                 int lengthFromZeroIndexToEnd = Math.Min(length, (countsArrayLength - zeroIndex));
                 int remainingLengthFromNormalizedZeroIndex = length - lengthFromZeroIndexToEnd;
                 for (int i = 0; i < lengthFromZeroIndexToEnd; i++)

@@ -130,7 +130,7 @@ namespace HdrHistogram
         /// <param name="value">value The value to be recorded.</param>
         public void RecordValue(long value)
         {
-            recordSingleValue(value);
+            RecordSingleValue(value);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace HdrHistogram
         /// <param name="count">The number of occurrences of this value to record</param>
         public void RecordValueWithCount(long value, long count)
         {
-            recordCountAtValue(count, value);
+            RecordCountAtValue(count, value);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace HdrHistogram
         {
             recordSingleValueWithExpectedInterval(value, expectedIntervalBetweenValueSamples);
         }
-        
+
         //
         //
         //
@@ -268,22 +268,22 @@ namespace HdrHistogram
             return getLengthForNumberOfBuckets(getBucketsNeededToCoverValue(highestTrackableValue));
         }
 
-        private void updateMinAndMax(long value)
+        private void UpdateMinAndMax(long value)
         {
             // we can use non volatile get as the update method checks again
-            if (value > maxValue.NonVolatileGetValue())
+            if (value > this.maxValue.NonVolatileGetValue())
             {
                 updatedMaxValue(value);
             }
-            if ((value < minNonZeroValue.NonVolatileGetValue()) && (value != 0))
+            if ((value < this.minNonZeroValue.NonVolatileGetValue()) && (value != 0))
             {
                 updateMinNonZeroValue(value);
             }
         }
 
-        private void recordCountAtValue(long count, long value)
+        private void RecordCountAtValue(long count, long value)
         {
-            int countsIndex = countsArrayIndex(value);
+            int countsIndex = CountsArrayIndex(value);
             try
             {
                 addToCountAtIndex(countsIndex, count);
@@ -293,13 +293,13 @@ namespace HdrHistogram
                 handleRecordException(count, value, ex);
             }
 
-            updateMinAndMax(value);
+            UpdateMinAndMax(value);
             addToTotalCount(count);
         }
 
-        private void recordSingleValue(long value)
+        private void RecordSingleValue(long value)
         {
-            int countsIndex = countsArrayIndex(value);
+            int countsIndex = CountsArrayIndex(value);
             try
             {
                 incrementCountAtIndex(countsIndex);
@@ -308,7 +308,7 @@ namespace HdrHistogram
             {
                 handleRecordException(1, value, ex);
             }
-            updateMinAndMax(value);
+            UpdateMinAndMax(value);
             incrementTotalCount();
         }
 
@@ -319,34 +319,34 @@ namespace HdrHistogram
                 throw new IndexOutOfRangeException("value outside of histogram covered range. Caused by: " + ex);
             }
             resize(value);
-            int countsIndex = countsArrayIndex(value);
+            int countsIndex = CountsArrayIndex(value);
             addToCountAtIndex(countsIndex, count);
-            this.HighestTrackableValue = highestEquivalentValue(valueFromIndex(countsArrayLength - 1));
+            this.HighestTrackableValue = highestEquivalentValue(ValueFromIndex(countsArrayLength - 1));
         }
 
         private void recordValueWithCountAndExpectedInterval(long value, long count, long expectedIntervalBetweenValueSamples)
         {
-            recordCountAtValue(count, value);
+            RecordCountAtValue(count, value);
             if (expectedIntervalBetweenValueSamples <= 0)
                 return;
             for (long missingValue = value - expectedIntervalBetweenValueSamples;
                  missingValue >= expectedIntervalBetweenValueSamples;
                  missingValue -= expectedIntervalBetweenValueSamples)
             {
-                recordCountAtValue(count, missingValue);
+                RecordCountAtValue(count, missingValue);
             }
         }
 
         private void recordSingleValueWithExpectedInterval(long value, long expectedIntervalBetweenValueSamples)
         {
-            recordSingleValue(value);
+            RecordSingleValue(value);
             if (expectedIntervalBetweenValueSamples <= 0)
                 return;
             for (long missingValue = value - expectedIntervalBetweenValueSamples;
                 missingValue >= expectedIntervalBetweenValueSamples;
                 missingValue -= expectedIntervalBetweenValueSamples)
             {
-                recordSingleValue(missingValue);
+                RecordSingleValue(missingValue);
             }
         }
 
@@ -459,7 +459,7 @@ namespace HdrHistogram
 
         public void add(AbstractHistogram otherHistogram)
         {
-            long highestRecordableValue = highestEquivalentValue(valueFromIndex(countsArrayLength - 1));
+            long highestRecordableValue = highestEquivalentValue(ValueFromIndex(countsArrayLength - 1));
             if (highestRecordableValue < otherHistogram.getMaxValue())
             {
                 if (!AutoResize)
@@ -497,7 +497,7 @@ namespace HdrHistogram
                     long otherCount = otherHistogram.getCountAtIndex(i);
                     if (otherCount > 0)
                     {
-                        RecordValueWithCount(otherHistogram.valueFromIndex(i), otherCount);
+                        RecordValueWithCount(otherHistogram.ValueFromIndex(i), otherCount);
                     }
                 }
             }
@@ -517,7 +517,7 @@ namespace HdrHistogram
 
         public void subtract(AbstractHistogram otherHistogram)
         {
-            long highestRecordableValue = valueFromIndex(countsArrayLength - 1);
+            long highestRecordableValue = ValueFromIndex(countsArrayLength - 1);
             if (highestRecordableValue < otherHistogram.getMaxValue())
             {
                 if (!AutoResize)
@@ -541,7 +541,7 @@ namespace HdrHistogram
                         if (getCountAtIndex(i) < otherCount)
                         {
                             throw new ArgumentException("otherHistogram count (" + otherCount + ") at value " +
-                                                        valueFromIndex(i) + " is larger than this one's (" + getCountAtIndex(i) + ")");
+                                                        ValueFromIndex(i) + " is larger than this one's (" + getCountAtIndex(i) + ")");
                         }
                         addToCountAtIndex(i, -otherCount);
                         observedOtherTotalCount += otherCount;
@@ -560,7 +560,7 @@ namespace HdrHistogram
                     long otherCount = otherHistogram.getCountAtIndex(i);
                     if (otherCount > 0)
                     {
-                        long otherValue = otherHistogram.valueFromIndex(i);
+                        long otherValue = otherHistogram.ValueFromIndex(i);
                         if (getCountAtValue(otherValue) < otherCount)
                         {
                             throw new ArgumentException("otherHistogram count (" + otherCount + ") at value " +
@@ -648,7 +648,7 @@ namespace HdrHistogram
             }
 
             int shiftAmount = numberOfBinaryOrdersOfMagnitude << subBucketHalfCountMagnitude;
-            int maxValueIndex = countsArrayIndex(getMaxValue());
+            int maxValueIndex = CountsArrayIndex(getMaxValue());
             // indicate overflow if maxValue is in the range being wrapped:
             if (maxValueIndex >= (countsArrayLength - shiftAmount))
             {
@@ -664,10 +664,10 @@ namespace HdrHistogram
             shiftNormalizingIndexByOffset(shiftAmount, lowestHalfBucketPopulated);
 
             // adjust min, max:
-            updateMinAndMax(maxValueBeforeShift << numberOfBinaryOrdersOfMagnitude);
+            UpdateMinAndMax(maxValueBeforeShift << numberOfBinaryOrdersOfMagnitude);
             if (minNonZeroValueBeforeShift < long.MaxValue)
             {
-                updateMinAndMax(minNonZeroValueBeforeShift << numberOfBinaryOrdersOfMagnitude);
+                UpdateMinAndMax(minNonZeroValueBeforeShift << numberOfBinaryOrdersOfMagnitude);
             }
         }
 
@@ -710,8 +710,8 @@ namespace HdrHistogram
 
             for (int fromIndex = 1; fromIndex < subBucketHalfCount; fromIndex++)
             {
-                long toValue = valueFromIndex(fromIndex) << numberOfBinaryOrdersOfMagnitude;
-                int toIndex = countsArrayIndex(toValue);
+                long toValue = ValueFromIndex(fromIndex) << numberOfBinaryOrdersOfMagnitude;
+                int toIndex = CountsArrayIndex(toValue);
                 long countAtFromIndex = getCountAtNormalizedIndex(fromIndex);
                 setCountAtIndex(toIndex, countAtFromIndex);
                 setCountAtNormalizedIndex(fromIndex, 0);
@@ -758,7 +758,7 @@ namespace HdrHistogram
             int shiftAmount = subBucketHalfCount * numberOfBinaryOrdersOfMagnitude;
 
             // indicate underflow if minValue is in the range being shifted from:
-            int minNonZeroValueIndex = countsArrayIndex(getMinNonZeroValue());
+            int minNonZeroValueIndex = CountsArrayIndex(getMinNonZeroValue());
             // Any shifting into the bottom-most half bucket would represents a loss of accuracy,
             // and a non-reversible operation. Therefore any non-0 value that falls in an
             // index below (shiftAmount + subBucketHalfCount) would represent an underflow:
@@ -776,10 +776,10 @@ namespace HdrHistogram
             shiftNormalizingIndexByOffset(-shiftAmount, false);
 
             // adjust min, max:
-            updateMinAndMax(maxValueBeforeShift >> numberOfBinaryOrdersOfMagnitude);
+            UpdateMinAndMax(maxValueBeforeShift >> numberOfBinaryOrdersOfMagnitude);
             if (minNonZeroValueBeforeShift < long.MaxValue)
             {
-                updateMinAndMax(minNonZeroValueBeforeShift >> numberOfBinaryOrdersOfMagnitude);
+                UpdateMinAndMax(minNonZeroValueBeforeShift >> numberOfBinaryOrdersOfMagnitude);
             }
         }
 
@@ -893,8 +893,8 @@ namespace HdrHistogram
          */
         public long sizeOfEquivalentValueRange(long value)
         {
-            int bucketIndex = getBucketIndex(value);
-            int subBucketIndex = getSubBucketIndex(value, bucketIndex);
+            int bucketIndex = GetBucketIndex(value);
+            int subBucketIndex = GetSubBucketIndex(value, bucketIndex);
             long distanceToNextValue =
                     (1L << (unitMagnitude + ((subBucketIndex >= subBucketCount) ? (bucketIndex + 1) : bucketIndex)));
             return distanceToNextValue;
@@ -910,9 +910,9 @@ namespace HdrHistogram
          */
         public long lowestEquivalentValue(long value)
         {
-            int bucketIndex = getBucketIndex(value);
-            int subBucketIndex = getSubBucketIndex(value, bucketIndex);
-            long thisValueBaseLevel = valueFromIndex(bucketIndex, subBucketIndex);
+            int bucketIndex = GetBucketIndex(value);
+            int subBucketIndex = GetSubBucketIndex(value, bucketIndex);
+            long thisValueBaseLevel = ValueFromIndex(bucketIndex, subBucketIndex);
             return thisValueBaseLevel;
         }
 
@@ -1011,7 +1011,7 @@ namespace HdrHistogram
          */
         public override long getEndTimeStamp()
         {
-            return endTimeStampMsec;
+            return this.endTimeStampMsec;
         }
 
         /**
@@ -1154,7 +1154,7 @@ namespace HdrHistogram
                 totalToCurrentIndex += getCountAtIndex(i);
                 if (totalToCurrentIndex >= countAtPercentile)
                 {
-                    long valueAtIndex = valueFromIndex(i);
+                    long valueAtIndex = ValueFromIndex(i);
                     return (percentile == 0.0) ?
                         lowestEquivalentValue(valueAtIndex) :
                         highestEquivalentValue(valueAtIndex);
@@ -1182,7 +1182,7 @@ namespace HdrHistogram
             {
                 return 100.0;
             }
-            int targetIndex = Math.Min(countsArrayIndex(value), (countsArrayLength - 1));
+            int targetIndex = Math.Min(CountsArrayIndex(value), (countsArrayLength - 1));
             long totalToCurrentIndex = 0;
             for (int i = 0; i <= targetIndex; i++)
             {
@@ -1205,8 +1205,8 @@ namespace HdrHistogram
 
         public long getCountBetweenValues(long lowValue, long highValue)
         {
-            int lowIndex = Math.Max(0, countsArrayIndex(lowValue));
-            int highIndex = Math.Min(countsArrayIndex(highValue), (countsArrayLength - 1));
+            int lowIndex = Math.Max(0, CountsArrayIndex(lowValue));
+            int highIndex = Math.Min(CountsArrayIndex(highValue), (countsArrayLength - 1));
             long count = 0;
             for (int i = lowIndex; i <= highIndex; i++)
             {
@@ -1224,7 +1224,7 @@ namespace HdrHistogram
          */
         public long getCountAtValue(long value)
         {
-            int index = Math.Min(Math.Max(0, countsArrayIndex(value)), (countsArrayLength - 1));
+            int index = Math.Min(Math.Max(0, CountsArrayIndex(value)), (countsArrayLength - 1));
             return getCountAtIndex(index);
         }
 
@@ -1357,7 +1357,7 @@ namespace HdrHistogram
         public int encodeIntoByteBuffer(ByteBuffer buffer)
         {
             long maxValue = getMaxValue();
-            int relevantLength = countsArrayIndex(maxValue) + 1;
+            int relevantLength = CountsArrayIndex(maxValue) + 1;
             if (buffer.capacity() < getNeededByteBufferCapacity(relevantLength))
             {
                 throw new IndexOutOfRangeException("buffer does not have capacity for" +
@@ -1628,7 +1628,7 @@ namespace HdrHistogram
         //
         //
 
-        void establishInternalTackingValues()
+        private void establishInternalTackingValues()
         {
             resetMaxValue(0);
             resetMinNonZeroValue(long.MaxValue);
@@ -1650,11 +1650,11 @@ namespace HdrHistogram
             }
             if (maxIndex >= 0)
             {
-                updatedMaxValue(highestEquivalentValue(valueFromIndex(maxIndex)));
+                updatedMaxValue(highestEquivalentValue(ValueFromIndex(maxIndex)));
             }
             if (minNonZeroIndex >= 0)
             {
-                updateMinNonZeroValue(valueFromIndex(minNonZeroIndex));
+                updateMinNonZeroValue(ValueFromIndex(minNonZeroIndex));
             }
             setTotalCount(observedTotalCount);
         }
@@ -1681,41 +1681,41 @@ namespace HdrHistogram
             return lengthNeeded;
         }
 
-        protected int countsArrayIndex(long value)
+        protected int CountsArrayIndex(long value)
         {
             if (value < 0)
             {
                 throw new IndexOutOfRangeException("Histogram recorded value cannot be negative.");
             }
-            int bucketIndex = getBucketIndex(value);
-            int subBucketIndex = getSubBucketIndex(value, bucketIndex);
-            return countsArrayIndex(bucketIndex, subBucketIndex);
+            int bucketIndex = GetBucketIndex(value);
+            int subBucketIndex = GetSubBucketIndex(value, bucketIndex);
+            return CountsArrayIndex(bucketIndex, subBucketIndex);
         }
 
-        private int countsArrayIndex(int bucketIndex, int subBucketIndex)
+        private int CountsArrayIndex(int bucketIndex, int subBucketIndex)
         {
-            Debug.Assert(subBucketIndex < subBucketCount);
-            Debug.Assert(bucketIndex == 0 || (subBucketIndex >= subBucketHalfCount));
+            Debug.Assert(subBucketIndex < this.subBucketCount);
+            Debug.Assert(bucketIndex == 0 || (subBucketIndex >= this.subBucketHalfCount));
             // Calculate the index for the first entry in the bucket:
             // (The following is the equivalent of ((bucketIndex + 1) * subBucketHalfCount) ):
-            int bucketBaseIndex = (bucketIndex + 1) << subBucketHalfCountMagnitude;
+            int bucketBaseIndex = (bucketIndex + 1) << this.subBucketHalfCountMagnitude;
             // Calculate the offset in the bucket (can be negative for first bucket):
-            int offsetInBucket = subBucketIndex - subBucketHalfCount;
+            int offsetInBucket = subBucketIndex - this.subBucketHalfCount;
             // The following is the equivalent of ((subBucketIndex  - subBucketHalfCount) + bucketBaseIndex;
             return bucketBaseIndex + offsetInBucket;
         }
 
-        int getBucketIndex(long value)
+        private int GetBucketIndex(long value)
         {
-            return leadingZeroCountBase - MathUtils.NumberOfLeadingZeros(value | subBucketMask);
+            return this.leadingZeroCountBase - MathUtils.NumberOfLeadingZeros(value | this.subBucketMask);
         }
 
-        int getSubBucketIndex(long value, int bucketIndex)
+        private int GetSubBucketIndex(long value, int bucketIndex)
         {
-            return (int)((ulong)value >> (bucketIndex + unitMagnitude));
+            return (int)((ulong)value >> (bucketIndex + this.unitMagnitude));
         }
 
-        protected int normalizeIndex(int index, int normalizingIndexOffset, int arrayLength)
+        protected static int NormalizeIndex(int index, int normalizingIndexOffset, int arrayLength)
         {
             if (normalizingIndexOffset == 0)
             {
@@ -1723,6 +1723,12 @@ namespace HdrHistogram
                 // others (like DoubleHistogram) to use normalization at a cost...
                 return index;
             }
+
+            return NormalizedNonZeroIndex(index, normalizingIndexOffset, arrayLength);
+        }
+
+        private static int NormalizedNonZeroIndex(int index, int normalizingIndexOffset, int arrayLength)
+        {
             if ((index > arrayLength) || (index < 0))
             {
                 throw new IndexOutOfRangeException("index out of covered value range");
@@ -1743,24 +1749,24 @@ namespace HdrHistogram
             return normalizedIndex;
         }
 
-        long valueFromIndex(int bucketIndex, int subBucketIndex)
+        private long ValueFromIndex(int bucketIndex, int subBucketIndex)
         {
             return ((long)subBucketIndex) << (bucketIndex + unitMagnitude);
         }
 
-        internal long valueFromIndex(int index)
+        internal long ValueFromIndex(int index)
         {
-            int bucketIndex = (index >> subBucketHalfCountMagnitude) - 1;
-            int subBucketIndex = (index & (subBucketHalfCount - 1)) + subBucketHalfCount;
+            int bucketIndex = (index >> this.subBucketHalfCountMagnitude) - 1;
+            int subBucketIndex = (index & (this.subBucketHalfCount - 1)) + this.subBucketHalfCount;
             if (bucketIndex < 0)
             {
-                subBucketIndex -= subBucketHalfCount;
+                subBucketIndex -= this.subBucketHalfCount;
                 bucketIndex = 0;
             }
-            return valueFromIndex(bucketIndex, subBucketIndex);
+            return ValueFromIndex(bucketIndex, subBucketIndex);
         }
 
-        internal static int numberOfSubbuckets(int numberOfSignificantValueDigits)
+        internal static int NumberOfSubbuckets(int numberOfSignificantValueDigits)
         {
             long largestValueWithSingleUnitResolution = 2 * (long)Math.Pow(10, numberOfSignificantValueDigits);
 

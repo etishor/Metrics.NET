@@ -110,7 +110,7 @@ namespace HdrHistogram
 
         internal override long getCountAtIndex(int index)
         {
-            return counts[normalizeIndex(index, normalizingIndexOffset, countsArrayLength)];
+            return counts[NormalizeIndex(index, normalizingIndexOffset, countsArrayLength)];
         }
 
         protected override long getCountAtNormalizedIndex(int index)
@@ -120,17 +120,17 @@ namespace HdrHistogram
 
         protected override void incrementCountAtIndex(int index)
         {
-            counts[normalizeIndex(index, normalizingIndexOffset, countsArrayLength)]++;
+            counts[NormalizeIndex(index, normalizingIndexOffset, countsArrayLength)]++;
         }
 
         protected override void addToCountAtIndex(int index, long value)
         {
-            counts[normalizeIndex(index, normalizingIndexOffset, countsArrayLength)] += value;
+            counts[NormalizeIndex(index, normalizingIndexOffset, countsArrayLength)] += value;
         }
 
         protected override void setCountAtIndex(int index, long value)
         {
-            counts[normalizeIndex(index, normalizingIndexOffset, countsArrayLength)] = value;
+            counts[NormalizeIndex(index, normalizingIndexOffset, countsArrayLength)] = value;
         }
 
         protected override void setCountAtNormalizedIndex(int index, long value)
@@ -200,7 +200,7 @@ namespace HdrHistogram
 
         protected internal override void resize(long newHighestTrackableValue)
         {
-            int oldNormalizedZeroIndex = normalizeIndex(0, normalizingIndexOffset, countsArrayLength);
+            int oldNormalizedZeroIndex = NormalizeIndex(0, normalizingIndexOffset, countsArrayLength);
 
             establishSize(newHighestTrackableValue);
 
@@ -269,7 +269,7 @@ namespace HdrHistogram
                 cachedDstLongBuffer = buffer.asLongBuffer();
             }
             cachedDstLongBuffer.rewind();
-            int zeroIndex = normalizeIndex(0, getNormalizingIndexOffset(), countsArrayLength);
+            int zeroIndex = NormalizeIndex(0, getNormalizingIndexOffset(), countsArrayLength);
             int lengthFromZeroIndexToEnd = Math.Min(length, (countsArrayLength - zeroIndex));
             int remainingLengthFromNormalizedZeroIndex = length - lengthFromZeroIndexToEnd;
             cachedDstLongBuffer.put(counts, zeroIndex, lengthFromZeroIndexToEnd);

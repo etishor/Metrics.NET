@@ -33,7 +33,7 @@ namespace HdrHistogram
         [MethodImpl(MethodImplOptions.Synchronized)]
         internal override long getCountAtIndex(int index)
         {
-            return counts[normalizeIndex(index, normalizingIndexOffset, countsArrayLength)];
+            return counts[NormalizeIndex(index, normalizingIndexOffset, countsArrayLength)];
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -45,19 +45,19 @@ namespace HdrHistogram
         [MethodImpl(MethodImplOptions.Synchronized)]
         protected override void incrementCountAtIndex(int index)
         {
-            counts[normalizeIndex(index, normalizingIndexOffset, countsArrayLength)]++;
+            counts[NormalizeIndex(index, normalizingIndexOffset, countsArrayLength)]++;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         protected override void addToCountAtIndex(int index, long value)
         {
-            counts[normalizeIndex(index, normalizingIndexOffset, countsArrayLength)] += value;
+            counts[NormalizeIndex(index, normalizingIndexOffset, countsArrayLength)] += value;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         protected override void setCountAtIndex(int index, long value)
         {
-            counts[normalizeIndex(index, normalizingIndexOffset, countsArrayLength)] = value;
+            counts[NormalizeIndex(index, normalizingIndexOffset, countsArrayLength)] = value;
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -202,7 +202,7 @@ namespace HdrHistogram
         [MethodImpl(MethodImplOptions.Synchronized)]
         protected internal override void resize(long newHighestTrackableValue)
         {
-            int oldNormalizedZeroIndex = normalizeIndex(0, normalizingIndexOffset, countsArrayLength);
+            int oldNormalizedZeroIndex = NormalizeIndex(0, normalizingIndexOffset, countsArrayLength);
 
             establishSize(newHighestTrackableValue);
 
@@ -334,7 +334,7 @@ namespace HdrHistogram
                 cachedDstLongBuffer = buffer.asLongBuffer();
             }
             cachedDstLongBuffer.rewind();
-            int zeroIndex = normalizeIndex(0, getNormalizingIndexOffset(), countsArrayLength);
+            int zeroIndex = NormalizeIndex(0, getNormalizingIndexOffset(), countsArrayLength);
             int lengthFromZeroIndexToEnd = Math.Min(length, (countsArrayLength - zeroIndex));
             int remainingLengthFromNormalizedZeroIndex = length - lengthFromZeroIndexToEnd;
             cachedDstLongBuffer.put(counts, zeroIndex, lengthFromZeroIndexToEnd);

@@ -253,7 +253,7 @@ namespace HdrHistogram
                 cachedDstLongBuffer = buffer.asLongBuffer();
             }
             cachedDstLongBuffer.rewind();
-            int zeroIndex = normalizeIndex(0, getNormalizingIndexOffset(), countsArrayLength);
+            int zeroIndex = NormalizeIndex(0, getNormalizingIndexOffset(), countsArrayLength);
             int lengthFromZeroIndexToEnd = Math.Min(length, (countsArrayLength - zeroIndex));
             int remainingLengthFromNormalizedZeroIndex = length - lengthFromZeroIndexToEnd;
             for (int i = 0; i < lengthFromZeroIndexToEnd; i++)

@@ -703,7 +703,7 @@ namespace HdrHistogram
                 if (count > 0)
                 {
                     recordValueWithCount(
-                        fromIntegerHistogram.valueFromIndex(i) *
+                        fromIntegerHistogram.ValueFromIndex(i) *
                         fromHistogram.integerToDoubleValueConversionRatio.GetValue(),
                         count);
                 }
@@ -764,7 +764,7 @@ namespace HdrHistogram
                 long otherCount = otherIntegerHistogram.getCountAtIndex(i);
                 if (otherCount > 0)
                 {
-                    double otherValue = otherIntegerHistogram.valueFromIndex(i) *
+                    double otherValue = otherIntegerHistogram.ValueFromIndex(i) *
                                         otherHistogram.integerToDoubleValueConversionRatio.GetValue();
                     if (getCountAtValue(otherValue) < otherCount)
                     {
@@ -1786,7 +1786,7 @@ namespace HdrHistogram
             // range to be bigger, such that the entire double value range can fit in the upper halves of
             // all buckets. Compute the integer value range that will achieve this:
 
-            long lowestTackingIntegerValue = AbstractHistogram.numberOfSubbuckets(numberOfSignificantValueDigits) / 2;
+            long lowestTackingIntegerValue = AbstractHistogram.NumberOfSubbuckets(numberOfSignificantValueDigits) / 2;
             long integerValueRange = lowestTackingIntegerValue * internalHighestToLowestValueRatio;
 
             return integerValueRange;

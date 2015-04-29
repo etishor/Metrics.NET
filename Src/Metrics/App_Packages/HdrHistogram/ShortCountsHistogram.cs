@@ -24,7 +24,7 @@ namespace HdrHistogram
 
         internal override long getCountAtIndex(int index)
         {
-            return counts[normalizeIndex(index, normalizingIndexOffset, countsArrayLength)];
+            return counts[NormalizeIndex(index, normalizingIndexOffset, countsArrayLength)];
         }
 
         protected override long getCountAtNormalizedIndex(int index)
@@ -34,7 +34,7 @@ namespace HdrHistogram
 
         protected override void incrementCountAtIndex(int index)
         {
-            int normalizedIndex = normalizeIndex(index, normalizingIndexOffset, countsArrayLength);
+            int normalizedIndex = NormalizeIndex(index, normalizingIndexOffset, countsArrayLength);
             short currentCount = counts[normalizedIndex];
             short newCount = (short)(currentCount + 1);
             if (newCount < 0)
@@ -46,7 +46,7 @@ namespace HdrHistogram
 
         protected override void addToCountAtIndex(int index, long value)
         {
-            int normalizedIndex = normalizeIndex(index, normalizingIndexOffset, countsArrayLength);
+            int normalizedIndex = NormalizeIndex(index, normalizingIndexOffset, countsArrayLength);
             short currentCount = counts[normalizedIndex];
             if ((value < 0) || (value > short.MaxValue))
             {
@@ -62,7 +62,7 @@ namespace HdrHistogram
 
         protected override void setCountAtIndex(int index, long value)
         {
-            setCountAtNormalizedIndex(normalizeIndex(index, normalizingIndexOffset, countsArrayLength), value);
+            setCountAtNormalizedIndex(NormalizeIndex(index, normalizingIndexOffset, countsArrayLength), value);
         }
 
         protected override void setCountAtNormalizedIndex(int index, long value)
@@ -137,7 +137,7 @@ namespace HdrHistogram
 
         protected internal override void resize(long newHighestTrackableValue)
         {
-            int oldNormalizedZeroIndex = normalizeIndex(0, normalizingIndexOffset, countsArrayLength);
+            int oldNormalizedZeroIndex = NormalizeIndex(0, normalizingIndexOffset, countsArrayLength);
 
             establishSize(newHighestTrackableValue);
 
@@ -266,7 +266,7 @@ namespace HdrHistogram
                 cachedDstShortBuffer = buffer.asShortBuffer();
             }
             cachedDstShortBuffer.rewind();
-            int zeroIndex = normalizeIndex(0, getNormalizingIndexOffset(), countsArrayLength);
+            int zeroIndex = NormalizeIndex(0, getNormalizingIndexOffset(), countsArrayLength);
             int lengthFromZeroIndexToEnd = Math.Min(length, (countsArrayLength - zeroIndex));
             int remainingLengthFromNormalizedZeroIndex = length - lengthFromZeroIndexToEnd;
             cachedDstShortBuffer.put(counts, zeroIndex, lengthFromZeroIndexToEnd);
