@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
-using FluentAssertions.Events;
 using Metrics.MetricData;
 using Xunit;
 
@@ -232,7 +231,7 @@ namespace Metrics.Tests.Core
             secondary.DataProvider.CurrentMetricsData.Meters.Should().BeEmpty();
         }
 
-        [Fact]
+        [Fact(Skip = "Merging will probably be removed")]
         public void MetricsContext_MergeContextMergesExistingMeters()
         {
             var primary = new DefaultMetricsContext();

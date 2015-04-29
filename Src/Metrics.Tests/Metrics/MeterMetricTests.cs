@@ -68,14 +68,14 @@ namespace Metrics.Tests.Metrics
             value.FifteenMinuteRate.Should().BeApproximately(0.1988, 0.001);
         }
 
-        [Fact]
+        [Fact(Skip = "Merging will probably be removed")]
         public void MeterMetric_CanMergeComputedRates()
         {
             var otherScheduler = new TestScheduler(this.clock);
             var other = new MeterMetric(clock, otherScheduler);
 
             meter.Mark();
-            
+
             clock.Advance(TimeUnit.Seconds, 10);
             meter.Mark(1);
             other.Mark(1);
@@ -135,7 +135,7 @@ namespace Metrics.Tests.Metrics
             meter.Value.Items[1].Percent.Should().Be(50);
         }
 
-        [Fact]
+        [Fact(Skip = "Merging will probably be removed")]
         public void MeterMetric_CanMergeWithMultipleSetItem()
         {
             var otherScheduler = new TestScheduler(this.clock);

@@ -3,94 +3,17 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
-using Metrics.ConcurrencyUtilities;
 using Metrics.MetricData;
 using Metrics.Utils;
 namespace Metrics.Core
 {
     public interface MeterImplementation : Meter, MetricValueProvider<MeterValue> { }
 
-    public sealed class MeterMetric : MeterImplementation, IDisposable
+    public sealed class MeterMetric : SimpleMeter, MeterImplementation, IDisposable
     {
         private static readonly TimeSpan TickInterval = TimeSpan.FromSeconds(5);
 
-        private struct MeterWrapper
-        {
-            private readonly StripedLongAdder total;
-            private readonly StripedLongAdder uncounted;
-            private readonly EWMA m1Rate;
-            private readonly EWMA m5Rate;
-            private readonly EWMA m15Rate;
-
-            public MeterWrapper(StripedLongAdder total)
-            {
-                this.total = total;
-                this.uncounted = new StripedLongAdder();
-                this.m1Rate = EWMA.OneMinuteEWMA();
-                this.m5Rate = EWMA.FiveMinuteEWMA();
-                this.m15Rate = EWMA.FifteenMinuteEWMA();
-            }
-
-            public void Tick()
-            {
-                var count = uncounted.GetAndReset();
-
-                this.total.Add(count);
-                this.m1Rate.Tick(count);
-                this.m5Rate.Tick(count);
-                this.m15Rate.Tick(count);
-            }
-
-            public void Mark(long count)
-            {
-                this.uncounted.Add(count);
-                //this.m1Rate.Update(count);
-                //this.m5Rate.Update(count);
-                //this.m15Rate.Update(count);
-            }
-
-            public void Merge(MeterWrapper other)
-            {
-                this.uncounted.Add(other.uncounted.GetValue());
-                this.total.Add(other.total.GetValue());
-                this.m1Rate.Merge(other.m1Rate);
-                this.m5Rate.Merge(other.m5Rate);
-                this.m15Rate.Merge(other.m15Rate);
-            }
-
-            public void Reset()
-            {
-                this.uncounted.Reset();
-                this.total.Reset();
-                this.m1Rate.Reset();
-                this.m5Rate.Reset();
-                this.m15Rate.Reset();
-            }
-
-            public MeterValue GetValue(double elapsed)
-            {
-                var count = this.total.GetValue() + this.uncounted.GetValue();
-                return new MeterValue(count, GetMeanRate(count, elapsed), OneMinuteRate, FiveMinuteRate, FifteenMinuteRate, TimeUnit.Seconds);
-            }
-
-            private static double GetMeanRate(long value, double elapsed)
-            {
-                if (value == 0)
-                {
-                    return 0.0;
-                }
-
-                return value / elapsed * TimeUnit.Seconds.ToNanoseconds(1);
-            }
-
-            private double FifteenMinuteRate { get { return this.m15Rate.GetRate(TimeUnit.Seconds); } }
-            private double FiveMinuteRate { get { return this.m5Rate.GetRate(TimeUnit.Seconds); } }
-            private double OneMinuteRate { get { return this.m1Rate.GetRate(TimeUnit.Seconds); } }
-        }
-
-        private ConcurrentDictionary<string, MeterWrapper> setMeters = null;
-
-        private readonly MeterWrapper wrapper = new MeterWrapper(new StripedLongAdder());
+        private ConcurrentDictionary<string, SimpleMeter> setMeters = null;
 
         private readonly Clock clock;
         private readonly Scheduler tickScheduler;
@@ -116,9 +39,9 @@ namespace Metrics.Core
             Mark(1L);
         }
 
-        public void Mark(long count)
+        public new void Mark(long count)
         {
-            this.wrapper.Mark(count);
+            base.Mark(count);
         }
 
         public void Mark(string item)
@@ -137,11 +60,11 @@ namespace Metrics.Core
 
             if (this.setMeters == null)
             {
-                Interlocked.CompareExchange(ref this.setMeters, new ConcurrentDictionary<string, MeterWrapper>(), null);
+                Interlocked.CompareExchange(ref this.setMeters, new ConcurrentDictionary<string, SimpleMeter>(), null);
             }
 
             Debug.Assert(this.setMeters != null);
-            this.setMeters.GetOrAdd(item, v => new MeterWrapper(new StripedLongAdder())).Mark(count);
+            this.setMeters.GetOrAdd(item, v => new SimpleMeter()).Mark(count);
         }
 
         public MeterValue GetValue(bool resetMetric = false)
@@ -149,7 +72,7 @@ namespace Metrics.Core
             if (this.setMeters == null || this.setMeters.Count == 0)
             {
                 double elapsed = (this.clock.Nanoseconds - this.startTime);
-                var value = this.wrapper.GetValue(elapsed);
+                var value = base.GetValue(elapsed);
                 if (resetMetric)
                 {
                     Reset();
@@ -163,7 +86,7 @@ namespace Metrics.Core
         private MeterValue GetValueWithSetItems(bool resetMetric)
         {
             double elapsed = this.clock.Nanoseconds - this.startTime;
-            var value = this.wrapper.GetValue(elapsed);
+            var value = base.GetValue(elapsed);
 
             Debug.Assert(this.setMeters != null);
 
@@ -190,9 +113,9 @@ namespace Metrics.Core
             return result;
         }
 
-        private void Tick()
+        private new void Tick()
         {
-            this.wrapper.Tick();
+            base.Tick();
             if (this.setMeters != null)
             {
                 foreach (var value in this.setMeters.Values)
@@ -214,10 +137,10 @@ namespace Metrics.Core
             }
         }
 
-        public void Reset()
+        public new void Reset()
         {
             this.startTime = this.clock.Nanoseconds;
-            this.wrapper.Reset();
+            base.Reset();
             if (this.setMeters != null)
             {
                 foreach (var meter in this.setMeters.Values)
@@ -229,22 +152,7 @@ namespace Metrics.Core
 
         public bool Merge(MetricValueProvider<MeterValue> other)
         {
-            var mOther = other as MeterMetric;
-            if (mOther == null)
-            {
-                return false;
-            }
-
-            this.wrapper.Merge(mOther.wrapper);
-            if (this.setMeters != null && mOther.setMeters != null)
-            {
-                foreach (var key in mOther.setMeters)
-                {
-                    this.setMeters.GetOrAdd(key.Key, v => new MeterWrapper(new StripedLongAdder())).Merge(key.Value);
-                }
-            }
-
-            return true;
+            return false;
         }
     }
 }
