@@ -33,7 +33,7 @@ namespace Metrics.Sampling
 
         public Snapshot GetSnapshot(bool resetReservoir = false)
         {
-            var size = Math.Min((int)this.count.GetValue(), this.values.Length); ;
+            var size = Math.Min((int)this.count.GetValue(), this.values.Length);
             if (size == 0)
             {
                 return new UniformSnapshot(0, Enumerable.Empty<long>());
