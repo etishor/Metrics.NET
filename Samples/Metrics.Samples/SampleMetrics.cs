@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Metrics.Core;
+using Metrics.MetricData;
 
 namespace Metrics.Samples
 {
@@ -42,6 +44,10 @@ namespace Metrics.Samples
         {
             // define a simple gauge that will provide the instant value of this.someValue when requested
             Metric.Gauge("SampleMetrics.DataValue", () => this.someValue, Unit.Custom("$"));
+
+            Metric.Gauge("Custom Ratio", () => ValueReader.GetCurrentValue(totalRequestsCounter).Count / ValueReader.GetCurrentValue(meter).FiveMinuteRate, Unit.None);
+            Metric.Advanced.Gauge("Ratio", () =>
+                new RatioGauge(() => ValueReader.GetCurrentValue(totalRequestsCounter).Count, () => ValueReader.GetCurrentValue(meter).OneMinuteRate), Unit.Calls);
         }
 
         public void Request(int i)

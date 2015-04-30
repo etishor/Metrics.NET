@@ -117,6 +117,7 @@
     <Compile Include="MetricData\MeterValue.cs" />
     <Compile Include="MetricData\MetricsDataProvider.cs" />
     <Compile Include="MetricData\TimerValue.cs" />
+    <Compile Include="MetricData\ValueReader.cs" />
     <Compile Include="MetricTags.cs" />
     <Compile Include="RemoteMetrics\HttpRemoteMetrics.cs" />
     <Compile Include="RemoteMetrics\RemoteMetricsExtensions.cs" />

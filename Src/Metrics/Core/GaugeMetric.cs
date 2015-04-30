@@ -1,19 +1,17 @@
 ﻿
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Metrics.MetricData;
 namespace Metrics.Core
 {
     public interface GaugeImplementation : MetricValueProvider<double> { }
 
-    public sealed class FunctionGauge : GaugeImplementation
+    public class FunctionGauge : GaugeImplementation
     {
-        private readonly List<Func<double>> valueProviders;
+        private readonly Func<double> valueProvider;
 
         public FunctionGauge(Func<double> valueProvider)
         {
-            this.valueProviders = new List<Func<double>>(new[] { valueProvider });
+            this.valueProvider = valueProvider;
         }
 
         public double GetValue(bool resetMetric = false)
@@ -27,15 +25,7 @@ namespace Metrics.Core
             {
                 try
                 {
-                    if (valueProviders.Count > 1)
-                    {
-                        var vals = valueProviders.AsParallel().Select(vp => vp()).ToArray();
-                        Array.Sort(vals);
-
-                        // get the median gauge value
-                        return (vals[(vals.Length-1)/2]);
-                    }
-                    return valueProviders[0]();
+                    return this.valueProvider();
                 }
                 catch (Exception x)
                 {
@@ -76,6 +66,14 @@ namespace Metrics.Core
                     return double.NaN;
                 }
             }
+        }
+    }
+
+    public sealed class RatioGauge : FunctionGauge
+    {
+        public RatioGauge(Func<double> numerator, Func<double> denominator)
+            : base(() => numerator() / denominator())
+        {
         }
     }
 }
