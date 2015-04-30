@@ -26,7 +26,7 @@ namespace Metrics
             if (MetricsConfig.GlobalyDisabledMetrics)
             {
                 globalContext.CompletelyDisableMetrics();
-                log.Info(() => "Metrics: Metrics.NET Library is completely disabled. Set Metrics.CompetelyDisableMetrics to false to re-enable.");
+                log.Info(() => "Metrics: Metrics.NET Library is completely disabled. Set Metrics.CompletelyDisableMetrics to false to re-enable.");
             }
             config = new MetricsConfig(globalContext);
             config.ApplySettingsFromConfigFile();
