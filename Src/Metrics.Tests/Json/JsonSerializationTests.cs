@@ -60,7 +60,7 @@ namespace Metrics.Tests.Json
 
         public JsonSerializationTests()
         {
-            this.timerValue = new TimerValue(this.meterValue, this.histogramValue, 0, TimeUnit.Nanoseconds);
+            this.timerValue = new TimerValue(this.meterValue, this.histogramValue, 0, 1, TimeUnit.Nanoseconds);
 
             this.counter = new CounterValueSource("test1", Provider(counterValue), Unit.Errors, MetricTags.None);
             this.meter = new MeterValueSource("test2", Provider(meterValue), Unit.Calls, TimeUnit.Seconds, MetricTags.None);

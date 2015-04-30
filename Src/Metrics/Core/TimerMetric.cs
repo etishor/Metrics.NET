@@ -14,6 +14,7 @@ namespace Metrics.Core
         private readonly MeterImplementation meter;
         private readonly HistogramImplementation histogram;
         private readonly StripedLongAdder activeSessionsCounter = new StripedLongAdder();
+        private readonly StripedLongAdder totalRecordedTime = new StripedLongAdder();
 
         public TimerMetric()
             : this(new HistogramMetric(), new MeterMetric(), Clock.Default) { }
@@ -44,6 +45,7 @@ namespace Metrics.Core
             {
                 this.histogram.Update(nanos, userValue);
                 this.meter.Mark();
+                this.totalRecordedTime.Add(nanos);
             }
         }
 
@@ -109,7 +111,8 @@ namespace Metrics.Core
 
         public TimerValue GetValue(bool resetMetric = false)
         {
-            return new TimerValue(this.meter.GetValue(resetMetric), this.histogram.GetValue(resetMetric), this.activeSessionsCounter.GetValue(), TimeUnit.Nanoseconds);
+            var total = resetMetric ? this.totalRecordedTime.GetAndReset() : this.totalRecordedTime.GetValue();
+            return new TimerValue(this.meter.GetValue(resetMetric), this.histogram.GetValue(resetMetric), this.activeSessionsCounter.GetValue(), total, TimeUnit.Nanoseconds);
         }
 
         public void Reset()

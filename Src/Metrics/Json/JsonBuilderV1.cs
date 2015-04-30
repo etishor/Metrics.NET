@@ -104,6 +104,7 @@ namespace Metrics.Json
                 .Select(t => new JsonProperty(t.Name, new[] 
                 {
                     new JsonProperty("ActiveSessions", t.Value.ActiveSessions),
+                    new JsonProperty("TotalTime", t.Value.TotalTime),
                     new JsonProperty("Rate", Meter(t.Value.Rate)), 
                     new JsonProperty("Histogram", Histogram(t.Value.Histogram)) 
                 }));
