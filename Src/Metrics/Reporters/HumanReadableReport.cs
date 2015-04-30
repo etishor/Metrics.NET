@@ -85,6 +85,7 @@ namespace Metrics.Reporters
         {
             this.WriteMetricName(name);
             this.WriteValue("Active Sessions", value.ActiveSessions.ToString());
+            this.WriteValue("Total Time", value.TotalTime.ToString());
             this.WriteMeter(value.Rate, unit, rateUnit);
             this.WriteHistogram(value.Histogram, unit, durationUnit);
         }

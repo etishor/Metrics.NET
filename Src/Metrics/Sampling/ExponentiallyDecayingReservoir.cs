@@ -61,7 +61,6 @@ namespace Metrics.Sampling
             this.startTime = new AtomicLong(clock.Seconds);
         }
 
-        public long Count { get { return this.count.GetValue(); } }
         public int Size { get { return Math.Min(this.size, (int)this.count.GetValue()); } }
 
         public Snapshot GetSnapshot(bool resetReservoir = false)
@@ -106,23 +105,6 @@ namespace Metrics.Sampling
                     this.@lock.Exit();
                 }
             }
-        }
-
-        public bool Merge(Reservoir other)
-        {
-            var exponOther = other as ExponentiallyDecayingReservoir;
-            if (exponOther == null)
-            {
-                return false;
-            }
-
-            foreach (var sample in exponOther.values)
-            {
-                var timestamp = exponOther.startTime.GetValue() + (Math.Log(sample.Value.Weight) / exponOther.alpha);
-                Update(sample.Value.Value, sample.Value.UserValue, (long)timestamp);
-            }
-
-            return true;
         }
 
         private void ResetReservoir()

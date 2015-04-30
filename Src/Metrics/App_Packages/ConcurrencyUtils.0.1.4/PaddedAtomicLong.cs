@@ -20,31 +20,32 @@
 
 // ReSharper disable All
 
+
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace Metrics.ConcurrencyUtilities
 {
     /// <summary>
-    /// Atomic long value. Operations exposed on this class are performed using System.Threading.Interlocked class and are thread safe.
-    /// For AtomicLong values that are stored in arrays PaddedAtomicLong is recommended.
+    /// Padded version of the AtomicLong to avoid false CPU cache sharing. Recommended for cases where instances of 
+    /// AtomicLong end up close to each other in memory - when stored in an array for ex. 
     /// </summary>
-    /// <remarks>
-    /// The AtomicLong is a struct not a class and members of this type should *not* be declared readonly or changes will not be reflected in the member instance. 
-    /// </remarks>
+    [StructLayout(LayoutKind.Explicit, Size = 64 * 2)]
 #if CONCURRENCY_UTILS_PUBLIC
 public
 #else
 internal
 #endif
-    struct AtomicLong
+    struct PaddedAtomicLong
     {
+        [FieldOffset(64)]
         private long value;
 
         /// <summary>
         /// Initializes a new instance with the specified <paramref name="value"/>.
         /// </summary>
         /// <param name="value">Initial value of the instance.</param>
-        public AtomicLong(long value)
+        public PaddedAtomicLong(long value)
         {
             this.value = value;
         }
@@ -59,12 +60,47 @@ internal
         }
 
         /// <summary>
+        /// Returns the current value of the instance without using Volatile.Read fence and ordering.  
+        /// </summary>
+        /// <returns>The current value of the instance in a non-volatile way (might not observe changes on other threads).</returns>
+        public long NonVolatileGetValue()
+        {
+            return this.value;
+        }
+
+        /// <summary>
         /// Write a new value to this instance. The value is immediately seen by all processors.
         /// </summary>
         /// <param name="value">The new value for this instance.</param>
         public void SetValue(long value)
         {
             Volatile.Write(ref this.value, value);
+        }
+
+        /// <summary>
+        /// From the Java Version:
+        /// Eventually sets to the given value.
+        /// The semantics are that the write is guaranteed not to be re-ordered with any previous write, 
+        /// but may be reordered with subsequent operations (or equivalently, might not be visible to other threads) 
+        /// until some other volatile write or synchronizing action occurs).
+        /// </summary>
+        /// <remarks>
+        /// Currently implemented by calling Volatile.Write which is different from the java version. 
+        /// Not sure if it is possible on CLR to implement this.
+        /// </remarks>
+        /// <param name="value">The new value for this instance.</param>
+        public void LazySetValue(long value)
+        {
+            Volatile.Write(ref this.value, value);
+        }
+
+        /// <summary>
+        /// Set the value without using Volatile.Write fence and ordering.
+        /// </summary>
+        /// <param name="value">The new value for this instance.</param>
+        public void NonVolatileSetValue(long value)
+        {
+            this.value = value;
         }
 
         /// <summary>

@@ -93,27 +93,6 @@ namespace Metrics.Core
             SetCounter(item).Add(-amount);
         }
 
-        public bool Merge(MetricValueProvider<CounterValue> other)
-        {
-            var cOther = other as CounterMetric;
-            if (cOther == null)
-            {
-                return false;
-            }
-
-            Increment(cOther.counter.GetValue());
-
-            if (cOther.setCounters != null)
-            {
-                foreach (var setCounter in cOther.setCounters)
-                {
-                    SetCounter(setCounter.Key).Add(setCounter.Value.GetValue());
-                }
-            }
-
-            return true;
-        }
-
         private StripedLongAdder SetCounter(string item)
         {
             if (this.setCounters == null)

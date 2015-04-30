@@ -31,26 +31,12 @@ namespace Metrics.Sampling
             this.count.SetValue(0L);
         }
 
-        public bool Merge(Reservoir other)
-        {
-            var snapshot = other.GetSnapshot();
-            foreach (var value in snapshot.Values)
-            {
-                Update(value.Item1, value.Item2);
-            }
-
-            return true;
-        }
-
-        public long Count { get { return this.count.GetValue(); } }
-        public int Size { get { return Math.Min((int)this.count.GetValue(), this.values.Length); } }
-
         public Snapshot GetSnapshot(bool resetReservoir = false)
         {
-            var size = Size;
+            var size = Math.Min((int)this.count.GetValue(), this.values.Length); ;
             if (size == 0)
             {
-                return new UniformSnapshot(0, Enumerable.Empty<Tuple<long, string>>());
+                return new UniformSnapshot(0, Enumerable.Empty<long>());
             }
 
             var snapshotValues = new UserValueWrapper[size];
@@ -65,7 +51,7 @@ namespace Metrics.Sampling
             Array.Sort(snapshotValues, UserValueWrapper.Comparer);
             var minValue = snapshotValues[0].UserValue;
             var maxValue = snapshotValues[size - 1].UserValue;
-            return new UniformSnapshot(this.count.GetValue(), snapshotValues.Select(v => new Tuple<long, string>(v.Value, v.UserValue)), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
+            return new UniformSnapshot(this.count.GetValue(), snapshotValues.Select(v => v.Value), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
         }
     }
 }

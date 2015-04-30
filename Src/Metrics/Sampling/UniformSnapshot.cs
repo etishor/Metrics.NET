@@ -7,11 +7,11 @@ namespace Metrics.Sampling
     public sealed class UniformSnapshot : Snapshot
     {
         private readonly long count;
-        private readonly Tuple<long, string>[] values;
+        private readonly long[] values;
         private readonly string minUserValue;
         private readonly string maxUserValue;
 
-        public UniformSnapshot(long count, IEnumerable<Tuple<long, string>> values, bool valuesAreSorted = false, string minUserValue = null, string maxUserValue = null)
+        public UniformSnapshot(long count, IEnumerable<long> values, bool valuesAreSorted = false, string minUserValue = null, string maxUserValue = null)
         {
             this.count = count;
             this.values = values.ToArray();
@@ -26,13 +26,13 @@ namespace Metrics.Sampling
         public long Count { get { return this.count; } }
         public int Size { get { return this.values.Length; } }
 
-        public long Max { get { return this.values.Select(val => val.Item1).LastOrDefault(); } }
-        public long Min { get { return this.values.Select(val => val.Item1).FirstOrDefault(); } }
+        public long Max { get { return this.values.LastOrDefault(); } }
+        public long Min { get { return this.values.FirstOrDefault(); } }
 
         public string MaxUserValue { get { return this.maxUserValue; } }
         public string MinUserValue { get { return this.minUserValue; } }
 
-        public double Mean { get { return Size == 0 ? 0.0 : this.values.Select(val => val.Item1).Average(); } }
+        public double Mean { get { return Size == 0 ? 0.0 : this.values.Average(); } }
 
         public double StdDev
         {
@@ -43,8 +43,8 @@ namespace Metrics.Sampling
                     return 0;
                 }
 
-                double avg = values.Select(val => val.Item1).Average();
-                double sum = values.Select(val => val.Item1).Sum(d => Math.Pow(d - avg, 2));
+                double avg = values.Average();
+                double sum = values.Sum(d => Math.Pow(d - avg, 2));
 
                 return Math.Sqrt((sum) / (values.Length - 1));
             }
@@ -57,7 +57,7 @@ namespace Metrics.Sampling
         public double Percentile99 { get { return GetValue(0.99d); } }
         public double Percentile999 { get { return GetValue(0.999d); } }
 
-        public IEnumerable<Tuple<long, string>> Values { get { return this.values.AsEnumerable(); } }
+        public IEnumerable<long> Values { get { return this.values; } }
 
         public double GetValue(double quantile)
         {
@@ -76,16 +76,16 @@ namespace Metrics.Sampling
 
             if (index < 1)
             {
-                return values[0].Item1;
+                return values[0];
             }
 
             if (index >= values.Length)
             {
-                return values[values.Length - 1].Item1;
+                return values[values.Length - 1];
             }
 
-            double lower = values[index - 1].Item1;
-            double upper = values[index].Item1;
+            double lower = values[index - 1];
+            double upper = values[index];
 
             return lower + (pos - Math.Floor(pos)) * (upper - lower);
         }

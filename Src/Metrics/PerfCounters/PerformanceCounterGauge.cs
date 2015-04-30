@@ -64,11 +64,5 @@ namespace Metrics.PerfCounters
                 }
             }
         }
-
-        public bool Merge(MetricValueProvider<double> other)
-        {
-            // this is kind of a global systemwide thing
-            return false;
-        }
     }
 }

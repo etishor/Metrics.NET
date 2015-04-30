@@ -1,20 +1,17 @@
 ﻿
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using Metrics.MetricData;
 namespace Metrics.Core
 {
     public interface GaugeImplementation : MetricValueProvider<double> { }
 
-    public sealed class FunctionGauge : GaugeImplementation
+    public class FunctionGauge : GaugeImplementation
     {
-        private readonly List<Func<double>> valueProviders;
+        private readonly Func<double> valueProvider;
 
         public FunctionGauge(Func<double> valueProvider)
         {
-            this.valueProviders = new List<Func<double>>(new[] { valueProvider });
+            this.valueProvider = valueProvider;
         }
 
         public double GetValue(bool resetMetric = false)
@@ -28,15 +25,7 @@ namespace Metrics.Core
             {
                 try
                 {
-                    if (valueProviders.Count > 1)
-                    {
-                        var vals = valueProviders.AsParallel().Select(vp => vp()).ToArray();
-                        Array.Sort(vals);
-
-                        // get the median gauge value
-                        return (vals[(vals.Length-1)/2]);
-                    }
-                    return valueProviders[0]();
+                    return this.valueProvider();
                 }
                 catch (Exception x)
                 {
@@ -44,12 +33,6 @@ namespace Metrics.Core
                     return double.NaN;
                 }
             }
-        }
-
-        public bool Merge(MetricValueProvider<double> other)
-        {
-            valueProviders.Add(() => other.Value);
-            return true;
         }
     }
 
@@ -66,7 +49,7 @@ namespace Metrics.Core
 
         public double GetValue(bool resetMetric = false)
         {
-            return this.Value;
+            return Value;
         }
 
         public double Value
@@ -84,137 +67,65 @@ namespace Metrics.Core
                 }
             }
         }
-        
-        public bool Merge(MetricValueProvider<double> other)
-        {
-            return gauge.Merge(other);
-        }
     }
 
-    public abstract class RatioGauge : GaugeImplementation
+    public class RatioGauge : FunctionGauge
     {
-
-        /// <summary>
-        /// A ratio of one quantity to another.
-        /// </summary>
-        public sealed class Ratio 
-        {
-            /// <summary>
-            /// Creates a new ratio with the given numerator and denominator.
-            /// </summary>
-            /// <param name="numerator">the numerator of the ratio</param>
-            /// <param name="denominator">the denominator of the ratio</param>
-            /// <returns>numerator:denominator</returns>
-            public static Ratio Of(double numerator, double denominator) 
+        public RatioGauge(Func<double> numerator, Func<double> denominator)
+            : base(() =>
             {
-                return new Ratio(numerator, denominator);
-            }
-
-            private readonly double _numerator;
-            private readonly double _denominator;
-
-            private Ratio(double numerator, double denominator) 
-            {
-                _numerator = numerator;
-                _denominator = denominator;
-            }
-
-            /// <summary>
-            /// Returns the ratio, which is either a {@code double} between 0 and 1 (inclusive) or Double.NaN.
-            /// </summary>
-            public double Value {
-                get
+                var den = denominator();
+                // ReSharper disable once CompareOfFloatsByEqualityOperator
+                if (double.IsNaN(den) || double.IsInfinity(den) || den == 0)
                 {
-                    // ReSharper disable once CompareOfFloatsByEqualityOperator
-                    if (double.IsNaN(_denominator) || double.IsInfinity(_denominator) || _denominator == 0)
-                    {
-                        return Double.NaN;
-                    }
-                    return _numerator / _denominator;
+                    return Double.NaN;
                 }
-            }
-
-            public override string ToString()
-            {
-                return _numerator + ":" + _denominator;
-            }
-
-        }
-
-        /// <summary>
-        /// Returns the {@link Ratio} which is the gauge's current value.
-        /// </summary>
-        /// <returns>the {@link Ratio} which is the gauge's current value</returns>
-        protected abstract Ratio GetRatio();
-
-        public double Value
+                return numerator() / den;
+            })
         {
-            get { return GetRatio().Value; }
         }
-
-        public double GetValue(bool resetMetric = false)
-        {
-            return Value;
-        }
-
-        public abstract bool Merge(MetricValueProvider<double> other);
-    //{
-    //    throw new NotImplementedException();
-    //}
     }
 
     public sealed class MeterRatioGauge : RatioGauge
     {
-
-        private readonly ConcurrentBag<Func<double>> _hitValueFuncs = new ConcurrentBag<Func<double>>();
-        private readonly ConcurrentBag<Func<double>> _totalValueFuncs = new ConcurrentBag<Func<double>>();
- 
         /// <summary>
         /// Creates a new MeterRatioGauge with externally tracked Meters, and uses the OneMinuteRate from the MeterValue of the meters.
         /// </summary>
         /// <param name="hitMeter"></param>
         /// <param name="totalMeter"></param>
-        public MeterRatioGauge(MetricValueSource<MeterValue> hitMeter, MetricValueSource<MeterValue> totalMeter)
+        public MeterRatioGauge(Meter hitMeter, Meter totalMeter)
             : this(hitMeter, totalMeter, value => value.OneMinuteRate)
-        {
-            
-        }
+        {}
 
-        public MeterRatioGauge(MetricValueSource<MeterValue> hitMeter, MetricValueSource<MeterValue> totalMeter, Func<MeterValue, double> meterRateFunc)
-        {
-            _hitValueFuncs.Add(() => meterRateFunc(hitMeter.Value));
-            _totalValueFuncs.Add(() => meterRateFunc(totalMeter.Value));
-        }
+        /// <summary>
+        /// Creates a new MeterRatioGauge with externally tracked Meters, and uses the provided meter rate function to extract the value for the ratio.
+        /// </summary>
+        /// <param name="hitMeter">The numerator meter to use for the ratio.</param>
+        /// <param name="totalMeter">The denominator meter to use for the ratio.</param>
+        /// <param name="meterRateFunc">The function to extract a value from the MeterValue. Will be applied to both the numerator and denominator meters.</param>
+        public MeterRatioGauge(Meter hitMeter, Meter totalMeter, Func<MeterValue, double> meterRateFunc)
+            : base(() => meterRateFunc(ValueReader.GetCurrentValue(hitMeter)), () => meterRateFunc(ValueReader.GetCurrentValue(totalMeter)))
+        {}
 
-        public MeterRatioGauge(MetricValueSource<MeterValue> hitMeter, TimerValueSource totalTimer)
+
+        /// <summary>
+        /// Creates a new MeterRatioGauge with externally tracked Meter and Timer, and uses the OneMinuteRate from the MeterValue of the meters.
+        /// </summary>
+        /// <param name="hitMeter">The numerator meter to use for the ratio.</param>
+        /// <param name="totalTimer">The denominator meter to use for the ratio.</param>
+        public MeterRatioGauge(Meter hitMeter, Timer totalTimer)
             : this(hitMeter, totalTimer, value => value.OneMinuteRate)
-        {
-        }
+        {}
 
-        public MeterRatioGauge(MetricValueSource<MeterValue> hitMeter, TimerValueSource totalTimer, Func<MeterValue, double> meterRateFunc)
-        {
-            _hitValueFuncs.Add(() => meterRateFunc(hitMeter.Value));
-            _totalValueFuncs.Add(() => meterRateFunc(totalTimer.Value.Rate));
-        }
 
-        protected override Ratio GetRatio()
-        {
-            return Ratio.Of(_hitValueFuncs.Sum(f =>f()),_totalValueFuncs.Sum(f=>f()));
-        }
-
-        public override bool Merge(MetricValueProvider<double> other)
-        {
-            var otherMeterGauge = other as MeterRatioGauge;
-            if (otherMeterGauge == null)
-                return false;
-
-            foreach (var f in otherMeterGauge._hitValueFuncs)
-                _hitValueFuncs.Add(f);
-
-            foreach (var f in _totalValueFuncs)
-                _totalValueFuncs.Add(f);
-
-            return true;
-        }
+        /// <summary>
+        /// Creates a new MeterRatioGauge with externally tracked Meter and Timer, and uses the provided meter rate function to extract the value for the ratio.
+        /// </summary>
+        /// <param name="hitMeter">The numerator meter to use for the ratio.</param>
+        /// <param name="totalTimer">The denominator timer to use for the ratio.</param>
+        /// <param name="meterRateFunc">The function to extract a value from the MeterValue. Will be applied to both the numerator and denominator meters.</param>
+        public MeterRatioGauge(Meter hitMeter, Timer totalTimer, Func<MeterValue, double> meterRateFunc)
+            : base(() => meterRateFunc(ValueReader.GetCurrentValue(hitMeter)), () => meterRateFunc(ValueReader.GetCurrentValue(totalTimer).Rate))
+        {}
     }
 }

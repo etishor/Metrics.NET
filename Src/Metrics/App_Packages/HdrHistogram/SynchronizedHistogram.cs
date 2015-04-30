@@ -1,228 +1,281 @@
-﻿/*
- * Written by Matt Warren, and released to the public domain,
- * as explained at
- * http://creativecommons.org/publicdomain/zero/1.0/
- *
- * This is a .NET port of the original Java version, which was written by
- * Gil Tene as described in
- * https://github.com/HdrHistogram/HdrHistogram
- */
+﻿// Written by Gil Tene of Azul Systems, and released to the public domain,
+// as explained at http://creativecommons.org/publicdomain/zero/1.0/
+// 
+// Ported to .NET by Iulian Margarintescu under the same license and terms as the java version
+// Java Version repo: https://github.com/HdrHistogram/HdrHistogram
+// Latest ported version is available in the Java submodule in the root of the repo
 
 using System;
-using HdrHistogram.NET.Utilities;
+using System.Runtime.CompilerServices;
 
-namespace HdrHistogram.NET
+namespace HdrHistogram
 {
     /**
-     * <h3>An internally synchronized High Dynamic Range (HDR) Histogram using a <b><code>long</code></b> count type </h3>
-     * <p>
-     * See package description for {@link org.HdrHistogram} for details.
-     */
-    public class SynchronizedHistogram : AbstractHistogram 
-    {
-        long totalCount;
-        readonly long[] counts;
+ * <h3>An integer values High Dynamic Range (HDR) Histogram that is synchronized as a whole</h3>
+ * <p>
+ * A {@link SynchronizedHistogram} is a variant of {@link Histogram} that is
+ * synchronized as a whole, such that queries, copying, and addition operations are atomic with relation to
+ * modification on the {@link SynchronizedHistogram}, and such that external accessors (e.g. iterations on the
+ * histogram data) that synchronize on the {@link SynchronizedHistogram} instance can safely assume that no
+ * modifications to the histogram data occur within their synchronized block.
+ * <p>
+ * It is important to note that synchronization can result in blocking recoding calls. If non-blocking recoding
+ * operations are required, consider using {@link ConcurrentHistogram}, {@link AtomicHistogram}, or (recommended)
+ * {@link Recorder} or {@link org.HdrHistogram.SingleWriterRecorder} which were intended for concurrent operations.
+ * <p>
+ * See package description for {@link org.HdrHistogram} and {@link org.HdrHistogram.Histogram} for more details.
+ */
 
-        public override long getCountAtIndex(/*final*/ int index) 
+
+    internal class SynchronizedHistogram : Histogram
+    {
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal override long getCountAtIndex(int index)
+        {
+            return counts[NormalizeIndex(index, normalizingIndexOffset, countsArrayLength)];
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override long getCountAtNormalizedIndex(int index)
         {
             return counts[index];
         }
 
-        public override void incrementCountAtIndex(/*final*/ int index) 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override void incrementCountAtIndex(int index)
         {
-            lock (updateLock) 
-            {
-                counts[index]++;
-            }
+            counts[NormalizeIndex(index, normalizingIndexOffset, countsArrayLength)]++;
         }
 
-        public override void addToCountAtIndex(/*final*/ int index, /*final*/ long value) 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override void addToCountAtIndex(int index, long value)
         {
-            lock (updateLock) 
-            {
-                counts[index] += value;
-            }
+            counts[NormalizeIndex(index, normalizingIndexOffset, countsArrayLength)] += value;
         }
 
-        public override void clearCounts() 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override void setCountAtIndex(int index, long value)
         {
-            lock (updateLock) 
-            {
-                Array.Clear(counts, 0, counts.Length);
-                totalCount = 0;
-            }
+            counts[NormalizeIndex(index, normalizingIndexOffset, countsArrayLength)] = value;
         }
 
-        public new void add(/*final*/ AbstractHistogram other) 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override void setCountAtNormalizedIndex(int index, long value)
+        {
+            counts[index] = value;
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override int getNormalizingIndexOffset()
+        {
+            return normalizingIndexOffset;
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override void setNormalizingIndexOffset(int normalizingIndexOffset)
+        {
+            this.normalizingIndexOffset = normalizingIndexOffset;
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override void shiftNormalizingIndexByOffset(int offsetToAdd, bool lowestHalfBucketPopulated)
+        {
+            nonConcurrentNormalizingIndexShift(offsetToAdd, lowestHalfBucketPopulated);
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected internal override void clearCounts()
+        {
+            Array.Clear(counts, 0, counts.Length);
+            totalCount = 0;
+        }
+
+        public new void add(AbstractHistogram otherHistogram)
         {
             // Synchronize add(). Avoid deadlocks by synchronizing in order of construction identity count.
-            if (identity < other.identity) 
+            if (Identity < otherHistogram.Identity)
             {
-                lock (updateLock)
+                lock (this)
                 {
-                    lock (other)
+                    lock (otherHistogram)
                     {
-                        base.add(other);
+                        base.add(otherHistogram);
                     }
                 }
-            } 
-            else 
+            }
+            else
             {
-                lock(other) 
+                lock (otherHistogram)
                 {
-                    lock (updateLock) 
+                    lock (this)
                     {
-                        base.add(other);
+                        base.add(otherHistogram);
                     }
                 }
             }
         }
 
-        public override /*SynchronizedHistogram*/ AbstractHistogram copy() 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected internal override void shiftValuesLeft(int numberOfBinaryOrdersOfMagnitude)
         {
-            SynchronizedHistogram copy = new SynchronizedHistogram(lowestTrackableValue, highestTrackableValue, numberOfSignificantValueDigits);
+            base.shiftValuesLeft(numberOfBinaryOrdersOfMagnitude);
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected internal override void shiftValuesRight(int numberOfBinaryOrdersOfMagnitude)
+        {
+            base.shiftValuesRight(numberOfBinaryOrdersOfMagnitude);
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public override AbstractHistogram copy()
+        {
+            SynchronizedHistogram copy;
+            lock (this)
+            {
+                copy = new SynchronizedHistogram(this);
+            }
             copy.add(this);
             return copy;
         }
 
-        public override /*SynchronizedHistogram*/ AbstractHistogram copyCorrectedForCoordinatedOmission(/*final*/ long expectedIntervalBetweenValueSamples) 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public override AbstractHistogram copyCorrectedForCoordinatedOmission(long expectedIntervalBetweenValueSamples)
         {
-            SynchronizedHistogram toHistogram = new SynchronizedHistogram(lowestTrackableValue, highestTrackableValue, numberOfSignificantValueDigits);
-            toHistogram.addWhileCorrectingForCoordinatedOmission(this, expectedIntervalBetweenValueSamples);
-            return toHistogram;
+            lock (this)
+            {
+                SynchronizedHistogram toHistogram = new SynchronizedHistogram(this);
+                toHistogram.addWhileCorrectingForCoordinatedOmission(this, expectedIntervalBetweenValueSamples);
+                return toHistogram;
+            }
         }
 
-        public override long getTotalCount() 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public override long getTotalCount()
         {
             return totalCount;
         }
 
-        public override void setTotalCount(/*final*/ long totalCount) 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override void setTotalCount(long totalCount)
         {
-            lock (updateLock) 
+            this.totalCount = totalCount;
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override void incrementTotalCount()
+        {
+            totalCount++;
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override void addToTotalCount(long value)
+        {
+            totalCount += value;
+        }
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override void updatedMaxValue(long maxValue)
+        {
+            if (maxValue > getMaxValue())
             {
-               this.totalCount = totalCount;
+                base.updatedMaxValue(maxValue);
             }
         }
 
-        public override void incrementTotalCount() 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected override void updateMinNonZeroValue(long minNonZeroValue)
         {
-            lock (updateLock) 
+            if (minNonZeroValue < getMinNonZeroValue())
             {
-                totalCount++;
+                base.updateMinNonZeroValue(minNonZeroValue);
             }
         }
 
-        public override void addToTotalCount(long value) 
-        {
-            lock (updateLock) 
-            {
-                totalCount += value;
-            }
-        }
-
-        public override int _getEstimatedFootprintInBytes() 
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected internal override int _getEstimatedFootprintInBytes()
         {
             return (512 + (8 * counts.Length));
         }
 
-        /**
-         * Construct a SynchronizedHistogram given the Highest value to be tracked and a number of significant decimal digits. The
-         * histogram will be constructed to implicitly track (distinguish from 0) values as low as 1.
-         *
-         * @param highestTrackableValue The highest value to be tracked by the histogram. Must be a positive
-         *                              integer that is {@literal >=} 2.
-         * @param numberOfSignificantValueDigits The number of significant decimal digits to which the histogram will
-         *                                       maintain value resolution and separation. Must be a non-negative
-         *                                       integer between 0 and 5.
-         */
-        public SynchronizedHistogram(/*final*/ long highestTrackableValue, /*final*/ int numberOfSignificantValueDigits)
-            : this(1, highestTrackableValue, numberOfSignificantValueDigits)
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        protected internal override void resize(long newHighestTrackableValue)
         {
-        }
+            int oldNormalizedZeroIndex = NormalizeIndex(0, normalizingIndexOffset, countsArrayLength);
 
-        /**
-         * Construct a SynchronizedHistogram given the Lowest and Highest values to be tracked and a number of significant
-         * decimal digits. Providing a lowestTrackableValue is useful is situations where the units used
-         * for the histogram's values are much smaller that the minimal accuracy required. E.g. when tracking
-         * time values stated in nanosecond units, where the minimal accuracy required is a microsecond, the
-         * proper value for lowestTrackableValue would be 1000.
-         *
-         * @param lowestTrackableValue The lowest value that can be tracked (distinguished from 0) by the histogram.
-         *                             Must be a positive integer that is {@literal >=} 1. May be internally rounded down to nearest
-         *                             power of 2.
-         * @param highestTrackableValue The highest value to be tracked by the histogram. Must be a positive
-         *                              integer that is {@literal >=} (2 * lowestTrackableValue).
-         * @param numberOfSignificantValueDigits The number of significant decimal digits to which the histogram will
-         *                                       maintain value resolution and separation. Must be a non-negative
-         *                                       integer between 0 and 5.
-         */
-        public SynchronizedHistogram(/*final*/ long lowestTrackableValue, /*final*/ long highestTrackableValue, /*final*/ int numberOfSignificantValueDigits)
-            : base(lowestTrackableValue, highestTrackableValue, numberOfSignificantValueDigits)
-        {
-            counts = new long[countsArrayLength];
-            wordSizeInBytes = 8;
-        }
+            establishSize(newHighestTrackableValue);
 
-        /**
-         * Construct a new histogram by decoding it from a ByteBuffer.
-         * @param buffer The buffer to decode from
-         * @param minBarForHighestTrackableValue Force highestTrackableValue to be set at least this high
-         * @return The newly constructed histogram
-         */
-        public static SynchronizedHistogram decodeFromByteBuffer(/*final*/ ByteBuffer buffer,
-                                                                 /*final*/ long minBarForHighestTrackableValue) 
-        {
-            return (SynchronizedHistogram)decodeFromByteBuffer(buffer, typeof(SynchronizedHistogram), minBarForHighestTrackableValue);
-        }
+            int countsDelta = countsArrayLength - counts.Length;
+            Array.Resize(ref counts, countsArrayLength);
 
-        /**
-         * Construct a new histogram by decoding it from a compressed form in a ByteBuffer.
-         * @param buffer The buffer to encode into
-         * @param minBarForHighestTrackableValue Force highestTrackableValue to be set at least this high
-         * @return The newly constructed histogram
-         * @throws DataFormatException on error parsing/decompressing the buffer
-         */
-        public static SynchronizedHistogram decodeFromCompressedByteBuffer(/*final*/ ByteBuffer buffer,
-                                                                           /*final*/ long minBarForHighestTrackableValue) //throws DataFormatException 
-        {
-            return (SynchronizedHistogram)decodeFromCompressedByteBuffer(buffer, typeof(SynchronizedHistogram), minBarForHighestTrackableValue);
-        }
-
-        //private void readObject(/*final*/ ObjectInputStream o)
-        //        throws IOException, ClassNotFoundException {
-        //    o.defaultReadObject();
-        //}
-
-        public override void fillCountsArrayFromBuffer(/*final*/ ByteBuffer buffer, /*final*/ int length) 
-        {
-            lock (updateLock)
+            if (oldNormalizedZeroIndex != 0)
             {
-                buffer.asLongBuffer().get(counts, 0, length);
+                // We need to shift the stuff from the zero index and up to the end of the array:
+                int newNormalizedZeroIndex = oldNormalizedZeroIndex + countsDelta;
+                int lengthToCopy = (countsArrayLength - countsDelta) - oldNormalizedZeroIndex;
+                Array.Copy(counts, oldNormalizedZeroIndex, counts, newNormalizedZeroIndex, lengthToCopy);
             }
         }
 
-        // We try to cache the LongBuffer used in output cases, as repeated
-        // output form the same histogram using the same buffer is likely:
-        private WrappedBuffer<long> cachedDstLongBuffer = null;
-        private ByteBuffer cachedDstByteBuffer = null;
-        private int cachedDstByteBufferPosition = 0;
+        /**
+     * Construct an auto-resizing SynchronizedHistogram with a lowest discernible value of 1 and an auto-adjusting
+     * highestTrackableValue. Can auto-resize up to track values up to (Long.MAX_VALUE / 2).
+     *
+     * @param numberOfSignificantValueDigits Specifies the precision to use. This is the number of significant
+     *                                       decimal digits to which the histogram will maintain value resolution
+     *                                       and separation. Must be a non-negative integer between 0 and 5.
+     */
 
-        public override void fillBufferFromCountsArray(/*final*/ ByteBuffer buffer, /*final*/ int length) 
+        public SynchronizedHistogram(int numberOfSignificantValueDigits)
+            : base(numberOfSignificantValueDigits)
+        { }
+
+        /**
+     * Construct a SynchronizedHistogram given the Highest value to be tracked and a number of significant decimal digits. The
+     * histogram will be constructed to implicitly track (distinguish from 0) values as low as 1.
+     *
+     * @param highestTrackableValue The highest value to be tracked by the histogram. Must be a positive
+     *                              integer that is {@literal >=} 2.
+     * @param numberOfSignificantValueDigits Specifies the precision to use. This is the number of significant
+     *                                       decimal digits to which the histogram will maintain value resolution
+     *                                       and separation. Must be a non-negative integer between 0 and 5.
+     */
+
+        public SynchronizedHistogram(long highestTrackableValue, int numberOfSignificantValueDigits)
+            : base(highestTrackableValue, numberOfSignificantValueDigits)
+        { }
+
+        /**
+     * Construct a SynchronizedHistogram given the Lowest and Highest values to be tracked and a number of significant
+     * decimal digits. Providing a lowestDiscernibleValue is useful is situations where the units used
+     * for the histogram's values are much smaller that the minimal accuracy required. E.g. when tracking
+     * time values stated in nanosecond units, where the minimal accuracy required is a microsecond, the
+     * proper value for lowestDiscernibleValue would be 1000.
+     *
+     * @param lowestDiscernibleValue The lowest value that can be tracked (distinguished from 0) by the histogram.
+     *                               Must be a positive integer that is {@literal >=} 1. May be internally rounded
+     *                               down to nearest power of 2.
+     * @param highestTrackableValue The highest value to be tracked by the histogram. Must be a positive
+     *                              integer that is {@literal >=} (2 * lowestDiscernibleValue).
+     * @param numberOfSignificantValueDigits Specifies the precision to use. This is the number of significant
+     *                                       decimal digits to which the histogram will maintain value resolution
+     *                                       and separation. Must be a non-negative integer between 0 and 5.
+     */
+
+        public SynchronizedHistogram(long lowestDiscernibleValue, long highestTrackableValue, int numberOfSignificantValueDigits)
+            : base(lowestDiscernibleValue, highestTrackableValue, numberOfSignificantValueDigits)
         {
-            lock (updateLock)
-            {
-                if ((cachedDstLongBuffer == null) ||
-                    (buffer != cachedDstByteBuffer) ||
-                    (buffer.position() != cachedDstByteBufferPosition))
-                {
-                    cachedDstByteBuffer = buffer;
-                    cachedDstByteBufferPosition = buffer.position();
-                    cachedDstLongBuffer = buffer.asLongBuffer();
-                }
-                cachedDstLongBuffer.rewind();
-                cachedDstLongBuffer.put(counts, 0, length);
-            }
+        }
+
+        /**
+     * Construct a histogram with the same range settings as a given source histogram,
+     * duplicating the source's start/end timestamps (but NOT it's contents)
+     * @param source The source histogram to duplicate
+     */
+
+        public SynchronizedHistogram(AbstractHistogram source)
+            : base(source)
+        {
         }
     }
 }

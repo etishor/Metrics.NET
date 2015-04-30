@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using CommandLine;
 using CommandLine.Text;
 using Metrics.Core;
@@ -47,11 +44,29 @@ namespace Metrics.StupidBenchmarks
         [VerbOption("EDR")]
         public CommonOptions Edr { get; set; }
 
+        [VerbOption("hdr")]
+        public CommonOptions Hdr { get; set; }
+
+        [VerbOption("hdrtimer")]
+        public CommonOptions HdrTimer { get; set; }
+
+        [VerbOption("hdrsync")]
+        public CommonOptions HdrSync { get; set; }
+
+        [VerbOption("hdrsynctimer")]
+        public CommonOptions HdrSyncTimer { get; set; }
+
         [VerbOption("Uniform")]
         public CommonOptions Uniform { get; set; }
 
         [VerbOption("Sliding")]
         public CommonOptions Sliding { get; set; }
+
+        [VerbOption("TimerImpact")]
+        public CommonOptions TimerImpact { get; set; }
+
+        [VerbOption("NoOp")]
+        public CommonOptions NoOp { get; set; }
 
         [HelpVerbOption]
         public string GetUsage(string verb)
@@ -65,11 +80,6 @@ namespace Metrics.StupidBenchmarks
         private static string target;
         private static CommonOptions targetOptions;
 
-        public static void Run<T>(Func<T> create, Action<T> action)
-        {
-            FixedTimeBenchmark.Run(create, action, targetOptions.MaxThreads, targetOptions.Seconds, targetOptions.Decrement);
-        }
-
         static void Main(string[] args)
         {
             var options = new Options();
@@ -79,65 +89,70 @@ namespace Metrics.StupidBenchmarks
                 Environment.Exit(CommandLine.Parser.DefaultExitCodeFail);
             }
 
-            Console.WriteLine("{0} | Duration {1} seconds  | Start Threads {2} | Step {3}", target, targetOptions.Seconds, targetOptions.MaxThreads, targetOptions.Decrement);
+            BenchmarkRunner.DefaultTotalSeconds = targetOptions.Seconds;
+            BenchmarkRunner.DefaultMaxThreads = targetOptions.MaxThreads;
 
-            CounterMetric counter = new CounterMetric();
-            MeterMetric meter = new MeterMetric();
-            HistogramMetric histogram = new HistogramMetric();
-            TimerMetric timer = new TimerMetric();
-            ExponentiallyDecayingReservoir edr = new ExponentiallyDecayingReservoir();
-
-            CancellationTokenSource tcs = new CancellationTokenSource();
-
-            var reader = ReaderTask(() => timer.Value, tcs.Token);
+            //Metric.Config.WithHttpEndpoint("http://localhost:1234/");
 
             switch (target)
             {
+                case "noop":
+                    BenchmarkRunner.Run("Noop", () => { });
+                    break;
                 case "counter":
-                    Run(() => counter, c => c.Increment());
+                    var counter = new CounterMetric();
+                    BenchmarkRunner.Run("Counter", () => counter.Increment());
                     break;
                 case "meter":
-                    Run(() => meter, m => m.Mark());
+                    var meter = new MeterMetric();
+                    BenchmarkRunner.Run("Meter", () => meter.Mark());
                     break;
                 case "histogram":
-                    Run(() => histogram, h => h.Update(37));
+                    var histogram = new HistogramMetric();
+                    BenchmarkRunner.Run("Histogram", () => histogram.Update(137));
                     break;
                 case "timer":
-                    Run(() => timer, t => t.Record(10, TimeUnit.Milliseconds));
+                    var timer = new TimerMetric();
+                    BenchmarkRunner.Run("Timer", () => timer.Record(1, TimeUnit.Milliseconds));
+                    break;
+                case "hdrtimer":
+                    var hdrTimer = new TimerMetric(new HdrHistogramReservoir());
+                    BenchmarkRunner.Run("HDR Timer", () => hdrTimer.Record(1, TimeUnit.Milliseconds));
                     break;
                 case "ewma":
-                    Run(() => EWMA.OneMinuteEWMA(), m => m.Update(1));
+                    var ewma = EWMA.OneMinuteEWMA();
+                    BenchmarkRunner.Run("EWMA", () => ewma.Update(1));
                     break;
                 case "edr":
-                    Run(() => edr, r => r.Update(100));
+                    var edr = new ExponentiallyDecayingReservoir();
+                    BenchmarkRunner.Run("EDR", () => edr.Update(1));
+                    break;
+                case "hdr":
+                    var hdrReservoir = new HdrHistogramReservoir();
+                    BenchmarkRunner.Run("HDR Recorder", () => hdrReservoir.Update(1));
+                    break;
+                case "hdrsync":
+                    var hdrSyncReservoir = new SyncronizedHdrReservoir();
+                    BenchmarkRunner.Run("HDR Sync", () => hdrSyncReservoir.Update(1));
+                    break;
+                case "hdrsynctimer":
+                    var hdrSyncTimer = new TimerMetric(new SyncronizedHdrReservoir());
+                    BenchmarkRunner.Run("HDR Sync Timer", () => hdrSyncTimer.Record(1, TimeUnit.Milliseconds));
                     break;
                 case "uniform":
-                    Run(() => new UniformReservoir(), r => r.Update(100));
+                    var uniform = new UniformReservoir();
+                    BenchmarkRunner.Run("Uniform", () => uniform.Update(1));
                     break;
                 case "sliding":
-                    Run(() => new SlidingWindowReservoir(), r => r.Update(100));
+                    var sliding = new SlidingWindowReservoir();
+                    BenchmarkRunner.Run("Sliding", () => sliding.Update(1));
+                    break;
+                case "timerimpact":
+                    WorkLoad load = new WorkLoad();
+                    BenchmarkRunner.Run("WorkWithoutTimer", () => load.DoSomeWork(), iterationsChunk: 10);
+                    BenchmarkRunner.Run("WorkWithTimer", () => load.DoSomeWorkWithATimer(), iterationsChunk: 10);
                     break;
             }
-
-            tcs.Cancel();
-        }
-
-        private static Task ReaderTask<T>(Func<T> reader, CancellationToken token)
-        {
-            List<T> values = new List<T>();
-
-            return Task.Factory.StartNew(async () =>
-            {
-                while (!token.IsCancellationRequested)
-                {
-                    values.Add(reader());
-                    await Task.Delay(200);
-                    if (values.Count > 100)
-                    {
-                        values.Clear();
-                    }
-                }
-            });
         }
     }
 }

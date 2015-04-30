@@ -1,15 +1,14 @@
-﻿/*
- * Written by Matt Warren, and released to the public domain,
- * as explained at
- * http://creativecommons.org/publicdomain/zero/1.0/
- *
- * This is a .NET port of the original Java version, which was written by
- * Gil Tene as described in
- * https://github.com/HdrHistogram/HdrHistogram
- */
+﻿// Written by Gil Tene of Azul Systems, and released to the public domain,
+// as explained at http://creativecommons.org/publicdomain/zero/1.0/
+// 
+// Ported to .NET by Iulian Margarintescu under the same license and terms as the java version
+// Java Version repo: https://github.com/HdrHistogram/HdrHistogram
+// Latest ported version is available in the Java submodule in the root of the repo
+using System;
 
-namespace HdrHistogram.NET.Iteration
+namespace HdrHistogram
 {
+
     /**
      * Represents a value point iterated through in a Histogram, with associated stats.
      * <ul>
@@ -35,26 +34,23 @@ namespace HdrHistogram.NET.Iteration
      * range of multiple percentiles in the requested percentile iteration points).</li>
      * </ul>
      */
-    public class HistogramIterationValue 
+
+    internal class HistogramIterationValue
     {
-        long valueIteratedTo;
-        long valueIteratedFrom;
-        long countAtValueIteratedTo;
-        long countAddedInThisIterationStep;
-        long totalCountToThisValue;
-        long totalValueToThisValue;
-        double percentile;
-        double percentileLevelIteratedTo;
+        private long valueIteratedTo;
+        private long valueIteratedFrom;
+        private long countAtValueIteratedTo;
+        private long countAddedInThisIterationStep;
+        private long totalCountToThisValue;
+        private long totalValueToThisValue;
+        private double percentile;
+        private double percentileLevelIteratedTo;
+        private double integerToDoubleValueConversionRatio;
 
         // Set is all-or-nothing to avoid the potential for accidental omission of some values...
-        internal void set(/*final*/ long valueIteratedTo, 
-                            /*final*/ long valueIteratedFrom, 
-                            /*final*/ long countAtValueIteratedTo,
-                            /*final*/ long countInThisIterationStep, 
-                            /*final*/ long totalCountToThisValue, 
-                            /*final*/ long totalValueToThisValue,
-                            /*final*/ double percentile, 
-                            /*final*/ double percentileLevelIteratedTo) 
+        internal void set(long valueIteratedTo, long valueIteratedFrom, long countAtValueIteratedTo,
+            long countInThisIterationStep, long totalCountToThisValue, long totalValueToThisValue,
+            double percentile, double percentileLevelIteratedTo, double integerToDoubleValueConversionRatio)
         {
             this.valueIteratedTo = valueIteratedTo;
             this.valueIteratedFrom = valueIteratedFrom;
@@ -64,9 +60,10 @@ namespace HdrHistogram.NET.Iteration
             this.totalValueToThisValue = totalValueToThisValue;
             this.percentile = percentile;
             this.percentileLevelIteratedTo = percentileLevelIteratedTo;
+            this.integerToDoubleValueConversionRatio = integerToDoubleValueConversionRatio;
         }
 
-        internal void reset() 
+        internal void reset()
         {
             this.valueIteratedTo = 0;
             this.valueIteratedFrom = 0;
@@ -78,60 +75,53 @@ namespace HdrHistogram.NET.Iteration
             this.percentileLevelIteratedTo = 0.0;
         }
 
-        public HistogramIterationValue() 
+        internal HistogramIterationValue()
         {
         }
-
-        public override string  ToString()
+       
+        public long getValueIteratedTo()
         {
-            return  "valueIteratedTo:" + this.valueIteratedTo +
-                    ", prevValueIteratedTo:" + this.valueIteratedFrom +
-                    ", countAtValueIteratedTo:" + this.countAtValueIteratedTo +
-                    ", countAddedInThisIterationStep:" + this.countAddedInThisIterationStep +
-                    ", totalCountToThisValue:" + this.totalCountToThisValue +
-                    ", totalValueToThisValue:" + this.totalValueToThisValue +
-                    ", percentile:" + this.percentile +
-                    ", percentileLevelIteratedTo:" + this.percentileLevelIteratedTo;
+            return valueIteratedTo;
         }
 
-        public long getValueIteratedTo() 
+        public long getValueIteratedFrom()
         {
-            return this.valueIteratedTo;
+            return valueIteratedFrom;
         }
 
-        public long getValueIteratedFrom() 
+        public long getCountAtValueIteratedTo()
         {
-            return this.valueIteratedFrom;
+            return countAtValueIteratedTo;
         }
 
-        public long getCountAtValueIteratedTo() 
+        public long getCountAddedInThisIterationStep()
         {
-            return this.countAtValueIteratedTo;
+            return countAddedInThisIterationStep;
         }
 
-        public long getCountAddedInThisIterationStep() 
+        public long getTotalCountToThisValue()
         {
-            return this.countAddedInThisIterationStep;
+            return totalCountToThisValue;
         }
 
-        public long getTotalCountToThisValue() 
+        public long getTotalValueToThisValue()
         {
-            return this.totalCountToThisValue;
+            return totalValueToThisValue;
         }
 
-        public long getTotalValueToThisValue() 
+        public double getPercentile()
         {
-            return this.totalValueToThisValue;
+            return percentile;
         }
 
-        public double getPercentile() 
+        public double getPercentileLevelIteratedTo()
         {
-            return this.percentile;
+            return percentileLevelIteratedTo;
         }
 
-        public double getPercentileLevelIteratedTo() 
+        public double getIntegerToDoubleValueConversionRatio()
         {
-            return this.percentileLevelIteratedTo;
+            return integerToDoubleValueConversionRatio;
         }
     }
 }

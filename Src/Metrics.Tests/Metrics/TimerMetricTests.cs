@@ -55,28 +55,6 @@ namespace Metrics.Tests.Metrics
         }
 
         [Fact]
-        public void TimerMetric_CanMergeTime()
-        {
-            var otherScheduler = new TestScheduler(clock);
-            var other = new TimerMetric(SamplingType.FavourRecent, new MeterMetric(clock, otherScheduler), clock);
-
-            using (timer.NewContext())
-            {
-                clock.Advance(TimeUnit.Milliseconds, 100);
-            }
-
-            using (other.NewContext())
-            {
-                clock.Advance(TimeUnit.Milliseconds, 300);
-            }
-
-            timer.Merge(other);
-            timer.Value.Histogram.Count.Should().Be(2);
-            timer.Value.Histogram.Max.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(300));
-            timer.Value.Histogram.Mean.Should().Be(TimeUnit.Milliseconds.ToNanoseconds(200));
-        }
-
-        [Fact]
         public void TimerMetric_ContextRecordsTimeOnlyOnFirstDispose()
         {
             var context = timer.NewContext();
@@ -124,24 +102,6 @@ namespace Metrics.Tests.Metrics
 
             timer.Value.Histogram.MinUserValue.Should().Be("A");
             timer.Value.Histogram.MaxUserValue.Should().Be("B");
-        }
-
-        [Fact]
-        public void TimerMetric_MergesUserValue()
-        {
-            var otherScheduler = new TestScheduler(clock);
-            var other = new TimerMetric(SamplingType.FavourRecent, new MeterMetric(clock, otherScheduler), clock);
-
-            timer.Record(0L, TimeUnit.Milliseconds, "A");
-            timer.Record(10L, TimeUnit.Milliseconds, "B");
-
-            other.Record(30L, TimeUnit.Milliseconds, "C");
-            other.Record(40L, TimeUnit.Milliseconds, "D");
-
-            timer.Merge(other);
-
-            timer.Value.Histogram.MinUserValue.Should().Be("A");
-            timer.Value.Histogram.MaxUserValue.Should().Be("D");
         }
 
         [Fact]

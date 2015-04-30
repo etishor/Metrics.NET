@@ -38,7 +38,7 @@ namespace Metrics.Sampling
             var size = Size;
             if (size == 0)
             {
-                return new UniformSnapshot(0, Enumerable.Empty<Tuple<long, string>>());
+                return new UniformSnapshot(0, Enumerable.Empty<long>());
             }
 
             var snapshotValues = new UserValueWrapper[size];
@@ -52,7 +52,7 @@ namespace Metrics.Sampling
             Array.Sort(snapshotValues, UserValueWrapper.Comparer);
             var minValue = snapshotValues[0].UserValue;
             var maxValue = snapshotValues[size - 1].UserValue;
-            return new UniformSnapshot(this.count.GetValue(), snapshotValues.Select(v => new Tuple<long, string>(v.Value, v.UserValue)), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
+            return new UniformSnapshot(this.count.GetValue(), snapshotValues.Select(v => v.Value), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
         }
 
         public void Update(long value, string userValue = null)
@@ -64,7 +64,7 @@ namespace Metrics.Sampling
             }
             else
             {
-                var r = NextLong(c);
+                var r = ThreadLocalRandom.NextLong(c);
                 if (r < this.values.Length)
                 {
                     this.values[(int)r] = new UserValueWrapper(value, userValue);
@@ -75,28 +75,6 @@ namespace Metrics.Sampling
         public void Reset()
         {
             this.count.SetValue(0L);
-        }
-
-        public bool Merge(Reservoir other)
-        {
-            var snapshot = other.GetSnapshot();
-            foreach (var value in snapshot.Values)
-            {
-                Update(value.Item1, value.Item2);
-            }
-
-            return true;
-        }
-
-        private static long NextLong(long max)
-        {
-            long bits, val;
-            do
-            {
-                bits = ThreadLocalRandom.NextLong() & (~(1L << BitsPerLong));
-                val = bits % max;
-            } while (bits - val + (max - 1) < 0L);
-            return val;
         }
     }
 }

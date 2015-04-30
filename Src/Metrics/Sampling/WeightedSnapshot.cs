@@ -21,7 +21,7 @@ namespace Metrics.Sampling
     public sealed class WeightedSnapshot : Snapshot
     {
         private readonly long count;
-        private readonly Tuple<long, string>[] values;
+        private readonly long[] values;
         private readonly double[] normWeights;
         private readonly double[] quantiles;
 
@@ -46,13 +46,13 @@ namespace Metrics.Sampling
 
             var sumWeight = sample.Sum(s => s.Weight);
 
-            this.values = new Tuple<long, string>[sample.Length];
+            this.values = new long[sample.Length];
             this.normWeights = new double[sample.Length];
             this.quantiles = new double[sample.Length];
 
             for (int i = 0; i < sample.Length; i++)
             {
-                this.values[i] = new Tuple<long, string>(sample[i].Value, sample[i].UserValue);
+                this.values[i] = sample[i].Value;
                 this.normWeights[i] = sample[i].Weight / sumWeight;
                 if (i > 0)
                 {
@@ -67,8 +67,8 @@ namespace Metrics.Sampling
         public long Count { get { return this.count; } }
         public int Size { get { return this.values.Length; } }
 
-        public long Max { get { return this.values.Select(value => value.Item1).LastOrDefault(); } }
-        public long Min { get { return this.values.Select(value => value.Item1).FirstOrDefault(); } }
+        public long Max { get { return this.values.LastOrDefault(); } }
+        public long Min { get { return this.values.FirstOrDefault(); } }
 
         public string MaxUserValue { get { return this.maxUserValue; } }
         public string MinUserValue { get { return this.minUserValue; } }
@@ -85,7 +85,7 @@ namespace Metrics.Sampling
                 double sum = 0;
                 for (int i = 0; i < this.values.Length; i++)
                 {
-                    sum += this.values[i].Item1 * this.normWeights[i];
+                    sum += this.values[i] * this.normWeights[i];
                 }
                 return sum;
             }
@@ -105,7 +105,7 @@ namespace Metrics.Sampling
 
                 for (int i = 0; i < this.values.Length; i++)
                 {
-                    double diff = values[i].Item1 - mean;
+                    double diff = values[i] - mean;
                     variance += this.normWeights[i] * diff * diff;
                 }
 
@@ -120,7 +120,7 @@ namespace Metrics.Sampling
         public double Percentile99 { get { return GetValue(0.99d); } }
         public double Percentile999 { get { return GetValue(0.999d); } }
 
-        public IEnumerable<Tuple<long, string>> Values { get { return this.values.AsEnumerable(); } }
+        public IEnumerable<long> Values { get { return this.values; } }
 
         public double GetValue(double quantile)
         {
@@ -142,15 +142,15 @@ namespace Metrics.Sampling
 
             if (posx < 1)
             {
-                return this.values[0].Item1;
+                return this.values[0];
             }
 
             if (posx >= this.values.Length)
             {
-                return values[values.Length - 1].Item1;
+                return values[values.Length - 1];
             }
 
-            return values[posx].Item1;
+            return values[posx];
         }
     }
 }

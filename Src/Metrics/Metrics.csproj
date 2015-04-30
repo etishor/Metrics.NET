@@ -36,7 +36,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <DocumentationFile>..\..\bin\Release\Metrics.XML</DocumentationFile>
-    <NoWarn>1591 1570</NoWarn>
+    <NoWarn>1591 1570 1587</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -50,42 +50,45 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AdvancedMetricsContext.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\AtomicIntArray.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\AtomicInteger.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\AtomicLong.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\AtomicLongArray.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\PaddedAtomicLong.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\Striped64.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\StripedLongAdder.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\ThreadLocalLongAdder.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\ThreadLocalRandom.cs" />
-    <Compile Include="App_Packages\ConcurrencyUtils.0.1.3\VolatileDouble.cs" />
-    <Compile Include="App_Packages\HdrHistogram\AbstractHistogram.cs" />
-    <Compile Include="App_Packages\HdrHistogram\AbstractHistogramBase.cs" />
-    <Compile Include="App_Packages\HdrHistogram\AtomicHistogram.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Histogram.cs" />
-    <Compile Include="App_Packages\HdrHistogram\IntHistogram.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Iteration\AbstractHistogramIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Iteration\AllValuesIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Iteration\HistogramIterationValue.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Iteration\LinearIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Iteration\LogarithmicIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Iteration\PercentileIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Iteration\RecordedValuesIterator.cs" />
-    <Compile Include="App_Packages\HdrHistogram\ShortHistogram.cs" />
-    <Compile Include="App_Packages\HdrHistogram\SynchronizedHistogram.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Utilities\AtomicLong.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Utilities\AtomicLongArray.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Utilities\ByteBuffer.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Utilities\CountingMemoryStream.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Utilities\MiscUtilities.cs" />
-    <Compile Include="App_Packages\HdrHistogram\Utilities\WrappedBuffer.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\AtomicIntArray.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\AtomicInteger.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\AtomicLong.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\AtomicLongArray.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\PaddedAtomicLong.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\Striped64.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\StripedLongAdder.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\ThreadLocalLongAdder.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\ThreadLocalRandom.cs" />
+    <Compile Include="App_Packages\ConcurrencyUtils.0.1.4\VolatileDouble.cs" />
+    <Compile Include="App_Packages\HdrHistogram\AbstractHistogram.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="App_Packages\HdrHistogram\AbstractHistogramBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="App_Packages\HdrHistogram\AbstractHistogramEnumerableExtensions.cs" />
+    <Compile Include="App_Packages\HdrHistogram\AbstractHistogramIterator.cs" />
+    <Compile Include="App_Packages\HdrHistogram\ConcurrentHistogram.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Histogram.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="App_Packages\HdrHistogram\HistogramIterationValue.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Iterable.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Iterator.cs" />
+    <Compile Include="App_Packages\HdrHistogram\MathUtils.cs" />
+    <Compile Include="App_Packages\HdrHistogram\RecordedValuesIterator.cs" />
+    <Compile Include="App_Packages\HdrHistogram\Recorder.cs" />
+    <Compile Include="App_Packages\HdrHistogram\SynchronizedHistogram.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="App_Packages\HdrHistogram\WriterReaderPhaser.cs" />
     <Compile Include="App_Packages\LibLog.4.2\LibLog.cs" />
     <Compile Include="Core\BaseMetricsContext.cs" />
     <Compile Include="Core\DefaultMetricsBuilder.cs" />
     <Compile Include="Core\DefaultMetricsRegistry.cs" />
     <Compile Include="Core\DefaultDataProvider.cs" />
     <Compile Include="Core\DefaultRegistryDataProvider.cs" />
+    <Compile Include="Core\SimpleMeter.cs" />
     <Compile Include="ElasticSearch\ElasticSearchConfigExtensions.cs" />
     <Compile Include="ElasticSearch\ElasticSearchReport.cs" />
     <Compile Include="Graphite\PickleGraphiteSender.cs" />
@@ -114,6 +117,7 @@
     <Compile Include="MetricData\MeterValue.cs" />
     <Compile Include="MetricData\MetricsDataProvider.cs" />
     <Compile Include="MetricData\TimerValue.cs" />
+    <Compile Include="MetricData\ValueReader.cs" />
     <Compile Include="MetricTags.cs" />
     <Compile Include="RemoteMetrics\HttpRemoteMetrics.cs" />
     <Compile Include="RemoteMetrics\RemoteMetricsExtensions.cs" />
@@ -123,6 +127,8 @@
     <Compile Include="Core\HealthCheck.cs" />
     <Compile Include="Core\MetricsBuilder.cs" />
     <Compile Include="Core\NullMetricsRegistry.cs" />
+    <Compile Include="Sampling\HdrHistogramReservoir.cs" />
+    <Compile Include="Sampling\HdrSnapshot.cs" />
     <Compile Include="Sampling\SyncronizedHdrReservoir.cs" />
     <Compile Include="Sampling\UserValueWrapper.cs" />
     <Compile Include="Sampling\Snapshot.cs" />

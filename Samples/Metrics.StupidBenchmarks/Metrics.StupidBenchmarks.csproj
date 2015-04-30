@@ -34,6 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CommandLine">
@@ -48,10 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FixedIterationsBenchmark.cs" />
-    <Compile Include="FixedTimeBenchmark.cs" />
+    <Compile Include="ActionBenchmark.cs" />
+    <Compile Include="BenchmarkResult.cs" />
+    <Compile Include="BenchmarkRunner.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WorkLoad.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

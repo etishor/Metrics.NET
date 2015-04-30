@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 namespace Metrics.Sampling
 {
     public interface Snapshot
     {
         long Count { get; }
+        IEnumerable<long> Values { get; }
         double GetValue(double quantile);
         long Max { get; }
         string MaxUserValue { get; }
@@ -17,8 +17,7 @@ namespace Metrics.Sampling
         double Percentile98 { get; }
         double Percentile99 { get; }
         double Percentile999 { get; }
-        int Size { get; }
         double StdDev { get; }
-        IEnumerable<Tuple<long, string>> Values { get; }
+        int Size { get; }
     }
 }

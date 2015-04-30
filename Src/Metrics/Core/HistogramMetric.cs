@@ -12,7 +12,7 @@ namespace Metrics.Core
         private UserValueWrapper last;
 
         public HistogramMetric()
-            : this(new ExponentiallyDecayingReservoir()) { }
+            : this(new HdrHistogramReservoir()) { }
 
         public HistogramMetric(SamplingType samplingType)
             : this(SamplingTypeToReservoir(samplingType)) { }
@@ -26,16 +26,6 @@ namespace Metrics.Core
         {
             this.last = new UserValueWrapper(value, userValue);
             this.reservoir.Update(value, userValue);
-        }
-
-        public bool Merge(MetricValueProvider<HistogramValue> other)
-        {
-            var hOther = other as HistogramMetric;
-            if (hOther != null)
-            {
-                return Merge(hOther);
-            }
-            return false;
         }
 
         public HistogramValue GetValue(bool resetMetric = false)
@@ -60,11 +50,6 @@ namespace Metrics.Core
         {
             this.last = UserValueWrapper.Empty;
             this.reservoir.Reset();
-        }
-
-        private bool Merge(HistogramMetric other)
-        {
-            return this.reservoir.Merge(other.reservoir);
         }
 
         private static Reservoir SamplingTypeToReservoir(SamplingType samplingType)
