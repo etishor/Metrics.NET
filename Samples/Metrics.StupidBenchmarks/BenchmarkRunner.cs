@@ -17,7 +17,7 @@ namespace Metrics.StupidBenchmarks
             DefaultTotalSeconds = 5;
         }
 
-        private static readonly int[] threads = new[] { 1, 2, 4, 6, 8, 16, 32 };
+        private static readonly int[] threads = new[] { 1, 2, 4, 6, 8, 16, 32, 48, 64 };
 
         public static IEnumerable<BenchmarkResult> Run(string name, Action action, int maxThreads = -1, int totalSeconds = -1, int iterationsChunk = 1000)
         {
