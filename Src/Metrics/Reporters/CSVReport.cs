@@ -59,7 +59,11 @@ namespace Metrics.Reporters
         {
             var values = MeterValues(value.Rate, unit, rateUnit)
                 .Concat(HistogramValues(value.Histogram, unit, durationUnit))
-                .Concat(new[] { new Value("Active Sessions", value.ActiveSessions) });
+                .Concat(new[]
+                {
+                    new Value("Active Sessions", value.ActiveSessions),
+                    new Value("Total Time", value.TotalTime)
+                });
 
             Write("Timer", name, values);
         }
