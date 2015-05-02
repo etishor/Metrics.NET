@@ -45,9 +45,9 @@ namespace Metrics.Samples
             // define a simple gauge that will provide the instant value of this.someValue when requested
             Metric.Gauge("SampleMetrics.DataValue", () => this.someValue, Unit.Custom("$"));
 
-            Metric.Gauge("Custom Ratio", () => ValueReader.GetCurrentValue(totalRequestsCounter).Count / ValueReader.GetCurrentValue(meter).FiveMinuteRate, Unit.None);
-            Metric.Advanced.Gauge("Ratio", () =>
-                new RatioGauge(() => ValueReader.GetCurrentValue(totalRequestsCounter).Count, () => ValueReader.GetCurrentValue(meter).OneMinuteRate), Unit.Calls);
+            Metric.Gauge("Custom Ratio", () => ValueReader.GetCurrentValue(totalRequestsCounter).Count / ValueReader.GetCurrentValue(meter).FiveMinuteRate, Unit.Percent);
+
+            Metric.Advanced.Gauge("Ratio", () => new HitRatioGauge(meter, timer, m => m.OneMinuteRate), Unit.Percent);
         }
 
         public void Request(int i)
