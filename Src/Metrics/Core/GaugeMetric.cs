@@ -72,60 +72,50 @@ namespace Metrics.Core
     public class RatioGauge : FunctionGauge
     {
         public RatioGauge(Func<double> numerator, Func<double> denominator)
-            : base(() =>
-            {
-                var den = denominator();
-                // ReSharper disable once CompareOfFloatsByEqualityOperator
-                if (double.IsNaN(den) || double.IsInfinity(den) || den == 0)
-                {
-                    return Double.NaN;
-                }
-                return numerator() / den;
-            })
-        {
-        }
+            : base(() => numerator() / denominator())
+        { }
     }
 
-    public sealed class MeterRatioGauge : RatioGauge
+    public sealed class HitRatioGauge : RatioGauge
     {
         /// <summary>
-        /// Creates a new MeterRatioGauge with externally tracked Meters, and uses the OneMinuteRate from the MeterValue of the meters.
+        /// Creates a new HitRatioGauge with externally tracked Meters, and uses the OneMinuteRate from the MeterValue of the meters.
         /// </summary>
         /// <param name="hitMeter"></param>
         /// <param name="totalMeter"></param>
-        public MeterRatioGauge(Meter hitMeter, Meter totalMeter)
+        public HitRatioGauge(Meter hitMeter, Meter totalMeter)
             : this(hitMeter, totalMeter, value => value.OneMinuteRate)
-        {}
+        { }
 
         /// <summary>
-        /// Creates a new MeterRatioGauge with externally tracked Meters, and uses the provided meter rate function to extract the value for the ratio.
+        /// Creates a new HitRatioGauge with externally tracked Meters, and uses the provided meter rate function to extract the value for the ratio.
         /// </summary>
         /// <param name="hitMeter">The numerator meter to use for the ratio.</param>
         /// <param name="totalMeter">The denominator meter to use for the ratio.</param>
         /// <param name="meterRateFunc">The function to extract a value from the MeterValue. Will be applied to both the numerator and denominator meters.</param>
-        public MeterRatioGauge(Meter hitMeter, Meter totalMeter, Func<MeterValue, double> meterRateFunc)
+        public HitRatioGauge(Meter hitMeter, Meter totalMeter, Func<MeterValue, double> meterRateFunc)
             : base(() => meterRateFunc(ValueReader.GetCurrentValue(hitMeter)), () => meterRateFunc(ValueReader.GetCurrentValue(totalMeter)))
-        {}
+        { }
 
 
         /// <summary>
-        /// Creates a new MeterRatioGauge with externally tracked Meter and Timer, and uses the OneMinuteRate from the MeterValue of the meters.
+        /// Creates a new HitRatioGauge with externally tracked Meter and Timer, and uses the OneMinuteRate from the MeterValue of the meters.
         /// </summary>
         /// <param name="hitMeter">The numerator meter to use for the ratio.</param>
         /// <param name="totalTimer">The denominator meter to use for the ratio.</param>
-        public MeterRatioGauge(Meter hitMeter, Timer totalTimer)
+        public HitRatioGauge(Meter hitMeter, Timer totalTimer)
             : this(hitMeter, totalTimer, value => value.OneMinuteRate)
-        {}
+        { }
 
 
         /// <summary>
-        /// Creates a new MeterRatioGauge with externally tracked Meter and Timer, and uses the provided meter rate function to extract the value for the ratio.
+        /// Creates a new HitRatioGauge with externally tracked Meter and Timer, and uses the provided meter rate function to extract the value for the ratio.
         /// </summary>
         /// <param name="hitMeter">The numerator meter to use for the ratio.</param>
         /// <param name="totalTimer">The denominator timer to use for the ratio.</param>
         /// <param name="meterRateFunc">The function to extract a value from the MeterValue. Will be applied to both the numerator and denominator meters.</param>
-        public MeterRatioGauge(Meter hitMeter, Timer totalTimer, Func<MeterValue, double> meterRateFunc)
+        public HitRatioGauge(Meter hitMeter, Timer totalTimer, Func<MeterValue, double> meterRateFunc)
             : base(() => meterRateFunc(ValueReader.GetCurrentValue(hitMeter)), () => meterRateFunc(ValueReader.GetCurrentValue(totalTimer).Rate))
-        {}
+        { }
     }
 }
