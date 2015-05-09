@@ -46,6 +46,7 @@ namespace Metrics
         /// GET /text => metrics in human readable text format
         /// </summary>
         /// <param name="httpUriPrefix">prefix where to start HTTP endpoint</param>
+		/// <param name="filter">Only report metrics that match the filter.</param> 
         /// <returns>Chain-able configuration object.</returns>
 		public MetricsConfig WithHttpEndpoint(string httpUriPrefix, MetricsFilter filter = null)
         {
