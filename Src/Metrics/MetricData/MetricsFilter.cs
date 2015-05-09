@@ -43,9 +43,12 @@ namespace Metrics.MetricData
 
         private Filter() { }
 
-        public static Filter New()
+        public static Filter New
         {
-            return new Filter();
+			get
+			{
+				return new Filter();
+			}
         }
 
         public Filter WhereContext(Predicate<string> condition)
