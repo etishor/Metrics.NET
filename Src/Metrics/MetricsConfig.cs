@@ -5,6 +5,7 @@ using System.Threading;
 using Metrics.Logging;
 using Metrics.Reports;
 using Metrics.Visualization;
+using Metrics.MetricData;
 
 namespace Metrics
 {
@@ -46,7 +47,7 @@ namespace Metrics
         /// </summary>
         /// <param name="httpUriPrefix">prefix where to start HTTP endpoint</param>
         /// <returns>Chain-able configuration object.</returns>
-        public MetricsConfig WithHttpEndpoint(string httpUriPrefix)
+		public MetricsConfig WithHttpEndpoint(string httpUriPrefix, MetricsFilter filter = null)
         {
             if (!isDisabled)
             {
@@ -60,7 +61,7 @@ namespace Metrics
                         using (this.listener)
                         {
                         }
-                        this.listener = new MetricsHttpListener(httpUriPrefix, this.context.DataProvider, this.healthStatus);
+						this.listener = new MetricsHttpListener(httpUriPrefix, this.context.DataProvider.WithFilter(filter), this.healthStatus);
                         this.listener.Start();
                         if (retries != MaxRetries)
                         {
@@ -201,7 +202,7 @@ namespace Metrics
             using (this.listener) { }
             this.listener = null;
         }
-
+			
         private void DisableAllReports()
         {
             this.reports.StopAndClearAllReports();
