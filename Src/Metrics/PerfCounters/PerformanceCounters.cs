@@ -12,6 +12,8 @@ namespace Metrics.PerfCounters
     {
         private static readonly ILog log = LogProvider.GetCurrentClassLogger();
 
+		private static readonly bool isMono = Type.GetType("Mono.Runtime") != null;
+
         private const string TotalInstance = "_Total";
         private const string GlobalInstance = "_Global_";
 
@@ -150,7 +152,10 @@ namespace Metrics.PerfCounters
                 }
             }
 
-            log.ErrorFormat("Performance counter does not exist [{0}] in category [{1}] for instance [{2}]", counter, category, instance ?? "none");
+			if(!isMono)
+			{
+				log.ErrorFormat("Performance counter does not exist [{0}] in category [{1}] for instance [{2}]", counter, category, instance ?? "none");
+			}
         }
     }
 }
