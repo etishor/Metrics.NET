@@ -122,9 +122,9 @@ namespace Metrics.Tests.Core
                 var name = "Test";
                 context.Gauge(name, () => 0.0, Unit.Calls);
                 context.Counter(name, Unit.Calls);
-                context.Meter(name, Unit.Calls, TimeUnit.Seconds);
-                context.Histogram(name, Unit.Calls, SamplingType.FavourRecent);
-                context.Timer(name, Unit.Calls, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+                context.Meter(name, Unit.Calls);
+                context.Histogram(name, Unit.Calls);
+                context.Timer(name, Unit.Calls);
             })).ShouldNotThrow();
         }
 

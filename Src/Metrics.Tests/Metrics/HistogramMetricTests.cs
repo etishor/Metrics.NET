@@ -43,5 +43,12 @@ namespace Metrics.Tests.Metrics
             histogram.Value.MinUserValue.Should().Be("A");
             histogram.Value.MaxUserValue.Should().Be("B");
         }
+
+        [Fact]
+        public void HistogramMetric_RecordsMeanForOneElement()
+        {
+            histogram.Update(1L);
+            histogram.Value.Mean.Should().Be(1);
+        }
     }
 }
