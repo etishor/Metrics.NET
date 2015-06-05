@@ -25,7 +25,7 @@ namespace Nancy.Metrics
 
         public static void MetricForRequestTime(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
-            var timer = NancyGlobalMetrics.NancyGlobalMetricsContext.Timer(metricName, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds);
+            var timer = NancyGlobalMetrics.NancyGlobalMetricsContext.Timer(metricName, Unit.Requests);
             var key = "Metrics.Nancy.Request.Timer." + metricName;
 
             module.Before.AddItemToStartOfPipeline(ctx =>
@@ -54,7 +54,7 @@ namespace Nancy.Metrics
 
         public static void MetricForResponseSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
-            var histogram = NancyGlobalMetrics.NancyGlobalMetricsContext.Histogram(metricName, Unit.Custom("bytes"), SamplingType.FavourRecent);
+            var histogram = NancyGlobalMetrics.NancyGlobalMetricsContext.Histogram(metricName, Unit.Custom("bytes"));
 
             module.After.AddItemToEndOfPipeline(ctx =>
             {
@@ -91,7 +91,7 @@ namespace Nancy.Metrics
 
         public static void MetricForRequestSize(this INancyModule module, string metricName, Predicate<RouteDescription> routePredicate)
         {
-            var histogram = NancyGlobalMetrics.NancyGlobalMetricsContext.Histogram(metricName, Unit.Custom("bytes"), SamplingType.FavourRecent);
+            var histogram = NancyGlobalMetrics.NancyGlobalMetricsContext.Histogram(metricName, Unit.Custom("bytes"));
 
             module.Before.AddItemToStartOfPipeline(ctx =>
             {

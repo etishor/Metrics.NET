@@ -125,7 +125,7 @@ namespace Nancy.Metrics
         /// <param name="metricName">Name of the metric.</param>
         public NancyGlobalMetrics WithPostAndPutRequestSizeHistogram(string metricName = "Post & Put Request Size")
         {
-            var histogram = this.context.Histogram(metricName, Unit.Bytes, SamplingType.FavourRecent);
+            var histogram = this.context.Histogram(metricName, Unit.Bytes);
 
             nancyPipelines.BeforeRequest.AddItemToStartOfPipeline(ctx =>
             {
@@ -160,7 +160,7 @@ namespace Nancy.Metrics
                     string name = string.Format("{0} {1}", ctx.ResolvedRoute.Description.Method, ctx.ResolvedRoute.Description.Path);
                     var startTime = (long)ctx.Items["RequestStartTimeKey"];
                     var elapsed = Clock.Default.Nanoseconds - startTime;
-                    this.context.Timer(name, Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds)
+                    this.context.Timer(name, Unit.Requests)
                         .Record(elapsed, TimeUnit.Nanoseconds);
                 }
             });

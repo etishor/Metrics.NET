@@ -1,9 +1,9 @@
-﻿using Metrics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Metrics;
 
 namespace Owin.Metrics.Middleware
 {
@@ -17,7 +17,7 @@ namespace Owin.Metrics.Middleware
         public PostAndPutRequestSizeHistogramMiddleware(MetricsContext context, string metricName, Regex[] ignorePatterns)
             : base(ignorePatterns)
         {
-            this.histogram = context.Histogram(metricName, Unit.Bytes, SamplingType.FavourRecent);
+            this.histogram = context.Histogram(metricName, Unit.Bytes);
         }
 
         public void Initialize(AppFunc next)
