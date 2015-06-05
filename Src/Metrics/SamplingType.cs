@@ -4,6 +4,15 @@ namespace Metrics
     public enum SamplingType
     {
         /// <summary>
+        /// Sampling will be done with a A High Dynamic Range (HDR) Histogram.
+        /// </summary>
+        /// <remarks>
+        /// The HDR Histogram is an extremely efficient implementation of a histogram. 
+        /// More information about <a href="http://hdrhistogram.github.io/HdrHistogram/">HDR Histogram</a>
+        /// </remarks>
+        HighDynamicRange,
+
+        /// <summary>
         /// Sampling will be done with a Exponentially Decaying Reservoir.
         /// </summary>
         /// <remarks>
@@ -13,7 +22,7 @@ namespace Metrics
         /// of the data has changed.
         /// More information about <a href="http://metrics.codahale.com/manual/core/#man-core-histograms">Exponentially Decaying Reservoir</a>
         /// </remarks>
-        FavourRecent,
+        ExponentiallyDecaying,
 
         /// <summary>
         /// Sampling will done with a Uniform Reservoir.
