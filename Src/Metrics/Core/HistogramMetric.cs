@@ -56,7 +56,8 @@ namespace Metrics.Core
         {
             switch (samplingType)
             {
-                case SamplingType.FavourRecent: return new ExponentiallyDecayingReservoir();
+                case SamplingType.HighDynamicRange: return new HdrHistogramReservoir();
+                case SamplingType.ExponentiallyDecaying: return new ExponentiallyDecayingReservoir();
                 case SamplingType.LongTerm: return new UniformReservoir();
                 case SamplingType.SlidingWindow: return new SlidingWindowReservoir();
             }
