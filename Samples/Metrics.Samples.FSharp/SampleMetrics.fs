@@ -30,7 +30,7 @@ type SampleMetrics () =
     /// <summary>
     /// measure the time rate and duration of requests
     /// </summary>
-    let timer = Metric.Timer("Requests", Unit.Requests, SamplingType.FavourRecent, TimeUnit.Seconds, TimeUnit.Milliseconds)
+    let timer = Metric.Timer("Requests", Unit.Requests, SamplingType.HighDynamicRange, TimeUnit.Seconds, TimeUnit.Milliseconds)
 
     let mutable someValue : double = 1.0;
 
