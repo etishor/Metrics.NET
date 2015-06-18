@@ -22,7 +22,7 @@ namespace Metrics.ElasticSearch
             public string ToJsonString()
             {
                 var meta = string.Format("{{ \"index\" : {{ \"_index\" : \"{0}\", \"_type\" : \"{1}\"}} }}", this.Index, this.Type);
-                return meta + Environment.NewLine + this.Object.AsJson(false);
+                return meta + Environment.NewLine + this.Object.AsJson(false) + Environment.NewLine;
             }
         }
 
@@ -46,7 +46,7 @@ namespace Metrics.ElasticSearch
             base.EndReport(contextName);
             using (var client = new WebClient())
             {
-                var json = string.Join(Environment.NewLine, this.data.Select(d => d.ToJsonString()));
+                var json = string.Join(string.Empty, this.data.Select(d => d.ToJsonString()));
                 client.UploadString(this.elasticSearchUri, json);
             }
         }
