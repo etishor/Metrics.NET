@@ -45,13 +45,13 @@ namespace Metrics
         /// GET /text => metrics in human readable text format
         /// </summary>
         /// <param name="httpUriPrefix">prefix where to start HTTP endpoint</param>
+        /// <param name="maxRetries">maximum number of attempts to start the http listener. Note the retry time between attemps is dependent on this value</param>
         /// <returns>Chain-able configuration object.</returns>
-        public MetricsConfig WithHttpEndpoint(string httpUriPrefix)
+        public MetricsConfig WithHttpEndpoint(string httpUriPrefix, int maxRetries = 3)
         {
             if (!isDisabled)
             {
-                const int MaxRetries = 3;
-                var retries = MaxRetries;
+                var retries = maxRetries;
 
                 do
                 {
@@ -62,9 +62,9 @@ namespace Metrics
                         }
                         this.listener = new MetricsHttpListener(httpUriPrefix, this.context.DataProvider, this.healthStatus);
                         this.listener.Start();
-                        if (retries != MaxRetries)
+                        if (retries != maxRetries)
                         {
-                            log.InfoFormat("HttpListener started successfully after {0} retries", MaxRetries - retries);
+                            log.InfoFormat("HttpListener started successfully after {0} retries", maxRetries - retries);
                         }
                         retries = 0;
                     }
@@ -73,13 +73,13 @@ namespace Metrics
                         retries--;
                         if (retries > 0)
                         {
-                            log.WarnException("Unable to start HTTP Listener. Sleeping for {0} sec and retrying {1} more times", x, MaxRetries - retries, retries);
-                            Thread.Sleep(1000 * (MaxRetries - retries));
+                            log.WarnException("Unable to start HTTP Listener. Sleeping for {0} sec and retrying {1} more times", x, maxRetries - retries, retries);
+                            Thread.Sleep(1000 * (maxRetries - retries));
                         }
                         else
                         {
                             MetricsErrorHandler.Handle(x,
-                                string.Format("Unable to start HTTP Listener. Retried {0} times, giving up...", MaxRetries));
+                                string.Format("Unable to start HTTP Listener. Retried {0} times, giving up...", maxRetries));
                         }
 
                     }
