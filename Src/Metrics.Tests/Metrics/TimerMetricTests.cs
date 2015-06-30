@@ -116,5 +116,27 @@ namespace Metrics.Tests.Metrics
             context2.Dispose();
             timer.Value.ActiveSessions.Should().Be(0);
         }
+
+        [Fact]
+        public void TimerMetric_UserValueCanBeSetAfterContextCreation()
+        {
+            using (var x = timer.NewContext())
+            {
+                x.TrackUserValue("test");
+            }
+
+            timer.Value.Histogram.LastUserValue.Should().Be("test");
+        }
+
+        [Fact]
+        public void TimerMetric_UserValueCanBeOverwrittenAfterContextCreation()
+        {
+            using (var x = timer.NewContext("a"))
+            {
+                x.TrackUserValue("b");
+            }
+
+            timer.Value.Histogram.LastUserValue.Should().Be("b");
+        }
     }
 }

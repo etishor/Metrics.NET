@@ -104,12 +104,12 @@ namespace Metrics
         }
 
         /// <summary>
-        /// Gets or sets the user value associated with this timer context.
+        /// Set the user value for this timer context.
         /// </summary>
-        public string UserValue
+        /// <param name="value">New user value to use for this context.</param>
+        public void TrackUserValue(string value)
         {
-            get { return this.userValue; }
-            set { this.userValue = value; }
+            this.userValue = value;
         }
 
         /// <summary>
