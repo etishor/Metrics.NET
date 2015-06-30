@@ -1,3 +1,6 @@
+###0.3.3-pre / 2015-06-300
+* introduce configurable Default sampling type
+
 ###0.3.2-pre / 2015-04-29
 * better meter performance (on recording path meter has same performance as a counter)
 * default to using HdrHistogram port reservoir for histogram and timer metrics ( greatly reduces contention and increases performance )
