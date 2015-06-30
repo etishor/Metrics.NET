@@ -96,7 +96,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         Histogram Histogram(string name,
             Unit unit,
-            SamplingType samplingType = SamplingType.HighDynamicRange,
+            SamplingType samplingType = SamplingType.Default,
             MetricTags tags = default(MetricTags));
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace Metrics
         /// <returns>Reference to the metric</returns>
         Timer Timer(string name,
             Unit unit,
-            SamplingType samplingType = SamplingType.HighDynamicRange,
+            SamplingType samplingType = SamplingType.Default,
             TimeUnit rateUnit = TimeUnit.Seconds,
             TimeUnit durationUnit = TimeUnit.Milliseconds,
             MetricTags tags = default(MetricTags));

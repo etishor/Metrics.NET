@@ -1,11 +1,12 @@
 ﻿
 using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Threading;
 using Metrics.Logging;
+using Metrics.MetricData;
 using Metrics.Reports;
 using Metrics.Visualization;
-using Metrics.MetricData;
 
 namespace Metrics
 {
@@ -13,7 +14,7 @@ namespace Metrics
     {
         private static readonly ILog log = LogProvider.GetCurrentClassLogger();
 
-        public static readonly bool GlobalyDisabledMetrics = ReadGloballyDisableMetricsSetting();
+        public static readonly bool GloballyDisabledMetrics = ReadGloballyDisableMetricsSetting();
 
         private readonly MetricsContext context;
         private readonly MetricsReports reports;
@@ -21,13 +22,24 @@ namespace Metrics
         private Func<HealthStatus> healthStatus;
         private MetricsHttpListener listener;
 
-        private bool isDisabled = MetricsConfig.GlobalyDisabledMetrics;
+        private SamplingType defaultSamplingType = SamplingType.ExponentiallyDecaying;
+
+        private bool isDisabled = MetricsConfig.GloballyDisabledMetrics;
+
+        public SamplingType DefaultSamplingType
+        {
+            get
+            {
+                Debug.Assert(this.defaultSamplingType != SamplingType.Default);
+                return this.defaultSamplingType;
+            }
+        }
 
         public MetricsConfig(MetricsContext context)
         {
             this.context = context;
 
-            if (!GlobalyDisabledMetrics)
+            if (!GloballyDisabledMetrics)
             {
                 this.healthStatus = HealthChecks.GetStatus;
                 this.reports = new MetricsReports(this.context.DataProvider, this.healthStatus);
@@ -46,9 +58,9 @@ namespace Metrics
         /// GET /text => metrics in human readable text format
         /// </summary>
         /// <param name="httpUriPrefix">prefix where to start HTTP endpoint</param>
-		/// <param name="filter">Only report metrics that match the filter.</param> 
+        /// <param name="filter">Only report metrics that match the filter.</param> 
         /// <returns>Chain-able configuration object.</returns>
-		public MetricsConfig WithHttpEndpoint(string httpUriPrefix, MetricsFilter filter = null)
+        public MetricsConfig WithHttpEndpoint(string httpUriPrefix, MetricsFilter filter = null)
         {
             if (!isDisabled)
             {
@@ -62,7 +74,7 @@ namespace Metrics
                         using (this.listener)
                         {
                         }
-						this.listener = new MetricsHttpListener(httpUriPrefix, this.context.DataProvider.WithFilter(filter), this.healthStatus);
+                        this.listener = new MetricsHttpListener(httpUriPrefix, this.context.DataProvider.WithFilter(filter), this.healthStatus);
                         this.listener.Start();
                         if (retries != MaxRetries)
                         {
@@ -191,6 +203,21 @@ namespace Metrics
             return extension(this.context, this.healthStatus);
         }
 
+        /// <summary>
+        /// Configure the default sampling type to use for histograms.
+        /// </summary>
+        /// <param name="type">Type of sampling to use.</param>
+        /// <returns>Chain-able configuration object.</returns>
+        public MetricsConfig WithDefaultSamplingType(SamplingType type)
+        {
+            if (type == SamplingType.Default)
+            {
+                throw new InvalidOperationException("Sampling type other than default must be specified");
+            }
+            this.defaultSamplingType = type;
+            return this;
+        }
+
         public MetricsConfig WithInternalMetrics()
         {
             Metric.EnableInternalMetrics();
@@ -203,7 +230,7 @@ namespace Metrics
             using (this.listener) { }
             this.listener = null;
         }
-			
+
         private void DisableAllReports()
         {
             this.reports.StopAndClearAllReports();
@@ -213,7 +240,7 @@ namespace Metrics
 
         internal void ApplySettingsFromConfigFile()
         {
-            if (!GlobalyDisabledMetrics)
+            if (!GloballyDisabledMetrics)
             {
                 ConfigureCsvReports();
                 ConfigureHttpListener();

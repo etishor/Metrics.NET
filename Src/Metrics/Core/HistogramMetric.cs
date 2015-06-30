@@ -54,14 +54,24 @@ namespace Metrics.Core
 
         private static Reservoir SamplingTypeToReservoir(SamplingType samplingType)
         {
-            switch (samplingType)
+            while (true)
             {
-                case SamplingType.HighDynamicRange: return new HdrHistogramReservoir();
-                case SamplingType.ExponentiallyDecaying: return new ExponentiallyDecayingReservoir();
-                case SamplingType.LongTerm: return new UniformReservoir();
-                case SamplingType.SlidingWindow: return new SlidingWindowReservoir();
+                switch (samplingType)
+                {
+                    case SamplingType.Default:
+                        samplingType = Metric.Config.DefaultSamplingType;
+                        continue;
+                    case SamplingType.HighDynamicRange:
+                        return new HdrHistogramReservoir();
+                    case SamplingType.ExponentiallyDecaying:
+                        return new ExponentiallyDecayingReservoir();
+                    case SamplingType.LongTerm:
+                        return new UniformReservoir();
+                    case SamplingType.SlidingWindow:
+                        return new SlidingWindowReservoir();
+                }
+                throw new InvalidOperationException("Sampling type not implemented " + samplingType);
             }
-            throw new InvalidOperationException("Sampling type not implemented " + samplingType);
         }
     }
 }

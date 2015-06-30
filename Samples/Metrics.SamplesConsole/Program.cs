@@ -1,7 +1,7 @@
 ﻿using System;
+using Metrics.MetricData;
 using Metrics.Samples;
 using Metrics.Utils;
-using Metrics.MetricData;
 
 namespace Metrics.SamplesConsole
 {
@@ -12,7 +12,7 @@ namespace Metrics.SamplesConsole
             //Metric.CompletelyDisableMetrics();
 
             Metric.Config
-				.WithHttpEndpoint("http://localhost:1234/metrics/", Filter.New.WhereNameStartsWith("Requests"))
+                .WithHttpEndpoint("http://localhost:1234/metrics/", Filter.New.WhereNameStartsWith("Requests"))
                 .WithAllCounters()
                 .WithInternalMetrics()
                 .WithReporting(config => config

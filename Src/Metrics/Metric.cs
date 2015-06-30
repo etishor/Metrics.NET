@@ -23,7 +23,7 @@ namespace Metrics
         static Metric()
         {
             globalContext = new DefaultMetricsContext(GetGlobalContextName());
-            if (MetricsConfig.GlobalyDisabledMetrics)
+            if (MetricsConfig.GloballyDisabledMetrics)
             {
                 globalContext.CompletelyDisableMetrics();
                 log.Info(() => "Metrics: Metrics.NET Library is completely disabled. Set Metrics.CompletelyDisableMetrics to false to re-enable.");
@@ -157,7 +157,7 @@ namespace Metrics
         /// <param name="samplingType">Type of the sampling to use (see SamplingType for details ).</param>
         /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        public static Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.HighDynamicRange, MetricTags tags = default(MetricTags))
+        public static Histogram Histogram(string name, Unit unit, SamplingType samplingType = SamplingType.Default, MetricTags tags = default(MetricTags))
         {
             return globalContext.Histogram(name, unit, samplingType, tags);
         }
@@ -173,7 +173,7 @@ namespace Metrics
         /// <param name="durationUnit">Time unit for reporting durations. Defaults to Milliseconds. </param>
         /// <param name="tags">Optional set of tags that can be associated with the metric.</param>
         /// <returns>Reference to the metric</returns>
-        public static Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.HighDynamicRange,
+        public static Timer Timer(string name, Unit unit, SamplingType samplingType = SamplingType.Default,
             TimeUnit rateUnit = TimeUnit.Seconds, TimeUnit durationUnit = TimeUnit.Milliseconds, MetricTags tags = default(MetricTags))
         {
             return globalContext.Timer(name, unit, samplingType, rateUnit, durationUnit, tags);
