@@ -115,6 +115,7 @@
     <Compile Include="MetricsConfigTests\HttpEndpointTests.cs" />
     <Compile Include="Metrics\CounterMetricTests.cs" />
     <Compile Include="Metrics\GaugeMetricTests.cs" />
+    <Compile Include="Sampling\DefaultSamplingTypeTests.cs" />
     <Compile Include="Sampling\WeightedSnapshotTests.cs" />
     <Compile Include="Utils\EWMATests.cs" />
     <Compile Include="Sampling\ExponentiallyDecayingReservoirTests.cs" />

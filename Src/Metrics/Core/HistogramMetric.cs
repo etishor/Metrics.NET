@@ -12,7 +12,7 @@ namespace Metrics.Core
         private UserValueWrapper last;
 
         public HistogramMetric()
-            : this(new HdrHistogramReservoir()) { }
+            : this(SamplingType.Default) { }
 
         public HistogramMetric(SamplingType samplingType)
             : this(SamplingTypeToReservoir(samplingType)) { }

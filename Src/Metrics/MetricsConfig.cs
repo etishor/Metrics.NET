@@ -214,7 +214,7 @@ namespace Metrics
         {
             if (type == SamplingType.Default)
             {
-                throw new InvalidOperationException("Sampling type other than default must be specified");
+                throw new ArgumentException("Sampling type other than default must be specified", "type");
             }
             this.defaultSamplingType = type;
             return this;
