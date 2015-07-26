@@ -1,7 +1,7 @@
-﻿using System;
-using Metrics.ConcurrencyUtilities;
+﻿using Metrics.ConcurrencyUtilities;
 using Metrics.MetricData;
 using Metrics.Utils;
+using System;
 
 namespace Metrics.Core
 {
@@ -24,7 +24,7 @@ namespace Metrics.Core
         private VolatileDouble m1Rate = new VolatileDouble(0.0);
         private VolatileDouble m5Rate = new VolatileDouble(0.0);
         private VolatileDouble m15Rate = new VolatileDouble(0.0);
-        private volatile bool initialized = false;
+        private volatile bool initialized;
 
         public void Mark(long count)
         {

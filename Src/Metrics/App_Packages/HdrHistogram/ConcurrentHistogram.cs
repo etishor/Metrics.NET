@@ -5,8 +5,8 @@
 // Java Version repo: https://github.com/HdrHistogram/HdrHistogram
 // Latest ported version is available in the Java submodule in the root of the repo
 
-using System.Diagnostics;
 using Metrics.ConcurrencyUtilities;
+using System.Diagnostics;
 
 namespace HdrHistogram
 {
@@ -486,7 +486,7 @@ namespace HdrHistogram
             activeCounts = new AtomicLongArray(countsArrayLength);
             activeCountsNormalizingIndexOffset = 0;
 
-            inactiveCounts = new AtomicLongArray(countsArrayLength); ;
+            inactiveCounts = new AtomicLongArray(countsArrayLength);
             inactiveCountsNormalizingIndexOffset = 0;
         }
 
@@ -501,7 +501,7 @@ namespace HdrHistogram
             activeCounts = new AtomicLongArray(countsArrayLength);
             activeCountsNormalizingIndexOffset = 0;
 
-            inactiveCounts = new AtomicLongArray(countsArrayLength); ;
+            inactiveCounts = new AtomicLongArray(countsArrayLength);
             inactiveCountsNormalizingIndexOffset = 0;
         }
     }

@@ -1,14 +1,14 @@
 ﻿
+using Metrics.ConcurrencyUtilities;
 using System;
 using System.Linq;
-using Metrics.ConcurrencyUtilities;
+using static System.Math;
 
 namespace Metrics.Sampling
 {
     public sealed class UniformReservoir : Reservoir
     {
         private const int DefaultSize = 1028;
-        private const int BitsPerLong = 63;
 
         private AtomicLong count = new AtomicLong();
 
@@ -23,15 +23,7 @@ namespace Metrics.Sampling
             this.values = new UserValueWrapper[size];
         }
 
-        public long Count { get { return this.count.GetValue(); } }
-
-        public int Size
-        {
-            get
-            {
-                return Math.Min((int)this.count.GetValue(), this.values.Length);
-            }
-        }
+        public int Size => Min((int)this.count.GetValue(), this.values.Length);
 
         public Snapshot GetSnapshot(bool resetReservoir = false)
         {
@@ -46,7 +38,7 @@ namespace Metrics.Sampling
 
             if (resetReservoir)
             {
-                count.SetValue(0L);
+                this.count.SetValue(0L);
             }
 
             Array.Sort(snapshotValues, UserValueWrapper.Comparer);

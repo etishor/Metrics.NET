@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Metrics.Logging;
+using Metrics.Utils;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using Metrics.Logging;
-using Metrics.Utils;
 
 namespace Metrics.Graphite
 {
@@ -47,10 +47,7 @@ namespace Metrics.Graphite
         {
             try
             {
-                if (this.client != null)
-                {
-                    this.client.GetStream().Flush();
-                }
+                this.client?.GetStream().Flush();
             }
             catch (Exception x)
             {

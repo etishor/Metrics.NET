@@ -66,10 +66,7 @@ namespace Metrics.Graphite
             try
             {
                 WriteCurrentJar();
-                if (this.client != null)
-                {
-                    this.client.GetStream().Flush();
-                }
+                this.client?.GetStream().Flush();
             }
             catch (Exception x)
             {

@@ -1,7 +1,7 @@
 ﻿
+using Metrics.ConcurrencyUtilities;
 using System;
 using System.Diagnostics;
-using Metrics.ConcurrencyUtilities;
 
 namespace Metrics.Utils
 {
@@ -22,7 +22,7 @@ namespace Metrics.Utils
         private static readonly double M5Alpha = 1 - Math.Exp(-Interval / SecondsPerMinute / FiveMinutes);
         private static readonly double M15Alpha = 1 - Math.Exp(-Interval / SecondsPerMinute / FifteenMinutes);
 
-        private volatile bool initialized = false;
+        private volatile bool initialized;
         private VolatileDouble rate = new VolatileDouble(0.0);
 
         private readonly StripedLongAdder uncounted = new StripedLongAdder();

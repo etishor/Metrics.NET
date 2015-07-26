@@ -1,4 +1,8 @@
 ﻿
+using Metrics.Json;
+using Metrics.Logging;
+using Metrics.MetricData;
+using Metrics.Reporters;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -7,10 +11,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Metrics.Json;
-using Metrics.Logging;
-using Metrics.MetricData;
-using Metrics.Reporters;
 
 
 namespace Metrics.Visualization
@@ -74,7 +74,7 @@ namespace Metrics.Visualization
                         if (remainingRetries > 0)
                         {
                             log.WarnException("Unable to start HTTP Listener. Sleeping for {0} sec and retrying {1} more times", x, maxRetries - remainingRetries, remainingRetries);
-                            await Task.Delay(1000*(maxRetries - remainingRetries), token).ConfigureAwait(false);
+                            await Task.Delay(1000 * (maxRetries - remainingRetries), token).ConfigureAwait(false);
                         }
                         else
                         {
@@ -95,7 +95,7 @@ namespace Metrics.Visualization
         public void Start()
         {
             this.httpListener.Start();
-            this.processingTask = Task.Factory.StartNew(ProcessRequests,this.cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+            this.processingTask = Task.Factory.StartNew(ProcessRequests, this.cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
         private void ProcessRequests()
@@ -143,11 +143,12 @@ namespace Metrics.Visualization
             }
         }
 
-        private bool ProcessRequest(HttpListenerContext context)
+        private void ProcessRequest(HttpListenerContext context)
         {
             if (context.Request.HttpMethod.ToUpperInvariant() != "GET")
             {
-                return WriteNotFound(context);
+                WriteNotFound(context);
+                return;
             }
 
             var urlPath = context.Request.RawUrl.Substring(this.prefixPath.Length)
@@ -159,35 +160,43 @@ namespace Metrics.Visualization
                     if (!context.Request.Url.ToString().EndsWith("/"))
                     {
                         context.Response.Redirect(context.Request.Url + "/");
-                        return true;
                     }
                     else
                     {
-                        return WriteFlotApp(context, this.cts.Token);
+                        WriteFlotApp(context);
                     }
+                    break;
                 case "/favicon.ico":
-                    return WriteFavIcon(context, this.cts.Token);
+                    WriteFavIcon(context);
+                    break;
                 case "/json":
-                    return WriteJsonMetrics(context, this.metricsDataProvider);
+                    WriteJsonMetrics(context, this.metricsDataProvider);
+                    break;
                 case "/v1/json":
-                    return WriteJsonMetricsV1(context, this.metricsDataProvider);
+                    WriteJsonMetricsV1(context, this.metricsDataProvider);
+                    break;
                 case "/v2/json":
-                    return WriteJsonMetricsV2(context, this.metricsDataProvider);
-
+                    WriteJsonMetricsV2(context, this.metricsDataProvider);
+                    break;
                 case "/health":
-                    return WriteHealthStatus(context, this.healthStatus);
+                    WriteHealthStatus(context, this.healthStatus);
+                    break;
                 case "/v1/health":
-                    return WriteHealthStatus(context, this.healthStatus);
-
+                    WriteHealthStatus(context, this.healthStatus);
+                    break;
                 case "/text":
-                    return WriteTextMetrics(context, this.metricsDataProvider, this.healthStatus);
+                    WriteTextMetrics(context, this.metricsDataProvider, this.healthStatus);
+                    break;
                 case "/ping":
-                    return WritePong(context);
+                    WritePong(context);
+                    break;
+                default:
+                    WriteNotFound(context);
+                    break;
             }
-            return WriteNotFound(context);
         }
 
-        private static bool WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
+        private static void WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
         {
             var status = healthStatus();
             var json = JsonHealthChecks.BuildJson(status);
@@ -195,58 +204,60 @@ namespace Metrics.Visualization
             var httpStatus = status.IsHealthy ? 200 : 500;
             var httpStatusDescription = status.IsHealthy ? "OK" : "Internal Server Error";
 
-            return WriteString(context, json, JsonHealthChecks.HealthChecksMimeType, httpStatus, httpStatusDescription);
+            WriteString(context, json, JsonHealthChecks.HealthChecksMimeType, httpStatus, httpStatusDescription);
         }
 
-        private static bool WritePong(HttpListenerContext context)
+        private static void WritePong(HttpListenerContext context)
         {
-            return WriteString(context, "pong", "text/plain");
+            WriteString(context, "pong", "text/plain");
         }
 
-        private static bool WriteNotFound(HttpListenerContext context)
+        private static void WriteNotFound(HttpListenerContext context)
         {
-            return WriteString(context, NotFoundResponse, "text/plain", 404, "NOT FOUND");
+            WriteString(context, NotFoundResponse, "text/plain", 404, "NOT FOUND");
         }
 
-        private static bool WriteTextMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
+        private static void WriteTextMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
         {
             var text = StringReport.RenderMetrics(metricsDataProvider.CurrentMetricsData, healthStatus);
-            return WriteString(context, text, "text/plain");
+            WriteString(context, text, "text/plain");
         }
 
-        private static bool WriteJsonMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
+        private static void WriteJsonMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
         {
             var acceptHeader = context.Request.Headers["Accept"] ?? string.Empty;
 
             if (acceptHeader.Contains(JsonBuilderV2.MetricsMimeType))
             {
-                return WriteJsonMetricsV2(context, metricsDataProvider);
+                WriteJsonMetricsV2(context, metricsDataProvider);
             }
-
-            return WriteJsonMetricsV1(context, metricsDataProvider);
+            else
+            {
+                WriteJsonMetricsV1(context, metricsDataProvider);
+            }
         }
 
-        private static bool WriteJsonMetricsV1(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
+        private static void WriteJsonMetricsV1(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
         {
             using (jsonv1Metrics.NewContext())
             {
                 var json = JsonBuilderV1.BuildJson(metricsDataProvider.CurrentMetricsData);
-                jsonv1Size.Update(json.Length/1024);
-                return WriteString(context, json, JsonBuilderV1.MetricsMimeType);
+                jsonv1Size.Update(json.Length / 1024);
+                WriteString(context, json, JsonBuilderV1.MetricsMimeType);
             }
         }
 
-        private static bool WriteJsonMetricsV2(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
+        private static void WriteJsonMetricsV2(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
         {
             using (jsonv2Metrics.NewContext())
             {
                 var json = JsonBuilderV2.BuildJson(metricsDataProvider.CurrentMetricsData);
-                jsonv2Size.Update(json.Length/1024);
-                return WriteString(context, json, JsonBuilderV2.MetricsMimeType);
+                jsonv2Size.Update(json.Length / 1024);
+                WriteString(context, json, JsonBuilderV2.MetricsMimeType);
             }
         }
 
-        private static bool WriteString(HttpListenerContext context, string data, string contentType,
+        private static void WriteString(HttpListenerContext context, string data, string contentType,
             int httpStatus = 200, string httpStatusDescription = "OK")
         {
             AddCorsHeaders(context.Response);
@@ -273,20 +284,18 @@ namespace Metrics.Visualization
                     writer.Write(data);
                 }
             }
-            return true;
         }
 
-        private static bool WriteFavIcon(HttpListenerContext context,CancellationToken token)
+        private static void WriteFavIcon(HttpListenerContext context)
         {
             context.Response.ContentType = FlotWebApp.FavIconMimeType;
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
 
             FlotWebApp.WriteFavIcon(context.Response.OutputStream);
-            return true;
         }
 
-        private static bool WriteFlotApp(HttpListenerContext context, CancellationToken token)
+        private static void WriteFlotApp(HttpListenerContext context)
         {
             context.Response.ContentType = "text/html";
             context.Response.StatusCode = 200;
@@ -300,7 +309,6 @@ namespace Metrics.Visualization
             }
 
             FlotWebApp.WriteFlotAppAsync(context.Response.OutputStream, !acceptsGzip);
-            return true;
         }
 
         private static bool AcceptsGzip(HttpListenerRequest request)

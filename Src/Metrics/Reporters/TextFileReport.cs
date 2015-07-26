@@ -8,7 +8,7 @@ namespace Metrics.Reporters
     {
         private readonly string fileName;
 
-        private StringBuilder buffer = null;
+        private StringBuilder buffer;
 
         public TextFileReport(string fileName)
         {

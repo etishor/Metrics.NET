@@ -38,7 +38,7 @@ namespace Metrics
         {
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
 
             this.Name = name;
@@ -53,7 +53,7 @@ namespace Metrics
         {
             if (!string.IsNullOrEmpty(this.Name))
             {
-                return string.Format("{0} {1}", value.ToString(CultureInfo.InvariantCulture), this.Name);
+                return $"{value.ToString(CultureInfo.InvariantCulture)} {this.Name}";
             }
             return value.ToString();
         }
@@ -62,19 +62,19 @@ namespace Metrics
         {
             if (!string.IsNullOrEmpty(this.Name))
             {
-                return string.Format("{0} {1}", value.ToString("F2", CultureInfo.InvariantCulture), this.Name);
+                return $"{value.ToString("F2", CultureInfo.InvariantCulture)} {this.Name}";
             }
             return value.ToString("F2", CultureInfo.InvariantCulture);
         }
 
         public string FormatRate(double value, TimeUnit timeUnit)
         {
-            return string.Format("{0} {1}/{2}", value.ToString("F2", CultureInfo.InvariantCulture), this.Name, timeUnit.Unit());
+            return $"{value.ToString("F2", CultureInfo.InvariantCulture)} {this.Name}/{timeUnit.Unit()}";
         }
 
         public string FormatDuration(double value, TimeUnit? timeUnit)
         {
-            return string.Format("{0} {1}", value.ToString("F2", CultureInfo.InvariantCulture), timeUnit.HasValue ? timeUnit.Value.Unit() : this.Name);
+            return $"{value.ToString("F2", CultureInfo.InvariantCulture)} {(timeUnit.HasValue ? timeUnit.Value.Unit() : this.Name)}";
         }
     }
 }

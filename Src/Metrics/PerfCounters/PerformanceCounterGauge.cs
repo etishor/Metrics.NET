@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Metrics.MetricData;
+using System;
 using System.Diagnostics;
 using System.Security.Principal;
-using Metrics.MetricData;
 
 namespace Metrics.PerfCounters
 {
@@ -53,7 +53,7 @@ namespace Metrics.PerfCounters
             {
                 try
                 {
-                    return this.performanceCounter != null ? this.performanceCounter.NextValue() : double.NaN;
+                    return this.performanceCounter?.NextValue() ?? double.NaN;
                 }
                 catch (Exception x)
                 {

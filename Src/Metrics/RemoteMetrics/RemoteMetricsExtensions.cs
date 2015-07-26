@@ -1,12 +1,12 @@
-﻿using System;
-using Metrics.Json;
+﻿using Metrics.Json;
 using Metrics.RemoteMetrics;
+using System;
 
 namespace Metrics
 {
     public static class RemoteMetricsExtensions
     {
-        private static Func<string, JsonMetricsContext> jsonDeserializer = null;
+        private static Func<string, JsonMetricsContext> jsonDeserializer;
 
 
         public static MetricsConfig WithJsonDeserialzier(this MetricsConfig config, Func<string, JsonMetricsContext> jsonDeserializer)

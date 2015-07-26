@@ -110,7 +110,7 @@ namespace Metrics.Utils
                 case TimeUnit.Hours: return "h";
                 case TimeUnit.Days: return "days";
                 default:
-                    throw new ArgumentOutOfRangeException("unit");
+                    throw new ArgumentOutOfRangeException(nameof(unit));
             }
         }
 
@@ -126,7 +126,7 @@ namespace Metrics.Utils
                 case "h": return TimeUnit.Hours;
                 case "days": return TimeUnit.Days;
                 default:
-                    throw new ArgumentOutOfRangeException("unit");
+                    throw new ArgumentOutOfRangeException(nameof(unit));
             }
         }
 

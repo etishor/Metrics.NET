@@ -51,7 +51,7 @@ namespace Metrics.Reporters
             {
                 var key = "Item " + i.ToString();
                 var item = value.Items[i];
-                var val = string.Format("{0:00.00}% {1,5} {2} [{3}]", item.Percent, item.Count, unit.Name, item.Item);
+                var val = $"{item.Percent:00.00}% {item.Count,5} {unit.Name} [{item.Item}]";
                 WriteValue(key, val);
             }
         }
@@ -69,7 +69,7 @@ namespace Metrics.Reporters
             {
                 var key = "Item " + i.ToString();
                 var item = value.Items[i];
-                var val = string.Format("{0:00.00}% {1,5} {2} [{3}]", item.Percent, item.Value.Count, unit.Name, item.Item);
+                var val = $"{item.Percent:00.00}% {item.Value.Count,5} {unit.Name} [{item.Item}]";
                 WriteValue(key, val);
                 WriteMeter(item.Value, unit, rateUnit);
             }

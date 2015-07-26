@@ -26,8 +26,7 @@ namespace Metrics.Tests.Visualization
             var listener = await StartListener("HttpEndpointCanBeDisposed");
             listener.Dispose();
         }
-
-
+        
         [Fact]
         public async Task MetricsHttpListener_CanBeDoubleDisposed()
         {

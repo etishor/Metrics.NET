@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using Metrics.Json;
+﻿using Metrics.Json;
 using Metrics.MetricData;
 using Metrics.Reporters;
 using Metrics.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 
 namespace Metrics.ElasticSearch
 {
@@ -21,12 +21,12 @@ namespace Metrics.ElasticSearch
             public JsonObject Object { get; set; }
             public string ToJsonString()
             {
-                var meta = string.Format("{{ \"index\" : {{ \"_index\" : \"{0}\", \"_type\" : \"{1}\"}} }}", this.Index, this.Type);
+                var meta = $"{{ \"index\" : {{ \"_index\" : \"{this.Index}\", \"_type\" : \"{this.Type}\"}} }}";
                 return meta + Environment.NewLine + this.Object.AsJson(false) + Environment.NewLine;
             }
         }
 
-        private List<ESDocument> data = null;
+        private List<ESDocument> data;
 
         public ElasticSearchReport(Uri elasticSearchUri, string elasticSearchIndex)
         {
@@ -57,7 +57,7 @@ namespace Metrics.ElasticSearch
             {
                 Index = this.elasticSearchIndex,
                 Type = type,
-                Object = new JsonObject(new[] { 
+                Object = new JsonObject(new[] {
                          new JsonProperty("Timestamp", Clock.FormatTimestamp(this.CurrentContextTimestamp)),
                          new JsonProperty("Type",type),
                          new JsonProperty("Name",name),
@@ -71,7 +71,7 @@ namespace Metrics.ElasticSearch
         {
             if (!double.IsNaN(value) && !double.IsInfinity(value))
             {
-                Pack("Gauge", name, unit, tags, new[] { 
+                Pack("Gauge", name, unit, tags, new[] {
                     new JsonProperty("Value", value),
                 });
             }
@@ -79,22 +79,22 @@ namespace Metrics.ElasticSearch
 
         protected override void ReportCounter(string name, CounterValue value, Unit unit, MetricTags tags)
         {
-            var itemProperties = value.Items.SelectMany(i => new[] 
+            var itemProperties = value.Items.SelectMany(i => new[]
             {
-                new JsonProperty(i.Item + " - Count", i.Count), 
+                new JsonProperty(i.Item + " - Count", i.Count),
                 new JsonProperty(i.Item + " - Percent", i.Percent),
             });
 
-            Pack("Counter", name, unit, tags, new[] { 
+            Pack("Counter", name, unit, tags, new[] {
                 new JsonProperty("Count", value.Count),
             }.Concat(itemProperties));
         }
 
         protected override void ReportMeter(string name, MeterValue value, Unit unit, TimeUnit rateUnit, MetricTags tags)
         {
-            var itemProperties = value.Items.SelectMany(i => new[] 
+            var itemProperties = value.Items.SelectMany(i => new[]
             {
-                new JsonProperty(i.Item + " - Count", i.Value.Count), 
+                new JsonProperty(i.Item + " - Count", i.Value.Count),
                 new JsonProperty(i.Item + " - Percent", i.Percent),
                 new JsonProperty(i.Item + " - Mean Rate", i.Value.MeanRate),
                 new JsonProperty(i.Item + " - 1 Min Rate", i.Value.OneMinuteRate),
@@ -102,7 +102,7 @@ namespace Metrics.ElasticSearch
                 new JsonProperty(i.Item + " - 15 Min Rate", i.Value.FifteenMinuteRate)
             });
 
-            Pack("Meter", name, unit, tags, new[] { 
+            Pack("Meter", name, unit, tags, new[] {
                 new JsonProperty("Count", value.Count),
                 new JsonProperty("Mean Rate", value.MeanRate),
                 new JsonProperty("1 Min Rate", value.OneMinuteRate),
@@ -113,7 +113,7 @@ namespace Metrics.ElasticSearch
 
         protected override void ReportHistogram(string name, HistogramValue value, Unit unit, MetricTags tags)
         {
-            Pack("Histogram", name, unit, tags, new[] { 
+            Pack("Histogram", name, unit, tags, new[] {
                 new JsonProperty("Total Count",value.Count),
                 new JsonProperty("Last", value.LastValue),
                 new JsonProperty("Last User Value", value.LastUserValue),
@@ -135,7 +135,7 @@ namespace Metrics.ElasticSearch
 
         protected override void ReportTimer(string name, TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
         {
-            Pack("Timer", name, unit, tags, new[] { 
+            Pack("Timer", name, unit, tags, new[] {
                 new JsonProperty("Total Count",value.Rate.Count),
                 new JsonProperty("Active Sessions",value.ActiveSessions),
                 new JsonProperty("Mean Rate", value.Rate.MeanRate),

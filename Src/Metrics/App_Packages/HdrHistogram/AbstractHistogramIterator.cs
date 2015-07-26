@@ -31,7 +31,7 @@ namespace HdrHistogram
         protected long countAtThisValue;
 
         private bool freshSubBucket;
-        internal HistogramIterationValue currentIterationValue = new HistogramIterationValue();
+        internal readonly HistogramIterationValue currentIterationValue = new HistogramIterationValue();
 
         private double integerToDoubleValueConversionRatio;
 
@@ -116,12 +116,7 @@ namespace HdrHistogram
 
         double getPercentileIteratedTo()
         {
-            return (100.0 * (double)totalCountToCurrentIndex) / arrayTotalCount;
-        }
-
-        double getPercentileIteratedFrom()
-        {
-            return (100.0 * (double)totalCountToPrevIndex) / arrayTotalCount;
+            return (100.0 * this.totalCountToCurrentIndex) / arrayTotalCount;
         }
 
         long getValueIteratedTo()

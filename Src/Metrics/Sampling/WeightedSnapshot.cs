@@ -20,13 +20,9 @@ namespace Metrics.Sampling
 
     public sealed class WeightedSnapshot : Snapshot
     {
-        private readonly long count;
         private readonly long[] values;
         private readonly double[] normWeights;
         private readonly double[] quantiles;
-
-        private readonly string minUserValue;
-        private readonly string maxUserValue;
 
         private class WeightedSampleComparer : IComparer<WeightedSample>
         {
@@ -40,7 +36,7 @@ namespace Metrics.Sampling
 
         public WeightedSnapshot(long count, IEnumerable<WeightedSample> values)
         {
-            this.count = count;
+            this.Count = count;
             var sample = values.ToArray();
             Array.Sort(sample, WeightedSampleComparer.Instance);
 
@@ -50,7 +46,7 @@ namespace Metrics.Sampling
             this.normWeights = new double[sample.Length];
             this.quantiles = new double[sample.Length];
 
-            for (int i = 0; i < sample.Length; i++)
+            for (var i = 0; i < sample.Length; i++)
             {
                 this.values[i] = sample[i].Value;
                 this.normWeights[i] = sample[i].Weight / sumWeight;
@@ -60,18 +56,18 @@ namespace Metrics.Sampling
                 }
             }
 
-            this.minUserValue = sample.Select(s => s.UserValue).FirstOrDefault();
-            this.maxUserValue = sample.Select(s => s.UserValue).LastOrDefault();
+            this.MinUserValue = sample.Select(s => s.UserValue).FirstOrDefault();
+            this.MaxUserValue = sample.Select(s => s.UserValue).LastOrDefault();
         }
 
-        public long Count { get { return this.count; } }
-        public int Size { get { return this.values.Length; } }
+        public long Count { get; }
+        public int Size => this.values.Length;
 
-        public long Max { get { return this.values.LastOrDefault(); } }
-        public long Min { get { return this.values.FirstOrDefault(); } }
+        public long Max => this.values.LastOrDefault();
+        public long Min => this.values.FirstOrDefault();
 
-        public string MaxUserValue { get { return this.maxUserValue; } }
-        public string MinUserValue { get { return this.minUserValue; } }
+        public string MaxUserValue { get; }
+        public string MinUserValue { get; }
 
         public double Mean
         {
@@ -83,7 +79,7 @@ namespace Metrics.Sampling
                 }
 
                 double sum = 0;
-                for (int i = 0; i < this.values.Length; i++)
+                for (var i = 0; i < this.values.Length; i++)
                 {
                     sum += this.values[i] * this.normWeights[i];
                 }
@@ -100,12 +96,12 @@ namespace Metrics.Sampling
                     return 0;
                 }
 
-                double mean = this.Mean;
+                var mean = this.Mean;
                 double variance = 0;
 
-                for (int i = 0; i < this.values.Length; i++)
+                for (var i = 0; i < this.values.Length; i++)
                 {
-                    double diff = values[i] - mean;
+                    var diff = this.values[i] - mean;
                     variance += this.normWeights[i] * diff * diff;
                 }
 
@@ -113,28 +109,28 @@ namespace Metrics.Sampling
             }
         }
 
-        public double Median { get { return GetValue(0.5d); } }
-        public double Percentile75 { get { return GetValue(0.75d); } }
-        public double Percentile95 { get { return GetValue(0.95d); } }
-        public double Percentile98 { get { return GetValue(0.98d); } }
-        public double Percentile99 { get { return GetValue(0.99d); } }
-        public double Percentile999 { get { return GetValue(0.999d); } }
+        public double Median => GetValue(0.5d);
+        public double Percentile75 => GetValue(0.75d);
+        public double Percentile95 => GetValue(0.95d);
+        public double Percentile98 => GetValue(0.98d);
+        public double Percentile99 => GetValue(0.99d);
+        public double Percentile999 => GetValue(0.999d);
 
-        public IEnumerable<long> Values { get { return this.values; } }
+        public IEnumerable<long> Values => this.values;
 
         public double GetValue(double quantile)
         {
             if (quantile < 0.0 || quantile > 1.0 || double.IsNaN(quantile))
             {
-                throw new ArgumentException(string.Format("{0} is not in [0..1]", quantile));
+                throw new ArgumentException($"{quantile} is not in [0..1]");
             }
 
-            if (this.Size == 0)
+            if (Size == 0)
             {
                 return 0;
             }
 
-            int posx = Array.BinarySearch(this.quantiles, quantile);
+            var posx = Array.BinarySearch(this.quantiles, quantile);
             if (posx < 0)
             {
                 posx = ~posx - 1;
@@ -145,12 +141,7 @@ namespace Metrics.Sampling
                 return this.values[0];
             }
 
-            if (posx >= this.values.Length)
-            {
-                return values[values.Length - 1];
-            }
-
-            return values[posx];
+            return posx >= this.values.Length ? this.values[this.values.Length - 1] : this.values[posx];
         }
     }
 }

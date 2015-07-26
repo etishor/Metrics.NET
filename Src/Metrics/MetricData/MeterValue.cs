@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Metrics.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Metrics.Utils;
 
 namespace Metrics.MetricData
 {
@@ -10,10 +10,12 @@ namespace Metrics.MetricData
     /// </summary>
     public sealed class MeterValue
     {
-        private static readonly SetItem[] NoItems = new SetItem[0];
-        public static readonly IComparer<MeterValue.SetItem> SetItemComparer = Comparer<MeterValue.SetItem>.Create((x, y) => x.Percent != y.Percent ?
-                Comparer<double>.Default.Compare(x.Percent, y.Percent) :
-                Comparer<string>.Default.Compare(x.Item, y.Item));
+        private static readonly SetItem[] noItems = new SetItem[0];
+        public static readonly IComparer<SetItem> SetItemComparer = Comparer<SetItem>.Create((x, y) =>
+        {
+            var percent = Comparer<double>.Default.Compare(x.Percent, y.Percent);
+            return percent == 0 ? Comparer<string>.Default.Compare(x.Item, y.Item) : percent;
+        });
 
         public struct SetItem
         {
@@ -38,13 +40,14 @@ namespace Metrics.MetricData
         public readonly SetItem[] Items;
 
         internal MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate, TimeUnit rateUnit)
-            : this(count, meanRate, oneMinuteRate, fiveMinuteRate, fifteenMinuteRate, rateUnit, NoItems) { }
+            : this(count, meanRate, oneMinuteRate, fiveMinuteRate, fifteenMinuteRate, rateUnit, noItems)
+        { }
 
         public MeterValue(long count, double meanRate, double oneMinuteRate, double fiveMinuteRate, double fifteenMinuteRate, TimeUnit rateUnit, SetItem[] items)
         {
             if (items == null)
             {
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
             }
 
             this.Count = count;
