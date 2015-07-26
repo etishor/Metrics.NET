@@ -10,8 +10,6 @@ namespace Metrics
         private static readonly ILog log = LogProvider.GetCurrentClassLogger();
         private static readonly Meter errorMeter = Metric.Internal.Meter("Metrics Errors", Unit.Errors);
 
-        private static readonly MetricsErrorHandler handler = new MetricsErrorHandler();
-
         private readonly ConcurrentBag<Action<Exception, string>> handlers = new ConcurrentBag<Action<Exception, string>>();
 
         private static readonly bool isMono = Type.GetType("Mono.Runtime") != null;
@@ -27,7 +25,7 @@ namespace Metrics
             }
         }
 
-        internal static MetricsErrorHandler Handler { get { return handler; } }
+        internal static MetricsErrorHandler Handler { get; } = new MetricsErrorHandler();
 
         internal void AddHandler(Action<Exception> handler)
         {
@@ -36,7 +34,7 @@ namespace Metrics
 
         internal void AddHandler(Action<Exception, string> handler)
         {
-            handlers.Add(handler);
+            this.handlers.Add(handler);
         }
 
         internal void ClearHandlers()
@@ -67,12 +65,12 @@ namespace Metrics
 
         public static void Handle(Exception exception)
         {
-            MetricsErrorHandler.Handle(exception, string.Empty);
+            Handle(exception, string.Empty);
         }
 
         public static void Handle(Exception exception, string message)
         {
-            MetricsErrorHandler.handler.InternalHandle(exception, message);
+            Handler.InternalHandle(exception, message);
         }
     }
 }

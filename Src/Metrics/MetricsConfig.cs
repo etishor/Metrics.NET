@@ -49,7 +49,7 @@ namespace Metrics
                 this.context.Advanced.ContextDisabled += (s, e) =>
                 {
                     this.isDisabled = true;
-                    this.DisableAllReports();
+                    DisableAllReports();
                 };
             }
         }
@@ -98,8 +98,7 @@ namespace Metrics
                     }
                     else
                     {
-                        MetricsErrorHandler.Handle(x,
-                            string.Format("Unable to start HTTP Listener. Retried {0} times, giving up...", maxRetries));
+                        MetricsErrorHandler.Handle(x, $"Unable to start HTTP Listener. Retried {maxRetries} times, giving up...");
                     }
 
                 }
@@ -114,7 +113,7 @@ namespace Metrics
         /// <returns>Chain-able configuration object.</returns>
         public MetricsConfig WithHealthStatus(Func<HealthStatus> healthStatus)
         {
-            if (!isDisabled)
+            if (!this.isDisabled)
             {
                 this.healthStatus = healthStatus;
             }
@@ -135,7 +134,7 @@ namespace Metrics
                 MetricsErrorHandler.Handler.ClearHandlers();
             }
 
-            if (!isDisabled)
+            if (!this.isDisabled)
             {
                 MetricsErrorHandler.Handler.AddHandler(errorHandler);
             }
@@ -157,7 +156,7 @@ namespace Metrics
                 MetricsErrorHandler.Handler.ClearHandlers();
             }
 
-            if (!isDisabled)
+            if (!this.isDisabled)
             {
                 MetricsErrorHandler.Handler.AddHandler(errorHandler);
             }
@@ -172,7 +171,7 @@ namespace Metrics
         /// <returns>Chain-able configuration object.</returns>
         public MetricsConfig WithReporting(Action<MetricsReports> reportsConfig)
         {
-            if (!isDisabled)
+            if (!this.isDisabled)
             {
                 reportsConfig(this.reports);
             }
@@ -217,7 +216,7 @@ namespace Metrics
         {
             if (type == SamplingType.Default)
             {
-                throw new ArgumentException("Sampling type other than default must be specified", "type");
+                throw new ArgumentException("Sampling type other than default must be specified", nameof(type));
             }
             this.defaultSamplingType = type;
             return this;
@@ -259,14 +258,13 @@ namespace Metrics
                 var httpEndpoint = ConfigurationManager.AppSettings["Metrics.HttpListener.HttpUriPrefix"];
                 if (!string.IsNullOrEmpty(httpEndpoint))
                 {
-                    this.WithHttpEndpoint(httpEndpoint);
+                    WithHttpEndpoint(httpEndpoint);
                     log.Debug(() => "Metrics: HttpListener configured at " + httpEndpoint);
                 }
             }
             catch (Exception x)
             {
-                log.ErrorException("Metrics: error configuring HttpListener", x);
-                throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.HttpListener.HttpUriPrefix muse be a valid HttpListener endpoint prefix", x);
+                MetricsErrorHandler.Handle(x, "Invalid Metrics Configuration: Metrics.HttpListener.HttpUriPrefix muse be a valid HttpListener endpoint prefix");
             }
         }
 
@@ -282,15 +280,14 @@ namespace Metrics
                     int seconds;
                     if (int.TryParse(csvMetricsInterval, out seconds) && seconds > 0)
                     {
-                        this.WithReporting(r => r.WithCSVReports(csvMetricsPath, TimeSpan.FromSeconds(seconds)));
-                        log.Debug(() => string.Format("Metrics: Storing CSV reports in {0} every {1} seconds.", csvMetricsPath, csvMetricsInterval));
+                        WithReporting(r => r.WithCSVReports(csvMetricsPath, TimeSpan.FromSeconds(seconds)));
+                        log.Debug($"Metrics: Storing CSV reports in {csvMetricsPath} every {csvMetricsInterval} seconds.");
                     }
                 }
             }
             catch (Exception x)
             {
-                log.ErrorException("Metrics: Error configuring CSV reports", x);
-                throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.CSV.Path muse be a valid path and Metrics.CSV.Interval.Seconds must be an integer > 0 ", x);
+                MetricsErrorHandler.Handle(x, "Invalid Metrics Configuration: Metrics.CSV.Path muse be a valid path and Metrics.CSV.Interval.Seconds must be an integer > 0 ");
             }
         }
 
@@ -299,16 +296,12 @@ namespace Metrics
             try
             {
                 var isDisabled = ConfigurationManager.AppSettings["Metrics.CompletelyDisableMetrics"];
-                if (!string.IsNullOrEmpty(isDisabled) && isDisabled.ToUpperInvariant() == "TRUE")
-                {
-                    return true;
-                }
-                return false;
+                return !string.IsNullOrEmpty(isDisabled) && isDisabled.Equals("TRUE",StringComparison.OrdinalIgnoreCase);
             }
             catch (Exception x)
             {
-                log.ErrorException("Metrics: Error disabling metrics library", x);
-                throw new InvalidOperationException("Invalid Metrics Configuration: Metrics.CompletelyDisableMetrics must be set to true or false", x);
+                MetricsErrorHandler.Handle(x, "Invalid Metrics Configuration: Metrics.CompletelyDisableMetrics must be set to true or false");
+                return false;
             }
         }
     }
