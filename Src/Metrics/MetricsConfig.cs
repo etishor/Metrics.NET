@@ -1,8 +1,10 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using Metrics.Logging;
 using Metrics.MetricData;
 using Metrics.Reports;
@@ -20,8 +22,10 @@ namespace Metrics
         private readonly MetricsReports reports;
 
         private Func<HealthStatus> healthStatus;
-        private MetricsHttpListener listener;
 
+        private readonly CancellationTokenSource httpEndpointCancellation = new CancellationTokenSource();
+        private readonly List<Task<MetricsHttpListener>> httpEndpoints = new List<Task<MetricsHttpListener>>();
+        
         private SamplingType defaultSamplingType = SamplingType.ExponentiallyDecaying;
 
         private bool isDisabled = MetricsConfig.GloballyDisabledMetrics;
@@ -71,38 +75,10 @@ namespace Metrics
                 return this;
             }
 
-            var retries = maxRetries;
-
-            do
-            {
-                try
-                {
-                    using (this.listener)
-                    {
-                    }
-                    this.listener = new MetricsHttpListener(httpUriPrefix, this.context.DataProvider.WithFilter(filter), this.healthStatus);
-                    this.listener.Start();
-                    if (retries != maxRetries)
-                    {
-                        log.InfoFormat("HttpListener started successfully after {0} retries", maxRetries - retries);
-                    }
-                    retries = 0;
-                }
-                catch (Exception x)
-                {
-                    retries--;
-                    if (retries > 0)
-                    {
-                        log.WarnException("Unable to start HTTP Listener. Sleeping for {0} sec and retrying {1} more times", x, maxRetries - retries, retries);
-                        Thread.Sleep(1000 * (maxRetries - retries));
-                    }
-                    else
-                    {
-                        MetricsErrorHandler.Handle(x, $"Unable to start HTTP Listener. Retried {maxRetries} times, giving up...");
-                    }
-
-                }
-            } while (retries > 0);
+            var endpoint = MetricsHttpListener.StartHttpListenerAsync(httpUriPrefix, this.context.DataProvider.WithFilter(filter), 
+                this.healthStatus, this.httpEndpointCancellation.Token, maxRetries);
+            this.httpEndpoints.Add(endpoint);
+          
             return this;
         }
 
@@ -230,16 +206,33 @@ namespace Metrics
 
         public void Dispose()
         {
+            ShutdownHttpEndpoints();
             this.reports.Dispose();
-            using (this.listener) { }
-            this.listener = null;
+        }
+
+        private void ShutdownHttpEndpoints()
+        {
+            this.httpEndpointCancellation.Cancel();
+            foreach (var endpoint in this.httpEndpoints)
+            {
+                if (endpoint.IsCompleted)
+                {
+                    using (endpoint.Result)
+                    {
+                    }
+                }
+                else
+                {
+                    log.Warn("The task for Metrics Http Endpoint has not completed. Listener will not be disposed");
+                }
+            }
+            this.httpEndpoints.Clear();
         }
 
         private void DisableAllReports()
         {
             this.reports.StopAndClearAllReports();
-            using (this.listener) { }
-            this.listener = null;
+            ShutdownHttpEndpoints();
         }
 
         internal void ApplySettingsFromConfigFile()

@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Metrics.Json;
+using Metrics.Logging;
 using Metrics.MetricData;
 using Metrics.Reporters;
 
@@ -16,21 +17,29 @@ namespace Metrics.Visualization
 {
     public sealed class MetricsHttpListener : IDisposable
     {
+        private static readonly ILog log = LogProvider.GetCurrentClassLogger();
+
         private const string NotFoundResponse = "<!doctype html><html><body>Resource not found</body></html>";
         private readonly HttpListener httpListener;
-        private readonly CancellationTokenSource cts = new CancellationTokenSource();
+        private readonly CancellationTokenSource cts;
         private readonly MetricsDataProvider metricsDataProvider;
         private readonly Func<HealthStatus> healthStatus;
         private readonly string prefixPath;
 
         private Task processingTask;
 
-        private static readonly Timer timer = Metric.Internal.Timer("HTTP Request", Unit.Requests);
-        private static readonly Meter errors = Metric.Internal.Meter("HTTP Request Errors", Unit.Errors);
-        private static readonly Histogram jsonSize = Metric.Internal.Histogram("HTTP JSON Size", Unit.KiloBytes);
+        private static readonly Timer jsonv1Metrics = Metric.Internal.Context("HTTP").Timer("Json V1 Metrics", Unit.Requests);
+        private static readonly Histogram jsonv1Size = Metric.Internal.Context("HTTP").Histogram("JSON V1 Size", Unit.KiloBytes);
+        private static readonly Timer jsonv2Metrics = Metric.Internal.Context("HTTP").Timer("Json v2 Metrics", Unit.Requests);
+        private static readonly Histogram jsonv2Size = Metric.Internal.Context("HTTP").Histogram("JSON V2 Size", Unit.KiloBytes);
 
-        public MetricsHttpListener(string listenerUriPrefix, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
+        private static readonly Timer timer = Metric.Internal.Context("HTTP").Timer("Request", Unit.Requests);
+        private static readonly Meter errors = Metric.Internal.Context("HTTP").Meter("Request Errors", Unit.Errors);
+
+        public MetricsHttpListener(string listenerUriPrefix, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus, CancellationToken token)
         {
+            this.cts = CancellationTokenSource.CreateLinkedTokenSource(token);
+
             this.prefixPath = ParsePrefixPath(listenerUriPrefix);
             this.httpListener = new HttpListener();
             this.httpListener.Prefixes.Add(listenerUriPrefix);
@@ -38,23 +47,54 @@ namespace Metrics.Visualization
             this.healthStatus = healthStatus;
         }
 
+        public static Task<MetricsHttpListener> StartHttpListenerAsync(string httpUriPrefix, MetricsDataProvider dataProvider,
+            Func<HealthStatus> healthStatus, CancellationToken token, int maxRetries = 3)
+        {
+            return Task.Factory.StartNew(async () =>
+            {
+                MetricsHttpListener listener = null;
+                var remainingRetries = maxRetries;
+                do
+                {
+                    try
+                    {
+                        using (listener){}
+                        listener = new MetricsHttpListener(httpUriPrefix, dataProvider, healthStatus, token);
+                        listener.Start();
+                        if (remainingRetries != maxRetries)
+                        {
+                            log.InfoFormat("HttpListener started successfully after {0} retries", maxRetries - remainingRetries);
+                        }
+                        remainingRetries = 0;
+                    }
+                    catch (Exception x)
+                    {
+                        remainingRetries--;
+                        if (remainingRetries > 0)
+                        {
+                            log.WarnException("Unable to start HTTP Listener. Sleeping for {0} sec and retrying {1} more times", x, maxRetries - remainingRetries, remainingRetries);
+                            await Task.Delay(1000*(maxRetries - remainingRetries), token).ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            MetricsErrorHandler.Handle(x, $"Unable to start HTTP Listener. Retried {maxRetries} times, giving up...");
+                        }
+                    }
+                } while (remainingRetries > 0);
+                return listener;
+            }, token).Unwrap();
+        }
+
         private static string ParsePrefixPath(string listenerUriPrefix)
         {
             var match = Regex.Match(listenerUriPrefix, @"http://(?:[^/]*)(?:\:\d+)?/(.*)");
-            if (match.Success)
-            {
-                return match.Groups[1].Value.ToLowerInvariant();
-            }
-            else
-            {
-                return string.Empty;
-            }
+            return match.Success ? match.Groups[1].Value.ToLowerInvariant() : string.Empty;
         }
 
         public void Start()
         {
             this.httpListener.Start();
-            this.processingTask = Task.Factory.StartNew(async () => await ProcessRequests(), TaskCreationOptions.LongRunning);
+            this.processingTask = Task.Factory.StartNew(async () => await ProcessRequests(),this.cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
         }
 
         private async Task ProcessRequests()
@@ -63,13 +103,14 @@ namespace Metrics.Visualization
             {
                 try
                 {
-                    var context = await this.httpListener.GetContextAsync();
+                    var context = await this.httpListener.GetContextAsync().ConfigureAwait(false);
                     try
                     {
                         using (timer.NewContext())
                         {
                             await ProcessRequest(context).ConfigureAwait(false);
-                            context.Response.Close();
+                            using (context.Response.OutputStream) { }
+                            using (context.Response) { }
                         }
                     }
                     catch (Exception ex)
@@ -92,7 +133,7 @@ namespace Metrics.Visualization
                 catch (Exception ex)
                 {
                     errors.Mark();
-                    HttpListenerException httpException = ex as HttpListenerException;
+                    var httpException = ex as HttpListenerException;
                     if (httpException == null || httpException.ErrorCode != 995)// IO operation aborted
                     {
                         MetricsErrorHandler.Handle(ex, "Error processing HTTP request");
@@ -117,15 +158,14 @@ namespace Metrics.Visualization
                     if (!context.Request.Url.ToString().EndsWith("/"))
                     {
                         context.Response.Redirect(context.Request.Url + "/");
-                        context.Response.Close();
                         return Task.FromResult(0);
                     }
                     else
                     {
-                        return WriteFlotApp(context);
+                        return WriteFlotApp(context, this.cts.Token);
                     }
                 case "/favicon.ico":
-                    return WriteFavIcon(context);
+                    return WriteFavIcon(context, this.cts.Token);
                 case "/json":
                     return WriteJsonMetrics(context, this.metricsDataProvider);
                 case "/v1/json":
@@ -187,22 +227,28 @@ namespace Metrics.Visualization
 
         private static Task WriteJsonMetricsV1(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
         {
-            var json = JsonBuilderV1.BuildJson(metricsDataProvider.CurrentMetricsData);
-            jsonSize.Update(json.Length / 1024);
-            return WriteString(context, json, JsonBuilderV1.MetricsMimeType);
+            using (jsonv1Metrics.NewContext())
+            {
+                var json = JsonBuilderV1.BuildJson(metricsDataProvider.CurrentMetricsData);
+                jsonv1Size.Update(json.Length/1024);
+                return WriteString(context, json, JsonBuilderV1.MetricsMimeType);
+            }
         }
 
         private static Task WriteJsonMetricsV2(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
         {
-            var json = JsonBuilderV2.BuildJson(metricsDataProvider.CurrentMetricsData);
-            jsonSize.Update(json.Length / 1024);
-            return WriteString(context, json, JsonBuilderV2.MetricsMimeType);
+            using (jsonv2Metrics.NewContext())
+            {
+                var json = JsonBuilderV2.BuildJson(metricsDataProvider.CurrentMetricsData);
+                jsonv2Size.Update(json.Length/1024);
+                return WriteString(context, json, JsonBuilderV2.MetricsMimeType);
+            }
         }
 
         private static async Task WriteString(HttpListenerContext context, string data, string contentType,
             int httpStatus = 200, string httpStatusDescription = "OK")
         {
-            AddCORSHeaders(context.Response);
+            AddCorsHeaders(context.Response);
             AddNoCacheHeaders(context.Response);
 
             context.Response.ContentType = contentType;
@@ -220,7 +266,7 @@ namespace Metrics.Visualization
             else
             {
                 context.Response.AddHeader("Content-Encoding", "gzip");
-                using (GZipStream gzip = new GZipStream(context.Response.OutputStream, CompressionMode.Compress, true))
+                using (var gzip = new GZipStream(context.Response.OutputStream, CompressionMode.Compress, true))
                 using (var writer = new StreamWriter(gzip, Encoding.UTF8, 4096, true))
                 {
                     await writer.WriteAsync(data).ConfigureAwait(false);
@@ -228,40 +274,35 @@ namespace Metrics.Visualization
             }
         }
 
-        private static Task WriteFavIcon(HttpListenerContext context)
+        private static Task WriteFavIcon(HttpListenerContext context,CancellationToken token)
         {
             context.Response.ContentType = FlotWebApp.FavIconMimeType;
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
 
-            return FlotWebApp.WriteFavIcon(context.Response.OutputStream);
+            return FlotWebApp.WriteFavIcon(context.Response.OutputStream, token);
         }
 
-        private static Task WriteFlotApp(HttpListenerContext context)
+        private static Task WriteFlotApp(HttpListenerContext context, CancellationToken token)
         {
             context.Response.ContentType = "text/html";
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
 
-            bool acceptsGzip = AcceptsGzip(context.Request);
+            var acceptsGzip = AcceptsGzip(context.Request);
 
             if (acceptsGzip)
             {
                 context.Response.AddHeader("Content-Encoding", "gzip");
             }
 
-            return FlotWebApp.WriteFlotAppAsync(context.Response.OutputStream, !acceptsGzip);
+            return FlotWebApp.WriteFlotAppAsync(context.Response.OutputStream, token, !acceptsGzip);
         }
 
         private static bool AcceptsGzip(HttpListenerRequest request)
         {
-            string encoding = request.Headers["Accept-Encoding"];
-            if (string.IsNullOrEmpty(encoding))
-            {
-                return false;
-            }
-
-            return encoding.Contains("gzip");
+            var encoding = request.Headers["Accept-Encoding"];
+            return !string.IsNullOrEmpty(encoding) && encoding.Contains("gzip");
         }
 
         private static void AddNoCacheHeaders(HttpListenerResponse response)
@@ -271,7 +312,7 @@ namespace Metrics.Visualization
             response.Headers.Add("Expires", "0");
         }
 
-        private static void AddCORSHeaders(HttpListenerResponse response)
+        private static void AddCorsHeaders(HttpListenerResponse response)
         {
             response.Headers.Add("Access-Control-Allow-Origin", "*");
             response.Headers.Add("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
@@ -279,10 +320,10 @@ namespace Metrics.Visualization
 
         private void Stop()
         {
-            cts.Cancel();
-            if (processingTask != null && !processingTask.IsCompleted)
+            this.cts.Cancel();
+            if (this.processingTask != null && !this.processingTask.IsCompleted)
             {
-                processingTask.Wait();
+                this.processingTask.Wait(1000);
             }
             if (this.httpListener.IsListening)
             {
@@ -293,7 +334,7 @@ namespace Metrics.Visualization
 
         public void Dispose()
         {
-            this.Stop();
+            Stop();
             this.httpListener.Close();
             using (this.cts) { }
             using (this.httpListener) { }
