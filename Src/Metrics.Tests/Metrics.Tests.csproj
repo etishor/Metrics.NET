@@ -112,7 +112,6 @@
     <Compile Include="Core\DefaultContextCustomMetricsTests.cs" />
     <Compile Include="Core\MetricTagsTests.cs" />
     <Compile Include="Json\JsonSerializationTests.cs" />
-    <Compile Include="MetricsConfigTests\HttpEndpointTests.cs" />
     <Compile Include="Metrics\CounterMetricTests.cs" />
     <Compile Include="Metrics\GaugeMetricTests.cs" />
     <Compile Include="Sampling\DefaultSamplingTypeTests.cs" />
@@ -141,6 +140,7 @@
     <Compile Include="Utils\TimeUnitTests.cs" />
     <Compile Include="Sampling\UniformReservoirTests.cs" />
     <Compile Include="Visualization\FlotVisualizationTests.cs" />
+    <Compile Include="Visualization\MetricsHttpListenerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Adapters\Nancy.Metrics\Nancy.Metrics.csproj">

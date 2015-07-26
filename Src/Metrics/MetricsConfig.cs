@@ -24,8 +24,9 @@ namespace Metrics
         private Func<HealthStatus> healthStatus;
 
         private readonly CancellationTokenSource httpEndpointCancellation = new CancellationTokenSource();
-        private readonly List<Task<MetricsHttpListener>> httpEndpoints = new List<Task<MetricsHttpListener>>();
-        
+
+        private readonly Dictionary<string,Task<MetricsHttpListener>> httpEndpoints = new Dictionary<string, Task<MetricsHttpListener>>();
+
         private SamplingType defaultSamplingType = SamplingType.ExponentiallyDecaying;
 
         private bool isDisabled = MetricsConfig.GloballyDisabledMetrics;
@@ -75,9 +76,15 @@ namespace Metrics
                 return this;
             }
 
+            if (this.httpEndpoints.ContainsKey(httpUriPrefix))
+            {
+                log.WarnFormat("Http uri prefix {0} already registered. Ignoring...", httpUriPrefix);
+                return this;
+            }
+
             var endpoint = MetricsHttpListener.StartHttpListenerAsync(httpUriPrefix, this.context.DataProvider.WithFilter(filter), 
                 this.healthStatus, this.httpEndpointCancellation.Token, maxRetries);
-            this.httpEndpoints.Add(endpoint);
+            this.httpEndpoints.Add(httpUriPrefix,endpoint);
           
             return this;
         }
@@ -213,7 +220,7 @@ namespace Metrics
         private void ShutdownHttpEndpoints()
         {
             this.httpEndpointCancellation.Cancel();
-            foreach (var endpoint in this.httpEndpoints)
+            foreach (var endpoint in this.httpEndpoints.Values)
             {
                 if (endpoint.IsCompleted)
                 {

@@ -48,7 +48,7 @@ namespace Metrics.Visualization
         }
 
         public static Task<MetricsHttpListener> StartHttpListenerAsync(string httpUriPrefix, MetricsDataProvider dataProvider,
-            Func<HealthStatus> healthStatus, CancellationToken token, int maxRetries = 3)
+            Func<HealthStatus> healthStatus, CancellationToken token, int maxRetries = 1)
         {
             return Task.Factory.StartNew(async () =>
             {
@@ -58,7 +58,6 @@ namespace Metrics.Visualization
                 {
                     try
                     {
-                        using (listener){}
                         listener = new MetricsHttpListener(httpUriPrefix, dataProvider, healthStatus, token);
                         listener.Start();
                         if (remainingRetries != maxRetries)
@@ -69,6 +68,8 @@ namespace Metrics.Visualization
                     }
                     catch (Exception x)
                     {
+                        using (listener) { }
+                        listener = null;
                         remainingRetries--;
                         if (remainingRetries > 0)
                         {
@@ -323,7 +324,10 @@ namespace Metrics.Visualization
 
         private void Stop()
         {
-            this.cts.Cancel();
+            if (!this.cts.IsCancellationRequested)
+            {
+                this.cts.Cancel();
+            }
             if (this.processingTask != null && !this.processingTask.IsCompleted)
             {
                 this.processingTask.Wait(1000);
