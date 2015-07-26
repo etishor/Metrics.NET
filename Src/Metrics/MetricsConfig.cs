@@ -25,7 +25,10 @@ namespace Metrics
         private SamplingType defaultSamplingType = SamplingType.ExponentiallyDecaying;
 
         private bool isDisabled = MetricsConfig.GloballyDisabledMetrics;
-
+        
+        /// <summary>
+        /// Gets the currently configured default sampling type to use for histogram sampling.
+        /// </summary>
         public SamplingType DefaultSamplingType
         {
             get
@@ -63,7 +66,7 @@ namespace Metrics
         /// <returns>Chain-able configuration object.</returns>
         public MetricsConfig WithHttpEndpoint(string httpUriPrefix, MetricsFilter filter = null, int maxRetries = 3)
         {
-            if (isDisabled)
+            if (this.isDisabled)
             {
                 return this;
             }

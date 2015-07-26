@@ -3,7 +3,7 @@
 //
 // https://github.com/damianh/LibLog
 //===============================================================================
-// Copyright © 2011-2015 Damian Hickey.  All rights reserved.
+// Copyright Â© 2011-2015 Damian Hickey.  All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@
 // Define LIBLOG_PORTABLE conditional compilation symbol for PCL compatibility
 //
 // Define LIBLOG_PUBLIC to enable ability to GET a logger (LogProvider.For<>() etc) from outside this library. NOTE:
-// this can have unintendend consequences of consumers of your library using your library to resolve a logger. If the
+// this can have unintended consequences of consumers of your library using your library to resolve a logger. If the
 // reason is because you want to open this functionality to other projects within your solution,
 // consider [InternalVisibleTo] instead.
 // 
@@ -55,7 +55,9 @@ namespace Metrics.Logging
     using System;
 #if !LIBLOG_PROVIDERS_ONLY
     using System.Diagnostics;
+#if !LIBLOG_PORTABLE
     using System.Runtime.CompilerServices;
+#endif
 #endif
 
 #if LIBLOG_PROVIDERS_ONLY
@@ -63,7 +65,7 @@ namespace Metrics.Logging
 #else
     public
 #endif
- delegate bool Logger(LogLevel logLevel, Func<string> messageFunc, Exception exception = null, params object[] formatParameters);
+    delegate bool Logger(LogLevel logLevel, Func<string> messageFunc, Exception exception = null, params object[] formatParameters);
 
 #if !LIBLOG_PROVIDERS_ONLY
     /// <summary>
@@ -74,7 +76,7 @@ namespace Metrics.Logging
 #else
     internal
 #endif
- interface ILog
+    interface ILog
     {
         /// <summary>
         /// Log a message the specified log level.
@@ -90,7 +92,7 @@ namespace Metrics.Logging
         /// 
         /// To check IsEnabled call Log with only LogLevel and check the return value, no event will be written.
         /// </remarks>
-        bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception = null, params object[] formatParameters);
+        bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception = null, params object[] formatParameters );
     }
 #endif
 
@@ -102,7 +104,7 @@ namespace Metrics.Logging
 #else
     public
 #endif
- enum LogLevel
+    enum LogLevel
     {
         Trace,
         Debug,
@@ -118,7 +120,7 @@ namespace Metrics.Logging
 #else
     internal
 #endif
- static partial class LogExtensions
+    static partial class LogExtensions
     {
         public static bool IsDebugEnabled(this ILog logger)
         {
@@ -196,6 +198,7 @@ namespace Metrics.Logging
 
         public static void Error(this ILog logger, Func<string> messageFunc)
         {
+            GuardAgainstNullLogger(logger);
             logger.Log(LogLevel.Error, messageFunc);
         }
 
@@ -377,7 +380,7 @@ namespace Metrics.Logging
 #else
     public
 #endif
- interface ILogProvider
+    interface ILogProvider
     {
         /// <summary>
         /// Gets the specified named logger.
@@ -410,7 +413,7 @@ namespace Metrics.Logging
 #else
     public
 #endif
- static class LogProvider
+    static class LogProvider
     {
 #if !LIBLOG_PROVIDERS_ONLY
         /// <summary>
@@ -420,8 +423,8 @@ namespace Metrics.Logging
         public const string DisableLoggingEnvironmentVariable = "Metrics_LIBLOG_DISABLE";
         private const string NullLogProvider = "Current Log Provider is not set. Call SetCurrentLogProvider " +
                                                "with a non-null value first.";
-        private static dynamic _currentLogProvider;
-        private static Action<ILogProvider> _onCurrentLogProviderSet;
+        private static dynamic s_currentLogProvider;
+        private static Action<ILogProvider> s_onCurrentLogProviderSet;
 
         static LogProvider()
         {
@@ -434,7 +437,7 @@ namespace Metrics.Logging
         /// <param name="logProvider">The log provider.</param>
         public static void SetCurrentLogProvider(ILogProvider logProvider)
         {
-            _currentLogProvider = logProvider;
+            s_currentLogProvider = logProvider;
 
             RaiseOnCurrentLogProviderSet();
         }
@@ -457,7 +460,7 @@ namespace Metrics.Logging
         {
             set
             {
-                _onCurrentLogProviderSet = value;
+                s_onCurrentLogProviderSet = value;
                 RaiseOnCurrentLogProviderSet();
             }
         }
@@ -466,7 +469,7 @@ namespace Metrics.Logging
         {
             get
             {
-                return _currentLogProvider;
+                return s_currentLogProvider;
             }
         }
 
@@ -480,7 +483,7 @@ namespace Metrics.Logging
 #else
         internal
 #endif
- static ILog For<T>()
+        static ILog For<T>()
         {
             return GetLogger(typeof(T));
         }
@@ -496,7 +499,7 @@ namespace Metrics.Logging
 #else
         internal
 #endif
- static ILog GetCurrentClassLogger()
+        static ILog GetCurrentClassLogger()
         {
             var stackFrame = new StackFrame(1, false);
             return GetLogger(stackFrame.GetMethod().DeclaringType);
@@ -513,7 +516,7 @@ namespace Metrics.Logging
 #else
         internal
 #endif
- static ILog GetLogger(Type type)
+        static ILog GetLogger(Type type)
         {
             return GetLogger(type.FullName);
         }
@@ -528,10 +531,10 @@ namespace Metrics.Logging
 #else
         internal
 #endif
- static ILog GetLogger(string name)
+        static ILog GetLogger(string name)
         {
             ILogProvider logProvider = CurrentLogProvider ?? ResolveLogProvider();
-            return logProvider == null
+            return logProvider == null 
                 ? NoOpLogger.Instance
                 : (ILog)new LoggerExecutionWrapper(logProvider.GetLogger(name), () => IsDisabled);
         }
@@ -546,9 +549,9 @@ namespace Metrics.Logging
 #else
         internal
 #endif
- static IDisposable OpenNestedContext(string message)
+        static IDisposable OpenNestedContext(string message)
         {
-            if (CurrentLogProvider == null)
+            if(CurrentLogProvider == null)
             {
                 throw new InvalidOperationException(NullLogProvider);
             }
@@ -566,7 +569,7 @@ namespace Metrics.Logging
 #else
         internal
 #endif
- static IDisposable OpenMappedContext(string key, string value)
+        static IDisposable OpenMappedContext(string key, string value)
         {
             if (CurrentLogProvider == null)
             {
@@ -579,24 +582,24 @@ namespace Metrics.Logging
 #if LIBLOG_PROVIDERS_ONLY
     private
 #else
-        internal
+    internal
 #endif
- delegate bool IsLoggerAvailable();
+    delegate bool IsLoggerAvailable();
 
 #if LIBLOG_PROVIDERS_ONLY
     private
 #else
-        internal
+    internal
 #endif
- delegate ILogProvider CreateLogProvider();
+    delegate ILogProvider CreateLogProvider();
 
 #if LIBLOG_PROVIDERS_ONLY
     private
 #else
-        internal
+    internal
 #endif
- static readonly List<Tuple<IsLoggerAvailable, CreateLogProvider>> LogProviderResolvers =
-                new List<Tuple<IsLoggerAvailable, CreateLogProvider>>
+    static readonly List<Tuple<IsLoggerAvailable, CreateLogProvider>> LogProviderResolvers =
+            new List<Tuple<IsLoggerAvailable, CreateLogProvider>>
         {
             new Tuple<IsLoggerAvailable, CreateLogProvider>(SerilogLogProvider.IsLoggerAvailable, () => new SerilogLogProvider()),
             new Tuple<IsLoggerAvailable, CreateLogProvider>(NLogLogProvider.IsLoggerAvailable, () => new NLogLogProvider()),
@@ -608,9 +611,9 @@ namespace Metrics.Logging
 #if !LIBLOG_PROVIDERS_ONLY
         private static void RaiseOnCurrentLogProviderSet()
         {
-            if (_onCurrentLogProviderSet != null)
+            if (s_onCurrentLogProviderSet != null)
             {
-                _onCurrentLogProviderSet(_currentLogProvider);
+                s_onCurrentLogProviderSet(s_currentLogProvider);
             }
         }
 #endif
@@ -634,7 +637,7 @@ namespace Metrics.Logging
 #else
                 Console.WriteLine(
 #endif
-"Exception occured resolving a log provider. Logging for this assembly {0} is disabled. {1}",
+                    "Exception occurred resolving a log provider. Logging for this assembly {0} is disabled. {1}",
                     typeof(LogProvider).GetAssemblyPortable().FullName,
                     ex);
             }
@@ -674,15 +677,14 @@ namespace Metrics.Logging
 
         public bool Log(LogLevel logLevel, Func<string> messageFunc, Exception exception = null, params object[] formatParameters)
         {
-#if LIBLOG_PORTABLE
             if (_getIsDisabled())
             {
                 return false;
             }
-#else
+#if !LIBLOG_PORTABLE
             var envVar = Environment.GetEnvironmentVariable(LogProvider.DisableLoggingEnvironmentVariable);
 
-            if (_getIsDisabled() || (envVar != null && envVar.Equals("true", StringComparison.OrdinalIgnoreCase)))
+            if (envVar != null && envVar.Equals("true", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
@@ -719,12 +721,16 @@ namespace Metrics.Logging.LogProviders
 {
     using System;
     using System.Collections.Generic;
+#if !LIBLOG_PORTABLE
     using System.Diagnostics;
+#endif
     using System.Globalization;
     using System.Linq;
     using System.Linq.Expressions;
     using System.Reflection;
+#if !LIBLOG_PORTABLE
     using System.Text;
+#endif
     using System.Text.RegularExpressions;
 
     internal abstract class LogProviderBase : ILogProvider
@@ -738,7 +744,7 @@ namespace Metrics.Logging.LogProviders
 
         protected LogProviderBase()
         {
-            _lazyOpenNdcMethod
+            _lazyOpenNdcMethod 
                 = new Lazy<OpenNdc>(GetOpenNdcMethod);
             _lazyOpenMdcMethod
                = new Lazy<OpenMdc>(GetOpenMdcMethod);
@@ -770,7 +776,7 @@ namespace Metrics.Logging.LogProviders
     internal class NLogLogProvider : LogProviderBase
     {
         private readonly Func<string, object> _getLoggerByNameDelegate;
-        private static bool _providerIsAvailableOverride = true;
+        private static bool s_providerIsAvailableOverride = true;
 
         public NLogLogProvider()
         {
@@ -783,8 +789,8 @@ namespace Metrics.Logging.LogProviders
 
         public static bool ProviderIsAvailableOverride
         {
-            get { return _providerIsAvailableOverride; }
-            set { _providerIsAvailableOverride = value; }
+            get { return s_providerIsAvailableOverride; }
+            set { s_providerIsAvailableOverride = value; }
         }
 
         public override Logger GetLogger(string name)
@@ -848,6 +854,7 @@ namespace Metrics.Logging.LogProviders
 
         internal class NLogLogger
         {
+
 #pragma warning disable 414
             private readonly dynamic _logger;
 #pragma warning restore 414
@@ -865,7 +872,7 @@ namespace Metrics.Logging.LogProviders
                 }
                 messageFunc = LogMessageFormatter.SimulateStructuredLogging(messageFunc, formatParameters);
 
-                if (exception != null)
+                if(exception != null)
                 {
                     return LogException(logLevel, messageFunc, exception);
                 }
@@ -991,7 +998,7 @@ namespace Metrics.Logging.LogProviders
     internal class Log4NetLogProvider : LogProviderBase
     {
         private readonly Func<string, object> _getLoggerByNameDelegate;
-        private static bool _providerIsAvailableOverride = true;
+        private static bool s_providerIsAvailableOverride = true;
 
         public Log4NetLogProvider()
         {
@@ -1004,8 +1011,8 @@ namespace Metrics.Logging.LogProviders
 
         public static bool ProviderIsAvailableOverride
         {
-            get { return _providerIsAvailableOverride; }
-            set { _providerIsAvailableOverride = value; }
+            get { return s_providerIsAvailableOverride; }
+            set { s_providerIsAvailableOverride = value; }
         }
 
         public override Logger GetLogger(string name)
@@ -1072,15 +1079,16 @@ namespace Metrics.Logging.LogProviders
 #pragma warning disable 414
             private readonly dynamic _logger;
 #pragma warning restore 414
-            private static Type _callerStackBoundaryType;
+            private static Type s_callerStackBoundaryType;
+            private static readonly object CallerStackBoundaryTypeSync = new object();
 
             private readonly object _levelDebug;
             private readonly object _levelInfo;
             private readonly object _levelWarn;
             private readonly object _levelError;
             private readonly object _levelFatal;
-            private readonly Func<object, object, bool> isEnabledForDelegate;
-            private Action<object, Type, object, string, Exception> logDelegate;
+            private readonly Func<object, object, bool> _isEnabledForDelegate;
+            private readonly Action<object, Type, object, string, Exception> _logDelegate;
 
             internal Log4NetLogger(dynamic logger)
             {
@@ -1113,7 +1121,7 @@ namespace Metrics.Logging.LogProviders
                 ParameterExpression messageParam = Expression.Parameter(typeof(string));
                 UnaryExpression levelCast = Expression.Convert(levelParam, logEventLevelType);
                 MethodCallExpression isEnabledMethodCall = Expression.Call(instanceCast, isEnabledMethodInfo, levelCast);
-                isEnabledForDelegate = Expression.Lambda<Func<object, object, bool>>(isEnabledMethodCall, instanceParam, levelParam).Compile();
+                _isEnabledForDelegate = Expression.Lambda<Func<object, object, bool>>(isEnabledMethodCall, instanceParam, levelParam).Compile();
 
                 // Action<object, object, string, Exception> Log =
                 // (logger, callerStackBoundaryDeclaringType, level, message, exception) => { ((ILogger)logger).Write(callerStackBoundaryDeclaringType, level, message, exception); }
@@ -1130,7 +1138,7 @@ namespace Metrics.Logging.LogProviders
                     levelCast,
                     messageParam,
                     exceptionParam);
-                logDelegate = Expression.Lambda<Action<object, Type, object, string, Exception>>(
+                _logDelegate = Expression.Lambda<Action<object, Type, object, string, Exception>>(
                     writeMethodExp,
                     instanceParam,
                     callerStackBoundaryDeclaringTypeParam,
@@ -1146,38 +1154,38 @@ namespace Metrics.Logging.LogProviders
                     return IsLogLevelEnable(logLevel);
                 }
 
-                messageFunc = LogMessageFormatter.SimulateStructuredLogging(messageFunc, formatParameters);
-
                 if (!IsLogLevelEnable(logLevel))
                 {
                     return false;
                 }
 
+                messageFunc = LogMessageFormatter.SimulateStructuredLogging(messageFunc, formatParameters);
+
                 // determine correct caller - this might change due to jit optimizations with method inlining
-                if (_callerStackBoundaryType == null)
+                if (s_callerStackBoundaryType == null)
                 {
-                    lock (GetType())
+                    lock (CallerStackBoundaryTypeSync)
                     {
 #if !LIBLOG_PORTABLE
                         StackTrace stack = new StackTrace();
                         Type thisType = GetType();
-                        _callerStackBoundaryType = Type.GetType("LoggerExecutionWrapper");
-                        for (int i = 1; i < stack.FrameCount; i++)
+                        s_callerStackBoundaryType = Type.GetType("LoggerExecutionWrapper");
+                        for (var i = 1; i < stack.FrameCount; i++)
                         {
                             if (!IsInTypeHierarchy(thisType, stack.GetFrame(i).GetMethod().DeclaringType))
                             {
-                                _callerStackBoundaryType = stack.GetFrame(i - 1).GetMethod().DeclaringType;
+                                s_callerStackBoundaryType = stack.GetFrame(i - 1).GetMethod().DeclaringType;
                                 break;
                             }
                         }
 #else
-                        _callerStackBoundaryType = typeof (LoggerExecutionWrapper);
+                        s_callerStackBoundaryType = typeof (LoggerExecutionWrapper);
 #endif
                     }
                 }
 
                 var translatedLevel = TranslateLevel(logLevel);
-                logDelegate(_logger, _callerStackBoundaryType, translatedLevel, messageFunc(), exception);
+                _logDelegate(_logger, s_callerStackBoundaryType, translatedLevel, messageFunc(), exception);
                 return true;
             }
 
@@ -1197,7 +1205,7 @@ namespace Metrics.Logging.LogProviders
             private bool IsLogLevelEnable(LogLevel logLevel)
             {
                 var level = TranslateLevel(logLevel);
-                return isEnabledForDelegate(_logger, level);
+                return _isEnabledForDelegate(_logger, level);
             }
 
             private object TranslateLevel(LogLevel logLevel)
@@ -1225,7 +1233,7 @@ namespace Metrics.Logging.LogProviders
     internal class EntLibLogProvider : LogProviderBase
     {
         private const string TypeTemplate = "Microsoft.Practices.EnterpriseLibrary.Logging.{0}, Microsoft.Practices.EnterpriseLibrary.Logging";
-        private static bool _providerIsAvailableOverride = true;
+        private static bool s_providerIsAvailableOverride = true;
         private static readonly Type LogEntryType;
         private static readonly Type LoggerType;
         private static readonly Type TraceEventTypeType;
@@ -1257,8 +1265,8 @@ namespace Metrics.Logging.LogProviders
 
         public static bool ProviderIsAvailableOverride
         {
-            get { return _providerIsAvailableOverride; }
-            set { _providerIsAvailableOverride = value; }
+            get { return s_providerIsAvailableOverride; }
+            set { s_providerIsAvailableOverride = value; }
         }
 
         public override Logger GetLogger(string name)
@@ -1321,17 +1329,17 @@ namespace Metrics.Logging.LogProviders
             Expression severityParameter, ParameterExpression logNameParameter)
         {
             var entryType = LogEntryType;
-            MemberInitExpression memberInit = Expression.MemberInit(Expression.New(entryType),
+            MemberInitExpression memberInit = Expression.MemberInit(Expression.New(entryType), 
                 Expression.Bind(entryType.GetPropertyPortable("Message"), message),
                 Expression.Bind(entryType.GetPropertyPortable("Severity"), severityParameter),
                 Expression.Bind(
                     entryType.GetPropertyPortable("TimeStamp"),
-                    Expression.Property(null, typeof(DateTime).GetPropertyPortable("UtcNow"))),
+                    Expression.Property(null, typeof (DateTime).GetPropertyPortable("UtcNow"))),
                 Expression.Bind(
                     entryType.GetPropertyPortable("Categories"),
                     Expression.ListInit(
-                        Expression.New(typeof(List<string>)),
-                        typeof(List<string>).GetMethodPortable("Add", typeof(string)),
+                        Expression.New(typeof (List<string>)),
+                        typeof (List<string>).GetMethodPortable("Add", typeof (string)),
                         logNameParameter)));
             return memberInit;
         }
@@ -1397,7 +1405,7 @@ namespace Metrics.Logging.LogProviders
     internal class SerilogLogProvider : LogProviderBase
     {
         private readonly Func<string, object> _getLoggerByNameDelegate;
-        private static bool _providerIsAvailableOverride = true;
+        private static bool s_providerIsAvailableOverride = true;
 
         public SerilogLogProvider()
         {
@@ -1410,8 +1418,8 @@ namespace Metrics.Logging.LogProviders
 
         public static bool ProviderIsAvailableOverride
         {
-            get { return _providerIsAvailableOverride; }
-            set { _providerIsAvailableOverride = value; }
+            get { return s_providerIsAvailableOverride; }
+            set { s_providerIsAvailableOverride = value; }
         }
 
         public override Logger GetLogger(string name)
@@ -1438,7 +1446,7 @@ namespace Metrics.Logging.LogProviders
         {
             Type ndcContextType = Type.GetType("Serilog.Context.LogContext, Serilog.FullNetFx");
             MethodInfo pushPropertyMethod = ndcContextType.GetMethodPortable(
-                "PushProperty",
+                "PushProperty", 
                 typeof(string),
                 typeof(object),
                 typeof(bool));
@@ -1454,7 +1462,7 @@ namespace Metrics.Logging.LogProviders
                     valueParam,
                     destructureObjectParam)
                 .Compile();
-
+            
             return (key, value) => pushProperty(key, value, false);
         }
 
@@ -1538,7 +1546,7 @@ namespace Metrics.Logging.LogProviders
                     messageParam,
                     propertyValuesParam);
                 var expression = Expression.Lambda<Action<object, object, string, object[]>>(
-                    writeMethodExp,
+                    writeMethodExp, 
                     instanceParam,
                     levelParam,
                     messageParam,
@@ -1547,7 +1555,7 @@ namespace Metrics.Logging.LogProviders
 
                 // Action<object, object, string, Exception> WriteException =
                 // (logger, level, exception, message) => { ((ILogger)logger).Write(level, exception, message, new object[]); }
-                MethodInfo writeExceptionMethodInfo = loggerType.GetMethodPortable("Write",
+                MethodInfo writeExceptionMethodInfo = loggerType.GetMethodPortable("Write", 
                     logEventLevelType,
                     typeof(Exception),
                     typeof(string),
@@ -1561,7 +1569,7 @@ namespace Metrics.Logging.LogProviders
                     messageParam,
                     propertyValuesParam);
                 WriteException = Expression.Lambda<Action<object, object, Exception, string, object[]>>(
-                    writeMethodExp,
+                    writeMethodExp, 
                     instanceParam,
                     levelParam,
                     exceptionParam,
@@ -1704,7 +1712,7 @@ namespace Metrics.Logging.LogProviders
             params object[] args
             );
 
-        private static bool _providerIsAvailableOverride = true;
+        private static bool s_providerIsAvailableOverride = true;
         private readonly WriteDelegate _logWriteDelegate;
 
         public LoupeLogProvider()
@@ -1725,8 +1733,8 @@ namespace Metrics.Logging.LogProviders
         /// </value>
         public static bool ProviderIsAvailableOverride
         {
-            get { return _providerIsAvailableOverride; }
-            set { _providerIsAvailableOverride = value; }
+            get { return s_providerIsAvailableOverride; }
+            set { s_providerIsAvailableOverride = value; }
         }
 
         public override Logger GetLogger(string name)
@@ -1752,7 +1760,7 @@ namespace Metrics.Logging.LogProviders
 
             MethodInfo method = logManagerType.GetMethodPortable(
                 "Write",
-                logMessageSeverityType, typeof(string), typeof(int), typeof(Exception), typeof(bool),
+                logMessageSeverityType, typeof(string), typeof(int), typeof(Exception), typeof(bool), 
                 logWriteModeType, typeof(string), typeof(string), typeof(string), typeof(string), typeof(object[]));
 
             var callDelegate = (WriteDelegate)method.CreateDelegate(typeof(WriteDelegate));
@@ -1850,7 +1858,7 @@ namespace Metrics.Logging.LogProviders
         /// <summary>
         /// Some logging frameworks support structured logging, such as serilog. This will allow you to add names to structured data in a format string:
         /// For example: Log("Log message to {user}", user). This only works with serilog, but as the user of LibLog, you don't know if serilog is actually 
-        /// used. So, this class simulates that. it will replace any text in {curlybraces} with an index number. 
+        /// used. So, this class simulates that. it will replace any text in {curly braces} with an index number. 
         /// 
         /// "Log {message} to {user}" would turn into => "Log {0} to {1}". Then the format parameters are handled using regular .net string.Format.
         /// </summary>
@@ -1871,7 +1879,7 @@ namespace Metrics.Logging.LogProviders
                 foreach (Match match in Pattern.Matches(targetMessage))
                 {
                     int notUsed;
-                    if (!int.TryParse(match.Value.Substring(1, match.Value.Length - 2), out notUsed))
+                    if (!int.TryParse(match.Value.Substring(1, match.Value.Length -2), out notUsed))
                     {
                         targetMessage = ReplaceFirst(targetMessage, match.Value,
                             "{" + argumentIndex++ + "}");
@@ -1986,7 +1994,7 @@ namespace Metrics.Logging.LogProviders
 
         public void Dispose()
         {
-            if (_onDispose != null)
+            if(_onDispose != null)
             {
                 _onDispose();
             }
