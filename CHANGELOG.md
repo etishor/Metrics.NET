@@ -1,4 +1,4 @@
-###0.3.4-pre / 2015-06-300
+###0.3.4-pre / 2015-07-26
 * support multiple, separate http endpoints
 * initialize http endpoints async
 
