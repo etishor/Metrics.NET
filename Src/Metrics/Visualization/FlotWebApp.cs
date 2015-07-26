@@ -33,12 +33,12 @@ namespace Metrics.Visualization
 
         public const string FavIconMimeType = "image/png";
 
-        public static async Task WriteFavIcon(Stream output,CancellationToken token)
+        public static void WriteFavIcon(Stream output)
         {
             using (var stream = thisAssembly.GetManifestResourceStream(FavIconResource))
             {
                 Debug.Assert(stream != null, "Unable to read embeded flot app");
-                await stream.CopyToAsync(output, (int) stream.Length, token).ConfigureAwait(false);
+                stream.CopyTo(output);
             }
         }
 
@@ -49,11 +49,11 @@ namespace Metrics.Visualization
             return stream;
         }
 
-        public static async Task WriteFlotAppAsync(Stream output, CancellationToken token, bool decompress = false)
+        public static void WriteFlotAppAsync(Stream output, bool decompress = false)
         {
             using (var stream = GetAppStream(decompress))
             {
-                await stream.CopyToAsync(output, 81920, token).ConfigureAwait(false);
+                stream.CopyTo(output);
             }
         }
     }

@@ -94,21 +94,21 @@ namespace Metrics.Visualization
         public void Start()
         {
             this.httpListener.Start();
-            this.processingTask = Task.Factory.StartNew(async () => await ProcessRequests(),this.cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default).Unwrap();
+            this.processingTask = Task.Factory.StartNew(ProcessRequests,this.cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
 
-        private async Task ProcessRequests()
+        private void ProcessRequests()
         {
             while (!this.cts.IsCancellationRequested)
             {
                 try
                 {
-                    var context = await this.httpListener.GetContextAsync().ConfigureAwait(false);
+                    var context = this.httpListener.GetContext();
                     try
                     {
                         using (timer.NewContext())
                         {
-                            await ProcessRequest(context).ConfigureAwait(false);
+                            ProcessRequest(context);
                             using (context.Response.OutputStream) { }
                             using (context.Response) { }
                         }
@@ -142,7 +142,7 @@ namespace Metrics.Visualization
             }
         }
 
-        private Task ProcessRequest(HttpListenerContext context)
+        private bool ProcessRequest(HttpListenerContext context)
         {
             if (context.Request.HttpMethod.ToUpperInvariant() != "GET")
             {
@@ -158,7 +158,7 @@ namespace Metrics.Visualization
                     if (!context.Request.Url.ToString().EndsWith("/"))
                     {
                         context.Response.Redirect(context.Request.Url + "/");
-                        return Task.FromResult(0);
+                        return true;
                     }
                     else
                     {
@@ -186,7 +186,7 @@ namespace Metrics.Visualization
             return WriteNotFound(context);
         }
 
-        private static Task WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
+        private static bool WriteHealthStatus(HttpListenerContext context, Func<HealthStatus> healthStatus)
         {
             var status = healthStatus();
             var json = JsonHealthChecks.BuildJson(status);
@@ -197,23 +197,23 @@ namespace Metrics.Visualization
             return WriteString(context, json, JsonHealthChecks.HealthChecksMimeType, httpStatus, httpStatusDescription);
         }
 
-        private static Task WritePong(HttpListenerContext context)
+        private static bool WritePong(HttpListenerContext context)
         {
             return WriteString(context, "pong", "text/plain");
         }
 
-        private static Task WriteNotFound(HttpListenerContext context)
+        private static bool WriteNotFound(HttpListenerContext context)
         {
             return WriteString(context, NotFoundResponse, "text/plain", 404, "NOT FOUND");
         }
 
-        private static Task WriteTextMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
+        private static bool WriteTextMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider, Func<HealthStatus> healthStatus)
         {
             var text = StringReport.RenderMetrics(metricsDataProvider.CurrentMetricsData, healthStatus);
             return WriteString(context, text, "text/plain");
         }
 
-        private static Task WriteJsonMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
+        private static bool WriteJsonMetrics(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
         {
             var acceptHeader = context.Request.Headers["Accept"] ?? string.Empty;
 
@@ -225,7 +225,7 @@ namespace Metrics.Visualization
             return WriteJsonMetricsV1(context, metricsDataProvider);
         }
 
-        private static Task WriteJsonMetricsV1(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
+        private static bool WriteJsonMetricsV1(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
         {
             using (jsonv1Metrics.NewContext())
             {
@@ -235,7 +235,7 @@ namespace Metrics.Visualization
             }
         }
 
-        private static Task WriteJsonMetricsV2(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
+        private static bool WriteJsonMetricsV2(HttpListenerContext context, MetricsDataProvider metricsDataProvider)
         {
             using (jsonv2Metrics.NewContext())
             {
@@ -245,7 +245,7 @@ namespace Metrics.Visualization
             }
         }
 
-        private static async Task WriteString(HttpListenerContext context, string data, string contentType,
+        private static bool WriteString(HttpListenerContext context, string data, string contentType,
             int httpStatus = 200, string httpStatusDescription = "OK")
         {
             AddCorsHeaders(context.Response);
@@ -260,7 +260,7 @@ namespace Metrics.Visualization
             {
                 using (var writer = new StreamWriter(context.Response.OutputStream, Encoding.UTF8, 4096, true))
                 {
-                    await writer.WriteAsync(data).ConfigureAwait(false);
+                    writer.Write(data);
                 }
             }
             else
@@ -269,21 +269,23 @@ namespace Metrics.Visualization
                 using (var gzip = new GZipStream(context.Response.OutputStream, CompressionMode.Compress, true))
                 using (var writer = new StreamWriter(gzip, Encoding.UTF8, 4096, true))
                 {
-                    await writer.WriteAsync(data).ConfigureAwait(false);
+                    writer.Write(data);
                 }
             }
+            return true;
         }
 
-        private static Task WriteFavIcon(HttpListenerContext context,CancellationToken token)
+        private static bool WriteFavIcon(HttpListenerContext context,CancellationToken token)
         {
             context.Response.ContentType = FlotWebApp.FavIconMimeType;
             context.Response.StatusCode = 200;
             context.Response.StatusDescription = "OK";
 
-            return FlotWebApp.WriteFavIcon(context.Response.OutputStream, token);
+            FlotWebApp.WriteFavIcon(context.Response.OutputStream);
+            return true;
         }
 
-        private static Task WriteFlotApp(HttpListenerContext context, CancellationToken token)
+        private static bool WriteFlotApp(HttpListenerContext context, CancellationToken token)
         {
             context.Response.ContentType = "text/html";
             context.Response.StatusCode = 200;
@@ -296,7 +298,8 @@ namespace Metrics.Visualization
                 context.Response.AddHeader("Content-Encoding", "gzip");
             }
 
-            return FlotWebApp.WriteFlotAppAsync(context.Response.OutputStream, token, !acceptsGzip);
+            FlotWebApp.WriteFlotAppAsync(context.Response.OutputStream, !acceptsGzip);
+            return true;
         }
 
         private static bool AcceptsGzip(HttpListenerRequest request)
