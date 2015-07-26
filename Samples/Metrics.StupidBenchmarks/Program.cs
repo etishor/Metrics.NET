@@ -131,14 +131,6 @@ namespace Metrics.StupidBenchmarks
                     var hdrReservoir = new HdrHistogramReservoir();
                     BenchmarkRunner.Run("HDR Recorder", () => hdrReservoir.Update(1));
                     break;
-                case "hdrsync":
-                    var hdrSyncReservoir = new SyncronizedHdrReservoir();
-                    BenchmarkRunner.Run("HDR Sync", () => hdrSyncReservoir.Update(1));
-                    break;
-                case "hdrsynctimer":
-                    var hdrSyncTimer = new TimerMetric(new SyncronizedHdrReservoir());
-                    BenchmarkRunner.Run("HDR Sync Timer", () => hdrSyncTimer.Record(1, TimeUnit.Milliseconds));
-                    break;
                 case "uniform":
                     var uniform = new UniformReservoir();
                     BenchmarkRunner.Run("Uniform", () => uniform.Update(1));
@@ -148,7 +140,7 @@ namespace Metrics.StupidBenchmarks
                     BenchmarkRunner.Run("Sliding", () => sliding.Update(1));
                     break;
                 case "timerimpact":
-                    WorkLoad load = new WorkLoad();
+                    var load = new WorkLoad();
                     BenchmarkRunner.Run("WorkWithoutTimer", () => load.DoSomeWork(), iterationsChunk: 10);
                     BenchmarkRunner.Run("WorkWithTimer", () => load.DoSomeWorkWithATimer(), iterationsChunk: 10);
                     break;

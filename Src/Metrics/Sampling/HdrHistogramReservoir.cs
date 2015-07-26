@@ -45,7 +45,12 @@ namespace Metrics.Sampling
 
         public Snapshot GetSnapshot(bool resetReservoir = false)
         {
-            return new HdrSnapshot(UpdateTotals(), this.minUserValue, this.maxUserValue);
+            var snapshot = new HdrSnapshot(UpdateTotals(), this.minValue.GetValue(), this.minUserValue, this.maxValue.GetValue(), this.maxUserValue);
+            if (resetReservoir)
+            {
+               this.Reset();
+            }
+            return snapshot;
         }
 
         public void Reset()
