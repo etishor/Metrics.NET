@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
 using Metrics.Json;
 using Metrics.MetricData;
 using Metrics.Reporters;
@@ -13,6 +14,8 @@ namespace Metrics.ElasticSearch
     {
         private readonly Uri elasticSearchUri;
         private readonly string elasticSearchIndex;
+        private readonly string username;
+        private readonly string password;
 
         private class ESDocument
         {
@@ -28,9 +31,11 @@ namespace Metrics.ElasticSearch
 
         private List<ESDocument> data = null;
 
-        public ElasticSearchReport(Uri elasticSearchUri, string elasticSearchIndex)
+        public ElasticSearchReport(Uri elasticSearchUri, string username, string password, string elasticSearchIndex)
         {
             this.elasticSearchUri = elasticSearchUri;
+            this.username = username;
+            this.password = password;
             this.elasticSearchIndex = elasticSearchIndex;
         }
 
@@ -47,6 +52,11 @@ namespace Metrics.ElasticSearch
             using (var client = new WebClient())
             {
                 var json = string.Join(string.Empty, this.data.Select(d => d.ToJsonString()));
+                if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
+                {
+                    var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(this.username + ":" + this.password));
+                    client.Headers[HttpRequestHeader.Authorization] = "Basic " + credentials;
+                }
                 client.UploadString(this.elasticSearchUri, json);
             }
         }
