@@ -22,7 +22,7 @@ namespace Metrics.Graphite
         private PickleJar jar = new PickleJar();
 
 
-        public PickleGraphiteSender(string host, int port, int batchSize = DefaultPickleJarSize, bool keysToLowercase = true)
+        public PickleGraphiteSender(string host, int port, int batchSize = DefaultPickleJarSize, bool keysToLowercase = false)
         {
             this.host = host;
             this.port = port;

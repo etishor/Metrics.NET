@@ -6,7 +6,7 @@ namespace Metrics
 {
     public static class GraphiteExtensions
     {
-        public static MetricsReports WithGraphite(this MetricsReports reports, Uri graphiteUri, TimeSpan interval, bool keysToLowercase = true)
+        public static MetricsReports WithGraphite(this MetricsReports reports, Uri graphiteUri, TimeSpan interval, bool keysToLowercase = false)
         {
             if (graphiteUri.Scheme.ToLowerInvariant() == "net.tcp")
             {
@@ -31,12 +31,12 @@ namespace Metrics
             return reports.WithGraphite(new PickleGraphiteSender(host, port, batchSize, keysToLowercase), interval);
         }
 
-        public static MetricsReports WithTCPGraphite(this MetricsReports reports, string host, int port, TimeSpan interval, bool keysToLowercase = true)
+        public static MetricsReports WithTCPGraphite(this MetricsReports reports, string host, int port, TimeSpan interval, bool keysToLowercase = false)
         {
             return reports.WithGraphite(new TcpGraphiteSender(host, port, keysToLowercase), interval);
         }
 
-        public static MetricsReports WithUDPGraphite(this MetricsReports reports, string host, int port, TimeSpan interval, bool keysToLowercase = true)
+        public static MetricsReports WithUDPGraphite(this MetricsReports reports, string host, int port, TimeSpan interval, bool keysToLowercase = false)
         {
             return reports.WithGraphite(new UdpGraphiteSender(host, port, keysToLowercase), interval);
         }
