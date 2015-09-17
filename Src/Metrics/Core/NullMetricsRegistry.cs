@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Metrics.MetricData;
+using System;
 using System.Collections.Generic;
-using Metrics.MetricData;
 
 namespace Metrics.Core
 {
@@ -35,11 +35,6 @@ namespace Metrics.Core
             public long CurrentTime() { return 0; }
 
             public TimerContext NewContext(string userValue = null) { return NullContext; }
-            public TimerContext NewContext(Action<TimeSpan> finalAction, string userValue = null) { finalAction(TimeSpan.Zero); return NullContext; }
-
-            public TimeSpan Elapsed { get { return TimeSpan.Zero; } }
-            public void Dispose()
-            { }
 
             public void Reset() { }
 
@@ -50,7 +45,7 @@ namespace Metrics.Core
             public IEnumerable<TimerValueSource> Timers { get { yield break; } }
         }
 
-        public RegistryDataProvider DataProvider { get { return NullMetric.Instance; } }
+        public RegistryDataProvider DataProvider => NullMetric.Instance;
 
         public void ClearAllMetrics() { }
         public void ResetMetricsValues() { }

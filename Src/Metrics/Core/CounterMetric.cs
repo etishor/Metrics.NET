@@ -11,7 +11,7 @@ namespace Metrics.Core
 
     public sealed class CounterMetric : CounterImplementation
     {
-        private ConcurrentDictionary<string, StripedLongAdder> setCounters = null;
+        private ConcurrentDictionary<string, StripedLongAdder> setCounters;
 
         private readonly StripedLongAdder counter = new StripedLongAdder();
 

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Metrics.MetricData;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using Metrics.MetricData;
 
 namespace Metrics.Core
 {
@@ -19,9 +19,9 @@ namespace Metrics.Core
                     this.Value = valueUnit;
                 }
 
-                public string Name { get { return this.Value.Name; } }
-                public TMetric Metric { get; private set; }
-                public TValue Value { get; private set; }
+                public string Name => this.Value.Name;
+                public TMetric Metric { get; }
+                public TValue Value { get; }
             }
 
             private readonly ConcurrentDictionary<string, MetricMeta> metrics =
@@ -59,10 +59,7 @@ namespace Metrics.Core
                 foreach (var metric in this.metrics.Values)
                 {
                     var resetable = metric.Metric as ResetableMetric;
-                    if (resetable != null)
-                    {
-                        resetable.Reset();
-                    }
+                    resetable?.Reset();
                 }
             }
         }
@@ -79,7 +76,7 @@ namespace Metrics.Core
             this.DataProvider = new DefaultRegistryDataProvider(() => this.gauges.All, () => this.counters.All, () => this.meters.All, () => this.histograms.All, () => this.timers.All);
         }
 
-        public RegistryDataProvider DataProvider { get; private set; }
+        public RegistryDataProvider DataProvider { get; }
 
         public void Gauge(string name, Func<MetricValueProvider<double>> valueProvider, Unit unit, MetricTags tags)
         {

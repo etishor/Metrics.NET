@@ -6,33 +6,31 @@ namespace Metrics.Sampling
 {
     public sealed class UniformSnapshot : Snapshot
     {
-        private readonly long count;
         private readonly long[] values;
-        private readonly string minUserValue;
-        private readonly string maxUserValue;
 
         public UniformSnapshot(long count, IEnumerable<long> values, bool valuesAreSorted = false, string minUserValue = null, string maxUserValue = null)
         {
-            this.count = count;
+            this.Count = count;
             this.values = values.ToArray();
             if (!valuesAreSorted)
             {
                 Array.Sort(this.values);
             }
-            this.minUserValue = minUserValue;
-            this.maxUserValue = maxUserValue;
+            this.MinUserValue = minUserValue;
+            this.MaxUserValue = maxUserValue;
         }
 
-        public long Count { get { return this.count; } }
-        public int Size { get { return this.values.Length; } }
+        public long Count { get; }
 
-        public long Max { get { return this.values.LastOrDefault(); } }
-        public long Min { get { return this.values.FirstOrDefault(); } }
+        public int Size => this.values.Length;
 
-        public string MaxUserValue { get { return this.maxUserValue; } }
-        public string MinUserValue { get { return this.minUserValue; } }
+        public long Max => this.values.LastOrDefault();
+        public long Min => this.values.FirstOrDefault();
 
-        public double Mean { get { return Size == 0 ? 0.0 : this.values.Average(); } }
+        public string MaxUserValue { get; }
+        public string MinUserValue { get; }
+
+        public double Mean => Size == 0 ? 0.0 : this.values.Average();
 
         public double StdDev
         {
@@ -43,27 +41,27 @@ namespace Metrics.Sampling
                     return 0;
                 }
 
-                double avg = values.Average();
-                double sum = values.Sum(d => Math.Pow(d - avg, 2));
+                var avg = this.values.Average();
+                var sum = this.values.Sum(d => Math.Pow(d - avg, 2));
 
-                return Math.Sqrt((sum) / (values.Length - 1));
+                return Math.Sqrt((sum) / (this.values.Length - 1));
             }
         }
 
-        public double Median { get { return GetValue(0.5d); } }
-        public double Percentile75 { get { return GetValue(0.75d); } }
-        public double Percentile95 { get { return GetValue(0.95d); } }
-        public double Percentile98 { get { return GetValue(0.98d); } }
-        public double Percentile99 { get { return GetValue(0.99d); } }
-        public double Percentile999 { get { return GetValue(0.999d); } }
+        public double Median => GetValue(0.5d);
+        public double Percentile75 => GetValue(0.75d);
+        public double Percentile95 => GetValue(0.95d);
+        public double Percentile98 => GetValue(0.98d);
+        public double Percentile99 => GetValue(0.99d);
+        public double Percentile999 => GetValue(0.999d);
 
-        public IEnumerable<long> Values { get { return this.values; } }
+        public IEnumerable<long> Values => this.values;
 
         public double GetValue(double quantile)
         {
             if (quantile < 0.0 || quantile > 1.0 || double.IsNaN(quantile))
             {
-                throw new ArgumentException(string.Format("{0} is not in [0..1]", quantile));
+                throw new ArgumentException($"{quantile} is not in [0..1]");
             }
 
             if (this.Size == 0)
@@ -71,21 +69,21 @@ namespace Metrics.Sampling
                 return 0;
             }
 
-            double pos = quantile * (values.Length + 1);
-            int index = (int)pos;
+            var pos = quantile * (this.values.Length + 1);
+            var index = (int)pos;
 
             if (index < 1)
             {
-                return values[0];
+                return this.values[0];
             }
 
-            if (index >= values.Length)
+            if (index >= this.values.Length)
             {
-                return values[values.Length - 1];
+                return this.values[this.values.Length - 1];
             }
 
-            double lower = values[index - 1];
-            double upper = values[index];
+            double lower = this.values[index - 1];
+            double upper = this.values[index];
 
             return lower + (pos - Math.Floor(pos)) * (upper - lower);
         }

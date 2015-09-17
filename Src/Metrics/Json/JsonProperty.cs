@@ -42,13 +42,13 @@ namespace Metrics.Json
             this.Value = value;
         }
 
-        public string Name { get; private set; }
-        public JsonValue Value { get; private set; }
+        public string Name { get; }
+        public JsonValue Value { get; }
 
         public string AsJson(bool indented, int indent)
         {
             indent = indented ? indent : 0;
-            return string.Format("{0}\"{1}\":{2}", new string(' ', indent), JsonValue.Escape(this.Name), this.Value.AsJson(indented, indent + 2));
+            return $"{new string(' ', indent)}\"{JsonValue.Escape(Name)}\":{Value.AsJson(indented, indent + 2)}";
         }
     }
 }

@@ -34,7 +34,7 @@ namespace HdrHistogram
 
         private void reset(AbstractHistogram histogram)
         {
-            base.resetIterator(histogram);
+            resetIterator(histogram);
             visitedIndex = -1;
         }
 

@@ -40,11 +40,11 @@ namespace Metrics.Core
             {
                 return new MetricsData(this.context, this.timestampProvider(),
                     this.environment,
-                    this.registryDataProvider.Gauges,
-                    this.registryDataProvider.Counters,
-                    this.registryDataProvider.Meters,
-                    this.registryDataProvider.Histograms,
-                    this.registryDataProvider.Timers,
+                    this.registryDataProvider.Gauges.ToArray(),
+                    this.registryDataProvider.Counters.ToArray(),
+                    this.registryDataProvider.Meters.ToArray(),
+                    this.registryDataProvider.Histograms.ToArray(),
+                    this.registryDataProvider.Timers.ToArray(),
                     this.childProviders().Select(p => p.CurrentMetricsData));
             }
         }

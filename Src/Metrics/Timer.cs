@@ -7,7 +7,7 @@ namespace Metrics
     /// A timer is basically a histogram of the duration of a type of event and a meter of the rate of its occurrence.
     /// <seealso cref="Histogram"/> and <seealso cref="Meter"/>
     /// </summary>
-    public interface Timer : ResetableMetric, Utils.IHideObjectMembers
+    public interface Timer : ResetableMetric
     {
         /// <summary>
         /// Creates a new disposable instance and records the time it takes until the instance is disposed.

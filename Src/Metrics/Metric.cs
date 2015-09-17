@@ -18,8 +18,7 @@ namespace Metrics
         private static readonly DefaultMetricsContext globalContext;
         private static readonly MetricsConfig config;
 
-        private static readonly MetricsContext internalContext = new DefaultMetricsContext("Metrics.NET");
-        internal static MetricsContext Internal { get { return internalContext; } }
+        internal static MetricsContext Internal { get; } = new DefaultMetricsContext("Metrics.NET");
 
         static Metric()
         {
@@ -36,7 +35,7 @@ namespace Metrics
         /// <summary>
         /// Exposes advanced operations that are possible on this metrics context.
         /// </summary>
-        public static AdvancedMetricsContext Advanced { get { return globalContext; } }
+        public static AdvancedMetricsContext Advanced => globalContext;
 
         /// <summary>
         /// Create a new child metrics context. Metrics added to the child context are kept separate from the metrics in the 
@@ -182,7 +181,7 @@ namespace Metrics
 
         internal static void EnableInternalMetrics()
         {
-            globalContext.AttachContext("Metrics.NET", internalContext);
+            globalContext.AttachContext("Metrics.NET", Internal);
         }
 
         private static string GetGlobalContextName()
@@ -235,7 +234,7 @@ namespace Metrics
 
                 if (string.IsNullOrWhiteSpace(key.Value))
                 {
-                    var msg = string.Format("Metrics: Error substituting Environment tokens in Metrics.GlobalContextName. Found token with no key. Original string {0}", configName);
+                    var msg = $"Metrics: Error substituting Environment tokens in Metrics.GlobalContextName. Found token with no key. Original string {configName}";
                     log.Error(msg);
                     throw new InvalidOperationException(msg);
                 }
@@ -249,7 +248,7 @@ namespace Metrics
                     val = ConfigurationManager.AppSettings[key.Value];
                     if (string.IsNullOrWhiteSpace(val))
                     {
-                        var msg = string.Format("Metrics: Error substituting Environment tokens in Metrics.GlobalContextName. Found key '{0}' has no value in Environment or AppSettings. Original string {1}", key, configName);
+                        var msg = $"Metrics: Error substituting Environment tokens in Metrics.GlobalContextName. Found key '{key}' has no value in Environment or AppSettings. Original string {configName}";
                         log.Error(msg);
                         throw new InvalidOperationException(msg);
                     }
@@ -268,7 +267,7 @@ namespace Metrics
 
         private static string GetDefaultGlobalContextName()
         {
-            return string.Format(@"{0}.{1}", CleanName(Environment.MachineName), CleanName(Process.GetCurrentProcess().ProcessName));
+            return $@"{CleanName(Environment.MachineName)}.{CleanName(Process.GetCurrentProcess().ProcessName)}";
         }
     }
 }

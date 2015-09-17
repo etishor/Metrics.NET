@@ -127,7 +127,7 @@ namespace Metrics.MetricData
             {
                 return name;
             }
-            return string.Format("[{0}] {1}", prefix, name);
+            return $"[{prefix}] {name}";
         }
     }
 }

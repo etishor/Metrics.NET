@@ -1,10 +1,10 @@
 ﻿
+using Metrics.Core;
+using Metrics.Logging;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Security.Principal;
-using Metrics.Core;
-using Metrics.Logging;
 
 namespace Metrics.PerfCounters
 {
@@ -12,15 +12,13 @@ namespace Metrics.PerfCounters
     {
         private static readonly ILog log = LogProvider.GetCurrentClassLogger();
 
-		private static readonly bool isMono = Type.GetType("Mono.Runtime") != null;
+        private static readonly bool isMono = Type.GetType("Mono.Runtime") != null;
 
         private const string TotalInstance = "_Total";
-        private const string GlobalInstance = "_Global_";
 
         private const string Exceptions = ".NET CLR Exceptions";
         private const string Memory = ".NET CLR Memory";
         private const string LocksAndThreads = ".NET CLR LocksAndThreads";
-        private const string Networking = ".NET CLR Networking 4.0.0.0";
 
         internal static void RegisterSystemCounters(MetricsContext context)
         {
@@ -130,7 +128,7 @@ namespace Metrics.PerfCounters
             Func<double, double> derivate = null,
             MetricTags tags = default(MetricTags))
         {
-            log.Debug(() => string.Format("Registering performance counter [{0}] in category [{1}] for instance [{2}]", counter, category, instance ?? "none"));
+            log.Debug(() => $"Registering performance counter [{counter}] in category [{category}] for instance [{instance ?? "none"}]");
 
             if (PerformanceCounterCategory.Exists(category))
             {
@@ -152,10 +150,10 @@ namespace Metrics.PerfCounters
                 }
             }
 
-			if(!isMono)
-			{
-				log.ErrorFormat("Performance counter does not exist [{0}] in category [{1}] for instance [{2}]", counter, category, instance ?? "none");
-			}
+            if (!isMono)
+            {
+                log.ErrorFormat("Performance counter does not exist [{0}] in category [{1}] for instance [{2}]", counter, category, instance ?? "none");
+            }
         }
     }
 }

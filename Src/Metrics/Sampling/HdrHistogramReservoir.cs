@@ -15,11 +15,11 @@ namespace Metrics.Sampling
         private HdrHistogram.Histogram intervalHistogram;
 
         private AtomicLong maxValue = new AtomicLong(0);
-        private string maxUserValue = null;
+        private string maxUserValue;
         private readonly object maxValueLock = new object();
 
         private AtomicLong minValue = new AtomicLong(long.MaxValue);
-        private string minUserValue = null;
+        private string minUserValue;
         private readonly object minValueLock = new object();
 
         public HdrHistogramReservoir()
@@ -45,7 +45,12 @@ namespace Metrics.Sampling
 
         public Snapshot GetSnapshot(bool resetReservoir = false)
         {
-            return new HdrSnapshot(UpdateTotals(), this.minUserValue, this.maxUserValue);
+            var snapshot = new HdrSnapshot(UpdateTotals(), this.minValue.GetValue(), this.minUserValue, this.maxValue.GetValue(), this.maxUserValue);
+            if (resetReservoir)
+            {
+                this.Reset();
+            }
+            return snapshot;
         }
 
         public void Reset()

@@ -52,7 +52,7 @@ namespace Nancy.Metrics
                 Config.ModuleConfigAction(this);
             }
 
-            var noCacheHeaders = new[] { 
+            object[] noCacheHeaders = { 
                 new { Header = "Cache-Control", Value = "no-cache, no-store, must-revalidate" },
                 new { Header = "Pragma", Value = "no-cache" },
                 new { Header = "Expires", Value = "0" }
@@ -64,7 +64,7 @@ namespace Nancy.Metrics
                 {
                     return Response.AsRedirect(this.Request.Url.ToString() + "/");
                 }
-                bool gzip = AcceptsGzip();
+                var gzip = AcceptsGzip();
                 var response = Response.FromStream(FlotWebApp.GetAppStream(!gzip), "text/html");
                 if (gzip)
                 {
@@ -91,7 +91,7 @@ namespace Nancy.Metrics
 
         private bool AcceptsGzip()
         {
-            return this.Request.Headers.AcceptEncoding.Any(e => e.Equals("gzip", StringComparison.InvariantCultureIgnoreCase));
+            return this.Request.Headers.AcceptEncoding.Any(e => e.Equals("gzip", StringComparison.OrdinalIgnoreCase));
         }
 
         private Response GetHealthStatus()

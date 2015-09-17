@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Metrics.Json;
+using Metrics.Reporters;
+using Metrics.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Metrics.Json;
-using Metrics.Reporters;
-using Metrics.Utils;
 
 namespace Metrics.Influxdb
 {
@@ -13,17 +13,17 @@ namespace Metrics.Influxdb
         private static readonly string[] GaugeColumns = new[] { "Value" };
         private static readonly string[] CounterColumns = new[] { "Count" };
         private static readonly string[] MeterColumns = new[] { "Total Count", "Mean Rate", "1 Min Rate", "5 Min Rate", "15 Min Rate", };
-        private static readonly string[] HistogramColumns = new[] 
-        { 
+        private static readonly string[] HistogramColumns = new[]
+        {
             "Total Count", "Last", "Last User Value", "Min", "Min User Value", "Mean", "Max", "Max User Value",
             "StdDev", "Median", "Percentile 75%", "Percentile 95%", "Percentile 98%", "Percentile 99%", "Percentile 99.9%" , "Sample Size" };
 
-        private static readonly string[] TimerColumns = new[] 
+        private static readonly string[] TimerColumns = new[]
         {
             "Total Count", "Active Sessions",
             "Mean Rate", "1 Min Rate", "5 Min Rate", "15 Min Rate",
             "Last", "Last User Value", "Min", "Min User Value", "Mean", "Max", "Max User Value",
-            "StdDev", "Median", "Percentile 75%", "Percentile 95%", "Percentile 98%", "Percentile 99%", "Percentile 99.9%" , "Sample Size" 
+            "StdDev", "Median", "Percentile 75%", "Percentile 95%", "Percentile 98%", "Percentile 99%", "Percentile 99.9%" , "Sample Size"
         };
 
         private readonly Uri influxdb;
@@ -39,16 +39,16 @@ namespace Metrics.Influxdb
         {
             public InfluxRecord(string name, long timestamp, IEnumerable<string> columns, IEnumerable<JsonValue> data)
             {
-                var points = Enumerable.Concat(new[] { new LongJsonValue(timestamp) }, data);
+                var points = new[] { new LongJsonValue(timestamp) }.Concat(data);
 
                 this.Json = new JsonObject(new[] {
                     new JsonProperty("name",name),
-                    new JsonProperty("columns", Enumerable.Concat(new []{"time"}, columns)),
+                    new JsonProperty("columns", new []{"time"}.Concat(columns)),
                     new JsonProperty("points", new JsonValueArray( new [] { new JsonValueArray( points)}))
                 });
             }
 
-            public JsonObject Json { get; private set; }
+            public JsonObject Json { get; }
         }
 
         private void Pack(string name, IEnumerable<string> columns, JsonValue value)
@@ -115,10 +115,10 @@ namespace Metrics.Influxdb
 
         protected override void ReportMeter(string name, MetricData.MeterValue value, Unit unit, TimeUnit rateUnit, MetricTags tags)
         {
-            var itemColumns = value.Items.SelectMany(i => new[]             
-            { 
-                i.Item + " - Count", 
-                i.Item + " - Percent", 
+            var itemColumns = value.Items.SelectMany(i => new[]
+            {
+                i.Item + " - Count",
+                i.Item + " - Percent",
                 i.Item + " - Mean Rate",
                 i.Item + " - 1 Min Rate",
                 i.Item + " - 5 Min Rate",
@@ -126,17 +126,17 @@ namespace Metrics.Influxdb
             });
             var columns = MeterColumns.Concat(itemColumns);
 
-            var itemValues = value.Items.SelectMany(i => new[] 
+            var itemValues = value.Items.SelectMany(i => new[]
             {
-                Value(i.Value.Count), 
+                Value(i.Value.Count),
                 Value(i.Percent),
-                Value(i.Value.MeanRate), 
-                Value(i.Value.OneMinuteRate), 
-                Value(i.Value.FiveMinuteRate), 
+                Value(i.Value.MeanRate),
+                Value(i.Value.OneMinuteRate),
+                Value(i.Value.FiveMinuteRate),
                 Value(i.Value.FifteenMinuteRate)
             });
 
-            var data = new[] 
+            var data = new[]
             {
                 Value(value.Count),
                 Value (value.MeanRate),

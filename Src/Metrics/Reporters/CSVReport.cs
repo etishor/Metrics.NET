@@ -1,8 +1,8 @@
 ﻿
-using System.Collections.Generic;
-using System.Linq;
 using Metrics.MetricData;
 using Metrics.Utils;
+using System.Collections.Generic;
+using System.Linq;
 namespace Metrics.Reporters
 {
     public class CSVReport : BaseReport
@@ -10,13 +10,16 @@ namespace Metrics.Reporters
         public class Value
         {
             public Value(string name, bool value)
-                : this(name, value ? "Yes" : "No") { }
+                : this(name, value ? "Yes" : "No")
+            { }
 
             public Value(string name, double value)
-                : this(name, value.ToString("F")) { }
+                : this(name, value.ToString("F"))
+            { }
 
             public Value(string name, long value)
-                : this(name, value.ToString("D")) { }
+                : this(name, value.ToString("D"))
+            { }
 
             public Value(string name, string value)
             {
@@ -70,7 +73,7 @@ namespace Metrics.Reporters
 
         protected override void ReportHealth(HealthStatus status)
         {
-            Write("All", "HealthChecks", new[] { 
+            Write("All", "HealthChecks", new[] {
                 new Value("All Healthy", status.IsHealthy) }.Union(
                 status.Results.SelectMany(r => new[]
             {
@@ -109,7 +112,7 @@ namespace Metrics.Reporters
 
             if (!string.IsNullOrEmpty(unit.Name))
             {
-                yield return new Value("Rate Unit", string.Format("{0}/{1}", unit.Name, rateUnit.Unit()));
+                yield return new Value("Rate Unit", $"{unit.Name}/{rateUnit.Unit()}");
             }
         }
 
@@ -145,7 +148,7 @@ namespace Metrics.Reporters
 
         private void Write(string metricType, string metricName, IEnumerable<Value> values)
         {
-            this.appender.AppendLine(base.CurrentContextTimestamp, metricType, metricName, values);
+            this.appender.AppendLine(CurrentContextTimestamp, metricType, metricName, values);
         }
     }
 }

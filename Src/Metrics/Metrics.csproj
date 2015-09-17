@@ -129,7 +129,6 @@
     <Compile Include="Core\NullMetricsRegistry.cs" />
     <Compile Include="Sampling\HdrHistogramReservoir.cs" />
     <Compile Include="Sampling\HdrSnapshot.cs" />
-    <Compile Include="Sampling\SyncronizedHdrReservoir.cs" />
     <Compile Include="Sampling\UserValueWrapper.cs" />
     <Compile Include="Sampling\Snapshot.cs" />
     <Compile Include="Sampling\WeightedSnapshot.cs" />

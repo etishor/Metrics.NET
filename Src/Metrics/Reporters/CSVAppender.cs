@@ -25,7 +25,7 @@ namespace Metrics.Reporters
         {
             if (delimiter == null)
             {
-                throw new ArgumentNullException("delimiter");
+                throw new ArgumentNullException(nameof(delimiter));
             }
 
             this.delimiter = delimiter;

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Metrics.MetricData;
+using Metrics.Sampling;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using Metrics.MetricData;
-using Metrics.Sampling;
 
 namespace Metrics.Core
 {
@@ -24,12 +24,12 @@ namespace Metrics.Core
 
         protected abstract MetricsContext CreateChildContextInstance(string contextName);
 
-        public AdvancedMetricsContext Advanced { get { return this; } }
+        public AdvancedMetricsContext Advanced => this;
 
         public event EventHandler ContextShuttingDown;
         public event EventHandler ContextDisabled;
 
-        public MetricsDataProvider DataProvider { get; private set; }
+        public MetricsDataProvider DataProvider { get; }
 
         public MetricsContext Context(string contextName)
         {
@@ -63,7 +63,7 @@ namespace Metrics.Core
                 throw new ArgumentException("Context name can't be null or empty for attached contexts");
             }
             var attached = this.childContexts.GetOrAdd(contextName, context);
-            return object.ReferenceEquals(attached, context);
+            return ReferenceEquals(attached, context);
         }
 
         public void ShutdownContext(string contextName)
@@ -170,15 +170,8 @@ namespace Metrics.Core
 
             ForAllChildContexts(c => c.Advanced.CompletelyDisableMetrics());
 
-            if (this.ContextShuttingDown != null)
-            {
-                this.ContextShuttingDown(this, EventArgs.Empty);
-            }
-
-            if (this.ContextDisabled != null)
-            {
-                this.ContextDisabled(this, EventArgs.Empty);
-            }
+            this.ContextShuttingDown?.Invoke(this, EventArgs.Empty);
+            this.ContextDisabled?.Invoke(this, EventArgs.Empty);
         }
 
         public void Dispose()
@@ -193,10 +186,7 @@ namespace Metrics.Core
             {
                 if (!this.isDisabled)
                 {
-                    if (this.ContextShuttingDown != null)
-                    {
-                        this.ContextShuttingDown(this, EventArgs.Empty);
-                    }
+                    this.ContextShuttingDown?.Invoke(this, EventArgs.Empty);
                 }
             }
         }

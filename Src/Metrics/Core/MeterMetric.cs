@@ -1,10 +1,10 @@
 ﻿
+using Metrics.MetricData;
+using Metrics.Utils;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Threading;
-using Metrics.MetricData;
-using Metrics.Utils;
 namespace Metrics.Core
 {
     public interface MeterImplementation : Meter, MetricValueProvider<MeterValue> { }
@@ -13,7 +13,7 @@ namespace Metrics.Core
     {
         private static readonly TimeSpan TickInterval = TimeSpan.FromSeconds(5);
 
-        private ConcurrentDictionary<string, SimpleMeter> setMeters = null;
+        private ConcurrentDictionary<string, SimpleMeter> setMeters;
 
         private readonly Clock clock;
         private readonly Scheduler tickScheduler;

@@ -15,7 +15,7 @@ namespace Metrics.MetricData
                 this.Value = value;
             }
 
-            public T Value { get; private set; }
+            public T Value { get; }
 
             public T GetValue(bool resetMetric = false)
             {

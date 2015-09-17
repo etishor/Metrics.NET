@@ -25,9 +25,9 @@ namespace Metrics.MetricData
 
     public class Filter : MetricsFilter
     {
-        private Predicate<string> context = null;
-        private Predicate<string> name = null;
-        private HashSet<MetricType> types = null;
+        private Predicate<string> context;
+        private Predicate<string> name;
+        private HashSet<MetricType> types;
 
         private class NoOpFilter : MetricsFilter
         {

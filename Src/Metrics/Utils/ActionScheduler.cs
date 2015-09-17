@@ -13,7 +13,7 @@ namespace Metrics.Utils
     /// </remarks>
     public sealed class ActionScheduler : Scheduler
     {
-        private CancellationTokenSource token = null;
+        private CancellationTokenSource token;
 
         public void Start(TimeSpan interval, Action action)
         {
@@ -44,7 +44,7 @@ namespace Metrics.Utils
         {
             if (interval.TotalSeconds == 0)
             {
-                throw new ArgumentException("interval must be > 0 seconds", "interval");
+                throw new ArgumentException("interval must be > 0 seconds", nameof(interval));
             }
 
             if (this.token != null)

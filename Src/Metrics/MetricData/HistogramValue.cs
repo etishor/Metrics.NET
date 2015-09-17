@@ -81,7 +81,7 @@ namespace Metrics.MetricData
 
         public HistogramValue Scale(double factor)
         {
-            if (factor == 1)
+            if (factor == 1.0d)
             {
                 return this;
             }

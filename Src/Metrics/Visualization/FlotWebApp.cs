@@ -1,13 +1,17 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Metrics.Visualization
 {
     public static class FlotWebApp
     {
+        private static readonly Assembly thisAssembly = Assembly.GetAssembly(typeof(FlotWebApp));
+        private const string FlotAppResource = "Metrics.Visualization.index.full.html.gz";
+        private const string FavIconResource = "Metrics.Visualization.metrics_32.png";
+
         private static string ReadFromEmbededResource()
         {
             using (var stream = Assembly.GetAssembly(typeof(FlotWebApp)).GetManifestResourceStream("Metrics.Visualization.index.full.html.gz"))
@@ -27,42 +31,27 @@ namespace Metrics.Visualization
 
         public const string FavIconMimeType = "image/png";
 
-        public static async Task WriteFavIcon(Stream output)
+        public static void WriteFavIcon(Stream output)
         {
-            using (var stream = Assembly.GetAssembly(typeof(FlotWebApp)).GetManifestResourceStream("Metrics.Visualization.metrics_32.png"))
+            using (var stream = thisAssembly.GetManifestResourceStream(FavIconResource))
             {
-                await stream.CopyToAsync(output);
+                Debug.Assert(stream != null, "Unable to read embeded flot app");
+                stream.CopyTo(output);
             }
         }
 
         public static Stream GetAppStream(bool decompress = false)
         {
-            if (!decompress)
-            {
-                return Assembly.GetAssembly(typeof(FlotWebApp)).GetManifestResourceStream("Metrics.Visualization.index.full.html.gz");
-            }
-            else
-            {
-                return new GZipStream(Assembly.GetAssembly(typeof(FlotWebApp)).GetManifestResourceStream("Metrics.Visualization.index.full.html.gz"), CompressionMode.Decompress);
-            }
+            var stream = !decompress ? thisAssembly.GetManifestResourceStream(FlotAppResource) : new GZipStream(GetAppStream(), CompressionMode.Decompress, false);
+            Debug.Assert(stream != null, "Unable to read embeded flot app");
+            return stream;
         }
 
-        public static async Task WriteFlotAppAsync(Stream output, bool decompress = false)
+        public static void WriteFlotAppAsync(Stream output, bool decompress = false)
         {
-            if (!decompress)
+            using (var stream = GetAppStream(decompress))
             {
-                using (var stream = Assembly.GetAssembly(typeof(FlotWebApp)).GetManifestResourceStream("Metrics.Visualization.index.full.html.gz"))
-                {
-                    await stream.CopyToAsync(output).ConfigureAwait(false);
-                }
-            }
-            else
-            {
-                using (var stream = Assembly.GetAssembly(typeof(FlotWebApp)).GetManifestResourceStream("Metrics.Visualization.index.full.html.gz"))
-                using (var gzip = new GZipStream(stream, CompressionMode.Decompress))
-                {
-                    await gzip.CopyToAsync(output).ConfigureAwait(false);
-                }
+                stream.CopyTo(output);
             }
         }
     }

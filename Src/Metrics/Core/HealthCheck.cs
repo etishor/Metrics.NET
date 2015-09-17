@@ -36,7 +36,7 @@ namespace Metrics.Core
             this.check = check;
         }
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
         protected virtual HealthCheckResult Check()
         {

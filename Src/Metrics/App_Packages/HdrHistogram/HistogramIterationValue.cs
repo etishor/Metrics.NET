@@ -4,7 +4,6 @@
 // Ported to .NET by Iulian Margarintescu under the same license and terms as the java version
 // Java Version repo: https://github.com/HdrHistogram/HdrHistogram
 // Latest ported version is available in the Java submodule in the root of the repo
-using System;
 
 namespace HdrHistogram
 {
@@ -75,10 +74,6 @@ namespace HdrHistogram
             this.percentileLevelIteratedTo = 0.0;
         }
 
-        internal HistogramIterationValue()
-        {
-        }
-       
         public long getValueIteratedTo()
         {
             return valueIteratedTo;
