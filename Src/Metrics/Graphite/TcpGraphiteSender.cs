@@ -13,13 +13,15 @@ namespace Metrics.Graphite
 
         private readonly string host;
         private readonly int port;
+        private readonly bool _keysToLowercase;
 
         private TcpClient client;
 
-        public TcpGraphiteSender(string host, int port)
+        public TcpGraphiteSender(string host, int port, bool keysToLowercase)
         {
             this.host = host;
             this.port = port;
+            _keysToLowercase = keysToLowercase;
         }
 
         protected override void SendData(string data)
@@ -30,6 +32,9 @@ namespace Metrics.Graphite
                 {
                     this.client = InitClient(this.host, this.port);
                 }
+
+                if (_keysToLowercase)
+                    data = data.ToLower();
 
                 var bytes = Encoding.UTF8.GetBytes(data);
 

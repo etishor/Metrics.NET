@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
     <metadata>
-        <id>Metrics.NET</id>
-        <version>0.3.3-pre</version>
+        <version>0.3.3</version>
+        <id>Metrics.NET_ntent</id>
         <title>Metrics.NET</title>
         <authors>iulian.margarintescu</authors>
         <owners>Iulian Margarintescu</owners>

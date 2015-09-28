@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
 	<metadata>
-		<id>Owin.Metrics</id>
-		<version>0.3.3-pre</version>
+		<version>0.3.3</version>
+		<id>Owin.Metrics_ntent</id>
 		<title>Owin.Metrics</title>
 		<authors>Allan Hardy</authors>
 		<owners>Iulian Margarintescu</owners>
@@ -15,7 +15,7 @@
 		<iconUrl>http://www.erata.net/Metrics.NET/metrics_32.png</iconUrl>
 		<tags>webapi, owin, metrics, measurements, charts, timer, histogram, duration, graphite, health checks</tags>
 		<dependencies>
-			<dependency id="Metrics.NET" version="0.3.2-pre" />
+			<dependency id="Metrics.NET" version="0.3.3" />
 		</dependencies>
 	</metadata>
 	<files>

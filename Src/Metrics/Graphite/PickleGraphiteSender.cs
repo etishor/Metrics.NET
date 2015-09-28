@@ -16,20 +16,24 @@ namespace Metrics.Graphite
         private readonly int port;
 
         private readonly int pickleJarSize;
+        private readonly bool _keysToLowercase;
 
         private TcpClient client;
         private PickleJar jar = new PickleJar();
 
 
-        public PickleGraphiteSender(string host, int port, int batchSize = DefaultPickleJarSize)
+        public PickleGraphiteSender(string host, int port, int batchSize = DefaultPickleJarSize, bool keysToLowercase = false)
         {
             this.host = host;
             this.port = port;
             this.pickleJarSize = batchSize;
+            _keysToLowercase = keysToLowercase;
         }
 
         public override void Send(string name, string value, string timestamp)
         {
+            if (_keysToLowercase)
+                name = name.ToLower();
             this.jar.Append(name, value, timestamp);
 
             if (jar.Size >= this.pickleJarSize)
