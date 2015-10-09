@@ -16,10 +16,11 @@ namespace Metrics.Graphite
 
         private UdpClient client;
 
-        public UdpGraphiteSender(string host, int port)
+        public UdpGraphiteSender(string host, int port, string metricNamePrefix = null)
         {
             this.host = host;
             this.port = port;
+            this.MetricNamePrefix = metricNamePrefix;
         }
 
         protected override void SendData(string data)
@@ -43,7 +44,7 @@ namespace Metrics.Graphite
         }
 
         public override void Flush()
-        { 
+        {
         }
 
         private static UdpClient InitClient(string host, int port)

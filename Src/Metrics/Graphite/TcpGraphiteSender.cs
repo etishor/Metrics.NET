@@ -16,10 +16,11 @@ namespace Metrics.Graphite
 
         private TcpClient client;
 
-        public TcpGraphiteSender(string host, int port)
+        public TcpGraphiteSender(string host, int port, string metricNamePrefix = null)
         {
             this.host = host;
             this.port = port;
+            this.MetricNamePrefix = metricNamePrefix;
         }
 
         protected override void SendData(string data)

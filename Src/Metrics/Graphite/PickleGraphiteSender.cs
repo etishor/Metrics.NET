@@ -21,11 +21,12 @@ namespace Metrics.Graphite
         private PickleJar jar = new PickleJar();
 
 
-        public PickleGraphiteSender(string host, int port, int batchSize = DefaultPickleJarSize)
+        public PickleGraphiteSender(string host, int port, int batchSize = DefaultPickleJarSize, string metricNamePrefix = null)
         {
             this.host = host;
             this.port = port;
             this.pickleJarSize = batchSize;
+            this.MetricNamePrefix = metricNamePrefix;
         }
 
         public override void Send(string name, string value, string timestamp)
