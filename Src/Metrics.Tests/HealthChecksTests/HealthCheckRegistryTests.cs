@@ -10,18 +10,18 @@ namespace Metrics.Tests.HealthChecksTests
         [Fact]
         public void HealthCheck_RegistryExecutesCheckOnEachGetStatus()
         {
-            HealthChecks.UnregisterAllHealthChecks();
+            HealthCheckRegistry registry = new HealthCheckRegistry();
             int count = 0;
 
-            HealthChecks.RegisterHealthCheck(new HealthCheck("test", () => { count++; }));
+            registry.RegisterHealthCheck(new HealthCheck("test", () => { count++; }));
 
             count.Should().Be(0);
 
-            HealthChecks.GetStatus();
+            registry.GetStatus();
 
             count.Should().Be(1);
 
-            HealthChecks.GetStatus();
+            registry.GetStatus();
 
             count.Should().Be(2);
         }
@@ -29,12 +29,12 @@ namespace Metrics.Tests.HealthChecksTests
         [Fact]
         public void HealthCheck_RegistryStatusIsFailedIfOneCheckFails()
         {
-            HealthChecks.UnregisterAllHealthChecks();
+            HealthCheckRegistry registry = new HealthCheckRegistry();
 
-            HealthChecks.RegisterHealthCheck(new HealthCheck("ok", () => { }));
-            HealthChecks.RegisterHealthCheck(new HealthCheck("bad", () => HealthCheckResult.Unhealthy()));
+            registry.RegisterHealthCheck(new HealthCheck("ok", () => { }));
+            registry.RegisterHealthCheck(new HealthCheck("bad", () => HealthCheckResult.Unhealthy()));
 
-            var status = HealthChecks.GetStatus();
+            var status = registry.GetStatus();
 
             status.IsHealthy.Should().BeFalse();
             status.Results.Length.Should().Be(2);
@@ -43,12 +43,12 @@ namespace Metrics.Tests.HealthChecksTests
         [Fact]
         public void HealthCheck_RegistryStatusIsHealthyIfAllChecksAreHealthy()
         {
-            HealthChecks.UnregisterAllHealthChecks();
+            HealthCheckRegistry registry = new HealthCheckRegistry();
 
-            HealthChecks.RegisterHealthCheck(new HealthCheck("ok", () => { }));
-            HealthChecks.RegisterHealthCheck(new HealthCheck("another", () => HealthCheckResult.Healthy()));
+            registry.RegisterHealthCheck(new HealthCheck("ok", () => { }));
+            registry.RegisterHealthCheck(new HealthCheck("another", () => HealthCheckResult.Healthy()));
 
-            var status = HealthChecks.GetStatus();
+            var status = registry.GetStatus();
 
             status.IsHealthy.Should().BeTrue();
             status.Results.Length.Should().Be(2);
@@ -57,11 +57,11 @@ namespace Metrics.Tests.HealthChecksTests
         [Fact]
         public void HealthCheck_RegistryDoesNotThrowOnDuplicateRegistration()
         {
-            HealthChecks.UnregisterAllHealthChecks();
+            HealthCheckRegistry registry = new HealthCheckRegistry();
 
-            HealthChecks.RegisterHealthCheck(new HealthCheck("test", () => { }));
+            registry.RegisterHealthCheck(new HealthCheck("test", () => { }));
 
-            Action action = () => HealthChecks.RegisterHealthCheck(new HealthCheck("test", () => { }));
+            Action action = () => registry.RegisterHealthCheck(new HealthCheck("test", () => { }));
             action.ShouldNotThrow<InvalidOperationException>();
         }
     }
