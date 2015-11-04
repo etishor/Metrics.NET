@@ -8,12 +8,12 @@ namespace Metrics
     {
         public static MetricsReports WithInfluxDb(this MetricsReports reports, string host, int port, string user, string pass, string database, TimeSpan interval)
         {
-            return reports.WithInfluxDb(new Uri(string.Format(@"http://{0}:{1}/db/{2}/series?u={3}&p={4}&time_precision=s", host, port, database, user, pass)), interval);
+            return reports.WithInfluxDb(new Uri(string.Format(@"http://{0}:{1}/write?db={2}", host, port, database)), user, pass, interval);
         }
 
-        public static MetricsReports WithInfluxDb(this MetricsReports reports, Uri influxdbUri, TimeSpan interval)
+        public static MetricsReports WithInfluxDb(this MetricsReports reports, Uri influxdbUri, string username, string password, TimeSpan interval)
         {
-            return reports.WithReport(new InfluxdbReport(influxdbUri), interval);
+            return reports.WithReport(new InfluxdbReport(influxdbUri, username, password), interval);
         }
     }
 }

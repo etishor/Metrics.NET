@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using Metrics.Json;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using Metrics.Reporters;
 using Metrics.Utils;
 
@@ -27,53 +29,64 @@ namespace Metrics.Influxdb
         };
 
         private readonly Uri influxdb;
-
+        private readonly HttpClient httpClient;
+        
         private List<InfluxRecord> data;
 
-        public InfluxdbReport(Uri influxdb)
+        public InfluxdbReport(Uri influxdb, string username, string password)
         {
             this.influxdb = influxdb;
+
+            var byteArray = Encoding.ASCII.GetBytes(string.Format("{0}:{1}", username, password));
+
+            httpClient = new HttpClient()
+            {
+                DefaultRequestHeaders =
+                {
+                    Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray))
+                }
+            };
         }
 
         private class InfluxRecord
         {
-            public InfluxRecord(string name, long timestamp, IEnumerable<string> columns, IEnumerable<JsonValue> data)
+            public InfluxRecord(string name, long timestamp, IEnumerable<string> columns, IEnumerable<object> data)
             {
-                var points = Enumerable.Concat(new[] { new LongJsonValue(timestamp) }, data);
+                // see: https://influxdb.com/docs/v0.9/write_protocols/write_syntax.html
 
-                this.Json = new JsonObject(new[] {
-                    new JsonProperty("name",name),
-                    new JsonProperty("columns", Enumerable.Concat(new []{"time"}, columns)),
-                    new JsonProperty("points", new JsonValueArray( new [] { new JsonValueArray( points)}))
-                });
+                var record = new StringBuilder();
+                record.Append(Normalize(name)).Append(" ");
+
+                var fieldKeypairs = new List<string>();
+
+                foreach (var pair in columns.Zip(data, (col, dat) => new Tuple<string, object>(col, dat)))
+                {
+                    fieldKeypairs.Add(string.Format("{0}={1}", Normalize(pair.Item1), pair.Item2));
+                }
+
+                record.Append(string.Join(",", fieldKeypairs));
+
+                record.Append(" ").Append(string.Format("{0:F0}", timestamp * 1e9));
+
+                LineProtocol = record.ToString();
             }
 
-            public JsonObject Json { get; private set; }
+            private static string Normalize(string v)
+            {
+                return v.Replace(" ", "\\ ");
+            }
+
+            public string LineProtocol { get; private set; }
         }
 
-        private void Pack(string name, IEnumerable<string> columns, JsonValue value)
+        private void Pack(string name, IEnumerable<string> columns, object value)
         {
             Pack(name, columns, Enumerable.Repeat(value, 1));
         }
 
-        private void Pack(string name, IEnumerable<string> columns, IEnumerable<JsonValue> values)
+        private void Pack(string name, IEnumerable<string> columns, IEnumerable<object> values)
         {
             this.data.Add(new InfluxRecord(name, CurrentContextTimestamp.ToUnixTime(), columns, values));
-        }
-
-        private JsonValue Value(long value)
-        {
-            return new LongJsonValue(value);
-        }
-
-        private JsonValue Value(double value)
-        {
-            return new DoubleJsonValue(value);
-        }
-
-        private JsonValue Value(string value)
-        {
-            return new StringJsonValue(value);
         }
 
         protected override void StartReport(string contextName)
@@ -84,21 +97,35 @@ namespace Metrics.Influxdb
 
         protected override void EndReport(string contextName)
         {
-            base.EndReport(contextName);
-
-            using (var client = new WebClient())
+            using (Metric.Context("Metrics.NET").Timer("influxdb.report", Unit.Calls).NewContext())
             {
-                var json = new CollectionJsonValue(data.Select(d => d.Json)).AsJson();
-                client.UploadString(this.influxdb, json);
+                base.EndReport(contextName);
+
+                var content = string.Join("\n", data.Select(d => d.LineProtocol));
+
+                var task = httpClient.PostAsync(influxdb, new StringContent(content));
+
+                data = null;
+
+                task.ContinueWith(m =>
+                {
+                    if (m.Result.IsSuccessStatusCode)
+                    {
+                        Metric.Context("Metrics.NET").Counter("influxdb.report.success", Unit.Events).Increment();
+                    }
+                    else
+                    {
+                        Metric.Context("Metrics.NET").Counter("influxdb.report.fail", Unit.Events).Increment();
+                    }
+                });
             }
-            this.data = null;
         }
 
         protected override void ReportGauge(string name, double value, Unit unit, MetricTags tags)
         {
             if (!double.IsNaN(value) && !double.IsInfinity(value))
             {
-                Pack(name, GaugeColumns, Value(value));
+                Pack(name, GaugeColumns, value);
             }
         }
 
@@ -107,10 +134,11 @@ namespace Metrics.Influxdb
             var itemColumns = value.Items.SelectMany(i => new[] { i.Item + " - Count", i.Item + " - Percent" });
             var columns = CounterColumns.Concat(itemColumns);
 
-            var itemValues = value.Items.SelectMany(i => new[] { Value(i.Count), Value(i.Percent) });
-            var data = new[] { Value(value.Count) }.Concat(itemValues);
-
-            Pack(name, columns, data);
+            var itemValues = value.Items.SelectMany(i => new[] { i.Count, i.Percent });
+            foreach (var dat in new[] {(double) value.Count}.Concat(itemValues))
+            {
+                Pack(name, columns, dat);
+            }
         }
 
         protected override void ReportMeter(string name, MetricData.MeterValue value, Unit unit, TimeUnit rateUnit, MetricTags tags)
@@ -128,73 +156,76 @@ namespace Metrics.Influxdb
 
             var itemValues = value.Items.SelectMany(i => new[] 
             {
-                Value(i.Value.Count), 
-                Value(i.Percent),
-                Value(i.Value.MeanRate), 
-                Value(i.Value.OneMinuteRate), 
-                Value(i.Value.FiveMinuteRate), 
-                Value(i.Value.FifteenMinuteRate)
+                i.Value.Count, 
+                i.Percent,
+                i.Value.MeanRate, 
+                i.Value.OneMinuteRate, 
+                i.Value.FiveMinuteRate, 
+                i.Value.FifteenMinuteRate
             });
 
             var data = new[] 
             {
-                Value(value.Count),
-                Value (value.MeanRate),
-                Value (value.OneMinuteRate),
-                Value (value.FiveMinuteRate),
-                Value (value.FifteenMinuteRate)
+                value.Count,
+                value.MeanRate,
+                value.OneMinuteRate,
+                value.FiveMinuteRate,
+                value.FifteenMinuteRate
             }.Concat(itemValues);
 
-            Pack(name, columns, data);
+            foreach (var dat in data)
+            {
+                Pack(name, columns, dat);
+            }
         }
 
         protected override void ReportHistogram(string name, MetricData.HistogramValue value, Unit unit, MetricTags tags)
         {
-            Pack(name, HistogramColumns, new[]{
-                Value(value.Count),
-                Value(value.LastValue),
-                Value(value.LastUserValue),
-                Value(value.Min),
-                Value(value.MinUserValue),
-                Value(value.Mean),
-                Value(value.Max),
-                Value(value.MaxUserValue),
-                Value(value.StdDev),
-                Value(value.Median),
-                Value(value.Percentile75),
-                Value(value.Percentile95),
-                Value(value.Percentile98),
-                Value(value.Percentile99),
-                Value(value.Percentile999),
-                Value(value.SampleSize)
+            Pack(name, HistogramColumns, new object[]{
+                value.Count,
+                value.LastValue,
+                value.LastUserValue ?? "\"\"",
+                value.Min,
+                value.MinUserValue ?? "\"\"",
+                value.Mean,
+                value.Max,
+                value.MaxUserValue ?? "\"\"",
+                value.StdDev,
+                value.Median,
+                value.Percentile75,
+                value.Percentile95,
+                value.Percentile98,
+                value.Percentile99,
+                value.Percentile999,
+                value.SampleSize
             });
         }
 
         protected override void ReportTimer(string name, MetricData.TimerValue value, Unit unit, TimeUnit rateUnit, TimeUnit durationUnit, MetricTags tags)
         {
-            Pack(name, TimerColumns, new[]{
+            Pack(name, TimerColumns, new object[]{
 
-                Value(value.Rate.Count),
-                Value(value.ActiveSessions),
-                Value(value.Rate.MeanRate),
-                Value(value.Rate.OneMinuteRate),
-                Value(value.Rate.FiveMinuteRate),
-                Value(value.Rate.FifteenMinuteRate),
-                Value(value.Histogram.LastValue),
-                Value(value.Histogram.LastUserValue),
-                Value(value.Histogram.Min),
-                Value(value.Histogram.MinUserValue),
-                Value(value.Histogram.Mean),
-                Value(value.Histogram.Max),
-                Value(value.Histogram.MaxUserValue),
-                Value(value.Histogram.StdDev),
-                Value(value.Histogram.Median),
-                Value(value.Histogram.Percentile75),
-                Value(value.Histogram.Percentile95),
-                Value(value.Histogram.Percentile98),
-                Value(value.Histogram.Percentile99),
-                Value(value.Histogram.Percentile999),
-                Value(value.Histogram.SampleSize)
+                value.Rate.Count,
+                value.ActiveSessions,
+                value.Rate.MeanRate,
+                value.Rate.OneMinuteRate,
+                value.Rate.FiveMinuteRate,
+                value.Rate.FifteenMinuteRate,
+                value.Histogram.LastValue,
+                value.Histogram.LastUserValue ?? "\"\"",
+                value.Histogram.Min,
+                value.Histogram.MinUserValue ?? "\"\"",
+                value.Histogram.Mean,
+                value.Histogram.Max,
+                value.Histogram.MaxUserValue ?? "\"\"",
+                value.Histogram.StdDev,
+                value.Histogram.Median,
+                value.Histogram.Percentile75,
+                value.Histogram.Percentile95,
+                value.Histogram.Percentile98,
+                value.Histogram.Percentile99,
+                value.Histogram.Percentile999,
+                value.Histogram.SampleSize
             });
         }
 
