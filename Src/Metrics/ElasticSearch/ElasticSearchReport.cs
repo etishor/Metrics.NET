@@ -128,7 +128,7 @@ namespace Metrics.ElasticSearch
                 new JsonProperty("Percentile 95%",value.Percentile95),
                 new JsonProperty("Percentile 98%",value.Percentile98),
                 new JsonProperty("Percentile 99%",value.Percentile99),
-                new JsonProperty("Percentile 99.9%" ,value.Percentile999),
+                new JsonProperty("Percentile 99_9%" ,value.Percentile999),
                 new JsonProperty("Sample Size", value.SampleSize)
             });
         }
@@ -155,7 +155,7 @@ namespace Metrics.ElasticSearch
                 new JsonProperty("Percentile 95%",value.Histogram.Percentile95),
                 new JsonProperty("Percentile 98%",value.Histogram.Percentile98),
                 new JsonProperty("Percentile 99%",value.Histogram.Percentile99),
-                new JsonProperty("Percentile 99.9%" ,value.Histogram.Percentile999),
+                new JsonProperty("Percentile 99_9%" ,value.Histogram.Percentile999),
                 new JsonProperty("Sample Size", value.Histogram.SampleSize)
             });
         }
