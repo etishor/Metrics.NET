@@ -45,16 +45,16 @@ namespace Metrics.Sampling
             UserValueWrapper[] values = new UserValueWrapper[size];
             Array.Copy(this.values, values, size);
 
+            Array.Sort(values, UserValueWrapper.Comparer);
+            var minValue = values[0].UserValue;
+            var maxValue = values[size - 1].UserValue;
+            var snapshot = new UniformSnapshot(this.count.Value, values.Select(v => v.Value), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
             if (resetReservoir)
             {
                 Array.Clear(this.values, 0, values.Length);
                 count.SetValue(0L);
             }
-
-            Array.Sort(values, UserValueWrapper.Comparer);
-            var minValue = values[0].UserValue;
-            var maxValue = values[size - 1].UserValue;
-            return new UniformSnapshot(this.count.Value, values.Select(v => v.Value), valuesAreSorted: true, minUserValue: minValue, maxUserValue: maxValue);
+            return snapshot;
         }
     }
 }
