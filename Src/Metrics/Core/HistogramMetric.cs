@@ -6,7 +6,7 @@ namespace Metrics.Core
 {
     public interface HistogramImplementation : Histogram, MetricValueProvider<HistogramValue> { }
 
-    public sealed class HistogramMetric : HistogramImplementation
+    public sealed class HistogramMetric : HistogramImplementation, IDisposable
     {
         private readonly Reservoir reservoir;
         private UserValueWrapper last = new UserValueWrapper();
@@ -61,6 +61,14 @@ namespace Metrics.Core
                 case SamplingType.SlidingWindow: return new SlidingWindowReservoir();
             }
             throw new InvalidOperationException("Sampling type not implemented " + samplingType.ToString());
+        }
+
+        public void Dispose()
+        {
+            using (reservoir as IDisposable)
+            {
+
+            }
         }
     }
 }
