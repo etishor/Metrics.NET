@@ -37,16 +37,16 @@ namespace Metrics
     /// <summary>
     /// Registry for health checks
     /// </summary>
-    public static class HealthChecks
+    public class HealthCheckRegistry
     {
-        private static readonly ConcurrentDictionary<string, HealthCheck> checks = new ConcurrentDictionary<string, HealthCheck>();
+        private readonly ConcurrentDictionary<string, HealthCheck> checks = new ConcurrentDictionary<string, HealthCheck>();
 
         /// <summary>
         /// Registers an action to monitor. If the action throws the health check fails, otherwise is successful.
         /// </summary>
         /// <param name="name">Name of the health check.</param>
         /// <param name="check">Action to execute.</param>
-        public static void RegisterHealthCheck(string name, Action check)
+        public void RegisterHealthCheck(string name, Action check)
         {
             RegisterHealthCheck(new HealthCheck(name, check));
         }
@@ -57,7 +57,7 @@ namespace Metrics
         /// </summary>
         /// <param name="name">Name of the health check.</param>
         /// <param name="check">Function to execute.</param>
-        public static void RegisterHealthCheck(string name, Func<string> check)
+        public void RegisterHealthCheck(string name, Func<string> check)
         {
             RegisterHealthCheck(new HealthCheck(name, check));
         }
@@ -68,7 +68,7 @@ namespace Metrics
         /// </summary>
         /// <param name="name">Name of the health check.</param>
         /// <param name="check">Function to execute</param>
-        public static void RegisterHealthCheck(string name, Func<HealthCheckResult> check)
+        public void RegisterHealthCheck(string name, Func<HealthCheckResult> check)
         {
             RegisterHealthCheck(new HealthCheck(name, check));
         }
@@ -77,7 +77,7 @@ namespace Metrics
         /// Registers a custom health check.
         /// </summary>
         /// <param name="healthCheck">Custom health check to register.</param>
-        public static void RegisterHealthCheck(HealthCheck healthCheck)
+        public void RegisterHealthCheck(HealthCheck healthCheck)
         {
             checks.TryAdd(healthCheck.Name, healthCheck);
         }
@@ -86,7 +86,7 @@ namespace Metrics
         /// Execute all registered checks and return overall.
         /// </summary>
         /// <returns>Status of the system.</returns>
-        public static HealthStatus GetStatus()
+        public HealthStatus GetStatus()
         {
             var results = checks.Values.Select(v => v.Execute()).OrderBy(r => r.Name);
             return new HealthStatus(results);
@@ -95,10 +95,75 @@ namespace Metrics
         /// <summary>
         /// Remove all the registered health checks.
         /// </summary>
-        public static void UnregisterAllHealthChecks()
+        public void UnregisterAllHealthChecks()
         {
             checks.Clear();
         }
+    }
 
+    /// <summary>
+    /// Default and shared registry for health checks
+    /// </summary>
+    public static class HealthChecks
+    {
+        private static readonly HealthCheckRegistry registry = new HealthCheckRegistry();
+
+        /// <summary>
+        /// Registers an action to monitor. If the action throws the health check fails, otherwise is successful.
+        /// </summary>
+        /// <param name="name">Name of the health check.</param>
+        /// <param name="check">Action to execute.</param>
+        public static void RegisterHealthCheck(string name, Action check)
+        {
+            registry.RegisterHealthCheck(new HealthCheck(name, check));
+        }
+
+        /// <summary>
+        /// Registers an action to monitor. If the action throws the health check fails, 
+        /// otherwise is successful and the returned string is used as status message.
+        /// </summary>
+        /// <param name="name">Name of the health check.</param>
+        /// <param name="check">Function to execute.</param>
+        public static void RegisterHealthCheck(string name, Func<string> check)
+        {
+            registry.RegisterHealthCheck(new HealthCheck(name, check));
+        }
+
+        /// <summary>
+        /// Registers a function to monitor. If the function throws or returns an HealthCheckResult.Unhealthy the check fails,
+        /// otherwise the result of the function is used as a status.
+        /// </summary>
+        /// <param name="name">Name of the health check.</param>
+        /// <param name="check">Function to execute</param>
+        public static void RegisterHealthCheck(string name, Func<HealthCheckResult> check)
+        {
+            registry.RegisterHealthCheck(new HealthCheck(name, check));
+        }
+
+        /// <summary>
+        /// Registers a custom health check.
+        /// </summary>
+        /// <param name="healthCheck">Custom health check to register.</param>
+        public static void RegisterHealthCheck(HealthCheck healthCheck)
+        {
+            registry.RegisterHealthCheck(healthCheck);
+        }
+
+        /// <summary>
+        /// Execute all registered checks and return overall.
+        /// </summary>
+        /// <returns>Status of the system.</returns>
+        public static HealthStatus GetStatus()
+        {
+            return registry.GetStatus();
+        }
+
+        /// <summary>
+        /// Remove all the registered health checks.
+        /// </summary>
+        public static void UnregisterAllHealthChecks()
+        {
+            registry.UnregisterAllHealthChecks();
+        }
     }
 }

@@ -22,13 +22,13 @@ namespace Metrics
 
         private bool isDisabled = MetricsConfig.GlobalyDisabledMetrics;
 
-        public MetricsConfig(MetricsContext context)
+        public MetricsConfig(MetricsContext context, Func<HealthStatus> healthStatus = null)
         {
             this.context = context;
 
             if (!GlobalyDisabledMetrics)
             {
-                this.healthStatus = HealthChecks.GetStatus;
+                this.healthStatus = healthStatus ?? HealthChecks.GetStatus;
                 this.reports = new MetricsReports(this.context.DataProvider, this.healthStatus);
                 this.context.Advanced.ContextDisabled += (s, e) =>
                 {
