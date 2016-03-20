@@ -4,9 +4,11 @@ namespace Metrics.Graphite
 {
     public abstract class GraphiteSender : IDisposable
     {
+        protected string MetricNamePrefix;
         public virtual void Send(string name, string value, string timestamp)
         {
-            var data = string.Concat(name, " ", value, " ", timestamp, "\n");
+            var metricName = string.IsNullOrEmpty(MetricNamePrefix) ? name : string.Format("{0}.{1}", MetricNamePrefix, name);
+            var data = string.Concat(metricName, " ", value, " ", timestamp, "\n");
             SendData(data);
         }
 
