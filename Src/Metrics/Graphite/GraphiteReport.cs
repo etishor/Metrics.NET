@@ -64,8 +64,8 @@ namespace Metrics.Graphite
 
             foreach (var item in value.Items)
             {
-                Send(SubfolderName(name, unit, item.Item, "Count"), item.Percent);
-                Send(SubfolderName(name, unit, item.Item, "Percent"), item.Value.Count);
+                Send(SubfolderName(name, unit, item.Item, "Count"), item.Value.Count);
+                Send(SubfolderName(name, unit, item.Item, "Percent"), item.Percent);
                 Send(SubfolderName(name, AsRate(unit, rateUnit), item.Item, "Rate-Mean"), item.Value.MeanRate);
                 Send(SubfolderName(name, AsRate(unit, rateUnit), item.Item, "Rate-1-min"), item.Value.OneMinuteRate);
                 Send(SubfolderName(name, AsRate(unit, rateUnit), item.Item, "Rate-5-min"), item.Value.FiveMinuteRate);
