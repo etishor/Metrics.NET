@@ -16,7 +16,7 @@ namespace Metrics.Core
             }
         }
 
-        private readonly Func<HealthCheckResult> check;
+        internal Func<HealthCheckResult> CheckFunc { get; set; }
 
         protected HealthCheck(string name)
             : this(name, () => { })
@@ -33,14 +33,14 @@ namespace Metrics.Core
         public HealthCheck(string name, Func<HealthCheckResult> check)
         {
             this.Name = name;
-            this.check = check;
+            this.CheckFunc = check;
         }
 
         public string Name { get; }
 
         protected virtual HealthCheckResult Check()
         {
-            return this.check();
+            return this.CheckFunc();
         }
 
         public Result Execute()
