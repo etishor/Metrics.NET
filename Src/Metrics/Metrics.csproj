@@ -55,6 +55,16 @@
     <Compile Include="Core\DefaultMetricsRegistry.cs" />
     <Compile Include="Core\DefaultDataProvider.cs" />
     <Compile Include="Core\DefaultRegistryDataProvider.cs" />
+    <Compile Include="Core\NullMetricsRegistry.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NullMetricsRegistry.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Core\TimerMetric.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TimerMetric.tt</DependentUpon>
+    </Compile>
     <Compile Include="ElasticSearch\ElasticSearchConfigExtensions.cs" />
     <Compile Include="ElasticSearch\ElasticSearchReport.cs" />
     <Compile Include="Graphite\PickleGraphiteSender.cs" />
@@ -134,6 +144,11 @@
     <Compile Include="Sampling\UniformReservoir.cs" />
     <Compile Include="Metric.cs" />
     <Compile Include="Timer.cs" />
+    <Compile Include="Timer.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Timer.tt</DependentUpon>
+    </Compile>
     <Compile Include="Unit.cs" />
     <Compile Include="Utils\ActionScheduler.cs" />
     <Compile Include="Utils\AppEnvironment.cs" />
@@ -168,7 +183,25 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Core\NullMetricsRegistry.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>NullMetricsRegistry.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Core\TimerMetric.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TimerMetric.generated.cs</LastGenOutput>
+    </None>
+    <None Include="GenericTypes.tt">
+      <LastGenOutput>GenericTypes.cs</LastGenOutput>
+    </None>
     <None Include="packages.config" />
+    <None Include="Timer.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Timer.generated.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
