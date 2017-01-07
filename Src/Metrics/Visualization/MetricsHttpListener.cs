@@ -118,7 +118,7 @@ namespace Metrics.Visualization
                     {
                         context.Response.Redirect(context.Request.Url + "/");
                         context.Response.Close();
-                        return Task.FromResult(0);
+                        return TaskEx.FromResult(0);
                     }
                     else
                     {
@@ -212,7 +212,7 @@ namespace Metrics.Visualization
             var acceptsGzip = AcceptsGzip(context.Request);
             if (!acceptsGzip)
             {
-                using (var writer = new StreamWriter(context.Response.OutputStream, Encoding.UTF8, 4096, true))
+                using (var writer = new StreamWriter(context.Response.OutputStream, Encoding.UTF8, 4096))
                 {
                     await writer.WriteAsync(data).ConfigureAwait(false);
                 }
@@ -221,7 +221,7 @@ namespace Metrics.Visualization
             {
                 context.Response.AddHeader("Content-Encoding", "gzip");
                 using (GZipStream gzip = new GZipStream(context.Response.OutputStream, CompressionMode.Compress, true))
-                using (var writer = new StreamWriter(gzip, Encoding.UTF8, 4096, true))
+                using (var writer = new StreamWriter(gzip, Encoding.UTF8, 4096))
                 {
                     await writer.WriteAsync(data).ConfigureAwait(false);
                 }

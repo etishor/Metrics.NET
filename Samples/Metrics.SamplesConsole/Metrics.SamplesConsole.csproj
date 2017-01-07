@@ -21,6 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <OutputPath>..\..\bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -30,6 +31,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <OutputPath>..\..\bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -66,10 +68,6 @@
     <ProjectReference Include="..\Metrics.SampleReporter\Metrics.SampleReporter.csproj">
       <Project>{18e808cb-98f9-4754-9872-d3d00f9ce72b}</Project>
       <Name>Metrics.SampleReporter</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Metrics.Samples.FSharp\Metrics.Samples.FSharp.fsproj">
-      <Project>{daf70394-ce63-4d2f-b52b-839941827b4e}</Project>
-      <Name>Metrics.Samples.FSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\Metrics.Samples\Metrics.Samples.csproj">
       <Project>{d08a63d0-f440-477c-9565-1264ae0879d0}</Project>

@@ -31,13 +31,13 @@ namespace Metrics.Utils
             Start(interval, t =>
             {
                 action(t);
-                return Task.FromResult(true);
+                return TaskEx.FromResult(true);
             });
         }
 
         public void Start(TimeSpan interval, Func<Task> action)
         {
-            Start(interval, t => t.IsCancellationRequested ? action() : Task.FromResult(true));
+            Start(interval, t => t.IsCancellationRequested ? action() : TaskEx.FromResult(true));
         }
 
         public void Start(TimeSpan interval, Func<CancellationToken, Task> action)
@@ -65,7 +65,7 @@ namespace Metrics.Utils
                 {
                     try
                     {
-                        await Task.Delay(interval, token.Token).ConfigureAwait(false);
+                        await TaskEx.Delay(interval, token.Token).ConfigureAwait(false);
                         try
                         {
                             await action(token.Token).ConfigureAwait(false);
