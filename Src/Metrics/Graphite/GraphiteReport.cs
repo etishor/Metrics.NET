@@ -12,6 +12,7 @@ namespace Metrics.Graphite
     public class GraphiteReport : BaseReport, IDisposable
     {
         private static readonly Regex invalid = new Regex(@"[^a-zA-Z0-9\-%&]+", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        private static readonly Regex invalidAllowDots = new Regex(@"[^a-zA-Z0-9\-%&.]+", RegexOptions.CultureInvariant | RegexOptions.Compiled);
         private static readonly Regex slash = new Regex(@"\s*/\s*", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
         private readonly GraphiteSender sender;
@@ -133,7 +134,7 @@ namespace Metrics.Graphite
         protected override string FormatContextName(IEnumerable<string> contextStack, string contextName)
         {
             var parts = contextStack.Concat(new[] { contextName })
-                .Select(GraphiteName);
+                .Select(_ => GraphiteName(_, true));
 
             return string.Join(".", parts);
         }
@@ -196,10 +197,12 @@ namespace Metrics.Graphite
             return string.Concat("-", clean);
         }
 
-        protected virtual string GraphiteName(string name)
+        protected virtual string GraphiteName(string name, bool allowDots = false)
         {
             var noSlash = slash.Replace(name, "-per-");
-            return invalid.Replace(noSlash, "_").Trim('_');
+            return allowDots ? 
+                invalidAllowDots.Replace(noSlash, "_").Trim('_') : 
+                invalid.Replace(noSlash, "_").Trim('_');
         }
 
         public void Dispose()

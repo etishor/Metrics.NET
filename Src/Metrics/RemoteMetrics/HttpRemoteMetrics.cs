@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using Metrics.Json;
 
 namespace Metrics.RemoteMetrics
@@ -16,12 +18,12 @@ namespace Metrics.RemoteMetrics
             }
         }
 
-        public static JsonMetricsContext FetchRemoteMetrics(Uri remoteUri, Func<string, JsonMetricsContext> deserializer)
+        public static async Task<JsonMetricsContext> FetchRemoteMetrics(Uri remoteUri, Func<string, JsonMetricsContext> deserializer, CancellationToken token)
         {
             using (CustomClient client = new CustomClient())
             {
                 client.Headers.Add("Accept-Encoding", "gizp");
-                var json = client.DownloadString(remoteUri);
+                var json = await client.DownloadStringTaskAsync(remoteUri).ConfigureAwait(false);
                 return deserializer(json);
             }
         }

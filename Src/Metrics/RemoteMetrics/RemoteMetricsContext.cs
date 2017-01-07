@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Metrics.Core;
 using Metrics.Json;
 using Metrics.MetricData;
@@ -19,14 +21,14 @@ namespace Metrics.RemoteMetrics
         public RemoteMetricsContext(Scheduler scheduler, Uri remoteUri, TimeSpan updateInterval, Func<string, JsonMetricsContext> deserializer)
         {
             this.scheduler = scheduler;
-            this.scheduler.Start(updateInterval, () => UpdateMetrics(remoteUri, deserializer));
+            this.scheduler.Start(updateInterval, c => UpdateMetrics(remoteUri, deserializer, c));
         }
 
-        private void UpdateMetrics(Uri remoteUri, Func<string, JsonMetricsContext> deserializer)
+        private async Task UpdateMetrics(Uri remoteUri, Func<string, JsonMetricsContext> deserializer, CancellationToken token)
         {
             try
             {
-                var remoteContext = HttpRemoteMetrics.FetchRemoteMetrics(remoteUri, deserializer);
+                var remoteContext = await HttpRemoteMetrics.FetchRemoteMetrics(remoteUri, deserializer, token).ConfigureAwait(false);
                 remoteContext.Environment.Add("RemoteUri", remoteUri.ToString());
                 remoteContext.Environment.Add("RemoteVersion", remoteContext.Version);
                 remoteContext.Environment.Add("RemoteTimestamp", Clock.FormatTimestamp(remoteContext.Timestamp));
@@ -35,7 +37,7 @@ namespace Metrics.RemoteMetrics
             }
             catch (Exception x)
             {
-                MetricsErrorHandler.Handle(x, "Error updating metrics data from " + remoteUri.ToString());
+                MetricsErrorHandler.Handle(x, "Error updating metrics data from " + remoteUri);
                 this.currentData = MetricsData.Empty;
             }
         }
